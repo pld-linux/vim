@@ -1,0 +1,64 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.011
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.011
+Problem:    Alpha OSF1: stat() is a macro and doesn't allow an #ifdef halfway.
+	    (Moshe Kaminsky)
+Solution:   Move the #ifdef outside of stat().
+Files:	    src/os_unix.c
+
+
+*** ../vim-6.2.010/src/os_unix.c	Wed May 28 22:45:05 2003
+--- src/os_unix.c	Tue Jun  3 21:52:44 2003
+***************
+*** 2225,2237 ****
+  {
+      struct stat statb;
+  
+!     if (stat((char *)
+  #ifdef VMS
+! 		    vms_fixfilename(name),
+  #else
+! 		    name,
+  #endif
+- 		    &statb))
+  	return -1;
+      return statb.st_mode;
+  }
+--- 2225,2236 ----
+  {
+      struct stat statb;
+  
+!     /* Keep the #ifdef outside of stat(), it may be a macro. */
+  #ifdef VMS
+!     if (stat((char *)vms_fixfilename(name), &statb))
+  #else
+!     if (stat((char *)name, &statb))
+  #endif
+  	return -1;
+      return statb.st_mode;
+  }
+*** ../vim-6.2.010/src/version.c	Tue Jun  3 22:29:09 2003
+--- src/version.c	Tue Jun  3 23:13:02 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     11,
+  /**/
+
+-- 
+From "know your smileys":
+ :~)	A man with a tape recorder up his nose
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Help AIDS victims, buy at Amazon -- http://ICCF.nl/click1.html ///
