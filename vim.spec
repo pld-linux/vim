@@ -13,7 +13,7 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	6.0z
-Release:	1
+Release:	2
 Epoch:		1
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -28,6 +28,7 @@ Source5:	g%{name}-motif.desktop
 Source6:	g%{name}-gtk.desktop
 Source7:	g%{name}-gnome.desktop
 Patch0:		%{name}-sysconfdir.patch
+Patch1:		%{name}-visual.patch
 URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
 %{!?bcond_off_static:BuildRequires:	ncurses-static}
@@ -187,6 +188,7 @@ biblioteki GNOME.
 %prep
 %setup -q -b 1 -b 2 -b 3 -n %{name}%(echo %{version} | sed -e "s#\.##g")
 %patch0 -p1
+%patch1 -p1
 
 %build
 cd src
