@@ -16,7 +16,7 @@
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
 Summary(es):	Editor visual incrementado
-Summary(fr):	editeur VIM : VIsual editor iMproved
+Summary(fr):	Editeur VIM : VIsual editor iMproved
 Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(pt_BR):	Editor visual incrementado
 Summary(ru):	Visual editor IMproved - åÄÉÎÓÔ×ÅÎÎÏ ğÒÁ×ÉÌØÎÙÊ òÅÄÁËÔÏÒ :)
@@ -83,6 +83,13 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Text editor similar to Vi. Important improvements: multiple windows,
 multi-level undo, block highliting, folding, and many other.
 
+%description -l cs
+ViM je novı a vylep¹enı editor vycházející z klasického editoru vi. Vi
+byl prvním celoobrazovkovım editorem pro Unix a je stále velmi
+populární. ViM je obohacenı funkcemi jako: podpora více oken,
+víceúrovòové undo, zvırazòování blokù a øadu dal¹ích u¾iteènıch
+funkcí.
+
 %description -l de
 Der Visual-Editor iMproved ist ein aktualisierter und erweiterter Klon
 des vi-Editors, der mit praktisch allen UN*X-Systemen ausgeliefert
@@ -104,10 +111,38 @@ pratiquement tous les systèmes UN*X. Il ajoute les fenêtres
 mutltiples, l'annulation a plusieurs niveaux, la mise en évidence des
 blocs et autres caractéristiques au vi de base.
 
+%description -l id
+VIM (VIsual editor iMproved) adalah versi vi editor yang sudah
+diupdate dan ditambah kemampuannya. Vi adalah editor untuk UNIX yang
+pertama yang menggunakan layar, dan sekarang masih sangat populer. VIM
+mengembangkan vi dengan menambah kemampuan baru seperti: multiple
+windows, multi-level undo, block highlighting, dll.
+
+%description -l is
+VIM (VIsual editor iMproved) er uppfærğ og endurbætt útgáfa af vi
+ritlinum. Vi var fyrsti skjá-ritillinn fyrir UNIX og er enn mjög
+vinsæll. VIM gerist föğurbetrungur meğ nıjum möguleikum líkt og
+gluggakerfi, iğrun og yfirbót (e: multi-level undo), blokkarvali og
+fleira.
+
+%description -l it
+VIM (Vi IMproved) è una versione aggiornata e perfezionata dell'editor
+vi. Vi è stato il primo editor per UNIX realmente basato su video ed è
+ancora molto diffuso. VIM perfeziona vi aggiungendo nuove funzioni:
+finestre multiple, funzione \"annulla\" multilivello, evidenziazione
+dei blocchi e altro.
+
 %description -l pl
 Edytor tekstu podobny do Vi. Wa¿ne ulepszenia: mo¿liwo¶æ pracy w wielu
 oknach, wielopoziomowa opcja 'cofnij', bloki, pod¶wietlanie sk³adni,
 folding i wiele innych.
+
+%description -l ja
+O VIM (VIsual editor iMproved) é uma versão melhorada e actualizada do
+editor vi. O vi foi o primeiro verdadeiro editor baseado em ecrã para
+o UNIX, e ainda é muito popular. O VIM melhora o vi acrescentando
+novas potencialidades: janelas múltiplas, anulação multi-nível, realce
+de blocos e mais.
 
 %description -l pt_BR
 O editor Vim (Vi Enhanced) é um versão atualizada e com novas
@@ -121,6 +156,19 @@ VIsual editor iMproved - ÜÔÏ ÏÂÎÏ×ÌÅÎÎÙÊ É ÚÎÁŞÉÔÅÌØÎÏ ÕÌÕŞÛÅÎÎÙÊ ËÌÏÎ
 ÒÅÄÁËÔÏÒÁ vi, ËÏÔÏÒÙÊ ĞÏÓÔÁ×ÌÑÅÔÓÑ ĞÒÁËÔÉŞÅÓËÉ ÓÏ ×ÓÅÍÉ
 UN*X-ÓÉÓÔÅÍÁÍÉ. ÷ ÜÔÏÊ ×ÅÒÓÉÉ ÅÓÔØ ÍÎÏÇÏÕÒÏ×ÎÅ×ÙÊ ÏÔËÁÔ, ×ÙÄÅÌÅÎÉÅ
 ÂÌÏËÏ×, ÓÉÎÔÁËÓÉŞÅÓËÁÑ ĞÏÄÓ×ÅÔËÁ É ÍÎÏÇÏ ÄÒÕÇÏÇÏ...
+
+%description -l sk
+VIM (VIsual editor iMproved) je nov¹ia a vylep¹ená verzia editoru vi.
+Vi bol prvım skutoène obrazovkovo orientovanım editorom pre UNIX a
+stále je veµmi populárny. VIM má oproti vi vylep¹enia ako: prácu s
+viacerımi oknami, viacnásobné undo, zvırazòovanie blokov textu a iné.
+
+%description -l sv
+VIM (Vi IMproved) är en uppdaterad och förbättrad version av
+redigeraren vi. Vi var den första riktiga skärmbaserade redigeraren
+till UNIX, och är fortfarande väldigt populär. VIM förbättrar vi med
+nya finesser: flera fönster, flernivå ångra, blockmarkering och mer
+ändå.
 
 %description -l tr
 Standart vi metin düzenleyicisinin gelişmiş hali; daha fazla komut,
@@ -168,7 +216,7 @@ wyj¶cie. Co wiêcej, mo¿e byæ u¿yty do modyfikowania plików binarnych.
 
 %package static
 Summary:	Statically linked Vim
-Summary(pl):	Statycznie zlinkowany Vim
+Summary(pl):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
 Group(cs):	Aplikace/Editory/Vim
 Group(da):	Programmer/Tekstbehandlere/Vim
@@ -211,7 +259,24 @@ zalecana, mo¿e on pomóc Ci uratowaæ system w czasie awarii.
 
 %package rt
 Summary:	Vim runtime files
+Summary(cs):	Soubory nezbytné pro libovolnı editor ViM
+Summary(da):	Fælles filer som er nødvendige for enhver version af VIM editoren
+Summary(de):	Die von allen Versionen des VIM-Editors benötigten gemeinsamen Dateien
+Summary(es):	Ficheros comunes a todas las versiones de VIM
+Summary(fr):	Fichiers communs indispensables pour toute version de l'éditeur VIM
+Summary(id):	File umum yang dibutuhkan oleh semua versi editor VIM
+Summary(is):	Grunnskrár sem allar útgáfur VIM ritilsins şurfa á ağ halda
+Summary(it):	File comuni necessari per tutte le versioni dell'editor VIM
+Summary(ja):	¤¹¤Ù¤Æ¤Î¥Ğ¡¼¥¸¥ç¥ó¤Î VIM ¥¨¥Ç¥£¥¿¤ÇÉ¬Í×¤È¤µ¤ì¤ë¶¦ÄÌ¥Õ¥¡¥¤¥ë
+Summary(no):	Felles filer som er nødvendige for enhver versjon av VIM editoren
 Summary(pl):	Pliki przydatne edytorowi Vim
+Summary(pt):	Os ficheiros comuns necessários para qualquer versão do editor VIM
+Summary(ru):	æÁÊÌÙ, ÔÒÅÂÕÅÍÙÅ ÄÌÑ ÌÀÂÏÊ ×ÅÒÓÉÉ ÒÅÄÁËÔÏÒÁ vim
+Summary(sk):	Spoloèné súbory potrebné pre v¹etky verzie editoru VIM
+Summary(sl):	Skupne datoteke, potrebne s katerokoli razlièico urejevalnika VIM
+Summary(sv):	De gemensamma filerna som behövs av alla versioner av redigeraren VIM
+Summary(uk):	æÁÊÌÉ, ĞÏÔÒ¦ÂÎ¦ ÄÌÑ ÂÕÄØ-ÑËÏ§ ×ÅÒÓ¦§ ÒÅÄÁËÔÏÒÕ vim
+Summary(zh_CN):	ÈÎºÎ°æ±¾µÄ VIM ±à¼­Æ÷ËùĞèµÄ¹«ÓÃÎÄ¼ş¡£
 Group:		Applications/Editors/Vim
 Group(cs):	Aplikace/Editory/Vim
 Group(da):	Programmer/Tekstbehandlere/Vim
@@ -237,14 +302,58 @@ This package contains macros, documentation, syntax configuration and
 manual pages for Vim. If you want to take advantage of Vim more
 powerful features, you should install this package.
 
+%description rt -l cs
+Tento balíèek obsahuje spoleèné soubory pro v¹echny dal¹í balíèky s
+vim.
+
+%description rt -l da
+The vim-rt package contains files which every VIM binary will need in
+order to run.
+
+%description rt -l de
+Das Paket vim-rt enthält Dateien, die jede VIM-Binärdatei für die
+Ausführung benötigt.
+
+%description rt -l es
+The vim-rt package contains files which every VIM binary will need in
+order to run.
+
+%description rt -l fr
+Le paquetage vim-rt contient des fichiers dont chaque fichier binaire
+VIM a besoin pour fonctionner.
+
+%description rt -l id
+Package vim-rt berisi file yang dibutuhkan semua versi VIM agar bisa
+berjalan.
+
+%description rt -l is
+vim-rt pakkinn inniheldur skrár sem allar VIM keyrsluskrárnar şurfa
+til ağ keyra.
+
+%description rt -l it
+Il pacchetto vim-rt contiene i file necessari a ogni binario di VIM
+per poter funzionare.
+
 %description rt -l pl
 W tym pakiecie znajdziesz dokumentacjê, makra, pliki konfiguracyjne i
 strony podrêcznika dla edytora Vim. Je¿eli chcesz korzystaæ z
 zaawansowanych mo¿liwo¶ci Vima, powiniene¶ zainstalowaæ ten pakiet.
 
+%description rt -l pt
+O pacote vim-rt contém os ficheiros que todos os executáveis do VIM
+irão necessitar para correr.
+
 %description rt -l ru
 ğÁËÅÔ vim-rt ÓÏÄÅÒÖÉÔ ÆÁÊÌÙ (ÎÁĞÒÉÍÅÒ, ÆÁÊÌÙ ÓĞÒÁ×ËÉ), ËÏÔÏÒÙÅ ÎÕÖÎÙ
 ÄÌÑ ÒÁÂÏÔÙ ÌÀÂÏÊ ĞÒÏÇÒÁÍÍÙ vim.
+
+%description rt -l sk
+Balík vim-rt obsahuje súbory, ktoré bude potrebova» pre správnu
+funkciu ka¾dá verzia editoru VIM.
+
+%description rt -l sv
+Paketet vim-rt innehåller filer som alla VIM-binärer behöver för att
+köra.
 
 %description rt -l uk
 ğÁËÅÔ vim-rt Í¦ÓÔÉÔØ ÆÁÊÌÉ (ÎÁĞÒÉËÌÁÄ, ÆÁÊÌÉ ÄÏ×¦ÄËÉ), ËÏÔÒ¦ ĞÏÔÒ¦ÂÎ¦
