@@ -26,7 +26,7 @@ Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
 #Version:	%{_ver}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -56,6 +56,8 @@ Patch10:	%{name}-specsyntax-pld.patch
 Patch11:	%{name}-bonobo.patch
 Patch12:	%{name}-home_etc.patch
 #Patch12:	%{name}-dynamic_python.patch
+Patch13:	%{name}-selinux.patch
+
 Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030726.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.002
@@ -217,6 +219,7 @@ BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
+BuildRequires:	libselinux-devel
 %{?with_bonobo:BuildRequires:	libbonoboui-devel >= 2.2.0}
 %{?with_bonobo:BuildRequires:	ORBit2-devel}
 %{?with_bonobo:BuildRequires:	nautilus-devel >= 2.2.0}
@@ -769,6 +772,7 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch10 -p1
 %{?with_bonobo:%patch11 -p1}
 %patch12 -p1
+%patch13 -p1
 
 %build
 cd src
