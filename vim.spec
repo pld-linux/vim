@@ -31,7 +31,7 @@ multi-level undo, block highliting, and many other.
 Edytor tekstu podobny do Vi. Wa¿ne ulepszenia: mo¿liwo¶æ pracy w wielu 
 wielopoziomowa opcja 'cofnij', bloki, pod¶wietlanie sk³adni i wiele innych. 
   
-%package	static
+%package static
 Summary:	Staticly linked Vim
 Summary(pl):	Statycznie zlinkowany Vim
 Group:		Applications/Editors/Vim
@@ -51,7 +51,7 @@ posiada minimaln± ilo¶ci± dodatków. Jest instalowana w /bin jako narzêdzie
 dla administratora. Instalacja tego pakietu jest MOCNO zalecana, mo¿e on 
 pomóc Tobie uratowaæ system w czasie awarii.      
 
-%package	rt 
+%package rt 
 Summary:	Vim runtime files
 Summary(pl):	Pliki przydatne edytorowi Vim 
 Group:		Applications/Editors/Vim
