@@ -31,7 +31,7 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -132,7 +132,7 @@ BuildRequires:	gpm-devel
 %{?with_kde:BuildRequires:	kdelibs-devel >= 9:3.0.0}
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %{?with_selinux:BuildRequires:	libselinux-devel}
-%{?with_motif:BuildRequires:	motif-devel}
+%{?with_motif:BuildRequires:	openmotif-devel}
 BuildRequires:	ncurses-devel
 %{?with_perl:BuildRequires:	perl-devel}
 %{?with_python:BuildRequires:	python-devel}
