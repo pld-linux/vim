@@ -140,10 +140,11 @@ BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 %{?with_gtk:BuildRequires:	gtk+2-devel >= 2.2.1}
-BuildRequires:	ncurses-devel
+%{?with_kde:BuildRequires:	kdelibs-devel >= 9:3.0.0}
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 BuildRequires:	libselinux-devel
 %{?with_motif:BuildRequires:	motif-devel}
+BuildRequires:	ncurses-devel
 %{?with_perl:BuildRequires:	perl-devel}
 %{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby}
@@ -482,7 +483,6 @@ Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Obsoletes:	vim-X11
-Requires:	kdelibs
 
 %description -n kvim
 The classic Unix text editor now also under X Window System! This
