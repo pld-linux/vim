@@ -41,9 +41,13 @@ Source3:	%{name}-patches-%{_ver}.401-%{_patchlevel}.tar.bz2
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5: 09acc0de0aeb351947a64cad4e8ca2ec
 Source10:	g%{name}-athena.desktop
+# Source10-md5:	181a554b04f83b5eab64cd570a40d8cd
 Source11:	g%{name}-motif.desktop
+# Source11-md5:	2f5f6b39c66cfca1f45c3fd09da982da
 Source12:	g%{name}-gtk.desktop
+# Source12-md5:	55c78c0a82d06406ec1f466a805b34a6
 Source13:	g%{name}-gnome.desktop
+# Source13-md5:	9101a834761327f22d892768cab8799e
 Patch0:		http://regexxer.sourceforge.net/vim/vim-gtk2-20030404.patch.gz
 Patch1:		%{name}-sysconfdir.patch
 Patch2:		%{name}-visual.patch
