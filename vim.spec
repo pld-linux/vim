@@ -32,13 +32,14 @@ Patch12:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.008
 Patch13:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.009
 URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
-BuildRequires:	ncurses-static
-BuildRequires:	glibc-static
+%{!?bcond_off_static:BuildRequires:	ncurses-static}
+%{!?bcond_off_static:BuildRequires:	glibc-static}
 BuildRequires:	gpm-devel
 %{!?no_athena:BuildRequires:	Xaw3d-devel}
 %{!?no_motif:BuildRequires:	motif-devel}
 %{!?no_gtk:BuildRequires:	gtk+-devel}
 Requires:	%{name}-rt = %{version}
+%{?bcond_off_static:Requires:	%{name}-static = %{version}}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -191,8 +192,8 @@ cd src
 %{__make} vim
 mv -f vim vim.ncurses
 
-%{__make} distclean
-%configure \
+%{?bcond_off_static:#}%{__make} distclean
+%{?bcond_off_static:#}%configure \
 	--disable-gui \
 	--without-x \
 	--disable-perlinterp \
@@ -204,9 +205,9 @@ mv -f vim vim.ncurses
 	--enable-min-features \
 	--with-tlib=tinfo
 
-%{__make} vim
+%{?bcond_off_static:#}%{__make} vim
 %{__make} xxd/xxd
-mv -f vim vim.static
+%{?bcond_off_static:#}mv -f vim vim.static
 mv -f xxd/xxd xxd.static
 
 %{?no_athena:#}%{__make} distclean
@@ -254,9 +255,11 @@ install -d $RPM_BUILD_ROOT{%{_var}/lib/vim,%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim/{doc,tutor}} \
 	$RPM_BUILD_ROOT{%{_prefix}/X11R6/bin,%{_applnkdir}/Development/Editors}
 
-install src/vim.ncurses $RPM_BUILD_ROOT%{_bindir}/vim
+%{!?bcond_off_static:install src/vim.ncurses $RPM_BUILD_ROOT%{_bindir}/vim}
+%{?bcond_off_static:install src/vim.ncurses $RPM_BUILD_ROOT/bin/vi}
 
-install src/vim.static $RPM_BUILD_ROOT/bin/vi
+%{!?bcond_off_static:install src/vim.static $RPM_BUILD_ROOT/bin/vi}
+%{?bcond_off_static:ln -sf /bin/vi $RPM_BUILD_ROOT%{_bindir}/vim}
 install src/xxd.static $RPM_BUILD_ROOT/bin/xxd
 
 install src/vimtutor $RPM_BUILD_ROOT%{_bindir}/vimtutor
