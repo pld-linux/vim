@@ -16,7 +16,7 @@
 -syn match specMacroIdentifier contained '%{\w*}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
 +"syn match specMacroIdentifier contained '%{\w*}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
 +syn region specMacroIdentifier oneline matchgroup=Special start='%{' skip='\\}' end='}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
-+syn match specBcond contained '%{with\(out\)\?\s\+[a-zA-Z_-]\+}'
++syn match specBcond contained '%{with\(out\)\?\s\+[a-zA-Z0-9_-]\+}'
  
  syn match specSpecialVariables contained '\$[0-9]\|\${[0-9]}'
  syn match specCommandOpts      contained '\s\(-\w\+\|--\w[a-zA-Z_-]\+\)'ms=s+1
