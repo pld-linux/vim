@@ -6,7 +6,9 @@
 # _without_gtk		- without gtk+-based gvim support
 # _without_gnome	- without gnome-based gvim support
 # _with_ispell		- with spell checking (non-standard feature; disables RIGHTLEFT and FKMAP)
-#
+
+%define		_ver		6.0
+%define		_patchlevel	158
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
 Summary(es):	Editor visual incrementado
@@ -15,22 +17,21 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(pt_BR):	Editor visual incrementado
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
-Version:	6.0
-Release:	13
+Version:	6.0.%{_patchlevel}
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}.tar.bz2
-Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{version}-lang.tar.gz
-#Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{version}-extra.tar.gz
-Source3:	g%{name}-athena.desktop
-Source4:	g%{name}-motif.desktop
-Source5:	g%{name}-gtk.desktop
-Source6:	g%{name}-gnome.desktop
+Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
+Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
+Source2:	g%{name}-athena.desktop
+Source3:	g%{name}-motif.desktop
+Source4:	g%{name}-gtk.desktop
+Source5:	g%{name}-gnome.desktop
 #packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.0.*
-Source7:	%{name}-patches-%{version}.101.tar.bz2
+Source6:	%{name}-patches-%{_ver}.%{_patchlevel}.tar.bz2
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-phphighlight.patch
@@ -44,10 +45,12 @@ BuildRequires:	ncurses-devel
 %{!?_without_athena:BuildRequires:	Xaw3d-devel}
 %{!?_without_gnome:BuildRequires:	esound-devel}
 %{!?_without_gnome:BuildRequires:	gnome-libs-devel}
-%{!?_without_gtk:BuildRequires:	gtk+-devel}
+%{!?_without_gtk:BuildRequires:		gtk+-devel}
 %{!?_without_motif:BuildRequires:	motif-devel}
 %{!?_without_static:BuildRequires:	glibc-static}
 %{!?_without_static:BuildRequires:	ncurses-static}
+%{?_with_perl:BuildRequires:		perl-devel}
+%{?_with_python:BuildRequires:		python-devel}
 Requires:	%{name}-rt = %{version}
 %{?_without_static:Requires:	%{name}-static = %{version}}
 Obsoletes:	vim-enhanced
@@ -55,7 +58,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Text editor similar to Vi. Important improvements: multiple windows,
-multi-level undo, block highliting, and many other.
+multi-level undo, block highliting, folding, and many other.
 
 %description -l de
 Der Visual-Editor iMproved ist ein aktualisierter und erweiterter Klon
@@ -80,8 +83,8 @@ blocs et autres caractéristiques au vi de base.
 
 %description -l pl
 Edytor tekstu podobny do Vi. Wa¿ne ulepszenia: mo¿liwo¶æ pracy w wielu
-oknach, wielopoziomowa opcja 'cofnij', bloki, pod¶wietlanie sk³adni i
-wiele innych.
+oknach, wielopoziomowa opcja 'cofnij', bloki, pod¶wietlanie sk³adni,
+folding i wiele innych.
 
 %description -l pt_BR
 O editor Vim (Vi Enhanced) é um versão atualizada e com novas
@@ -126,7 +129,7 @@ Obsoletes:	vi
 Obsoletes:	vim-minimal
 
 %description static
-Text editor similar to Vi. This version is build with minimal feature
+Text editor similar to Vi. This version is built with minimal feature
 and is installed in /bin as a rescue tool. The installation of this
 package is STRONGLY recommended.
 
@@ -168,7 +171,7 @@ Obsoletes:	vim-X11
 
 %description -n gvim-athena
 The classic Unix text editor now also under X Window System! This
-version is build with Athena Widget Set.
+version is built with Athena Widget Set.
 
 %description -n gvim-athena -l pl
 Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
@@ -186,7 +189,7 @@ Obsoletes:	vim-X11
 
 %description -n gvim-motif
 The classic Unix text editor now also under X Window System! This
-version is build with Motif.
+version is built with Motif.
 
 %description -n gvim-motif -l pl
 Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
@@ -204,7 +207,7 @@ Obsoletes:	vim-X11
 
 %description -n gvim-gtk
 The classic Unix text editor now also under X Window System! This
-version is build with GTK.
+version is built with GTK.
 
 %description -n gvim-gtk -l pl
 Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
@@ -229,7 +232,7 @@ Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 bibliotek GNOME.
 
 %prep
-%setup -q -b1 -a7 -n %{name}%(echo %{version} | sed -e "s#\.##g")
+%setup -q -b1 -a6 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -237,8 +240,8 @@ bibliotek GNOME.
 %{?_with_ispell:%patch4 -p1}
 
 # these patches are to "extra" package which we don't need (nor use)
-rm -f patches/6.0.{027,048,053,064,070,073,093}
-# apply the rest of officual patches
+rm -f patches/6.0.{027,048,053,064,070,073,093,106,107,115,116,117,119,123,121,122,125,135}
+# apply the rest of official patches
 for f in patches/6.0.* ; do
 	echo "Applying official patch `basename $f` ..."
 	patch -s -p0 < $f
@@ -250,9 +253,10 @@ autoconf
 %configure \
 	--disable-gui \
 	--without-x \
-	--disable-perlinterp \
-	--disable-pythoninterp \
-	--disable-tclinterp \
+	%{!?_with_perl:--disable-perlinterp} \
+	%{?_with_perl:--enable-perlinterp} \
+	%{!?_with_python:--disable-pythoninterp} \
+	%{?_with_python:--enable-pythoninterp} \
 	--disable-rubyinterp \
 	--enable-cscope \
 	--enable-gpm \
@@ -293,10 +297,10 @@ LDFLAGS="%{rpmldflags}"
 	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
-	--disable-perlinterp \
-	--disable-pythoninterp \
-	--disable-tclinterp \
-	--disable-rubyinterp \
+	%{!?_with_perl:--disable-perlinterp} \
+	%{?_with_perl:--enable-perlinterp} \
+	%{!?_with_python:--disable-pythoninterp} \
+	%{?_with_python:--enable-pythoninterp} \
 	--enable-cscope \
 	--enable-fontset \
 	--disable-gpm \
@@ -312,10 +316,10 @@ mv -f vim gvim.athena
 	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
-	--disable-perlinterp \
-	--disable-pythoninterp \
-	--disable-tclinterp \
-	--disable-rubyinterp \
+	%{!?_with_perl:--disable-perlinterp} \
+	%{?_with_perl:--enable-perlinterp} \
+	%{!?_with_python:--disable-pythoninterp} \
+	%{?_with_python:--enable-pythoninterp} \
 	--enable-multibyte \
 	--enable-cscope \
 	--enable-fontset \
@@ -332,10 +336,10 @@ mv -f vim gvim.motif
 	--with-features=huge \
 	--enable-gui=gtk \
 	--with-x \
-	--disable-perlinterp \
-	--disable-pythoninterp \
-	--disable-tclinterp \
-	--disable-rubyinterp \
+	%{!?_with_perl:--disable-perlinterp} \
+	%{?_with_perl:--enable-perlinterp} \
+	%{!?_with_python:--disable-pythoninterp} \
+	%{?_with_python:--enable-pythoninterp} \
 	--disable-gpm \
 	--enable-cscope \
 	--enable-fontset \
@@ -350,10 +354,10 @@ mv -f vim gvim.gtk
 	--with-features=huge \
 	--enable-gui=gnome \
 	--with-x \
-	--disable-perlinterp \
-	--disable-pythoninterp \
-	--disable-tclinterp \
-	--disable-rubyinterp \
+	%{!?_with_perl:--disable-perlinterp} \
+	%{?_with_perl:--enable-perlinterp} \
+	%{!?_with_python:--disable-pythoninterp} \
+	%{?_with_python:--enable-pythoninterp} \
 	--disable-gpm \
 	--enable-cscope \
 	--enable-fontset \
@@ -409,10 +413,10 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 %{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
 %{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
 
-%{!?_without_athena:install %{SOURCE3}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_motif: install %{SOURCE4}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_gtk:   install %{SOURCE5}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_gnome: install %{SOURCE6}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_athena:install %{SOURCE2}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_motif: install %{SOURCE3}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_gtk:   install %{SOURCE4}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_gnome: install %{SOURCE5}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
