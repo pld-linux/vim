@@ -13,7 +13,7 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	6.0ai
-Release:	2
+Release:	3
 Epoch:		2
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -21,7 +21,7 @@ Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-src.tar.gz
 Source1:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-rt.tar.gz
-Source2:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
+#Source2:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
 Source3:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-lang.tar.gz
 Source4:	g%{name}-athena.desktop
 Source5:	g%{name}-motif.desktop
@@ -189,7 +189,7 @@ Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 biblioteki GNOME.
 
 %prep
-%setup -q -b 1 -b 2 -b 3 -n %{name}%(echo %{version} | sed -e "s#\.##g")
+%setup -q -b 1 -b 3 -n %{name}%(echo %{version} | sed -e "s#\.##g")
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -207,8 +207,8 @@ cd src
 	--disable-tclinterp \
 	--disable-rubyinterp \
 	--enable-cscope \
-	--enable-gmp \
-	--enable-max-features \
+	--enable-gpm \
+	--with-features=huge \
 	--enable-multibyte \
 	--with-tlib=ncurses \
 	--enable-nls
@@ -227,7 +227,7 @@ mv -f vim vim.ncurses
 	--disable-cscope \
 	--disable-gpm \
 	--disable-multibyte \
-	--enable-min-features \
+	--with-features=small \
 	--with-tlib=tinfo \
 	--disable-nls
 
@@ -241,7 +241,7 @@ mv -f xxd/xxd xxd.static
 %if %{!?_without_athena:1}%{?_without_athena:0}
 %{__make} distclean
 %configure \
-	--enable-max-features \
+	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
 	--disable-perlinterp \
@@ -260,7 +260,7 @@ mv -f vim gvim.athena
 %if %{!?_without_motif:1}%{?_without_motif:0}
 %{__make} distclean
 %configure \
-	--enable-max-features \
+	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
 	--disable-perlinterp \
@@ -280,7 +280,7 @@ mv -f vim gvim.motif
 %if %{!?_without_gtk:1}%{?_without_gtk:0}
 %{__make} distclean
 %configure \
-	--enable-max-features \
+	--with-features=huge \
 	--enable-gui=gtk \
 	--with-x \
 	--disable-perlinterp \
@@ -298,7 +298,7 @@ mv -f vim gvim.gtk
 %if %{!?_without_gnome:1}%{?_without_gnome:0}
 %{__make} distclean
 %configure \
-	--enable-max-features \
+	--with-features=huge \
 	--enable-gui=gnome \
 	--with-x \
 	--disable-perlinterp \
@@ -315,7 +315,7 @@ mv -f vim gvim.gnome
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_var}/lib/vim,%{_sysconfdir}/vim,%{_bindir}} \
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
 	$RPM_BUILD_ROOT{%{_prefix}/X11R6/bin,%{_applnkdir}/Development/Editors}
 
@@ -390,8 +390,6 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/vimrc
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/gvimrc
 
-%dir %{_var}/lib/vim
-
 %dir %{_datadir}/vim
 %dir %{_datadir}/vim/v*
 %{_datadir}/vim/v*/doc
@@ -423,25 +421,33 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/vim.*
 %{_mandir}/man1/rvim.*
 
-%{!?_without_athena:%files -n gvim-athena}
-%{!?_without_athena:%defattr(644,root,root,755)}
-%{!?_without_athena:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.athena}
-%{!?_without_athena:%{_applnkdir}/Development/Editors/gvim-athena.desktop}
+%if %{!?_without_athena:1}%{?_without_athena:0}
+%files -n gvim-athena
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.athena
+%{_applnkdir}/Development/Editors/gvim-athena.desktop
+%endif
 
-%{!?_without_motif:%files -n gvim-motif}
-%{!?_without_motif:%defattr(644,root,root,755)}
-%{!?_without_motif:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.motif}
-%{!?_without_motif:%{_applnkdir}/Development/Editors/gvim-motif.desktop}
+%if %{!?_without_motif:1}%{?_without_motif:0}
+%files -n gvim-motif
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.motif
+%{_applnkdir}/Development/Editors/gvim-motif.desktop
+%endif
 
-%{!?_without_gtk:%files -n gvim-gtk}
-%{!?_without_gtk:%defattr(644,root,root,755)}
-%{!?_without_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gtk}
-%{!?_without_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgvim}
-%{!?_without_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgview}
-%{!?_without_gtk:%attr(755,root,root) %verify(not link) %{_prefix}/X11R6/bin/gvim}
-%{!?_without_gtk:%{_applnkdir}/Development/Editors/gvim-gtk.desktop}
+%if %{!?_without_gtk:1}%{?_without_gtk:0}
+%files -n gvim-gtk
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gtk
+%attr(755,root,root) %{_prefix}/X11R6/bin/rgvim
+%attr(755,root,root) %{_prefix}/X11R6/bin/rgview
+%attr(755,root,root) %verify(not link) %{_prefix}/X11R6/bin/gvim
+%{_applnkdir}/Development/Editors/gvim-gtk.desktop
+%endif
 
-%{!?_without_gnome:%files -n gvim-gnome}
-%{!?_without_gnome:%defattr(644,root,root,755)}
-%{!?_without_gnome:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gnome}
-%{!?_without_gnome:%{_applnkdir}/Development/Editors/gvim-gnome.desktop}
+%if %{!?_without_gnome:1}%{?_without_gnome:0}
+%files -n gvim-gnome
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gnome
+%{_applnkdir}/Development/Editors/gvim-gnome.desktop
+%endif
