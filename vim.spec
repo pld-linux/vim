@@ -12,7 +12,7 @@
 %bcond_with    bonobo # with bonobo patch (doesn't work at the moment)
 
 %define		_ver		6.2
-%define		_patchlevel	106
+%define		_patchlevel	127
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -162,6 +162,27 @@ Patch203:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.103
 Patch204:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.104
 Patch205:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.105
 Patch206:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.106
+Patch207:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.107
+Patch208:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.108
+Patch209:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.109
+Patch210:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.110
+Patch211:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.111
+Patch212:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.112
+Patch213:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.113
+Patch214:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.114
+Patch215:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.115
+Patch216:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.116
+Patch217:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.117
+Patch218:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.118
+Patch219:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.119
+Patch220:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.120
+Patch221:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.121
+Patch222:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.122
+Patch223:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.123
+Patch224:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.124
+Patch225:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.125
+Patch226:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.126
+Patch227:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.127
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -652,6 +673,27 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch204 -p0
 %patch205 -p0
 %patch206 -p0
+%patch207 -p0
+%patch208 -p0
+%patch209 -p0
+%patch210 -p0
+%patch211 -p0
+%patch212 -p0
+%patch213 -p0
+%patch214 -p0
+%patch215 -p0
+%patch216 -p0
+%patch217 -p0
+%patch218 -p0
+%patch219 -p0
+%patch220 -p0
+%patch221 -p0
+%patch222 -p0
+%patch223 -p0
+%patch224 -p0
+%patch225 -p0
+%patch226 -p0
+%patch227 -p0
 
 %patch0 -p1
 %{?with_bonobo:%patch99 -p1}
