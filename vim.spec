@@ -9,7 +9,7 @@
 %bcond_with	python	# with python interp
 %bcond_with	ruby	# with ruby interp
 %bcond_with	tcl	# with tcl interp
-%bcond_without	bonobo	# without bonobo component
+%bcond_with	bonobo	# with bonobo component (breaks other things)
 #
 %define		_ver		6.2
 %define		_patchlevel	214
@@ -25,7 +25,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	2
+Release:	3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
