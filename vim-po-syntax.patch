@@ -1,0 +1,20 @@
+--- vim63/runtime/syntax/po.vim.wiget	2004-06-17 14:16:09.760638536 +0200
++++ vim63/runtime/syntax/po.vim	2004-06-17 14:18:48.851632618 +0200
+@@ -19,6 +19,8 @@
+ syn match  poFormat	"%%" contained
+ syn region poString	start=+"+ skip=+\\\\\|\\"+ end=+"+
+ 			\ contains=poSpecial,poFormat
++syn region poFuzzy       start=+^#,\sfuzzy+ end=+^$+
++syn match  poUntranslated +^msgstr\s""\n\n+
+ 
+ " Define the default highlighting.
+ " For version 5.7 and earlier: only when not done already
+@@ -37,6 +39,8 @@
+   HiLink poSpecial	Special
+   HiLink poFormat	poSpecial
+   HiLink poString	String
++  HiLink poFuzzy	Todo
++  HiLink poUntranslated	Todo
+ 
+   delcommand HiLink
+ endif
