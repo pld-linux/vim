@@ -14,27 +14,25 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	6.0at
-Release:	1
+Release:	2
 Epoch:		2
 License:	Charityware
 Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Source0:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-src1.tar.gz
-Source1:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-src2.tar.gz
-Source2:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-rt1.tar.gz
-Source3:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-rt2.tar.gz
-#Source4:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
-Source5:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-lang.tar.gz
-Source6:	g%{name}-athena.desktop
-Source7:	g%{name}-motif.desktop
-Source8:	g%{name}-gtk.desktop
-Source9:	g%{name}-gnome.desktop
+Source0:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}.tar.bz2
+Source1:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-lang.tar.gz
+#Source2:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
+Source3:	g%{name}-athena.desktop
+Source4:	g%{name}-motif.desktop
+Source5:	g%{name}-gtk.desktop
+Source6:	g%{name}-gnome.desktop
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-phphighlight.patch
 Patch3:		%{name}-paths.patch
 Patch4:		%{name}-ispell.patch
+Patch5:		%{name}-pl.patch
 URL:		http://www.vim.org/
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
@@ -212,12 +210,13 @@ Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 bibliotek GNOME.
 
 %prep
-%setup -q -b1 -b2 -b3 -b5 -n %{name}%(echo %{version} | sed -e "s#\.##g")
+%setup -q -b1 -n %{name}%(echo %{version} | sed -e "s#\.##g")
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %{?_with_ispell:%patch4 -p1}
+%patch5 -p1
 
 %build
 cd src
@@ -384,10 +383,10 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 %{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
 %{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
 
-%{!?_without_athena:install %{SOURCE6}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_motif: install %{SOURCE7}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_gtk:   install %{SOURCE8} 		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_gnome: install %{SOURCE9}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_athena:install %{SOURCE3}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_motif: install %{SOURCE4}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_gtk:   install %{SOURCE5} 		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_gnome: install %{SOURCE6}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 
 %clean
 rm -rf $RPM_BUILD_ROOT

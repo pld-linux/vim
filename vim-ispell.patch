@@ -385,212 +385,6 @@ diff -Nur vim60am.old/src/option.h vim60am/src/option.h
  #ifdef FEAT_INS_EXPAND
  EXTERN char_u	*p_dict;	/* 'dictionary' */
  #endif
-diff -Nur vim60am.old/src/os_msdos.c vim60am/src/os_msdos.c
---- vim60am.old/src/os_msdos.c	Wed Jul  4 20:42:09 2001
-+++ vim60am/src/os_msdos.c	Tue Jul  3 18:39:48 2001
-@@ -78,7 +78,7 @@
-  */
- 
- unsigned long	S_ulScreenBase = 0xb8000;
--unsigned short	S_uiAttribute = 0;
-+unsigned short	S_uiAttribute =  7 << 8;
- int		S_iCurrentRow = 0;	/* These are 0 offset */
- int		S_iCurrentColumn = 0;
- int		S_iLeft = 0;	/* Scroll window; these are 1 offset */
-@@ -248,6 +248,9 @@
-     }
-     else
-     {
-+      if(iChar == ' ')
-+ 	uiValue = ((S_uiAttribute & 0xf700) | 0x700) | ' ';
-+      else
- 	uiValue = S_uiAttribute | (unsigned char)iChar;
- 
- 	/*
-@@ -309,6 +312,7 @@
- mytextattr(int iAttribute)
- {
-     S_uiAttribute = (unsigned short)iAttribute << 8;
-+    textattr(iAttribute);		/* for delline() etc */
- }
- 
-     static void
-@@ -322,6 +326,7 @@
- {
-     S_uiAttribute = (unsigned short)((S_uiAttribute & 0xf000)
- 					   | (unsigned short)iTextColor << 8);
-+    textattr(S_uiAttribute >> 8);	/* for delline() etc */
- }
- 
-     static void
-@@ -329,6 +334,7 @@
- {
-     S_uiAttribute = (unsigned short)((S_uiAttribute & 0x0f00)
- 					 | (unsigned short)(iBkgColor << 12));
-+    textattr(S_uiAttribute >> 8);	/* for delline() etc */
- }
- /*
-  * Getdigits: Get a number from a string and skip over it.
-@@ -470,6 +476,7 @@
-     static union REGS	    regs;
-     static int		    saved = FALSE;
- 
-+    return;	/* WM */
-     if (restore)
-     {
- 	if (saved)
-@@ -495,6 +502,7 @@
- mch_set_cursor_shape(int thickness)
- {
-     union REGS	    regs;
-+    return;	/* WM */
- 
-     regs.h.ch = 7 - thickness;	    /*Starting Line*/
-     regs.h.cl = 7;		    /*Ending Line*/
-@@ -508,6 +516,7 @@
-     int		idx;
-     int		thickness;
- 
-+    return;	/* WM */
-     /*
-      * How the cursor is drawn depends on the current mode.
-      */
-@@ -2226,6 +2235,7 @@
-     char *
- djgpp_setlocale(void)
- {
-+     char *country;
-     __dpmi_regs regs;
-     struct { char id; unsigned short off, seg; } __attribute__ ((packed)) info;
-     unsigned char buffer[0x82], lower, upper;
-@@ -2267,6 +2277,127 @@
- 		__dj_ctype_tolower[upper+1] = lower;
- 	}
-     }
-+     if ((country = getenv("COUNTRY")) != NULL)
-+        {
-+         if(!strcmp(country, "MAZOWIA"))
-+ 	   {
-+ 	    __dj_ctype_flags[(unsigned char)'Ü' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'è' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'ç' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'ï' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'ë' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'ê' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'í' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'ú' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'§' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'•' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'¢' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'£' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'û' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'ò' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'¶' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'†' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'ß' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'°' + 1] = UPCASE;
-+ 
-+ 	    __dj_ctype_toupper[(unsigned char)'Ü'+ 1] = (unsigned char)'è';
-+ 	    __dj_ctype_toupper[(unsigned char)'è'+ 1] = (unsigned char)'è';
-+ 	    __dj_ctype_toupper[(unsigned char)'ç'+ 1] = (unsigned char)'ï';
-+ 	    __dj_ctype_toupper[(unsigned char)'ï'+ 1] = (unsigned char)'ï';
-+ 	    __dj_ctype_toupper[(unsigned char)'ë'+ 1] = (unsigned char)'ê';
-+ 	    __dj_ctype_toupper[(unsigned char)'ê'+ 1] = (unsigned char)'ê';
-+ 	    __dj_ctype_toupper[(unsigned char)'í'+ 1] = (unsigned char)'ú';
-+ 	    __dj_ctype_toupper[(unsigned char)'ú'+ 1] = (unsigned char)'ú';
-+ 	    __dj_ctype_toupper[(unsigned char)'§'+ 1] = (unsigned char)'•';
-+ 	    __dj_ctype_toupper[(unsigned char)'•'+ 1] = (unsigned char)'•';
-+ 	    __dj_ctype_toupper[(unsigned char)'¢'+ 1] = (unsigned char)'£';
-+ 	    __dj_ctype_toupper[(unsigned char)'£'+ 1] = (unsigned char)'£';
-+ 	    __dj_ctype_toupper[(unsigned char)'û'+ 1] = (unsigned char)'ò';
-+ 	    __dj_ctype_toupper[(unsigned char)'ò'+ 1] = (unsigned char)'ò';
-+ 	    __dj_ctype_toupper[(unsigned char)'¶'+ 1] = (unsigned char)'†';
-+ 	    __dj_ctype_toupper[(unsigned char)'†'+ 1] = (unsigned char)'†';
-+ 	    __dj_ctype_toupper[(unsigned char)'ß'+ 1] = (unsigned char)'°';
-+ 	    __dj_ctype_toupper[(unsigned char)'°'+ 1] = (unsigned char)'°';
-+ 
-+ 	    __dj_ctype_tolower[(unsigned char)'Ü'+ 1] = (unsigned char)'Ü';
-+ 	    __dj_ctype_tolower[(unsigned char)'è'+ 1] = (unsigned char)'Ü';
-+ 	    __dj_ctype_tolower[(unsigned char)'ç'+ 1] = (unsigned char)'ç';
-+ 	    __dj_ctype_tolower[(unsigned char)'ï'+ 1] = (unsigned char)'ç';
-+ 	    __dj_ctype_tolower[(unsigned char)'ë'+ 1] = (unsigned char)'ë';
-+ 	    __dj_ctype_tolower[(unsigned char)'ê'+ 1] = (unsigned char)'ë';
-+ 	    __dj_ctype_tolower[(unsigned char)'í'+ 1] = (unsigned char)'í';
-+ 	    __dj_ctype_tolower[(unsigned char)'ú'+ 1] = (unsigned char)'í';
-+ 	    __dj_ctype_tolower[(unsigned char)'§'+ 1] = (unsigned char)'§';
-+ 	    __dj_ctype_tolower[(unsigned char)'•'+ 1] = (unsigned char)'§';
-+ 	    __dj_ctype_tolower[(unsigned char)'¢'+ 1] = (unsigned char)'¢';
-+ 	    __dj_ctype_tolower[(unsigned char)'£'+ 1] = (unsigned char)'¢';
-+ 	    __dj_ctype_tolower[(unsigned char)'û'+ 1] = (unsigned char)'û';
-+ 	    __dj_ctype_tolower[(unsigned char)'ò'+ 1] = (unsigned char)'û';
-+ 	    __dj_ctype_tolower[(unsigned char)'¶'+ 1] = (unsigned char)'¶';
-+ 	    __dj_ctype_tolower[(unsigned char)'†'+ 1] = (unsigned char)'¶';
-+ 	    __dj_ctype_tolower[(unsigned char)'ß'+ 1] = (unsigned char)'ß';
-+ 	    __dj_ctype_tolower[(unsigned char)'°'+ 1] = (unsigned char)'ß';
-+ 	   }
-+	 else if(!strcmp(country, "CP1250"))
-+ 	   {
-+ 	    __dj_ctype_flags[(unsigned char)'9' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'%' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'f' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'F' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'j' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'J' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'3' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'#' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'q' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'Q' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'s' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'S' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'' + 1] = UPCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'?' + 1] = LOCASE;
-+ 	    __dj_ctype_flags[(unsigned char)'/' + 1] = UPCASE;
-+ 
-+ 	    __dj_ctype_toupper[(unsigned char)'9'+ 1] = (unsigned char)'%';
-+ 	    __dj_ctype_toupper[(unsigned char)'%'+ 1] = (unsigned char)'%';
-+ 	    __dj_ctype_toupper[(unsigned char)'f'+ 1] = (unsigned char)'F';
-+ 	    __dj_ctype_toupper[(unsigned char)'F'+ 1] = (unsigned char)'F';
-+ 	    __dj_ctype_toupper[(unsigned char)'j'+ 1] = (unsigned char)'J';
-+ 	    __dj_ctype_toupper[(unsigned char)'J'+ 1] = (unsigned char)'J';
-+ 	    __dj_ctype_toupper[(unsigned char)'3'+ 1] = (unsigned char)'#';
-+ 	    __dj_ctype_toupper[(unsigned char)'#'+ 1] = (unsigned char)'#';
-+ 	    __dj_ctype_toupper[(unsigned char)'q'+ 1] = (unsigned char)'Q';
-+ 	    __dj_ctype_toupper[(unsigned char)'Q'+ 1] = (unsigned char)'Q';
-+ 	    __dj_ctype_toupper[(unsigned char)'s'+ 1] = (unsigned char)'S';
-+ 	    __dj_ctype_toupper[(unsigned char)'S'+ 1] = (unsigned char)'S';
-+ 	    __dj_ctype_toupper[(unsigned char)''+ 1] = (unsigned char)'';
-+ 	    __dj_ctype_toupper[(unsigned char)''+ 1] = (unsigned char)'';
-+ 	    __dj_ctype_toupper[(unsigned char)''+ 1] = (unsigned char)'';
-+ 	    __dj_ctype_toupper[(unsigned char)''+ 1] = (unsigned char)'';
-+ 	    __dj_ctype_toupper[(unsigned char)'?'+ 1] = (unsigned char)'/';
-+ 	    __dj_ctype_toupper[(unsigned char)'/'+ 1] = (unsigned char)'/';
-+ 
-+ 	    __dj_ctype_tolower[(unsigned char)'9'+ 1] = (unsigned char)'9';
-+ 	    __dj_ctype_tolower[(unsigned char)'%'+ 1] = (unsigned char)'9';
-+ 	    __dj_ctype_tolower[(unsigned char)'f'+ 1] = (unsigned char)'f';
-+ 	    __dj_ctype_tolower[(unsigned char)'F'+ 1] = (unsigned char)'f';
-+ 	    __dj_ctype_tolower[(unsigned char)'j'+ 1] = (unsigned char)'j';
-+ 	    __dj_ctype_tolower[(unsigned char)'J'+ 1] = (unsigned char)'j';
-+ 	    __dj_ctype_tolower[(unsigned char)'3'+ 1] = (unsigned char)'3';
-+ 	    __dj_ctype_tolower[(unsigned char)'#'+ 1] = (unsigned char)'3';
-+ 	    __dj_ctype_tolower[(unsigned char)'q'+ 1] = (unsigned char)'q';
-+ 	    __dj_ctype_tolower[(unsigned char)'Q'+ 1] = (unsigned char)'q';
-+ 	    __dj_ctype_tolower[(unsigned char)'s'+ 1] = (unsigned char)'s';
-+ 	    __dj_ctype_tolower[(unsigned char)'S'+ 1] = (unsigned char)'s';
-+ 	    __dj_ctype_tolower[(unsigned char)''+ 1] = (unsigned char)'';
-+ 	    __dj_ctype_tolower[(unsigned char)''+ 1] = (unsigned char)'';
-+ 	    __dj_ctype_tolower[(unsigned char)''+ 1] = (unsigned char)'';
-+ 	    __dj_ctype_tolower[(unsigned char)''+ 1] = (unsigned char)'';
-+ 	    __dj_ctype_tolower[(unsigned char)'?'+ 1] = (unsigned char)'?';
-+ 	    __dj_ctype_tolower[(unsigned char)'/'+ 1] = (unsigned char)'?';
-+ 	   }
-+        }
- 
-     return "C";
- }
 diff -Nur vim60am.old/src/proto/spell.pro vim60am/src/proto/spell.pro
 --- vim60am.old/src/proto/spell.pro	Thu Jan  1 01:00:00 1970
 +++ vim60am/src/proto/spell.pro	Wed Jun 27 19:19:35 2001
@@ -7202,15 +6996,15 @@ diff -Nur vim60am.old/src/version.h vim60am/src/version.h
 +++ vim60am/src/version.h	Tue Jul  3 19:04:36 2001
 @@ -33,6 +33,10 @@
   */
- #define VIM_VERSION_NODOT	"vim60ar"
- #define VIM_VERSION_SHORT	"6.0ar"
+ #define VIM_VERSION_NODOT	"vim60at"
+ #define VIM_VERSION_SHORT	"6.0at"
 +#ifdef FEAT_SPELL_HL
-+#define VIM_VERSION_MEDIUM	"6.0ar BETA + ispell 3.1.20 WM-3"
++#define VIM_VERSION_MEDIUM	"6.0at BETA + ispell 3.1.20 WM-3"
 +#else
- #define VIM_VERSION_MEDIUM	"6.0ar BETA"
+ #define VIM_VERSION_MEDIUM	"6.0at BETA"
 +#endif
- #define VIM_VERSION_LONG	"VIM - Vi IMproved 6.0ar BETA (2001 Aug 12)"
- #define VIM_VERSION_LONG_DATE	"VIM - Vi IMproved 6.0ar BETA (2001 Aug 12, compiled "
+ #define VIM_VERSION_LONG	"VIM - Vi IMproved 6.0at BETA (2001 Aug 27)"
+ #define VIM_VERSION_LONG_DATE	"VIM - Vi IMproved 6.0at BETA (2001 Aug 27, compiled "
 diff -Nur vim60am.old/src/vim.h vim60am/src/vim.h
 --- vim60am.old/src/vim.h	Wed Jul  4 20:42:09 2001
 +++ vim60am/src/vim.h	Tue Jul  3 18:21:26 2001
