@@ -12,7 +12,7 @@
 # _with_bonobo		- with bonobo patch (doesn't work at the moment)
 
 %define		_ver		6.2
-%define		_patchlevel	021
+%define		_patchlevel	060
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -26,7 +26,7 @@ Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
 #Version:	%{_ver}
-Release:	4
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
