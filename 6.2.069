@@ -1,0 +1,116 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.069
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.069 (after 6.2.064)
+Problem:    Unused variables "limit" and "new_st" and unused label "fail" in
+	    some situation. (Bill McCarthy)
+Solution:   Put the declarations inside an #ifdef. (Servatius Brandt)
+Files:	    src/eval.c, src/tag.c
+
+
+*** ../vim-6.2.068/src/eval.c	Sun Aug 10 22:31:29 2003
+--- src/eval.c	Mon Aug 11 09:54:12 2003
+***************
+*** 5810,5816 ****
+      VAR		retvar;
+  {
+      char_u	*p;
+-     int		limit = 100;
+  
+      p = get_var_string(&argvars[0]);
+  #ifdef FEAT_SHORTCUT
+--- 5810,5815 ----
+***************
+*** 5833,5838 ****
+--- 5832,5838 ----
+  	char_u	*q;
+  	int	is_relative_to_current = FALSE;
+  	int	has_trailing_pathsep = FALSE;
++ 	int	limit = 100;
+  
+  	p = vim_strsave(p);
+  
+***************
+*** 5853,5859 ****
+  	    q[-1] = NUL;
+  	}
+  
+! 	for(;;)
+  	{
+  	    for (;;)
+  	    {
+--- 5853,5859 ----
+  	    q[-1] = NUL;
+  	}
+  
+! 	for (;;)
+  	{
+  	    for (;;)
+  	    {
+***************
+*** 5998,6004 ****
+--- 5998,6006 ----
+  
+      simplify_filename(retvar->var_val.var_string);
+  
++ #ifdef HAVE_READLINK
+  fail:
++ #endif
+      retvar->var_type = VAR_STRING;
+  }
+  
+*** ../vim-6.2.068/src/tag.c	Sun Aug 10 22:31:29 2003
+--- src/tag.c	Mon Aug 11 21:18:10 2003
+***************
+*** 2936,2942 ****
+  	    {
+  		int		do_strip = FALSE;
+  		char_u		saved_char;
+! 		struct stat	st, new_st;
+  
+  		/* Don't strip for an erroneous file name. */
+  		if (!stripping_disabled)
+--- 2936,2942 ----
+  	    {
+  		int		do_strip = FALSE;
+  		char_u		saved_char;
+! 		struct stat	st;
+  
+  		/* Don't strip for an erroneous file name. */
+  		if (!stripping_disabled)
+***************
+*** 2961,2966 ****
+--- 2961,2968 ----
+  
+  		    if (!do_strip)
+  		    {
++ 			struct stat	new_st;
++ 
+  			/* If the component exists in the file system, check
+  			 * that stripping it won't change the meaning of the
+  			 * file name.  First get information about the
+*** ../vim-6.2.068/src/version.c	Sun Aug 10 22:43:27 2003
+--- src/version.c	Mon Aug 11 23:03:28 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     69,
+  /**/
+
+-- 
+I AM THANKFUL... 
+...for the clothes that fit a little too snug because it 
+means I have more than enough to eat. 
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

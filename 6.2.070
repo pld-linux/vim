@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.070
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.070 (after 6.2.069)
+Problem:    Still unused variable "new_st". (Bill McCarthy)
+Solution:   Move the declaration to the right block this time.
+Files:	    src/tag.c
+
+
+*** ../vim-6.2.069/src/tag.c	Mon Aug 11 23:03:53 2003
+--- src/tag.c	Tue Aug 12 10:08:43 2003
+***************
+*** 2961,2968 ****
+  
+  		    if (!do_strip)
+  		    {
+- 			struct stat	new_st;
+- 
+  			/* If the component exists in the file system, check
+  			 * that stripping it won't change the meaning of the
+  			 * file name.  First get information about the
+--- 2961,2966 ----
+***************
+*** 2983,2988 ****
+--- 2981,2988 ----
+  #ifdef UNIX
+  			if (do_strip)
+  			{
++ 			    struct stat	new_st;
++ 
+  			    /* On Unix, the check for the unstripped file name
+  			     * above works also for a symbolic link pointing to
+  			     * a searchable directory.  But then the parent of
+*** ../vim-6.2.069/src/version.c	Mon Aug 11 23:03:53 2003
+--- src/version.c	Tue Aug 12 19:57:51 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     70,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+97. Your mother tells you to remember something, and you look for
+    a File/Save command.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

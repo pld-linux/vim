@@ -1,0 +1,83 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.071
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.071
+Problem:    'statusline' can only contain 50 % items. (Antony Scriven)
+Solution:   Allow 80 items and mention it in the docs.
+Files:	    runtime/doc/options.txt, src/vim.h
+
+
+*** ../vim-6.2.070/runtime/doc/options.txt	Sun Jun  1 12:20:34 2003
+--- runtime/doc/options.txt	Tue Aug 12 11:03:40 2003
+***************
+*** 1,4 ****
+! *options.txt*	For Vim version 6.2.  Last change: 2003 May 29
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+--- 1,4 ----
+! *options.txt*	For Vim version 6.2.  Last change: 2003 Aug 12
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+***************
+*** 5379,5385 ****
+  	normal text.  Each status line item is of the form:
+  	  %-0{minwid}.{maxwid}{item}
+  	All fields except the {item} is optional.  A single percent sign can
+! 	be given as "%%".
+  
+  	Note that the only effect of 'ruler' when this option is set (and
+  	'laststatus' is 2) is controlling the output of |CTRL-G|.
+--- 5383,5389 ----
+  	normal text.  Each status line item is of the form:
+  	  %-0{minwid}.{maxwid}{item}
+  	All fields except the {item} is optional.  A single percent sign can
+! 	be given as "%%".  Up to 80 items can be specified.
+  
+  	Note that the only effect of 'ruler' when this option is set (and
+  	'laststatus' is 2) is controlling the output of |CTRL-G|.
+*** ../vim-6.2.070/src/vim.h	Mon Jul 28 14:38:38 2003
+--- src/vim.h	Tue Aug 12 11:06:05 2003
+***************
+*** 1258,1264 ****
+  #endif
+  
+  #define SHOWCMD_COLS 10			/* columns needed by shown command */
+! #define STL_MAX_ITEM 50			/* max count of %<flag> in statusline*/
+  
+  typedef void	    *vim_acl_T;		/* dummy to pass an ACL to a function */
+  
+--- 1258,1264 ----
+  #endif
+  
+  #define SHOWCMD_COLS 10			/* columns needed by shown command */
+! #define STL_MAX_ITEM 80			/* max nr of %<flag> in statusline */
+  
+  typedef void	    *vim_acl_T;		/* dummy to pass an ACL to a function */
+  
+*** ../vim-6.2.070/src/version.c	Tue Aug 12 19:58:43 2003
+--- src/version.c	Tue Aug 12 20:00:00 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     71,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+98. The Alta Vista administrators ask you what sites are missing
+    in their index files.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
