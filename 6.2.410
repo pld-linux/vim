@@ -1,0 +1,59 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.410
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.410 (after 6.2.389)
+Problem:    In diff mode, when there are more filler lines than fit in the
+	    window, they are not drawn.
+Solution:   Check for filler lines when skipping to draw a line that doesn't
+	    fit.
+Files:	    src/screen.c
+
+
+*** ../vim-6.2.409/src/screen.c	Mon Mar 22 14:44:17 2004
+--- src/screen.c	Mon Mar 29 11:26:55 2004
+***************
+*** 1645,1651 ****
+  		    && wp->w_lines[idx].wl_lnum == lnum
+  		    && lnum > wp->w_topline
+  		    && !(dy_flags & DY_LASTLINE)
+! 		    && srow + wp->w_lines[idx].wl_size > wp->w_height)
+  	    {
+  		/* This line is not going to fit.  Don't draw anything here,
+  		 * will draw "@  " lines below. */
+--- 1645,1655 ----
+  		    && wp->w_lines[idx].wl_lnum == lnum
+  		    && lnum > wp->w_topline
+  		    && !(dy_flags & DY_LASTLINE)
+! 		    && srow + wp->w_lines[idx].wl_size > wp->w_height
+! #ifdef FEAT_DIFF
+! 		    && diff_check_fill(wp, lnum) == 0
+! #endif
+! 		    )
+  	    {
+  		/* This line is not going to fit.  Don't draw anything here,
+  		 * will draw "@  " lines below. */
+*** ../vim-6.2.409/src/version.c	Sun Mar 28 13:57:52 2004
+--- src/version.c	Mon Mar 29 11:59:12 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     410,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+170. You introduce your wife as "my_lady@home.wife" and refer to your
+     children as "forked processes."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

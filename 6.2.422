@@ -1,0 +1,96 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.422
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.422
+Problem:    In CTRL-X completion messages the "/" makes them less readable.
+Solution:   Remove the slashes. (Antony Scriven)
+Files:	    src/edit.c
+
+
+*** ../vim-6.2.421/src/edit.c	Tue Mar 23 14:04:16 2004
+--- src/edit.c	Thu Apr  1 12:20:02 2004
+***************
+*** 37,56 ****
+  
+  static char *ctrl_x_msgs[] =
+  {
+!     N_(" Keyword completion (^N/^P)"), /* ctrl_x_mode == 0, ^P/^N compl. */
+!     N_(" ^X mode (^E/^Y/^L/^]/^F/^I/^K/^D/^V/^N/^P)"),
+      /* Scroll has it's own msgs, in it's place there is the msg for local
+       * ctrl_x_mode = 0 (eg continue_status & CONT_LOCAL)  -- Acevedo */
+!     N_(" Keyword Local completion (^N/^P)"),
+!     N_(" Whole line completion (^L/^N/^P)"),
+!     N_(" File name completion (^F/^N/^P)"),
+!     N_(" Tag completion (^]/^N/^P)"),
+!     N_(" Path pattern completion (^N/^P)"),
+!     N_(" Definition completion (^D/^N/^P)"),
+      NULL,
+!     N_(" Dictionary completion (^K/^N/^P)"),
+!     N_(" Thesaurus completion (^T/^N/^P)"),
+!     N_(" Command-line completion (^V/^N/^P)")
+  };
+  
+  static char_u e_hitend[] = N_("Hit end of paragraph");
+--- 37,56 ----
+  
+  static char *ctrl_x_msgs[] =
+  {
+!     N_(" Keyword completion (^N^P)"), /* ctrl_x_mode == 0, ^P/^N compl. */
+!     N_(" ^X mode (^E^Y^L^]^F^I^K^D^V^N^P)"),
+      /* Scroll has it's own msgs, in it's place there is the msg for local
+       * ctrl_x_mode = 0 (eg continue_status & CONT_LOCAL)  -- Acevedo */
+!     N_(" Keyword Local completion (^N^P)"),
+!     N_(" Whole line completion (^L^N^P)"),
+!     N_(" File name completion (^F^N^P)"),
+!     N_(" Tag completion (^]^N^P)"),
+!     N_(" Path pattern completion (^N^P)"),
+!     N_(" Definition completion (^D^N^P)"),
+      NULL,
+!     N_(" Dictionary completion (^K^N^P)"),
+!     N_(" Thesaurus completion (^T^N^P)"),
+!     N_(" Command-line completion (^V^N^P)")
+  };
+  
+  static char_u e_hitend[] = N_("Hit end of paragraph");
+***************
+*** 5969,5975 ****
+  #endif
+  
+      /*
+!      * Don't map the register name. This also prevents the mode message to be
+       * deleted when ESC is hit.
+       */
+      ++no_mapping;
+--- 5969,5975 ----
+  #endif
+  
+      /*
+!      * Don't map the second key. This also prevents the mode message to be
+       * deleted when ESC is hit.
+       */
+      ++no_mapping;
+*** ../vim-6.2.421/src/version.c	Tue Mar 30 22:19:53 2004
+--- src/version.c	Thu Apr  1 12:23:53 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     422,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+219. Your spouse has his or her lawyer deliver the divorce papers...
+     via e-mail.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

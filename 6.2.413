@@ -1,0 +1,46 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.413
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.413 (after 6.2.411)
+Problem:    Missing prototype for vim_regexec_nl(). (Marcel Svitalsky)
+Solution:   Now really include the prototype.
+Files:	    src/proto/regexp.pro
+
+
+*** ../vim-6.2.412/src/proto/regexp.pro	Sun Jun  1 12:26:18 2003
+--- src/proto/regexp.pro	Fri Mar 26 11:24:14 2004
+***************
+*** 4,9 ****
+--- 4,10 ----
+  regprog_T *vim_regcomp __ARGS((char_u *expr, int re_flags));
+  int vim_regcomp_had_eol __ARGS((void));
+  int vim_regexec __ARGS((regmatch_T *rmp, char_u *line, colnr_T col));
++ int vim_regexec_nl __ARGS((regmatch_T *rmp, char_u *line, colnr_T col));
+  long vim_regexec_multi __ARGS((regmmatch_T *rmp, win_T *win, buf_T *buf, linenr_T lnum, colnr_T col));
+  reg_extmatch_T *ref_extmatch __ARGS((reg_extmatch_T *em));
+  void unref_extmatch __ARGS((reg_extmatch_T *em));
+*** ../vim-6.2.412/src/version.c	Mon Mar 29 16:12:14 2004
+--- src/version.c	Tue Mar 30 10:42:28 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     413,
+  /**/
+
+-- 
+Wizards had always known that the act of observation changed the thing that
+was observed, and sometimes forgot that it also changed the observer too.
+			Terry Pratchett  -  Interesting times
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,524 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.427
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.427 (extra)
+Problem:    When pasting a lot of text in a multi-byte encoding, conversion
+	    from 'termencoding' to 'encoding' may fail for some characters.
+	    (Kuang-che Wu)
+Solution:   When there is an incomplete byte sequence at the end of the read
+	    text keep it for the next time.
+Files:	    src/mbyte.c, src/os_amiga.c, src/os_mswin.c, src/proto/mbyte.pro,
+	    src/proto/os_mswin.pro, src/ui.c
+
+
+*** ../vim-6.2.426/src/mbyte.c	Fri Mar 26 14:25:07 2004
+--- src/mbyte.c	Thu Apr  1 22:43:07 2004
+***************
+*** 2891,2897 ****
+  
+  # if defined(USE_ICONV) || defined(PROTO)
+  
+! static char_u *iconv_string __ARGS((vimconv_T *vcp, char_u *str, int slen));
+  
+  /*
+   * Call iconv_open() with a check if iconv() works properly (there are broken
+--- 2891,2897 ----
+  
+  # if defined(USE_ICONV) || defined(PROTO)
+  
+! static char_u *iconv_string __ARGS((vimconv_T *vcp, char_u *str, int slen, int *unconvlenp));
+  
+  /*
+   * Call iconv_open() with a check if iconv() works properly (there are broken
+***************
+*** 2949,2961 ****
+  
+  /*
+   * Convert the string "str[slen]" with iconv().
+   * Returns the converted string in allocated memory.  NULL for an error.
+   */
+      static char_u *
+! iconv_string(vcp, str, slen)
+      vimconv_T	*vcp;
+      char_u	*str;
+      int		slen;
+  {
+      const char	*from;
+      size_t	fromlen;
+--- 2949,2964 ----
+  
+  /*
+   * Convert the string "str[slen]" with iconv().
++  * If "unconvlenp" is not NULL handle the string ending in an incomplete
++  * sequence and set "*unconvlenp" to the length of it.
+   * Returns the converted string in allocated memory.  NULL for an error.
+   */
+      static char_u *
+! iconv_string(vcp, str, slen, unconvlenp)
+      vimconv_T	*vcp;
+      char_u	*str;
+      int		slen;
++     int		*unconvlenp;
+  {
+      const char	*from;
+      size_t	fromlen;
+***************
+*** 2996,3005 ****
+  	    *to = NUL;
+  	    break;
+  	}
+  	/* Check both ICONV_EILSEQ and EILSEQ, because the dynamically loaded
+  	 * iconv library may use one of them. */
+! 	if (!vcp->vc_fail && (ICONV_ERRNO == ICONV_EILSEQ
+! 						    || ICONV_ERRNO == EILSEQ))
+  	{
+  	    /* Can't convert: insert a '?' and skip a character.  This assumes
+  	     * conversion from 'encoding' to something else.  In other
+--- 2999,3021 ----
+  	    *to = NUL;
+  	    break;
+  	}
++ 
++ 	/* Check both ICONV_EINVAL and EINVAL, because the dynamically loaded
++ 	 * iconv library may use one of them. */
++ 	if (!vcp->vc_fail && unconvlenp != NULL
++ 		&& (ICONV_ERRNO == ICONV_EINVAL || ICONV_ERRNO == EINVAL))
++ 	{
++ 	    /* Handle an incomplete sequence at the end. */
++ 	    *to = NUL;
++ 	    *unconvlenp = fromlen;
++ 	    break;
++ 	}
++ 
+  	/* Check both ICONV_EILSEQ and EILSEQ, because the dynamically loaded
+  	 * iconv library may use one of them. */
+! 	else if (!vcp->vc_fail
+! 		&& (ICONV_ERRNO == ICONV_EILSEQ || ICONV_ERRNO == EILSEQ
+! 		    || ICONV_ERRNO == ICONV_EINVAL || ICONV_ERRNO == EINVAL))
+  	{
+  	    /* Can't convert: insert a '?' and skip a character.  This assumes
+  	     * conversion from 'encoding' to something else.  In other
+***************
+*** 5358,5373 ****
+      int		len;
+      int		maxlen;
+  {
+      char_u	*d;
+      int		dlen = len;
+  
+!     d = string_convert(&input_conv, ptr, &dlen);
+      if (d != NULL)
+      {
+  	if (dlen <= maxlen)
+  	    mch_memmove(ptr, d, dlen);
+  	else
+! 	    dlen = len;	    /* result is too long, keep the unconverted text */
+  	vim_free(d);
+      }
+      return dlen;
+--- 5507,5552 ----
+      int		len;
+      int		maxlen;
+  {
++     return convert_input_safe(ptr, len, maxlen, NULL, NULL);
++ }
++ 
++ /*
++  * Like convert_input(), but when there is an incomplete byte sequence at the
++  * end return that as an allocated string in "restp" and set "*restlenp" to
++  * the length.  If "restp" is NULL it is not used.
++  */
++     int
++ convert_input_safe(ptr, len, maxlen, restp, restlenp)
++     char_u	*ptr;
++     int		len;
++     int		maxlen;
++     char_u	**restp;
++     int		*restlenp;
++ {
+      char_u	*d;
+      int		dlen = len;
++     int		unconvertlen = 0;
+  
+!     d = string_convert_ext(&input_conv, ptr, &dlen,
+! 					restp == NULL ? NULL : &unconvertlen);
+      if (d != NULL)
+      {
+  	if (dlen <= maxlen)
++ 	{
++ 	    if (unconvertlen > 0)
++ 	    {
++ 		/* Move the unconverted characters to allocated memory. */
++ 		*restp = alloc(unconvertlen);
++ 		if (*restp != NULL)
++ 		    mch_memmove(*restp, ptr + len - unconvertlen, unconvertlen);
++ 		*restlenp = unconvertlen;
++ 	    }
+  	    mch_memmove(ptr, d, dlen);
++ 	}
+  	else
+! 	    /* result is too long, keep the unconverted text (the caller must
+! 	     * have done something wrong!) */
+! 	    dlen = len;
+  	vim_free(d);
+      }
+      return dlen;
+***************
+*** 5470,5475 ****
+--- 5649,5669 ----
+      char_u	*ptr;
+      int		*lenp;
+  {
++     return string_convert_ext(vcp, ptr, lenp, NULL);
++ }
++ 
++ /*
++  * Like string_convert(), but when "unconvlenp" is not NULL and there are is
++  * an incomplete sequence at the end it is not converted and "*unconvlenp" is
++  * set to the number of remaining bytes.
++  */
++     char_u *
++ string_convert_ext(vcp, ptr, lenp, unconvlenp)
++     vimconv_T	*vcp;
++     char_u	*ptr;
++     int		*lenp;
++     int		*unconvlenp;
++ {
+      char_u	*retval = NULL;
+      char_u	*d;
+      int		len;
+***************
+*** 5514,5521 ****
+  	    for (i = 0; i < len; ++i)
+  	    {
+  		l = utf_ptr2len_check(ptr + i);
+! 		if (l <= 1)
+  		    *d++ = ptr[i];
+  		else
+  		{
+  		    c = utf_ptr2char(ptr + i);
+--- 5708,5725 ----
+  	    for (i = 0; i < len; ++i)
+  	    {
+  		l = utf_ptr2len_check(ptr + i);
+! 		if (l == 0)
+! 		    *d++ = NUL;
+! 		else if (l == 1)
+! 		{
+! 		    if (unconvlenp != NULL && utf8len_tab[ptr[i]] > len - i)
+! 		    {
+! 			/* Incomplete sequence at the end. */
+! 			*unconvlenp = len - i;
+! 			break;
+! 		    }
+  		    *d++ = ptr[i];
++ 		}
+  		else
+  		{
+  		    c = utf_ptr2char(ptr + i);
+***************
+*** 5571,5577 ****
+  
+  # ifdef USE_ICONV
+  	case CONV_ICONV:	/* conversion with output_conv.vc_fd */
+! 	    retval = iconv_string(vcp, ptr, len);
+  	    if (retval != NULL && lenp != NULL)
+  		*lenp = (int)STRLEN(retval);
+  	    break;
+--- 5775,5781 ----
+  
+  # ifdef USE_ICONV
+  	case CONV_ICONV:	/* conversion with output_conv.vc_fd */
+! 	    retval = iconv_string(vcp, ptr, len, unconvlenp);
+  	    if (retval != NULL && lenp != NULL)
+  		*lenp = (int)STRLEN(retval);
+  	    break;
+***************
+*** 5585,5591 ****
+  
+  	    /* 1. codepage/UTF-8  ->  ucs-2. */
+  	    if (vcp->vc_cpfrom == 0)
+! 		tmp_len = utf8_to_ucs2(ptr, len, NULL);
+  	    else
+  		tmp_len = MultiByteToWideChar(vcp->vc_cpfrom, 0,
+  							      ptr, len, 0, 0);
+--- 5789,5795 ----
+  
+  	    /* 1. codepage/UTF-8  ->  ucs-2. */
+  	    if (vcp->vc_cpfrom == 0)
+! 		tmp_len = utf8_to_ucs2(ptr, len, NULL, NULL);
+  	    else
+  		tmp_len = MultiByteToWideChar(vcp->vc_cpfrom, 0,
+  							      ptr, len, 0, 0);
+***************
+*** 5593,5599 ****
+  	    if (tmp == NULL)
+  		break;
+  	    if (vcp->vc_cpfrom == 0)
+! 		utf8_to_ucs2(ptr, len, tmp);
+  	    else
+  		MultiByteToWideChar(vcp->vc_cpfrom, 0, ptr, len, tmp, tmp_len);
+  
+--- 5797,5803 ----
+  	    if (tmp == NULL)
+  		break;
+  	    if (vcp->vc_cpfrom == 0)
+! 		utf8_to_ucs2(ptr, len, tmp, unconvlenp);
+  	    else
+  		MultiByteToWideChar(vcp->vc_cpfrom, 0, ptr, len, tmp, tmp_len);
+  
+*** ../vim-6.2.426/src/os_amiga.c	Tue Mar  9 14:18:21 2004
+--- src/os_amiga.c	Thu Apr  1 22:52:15 2004
+***************
+*** 172,178 ****
+  
+      for (;;)	    /* repeat until we got a character */
+      {
+! 	len = Read(raw_in, (char *)buf, (long)maxlen);
+  	if (len > 0)
+  	{
+  #ifdef FEAT_AUTOCMD
+--- 172,182 ----
+  
+      for (;;)	    /* repeat until we got a character */
+      {
+! 	len = Read(raw_in, (char *)buf, (long)maxlen
+! #  ifdef FEAT_MBYTE
+! 		/ input_conv.vc_factor
+! #  endif
+! 		);
+  	if (len > 0)
+  	{
+  #ifdef FEAT_AUTOCMD
+*** ../vim-6.2.426/src/os_mswin.c	Tue Mar 30 22:11:17 2004
+--- src/os_mswin.c	Thu Apr  1 22:43:35 2004
+***************
+*** 820,826 ****
+   * Returns the number of UCS-2 words produced.
+   */
+      int
+! utf8_to_ucs2(char_u *instr, int inlen, short_u *outstr)
+  {
+      int		outlen = 0;
+      char_u	*p = instr;
+--- 834,840 ----
+   * Returns the number of UCS-2 words produced.
+   */
+      int
+! utf8_to_ucs2(char_u *instr, int inlen, short_u *outstr, int *unconvlenp)
+  {
+      int		outlen = 0;
+      char_u	*p = instr;
+***************
+*** 832,838 ****
+--- 846,857 ----
+  	/* Only convert if we have a complete sequence. */
+  	l = utf_ptr2len_check_len(p, todo);
+  	if (l > todo)
++ 	{
++ 	    /* Return length of incomplete sequence. */
++ 	    if (unconvlenp != NULL)
++ 		*unconvlenp = todo;
+  	    break;
++ 	}
+  
+  	if (outstr != NULL)
+  	    *outstr++ = utf_ptr2char(p);
+***************
+*** 1038,1048 ****
+  	}
+  	convert_setup(&conv, NULL, NULL);
+  
+! 	length = utf8_to_ucs2(str, *lenp, NULL);
+  	ret = (WCHAR *)alloc((unsigned)((length == 0 ? 1 : length)
+  							    * sizeof(WCHAR)));
+  	if (ret != NULL)
+! 	    utf8_to_ucs2(str, *lenp, (short_u *)ret);
+  
+  	vim_free(allocbuf);
+      }
+--- 1057,1067 ----
+  	}
+  	convert_setup(&conv, NULL, NULL);
+  
+! 	length = utf8_to_ucs2(str, *lenp, NULL, NULL);
+  	ret = (WCHAR *)alloc((unsigned)((length == 0 ? 1 : length)
+  							    * sizeof(WCHAR)));
+  	if (ret != NULL)
+! 	    utf8_to_ucs2(str, *lenp, (short_u *)ret, NULL);
+  
+  	vim_free(allocbuf);
+      }
+***************
+*** 1054,1062 ****
+  /*
+   * Convert an UCS-2 string to 'encoding'.
+   * Input in "str" with length (counted in wide characters) "*lenp".  When
+!  * "lenp" is NULL, use strlen().
+!  * Output is returned as an allocated string.  "*lenp" is set to the length of
+!  * the result.
+   * Returns NULL when out of memory.
+   */
+      char_u *
+--- 1073,1081 ----
+  /*
+   * Convert an UCS-2 string to 'encoding'.
+   * Input in "str" with length (counted in wide characters) "*lenp".  When
+!  * "lenp" is NULL, use wcslen().
+!  * Output is returned as an allocated string.  If "*lenp" is not NULL it is
+!  * set to the length of the result.
+   * Returns NULL when out of memory.
+   */
+      char_u *
+*** ../vim-6.2.426/src/proto/mbyte.pro	Mon Feb  9 18:45:58 2004
+--- src/proto/mbyte.pro	Fri Apr  2 11:34:53 2004
+***************
+*** 80,84 ****
+--- 80,86 ----
+  int im_get_status __ARGS((void));
+  int convert_setup __ARGS((vimconv_T *vcp, char_u *from, char_u *to));
+  int convert_input __ARGS((char_u *ptr, int len, int maxlen));
++ int convert_input_safe __ARGS((char_u *ptr, int len, int maxlen, char_u **restp, int *restlenp));
+  char_u *string_convert __ARGS((vimconv_T *vcp, char_u *ptr, int *lenp));
++ char_u *string_convert_ext __ARGS((vimconv_T *vcp, char_u *ptr, int *lenp, int *unconvlenp));
+  /* vim: set ft=c : */
+*** ../vim-6.2.426/src/proto/os_mswin.pro	Sun Jun  1 12:26:31 2003
+--- src/proto/os_mswin.pro	Fri Apr  2 11:33:06 2004
+***************
+*** 22,28 ****
+  int can_end_termcap_mode __ARGS((int give_msg));
+  int mch_screenmode __ARGS((char_u *arg));
+  int mch_libcall __ARGS((char_u *libname, char_u *funcname, char_u *argstring, int argint, char_u **string_result, int *number_result));
+! int utf8_to_ucs2 __ARGS((char_u *instr, int inlen, short_u *outstr));
+  int ucs2_to_utf8 __ARGS((short_u *instr, int inlen, char_u *outstr));
+  void MultiByteToWideChar_alloc __ARGS((UINT cp, DWORD flags, LPCSTR in, int inlen, LPWSTR *out, int *outlen));
+  void WideCharToMultiByte_alloc __ARGS((UINT cp, DWORD flags, LPCWSTR in, int inlen, LPSTR *out, int *outlen, LPCSTR def, LPBOOL useddef));
+--- 22,28 ----
+  int can_end_termcap_mode __ARGS((int give_msg));
+  int mch_screenmode __ARGS((char_u *arg));
+  int mch_libcall __ARGS((char_u *libname, char_u *funcname, char_u *argstring, int argint, char_u **string_result, int *number_result));
+! int utf8_to_ucs2 __ARGS((char_u *instr, int inlen, short_u *outstr, int *unconvlenp));
+  int ucs2_to_utf8 __ARGS((short_u *instr, int inlen, char_u *outstr));
+  void MultiByteToWideChar_alloc __ARGS((UINT cp, DWORD flags, LPCSTR in, int inlen, LPWSTR *out, int *outlen));
+  void WideCharToMultiByte_alloc __ARGS((UINT cp, DWORD flags, LPCWSTR in, int inlen, LPSTR *out, int *outlen, LPCSTR def, LPBOOL useddef));
+*** ../vim-6.2.426/src/ui.c	Thu Apr  1 14:49:42 2004
+--- src/ui.c	Fri Apr  2 11:26:23 2004
+***************
+*** 1669,1674 ****
+--- 1669,1679 ----
+      int		len;
+      int		try;
+      static int	did_read_something = FALSE;
++ # ifdef FEAT_MBYTE
++     static char_u *rest = NULL;	    /* unconverted rest of previous read */
++     static int	restlen = 0;
++     int		unconverted;
++ # endif
+  #endif
+  
+  #ifdef FEAT_GUI
+***************
+*** 1708,1713 ****
+--- 1713,1744 ----
+      }
+  #  endif
+  
++ # ifdef FEAT_MBYTE
++     if (rest != NULL)
++     {
++ 	/* Use remainder of previous call, starts with an invalid character
++ 	 * that may become valid when reading more. */
++ 	if (restlen > INBUFLEN - inbufcount)
++ 	    unconverted = INBUFLEN - inbufcount;
++ 	else
++ 	    unconverted = restlen;
++ 	mch_memmove(inbuf + inbufcount, rest, unconverted);
++ 	if (unconverted == restlen)
++ 	{
++ 	    vim_free(rest);
++ 	    rest = NULL;
++ 	}
++ 	else
++ 	{
++ 	    restlen -= unconverted;
++ 	    mch_memmove(rest, rest + unconverted, restlen);
++ 	}
++ 	inbufcount += unconverted;
++     }
++     else
++ 	unconverted = 0;
++ #endif
++ 
+      len = 0;	/* to avoid gcc warning */
+      for (try = 0; try < 100; ++try)
+      {
+***************
+*** 1757,1771 ****
+  	did_read_something = TRUE;
+      if (got_int)
+      {
+! 	inbuf[inbufcount] = 3;
+  	inbufcount = 1;
+      }
+      else
+      {
+  # ifdef FEAT_MBYTE
+! 	/* May perform conversion on the input characters. */
+  	if (input_conv.vc_type != CONV_NONE)
+! 	    len = convert_input(inbuf + inbufcount, len, INBUFLEN - inbufcount);
+  # endif
+  	while (len-- > 0)
+  	{
+--- 1788,1815 ----
+  	did_read_something = TRUE;
+      if (got_int)
+      {
+! 	/* Interrupted, pretend a CTRL-C was typed. */
+! 	inbuf[0] = 3;
+  	inbufcount = 1;
+      }
+      else
+      {
+  # ifdef FEAT_MBYTE
+! 	/*
+! 	 * May perform conversion on the input characters.
+! 	 * Include the unconverted rest of the previous call.
+! 	 * If there is an incomplete char at the end it is kept for the next
+! 	 * time, reading more bytes should make conversion possible.
+! 	 * Don't do this in the unlikely event that the input buffer is too
+! 	 * small ("rest" still contains more bytes).
+! 	 */
+  	if (input_conv.vc_type != CONV_NONE)
+! 	{
+! 	    inbufcount -= unconverted;
+! 	    len = convert_input_safe(inbuf + inbufcount,
+! 				     len + unconverted, INBUFLEN - inbufcount,
+! 				       rest == NULL ? &rest : NULL, &restlen);
+! 	}
+  # endif
+  	while (len-- > 0)
+  	{
+*** ../vim-6.2.426/src/version.c	Thu Apr  1 15:42:48 2004
+--- src/version.c	Fri Apr  2 11:27:55 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     427,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+233. You start dreaming about web pages...in html.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

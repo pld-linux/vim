@@ -1,0 +1,70 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.415
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.415
+Problem:    Vim may crash after a sequence of events that change the window
+	    size.  The window layout assumes a larger window than is actually
+	    available. (Servatius Brandt)
+Solution:   Invoke win_new_shellsize() from screenalloc() instead of from
+	    set_shellsize().
+Files:	    src/screen.c, src/term.c
+
+
+*** ../vim-6.2.414/src/screen.c	Mon Mar 29 12:16:31 2004
+--- src/screen.c	Tue Mar 30 14:28:49 2004
+***************
+*** 6431,6436 ****
+--- 6437,6444 ----
+      if (entered)
+  	return;
+      entered = TRUE;
++ 
++     win_new_shellsize();    /* fit the windows in the new sized shell */
+  
+  #ifdef FEAT_GUI_BEOS
+      vim_lock_screen();  /* be safe, put it here */
+*** ../vim-6.2.414/src/term.c	Sat Aug  9 15:44:32 2003
+--- src/term.c	Tue Mar 30 14:28:33 2004
+***************
+*** 3045,3051 ****
+      }
+      else
+  	check_shellsize();
+!     win_new_shellsize();    /* fit the windows in the new sized shell */
+  
+      if (State != ASKMORE && State != EXTERNCMD && State != CONFIRM)
+  	screenclear();
+--- 3045,3054 ----
+      }
+      else
+  	check_shellsize();
+! 
+!     /* The window layout used to be adjusted here, but it now happens in
+!      * screenalloc() (also invoked from screenclear()).  That is because the
+!      * "busy" check above may skip this, but not screenalloc(). */
+  
+      if (State != ASKMORE && State != EXTERNCMD && State != CONFIRM)
+  	screenclear();
+*** ../vim-6.2.414/src/version.c	Tue Mar 30 21:47:08 2004
+--- src/version.c	Tue Mar 30 21:48:30 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     415,
+  /**/
+
+-- 
+Press any key to continue, press any other key to quit.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

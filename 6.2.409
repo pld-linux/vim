@@ -1,0 +1,83 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.409
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.409
+Problem:    The cursor ends up in the last column instead of after the line
+	    when doing "i//<Esc>o" with 'indentexpr' set to "cindent(v:lnum)".
+	    (Toby Allsopp)
+Solution:   Adjust the cursor as if in Insert mode.
+Files:	    src/misc1.c
+
+
+*** ../vim-6.2.408/src/misc1.c	Thu Mar 18 14:39:31 2004
+--- src/misc1.c	Sun Mar 28 13:57:35 2004
+***************
+*** 6170,6175 ****
+--- 6170,6176 ----
+  			 *  }
+  			 *  case 2:
+  			 *	stat;
++ 			 * }
+  			 */
+  			iscase = (ind_keep_case_label && cin_iscase(l));
+  
+***************
+*** 6504,6509 ****
+--- 6505,6511 ----
+  {
+      int		indent;
+      pos_T	pos;
++     int		save_State;
+  
+      pos = curwin->w_cursor;
+      set_vim_var_nr(VV_LNUM, curwin->w_cursor.lnum);
+***************
+*** 6511,6519 ****
+      indent = eval_to_number(curbuf->b_p_inde);
+      --sandbox;
+  
+!     /* restore the cursor position so that 'indentexpr' doesn't need to */
+      curwin->w_cursor = pos;
+      check_cursor();
+  
+      /* If there is an error, just keep the current indent. */
+      if (indent < 0)
+--- 6513,6526 ----
+      indent = eval_to_number(curbuf->b_p_inde);
+      --sandbox;
+  
+!     /* Restore the cursor position so that 'indentexpr' doesn't need to.
+!      * Pretend to be in Insert mode, allow cursor past end of line for "o"
+!      * command. */
+!     save_State = State;
+!     State = INSERT;
+      curwin->w_cursor = pos;
+      check_cursor();
++     State = save_State;
+  
+      /* If there is an error, just keep the current indent. */
+      if (indent < 0)
+*** ../vim-6.2.408/src/version.c	Sat Mar 27 13:23:01 2004
+--- src/version.c	Sun Mar 28 13:54:50 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     409,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+168. You have your own domain name.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

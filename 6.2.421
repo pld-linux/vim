@@ -1,0 +1,93 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.421
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.421
+Problem:    Cannot set the '[ and '] mark, which may be necessary when an
+	    autocommand simulates reading a file.
+Solution:   Allow using "m[" and "m]".
+Files:	    runtime/doc/motion.txt, src/mark.c
+
+
+*** ../vim-6.2.420/runtime/doc/motion.txt	Tue Mar  2 16:04:09 2004
+--- runtime/doc/motion.txt	Tue Mar 30 21:29:17 2004
+***************
+*** 1,4 ****
+! *motion.txt*    For Vim version 6.2.  Last change: 2004 Mar 02
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *motion.txt*    For Vim version 6.2.  Last change: 2004 Mar 30
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 652,661 ****
+--- 658,673 ----
+  m{a-zA-Z}		Set mark {a-zA-Z} at cursor position (does not move
+  			the cursor, this is not a motion command).
+  
++ 						*m'* *m`*
+  m'  or  m`		Set the previous context mark.  This can be jumped to
+  			with the "''" or "``" command (does not move the
+  			cursor, this is not a motion command).
+  
++ 						*m[* *m]*
++ m[  or  m]		Set the |'[| or |']| mark.  Useful when an operator is
++ 			to be simulated by multiple commands.  (does not move
++ 			the cursor, this is not a motion command).
++ 
+  						*:ma* *:mark* *E191*
+  :[range]ma[rk] {a-zA-Z}	Set mark {a-zA-Z} at last line number in [range],
+  			column 0.  Default is cursor line.
+*** ../vim-6.2.420/src/mark.c	Mon Mar  8 12:27:39 2004
+--- src/mark.c	Tue Mar 30 21:31:02 2004
+***************
+*** 60,65 ****
+--- 60,78 ----
+  	return OK;
+      }
+  
++     /* Allow setting '[ and '] for an autocommand that simulates reading a
++      * file. */
++     if (c == '[')
++     {
++ 	curbuf->b_op_start = curwin->w_cursor;
++ 	return OK;
++     }
++     if (c == ']')
++     {
++ 	curbuf->b_op_end = curwin->w_cursor;
++ 	return OK;
++     }
++ 
+  #ifndef EBCDIC
+      if (c > 'z')	    /* some islower() and isupper() cannot handle
+  				characters above 127 */
+*** ../vim-6.2.420/src/version.c	Tue Mar 30 22:17:27 2004
+--- src/version.c	Tue Mar 30 22:18:48 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     421,
+  /**/
+
+-- 
+Some of the well know MS-Windows errors:
+	ETIME		Wrong time, wait a little while
+	ECRASH		Try again...
+	EDETECT		Unable to detect errors
+	EOVER		You lost!  Play another game?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

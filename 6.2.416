@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.416
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.416
+Problem:    Compiler warning for incompatible pointer.
+Solution:   Remove the "&" in the call to poll(). (Xavier de Gaye)
+Files:	    src/os_unix.c
+
+
+*** ../vim-6.2.415/src/os_unix.c	Wed Mar 17 22:18:24 2004
+--- src/os_unix.c	Mon Mar 29 15:50:31 2004
+***************
+*** 4118,4124 ****
+  	}
+  # endif
+  
+! 	ret = poll(&fds, nfd, (int)msec);
+  
+  # ifdef FEAT_SNIFF
+  	if (ret < 0)
+--- 4118,4124 ----
+  	}
+  # endif
+  
+! 	ret = poll(fds, nfd, (int)msec);
+  
+  # ifdef FEAT_SNIFF
+  	if (ret < 0)
+*** ../vim-6.2.415/src/version.c	Tue Mar 30 21:49:18 2004
+--- src/version.c	Tue Mar 30 21:52:16 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     416,
+  /**/
+
+-- 
+% cat /usr/include/sys/errno.h
+#define	EPERM		1		/* Operation not permitted */
+#define	ENOENT		2		/* No such file or directory */
+#define	ESRCH		3		/* No such process */
+[...]
+#define EMACS		666		/* Too many macros */
+%
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,342 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.420
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.420
+Problem:    Cannot specify a file to be edited in binary mode without setting
+	    the global value of the 'binary' option.
+Solution:   Support ":edit ++bin file".
+Files:	    runtime/doc/editing.txt, src/buffer.c, src/eval.c, src/ex_cmds.h,
+	    src/ex_docmd.c, src/fileio.c, src/misc2.c
+
+
+*** ../vim-6.2.419/runtime/doc/editing.txt	Sun Jun  1 12:20:31 2003
+--- runtime/doc/editing.txt	Tue Mar 30 20:55:09 2004
+***************
+*** 1,4 ****
+! *editing.txt*   For Vim version 6.2.  Last change: 2003 May 04
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *editing.txt*   For Vim version 6.2.  Last change: 2004 Mar 30
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 345,353 ****
+  'fileencoding' to a value for one command.  The form is: >
+  	++{optname}={value}
+  
+! Where {optname} is one of:				*++ff* *++enc*
+!     ff  or  fileformat	    overrides 'fileformat'
+!     enc  or  encoding	    overrides 'fileencoding'
+  
+  {value} cannot contain white space.  It can be any valid value for these
+  options.  Examples: >
+--- 349,359 ----
+  'fileencoding' to a value for one command.  The form is: >
+  	++{optname}={value}
+  
+! Where {optname} is one of:		*++ff* *++enc* *++bin* *++nobin*
+!     ff     or  fileformat   overrides 'fileformat'
+!     enc    or  encoding	    overrides 'fileencoding'
+!     bin    or  binary	    sets 'binary'
+!     nobin  or  nobinary	    resets 'binary'
+  
+  {value} cannot contain white space.  It can be any valid value for these
+  options.  Examples: >
+***************
+*** 359,365 ****
+  
+  Note that when reading, the 'fileformat' and 'fileencoding' options will be
+  set to the used format.  When writing this doesn't happen, thus a next write
+! will use the old value of the option.
+  
+  There may be several ++opt arguments, separated by white space.  They must all
+  appear before any |+cmd| argument.
+--- 365,371 ----
+  
+  Note that when reading, the 'fileformat' and 'fileencoding' options will be
+  set to the used format.  When writing this doesn't happen, thus a next write
+! will use the old value of the option.  Same for the 'binary' option.
+  
+  There may be several ++opt arguments, separated by white space.  They must all
+  appear before any |+cmd| argument.
+*** ../vim-6.2.419/src/buffer.c	Thu Mar 25 19:27:28 2004
+--- src/buffer.c	Tue Mar 30 21:05:55 2004
+***************
+*** 150,156 ****
+  	 */
+  	curbuf->b_p_bin = TRUE;
+  	retval = readfile(NULL, NULL, (linenr_T)0,
+! 		  (linenr_T)0, (linenr_T)MAXLNUM, eap, READ_NEW + READ_STDIN);
+  	curbuf->b_p_bin = save_bin;
+  	if (retval == OK)
+  	{
+--- 150,156 ----
+  	 */
+  	curbuf->b_p_bin = TRUE;
+  	retval = readfile(NULL, NULL, (linenr_T)0,
+! 		  (linenr_T)0, (linenr_T)MAXLNUM, NULL, READ_NEW + READ_STDIN);
+  	curbuf->b_p_bin = save_bin;
+  	if (retval == OK)
+  	{
+*** ../vim-6.2.419/src/eval.c	Tue Mar 30 21:47:08 2004
+--- src/eval.c	Tue Mar 30 20:27:02 2004
+***************
+*** 7887,7907 ****
+      oldval = vimvars[VV_CMDARG].val;
+      if (eap != NULL)
+      {
+! 	if (eap->force_ff != 0)
+! 	    len = (unsigned)STRLEN(eap->cmd + eap->force_ff) + 6;
+  	else
+  	    len = 0;
+  # ifdef FEAT_MBYTE
+  	if (eap->force_enc != 0)
+  	    len += (unsigned)STRLEN(eap->cmd + eap->force_enc) + 7;
+  # endif
+  	newval = alloc(len + 1);
+  	if (newval == NULL)
+  	    return NULL;
+! 	if (eap->force_ff != 0)
+! 	    sprintf((char *)newval, " ++ff=%s", eap->cmd + eap->force_ff);
+  	else
+  	    *newval = NUL;
+  # ifdef FEAT_MBYTE
+  	if (eap->force_enc != 0)
+  	    sprintf((char *)newval + STRLEN(newval), " ++enc=%s",
+--- 7887,7918 ----
+      oldval = vimvars[VV_CMDARG].val;
+      if (eap != NULL)
+      {
+! 	if (eap->force_bin == FORCE_BIN)
+! 	    len = 6;
+! 	else if (eap->force_bin == FORCE_NOBIN)
+! 	    len = 8;
+  	else
+  	    len = 0;
++ 	if (eap->force_ff != 0)
++ 	    len += (unsigned)STRLEN(eap->cmd + eap->force_ff) + 6;
+  # ifdef FEAT_MBYTE
+  	if (eap->force_enc != 0)
+  	    len += (unsigned)STRLEN(eap->cmd + eap->force_enc) + 7;
+  # endif
++ 
+  	newval = alloc(len + 1);
+  	if (newval == NULL)
+  	    return NULL;
+! 
+! 	if (eap->force_bin == FORCE_BIN)
+! 	    sprintf((char *)newval, " ++bin");
+! 	else if (eap->force_bin == FORCE_NOBIN)
+! 	    sprintf((char *)newval, " ++nobin");
+  	else
+  	    *newval = NUL;
++ 	if (eap->force_ff != 0)
++ 	    sprintf((char *)newval + STRLEN(newval), " ++ff=%s",
++ 						    eap->cmd + eap->force_ff);
+  # ifdef FEAT_MBYTE
+  	if (eap->force_enc != 0)
+  	    sprintf((char *)newval + STRLEN(newval), " ++enc=%s",
+*** ../vim-6.2.419/src/ex_cmds.h	Sat Mar 13 14:28:50 2004
+--- src/ex_cmds.h	Tue Mar 30 20:20:53 2004
+***************
+*** 939,944 ****
+--- 939,945 ----
+      int		usefilter;	/* TRUE with ":w !command" and ":r!command" */
+      int		amount;		/* number of '>' or '<' for shift command */
+      int		regname;	/* register name (NUL if none) */
++     int		force_bin;	/* 0, FORCE_BIN or FORCE_NOBIN */
+      int		force_ff;	/* forced 'fileformat' (index in cmd[]) */
+  #ifdef FEAT_MBYTE
+      int		force_enc;	/* forced 'encoding' (index in cmd[]) */
+***************
+*** 953,956 ****
+--- 954,961 ----
+      struct condstack *cstack;	/* condition stack for ":if" etc. */
+  #endif
+  };
++ 
++ #define FORCE_BIN 1		/* ":edit ++bin file" */
++ #define FORCE_NOBIN 2		/* ":edit ++nobin file" */
++ 
+  #endif
+*** ../vim-6.2.419/src/ex_docmd.c	Tue Mar 30 21:47:08 2004
+--- src/ex_docmd.c	Tue Mar 30 20:28:50 2004
+***************
+*** 4220,4225 ****
+--- 4218,4239 ----
+      char_u	*p;
+  #endif
+  
++     /* ":edit ++[no]bin[ary] file" */
++     if (STRNCMP(arg, "bin", 3) == 0 || STRNCMP(arg, "nobin", 5) == 0)
++     {
++ 	if (*arg == 'n')
++ 	{
++ 	    arg += 2;
++ 	    eap->force_bin = FORCE_NOBIN;
++ 	}
++ 	else
++ 	    eap->force_bin = FORCE_BIN;
++ 	if (!checkforcmd(&arg, "binary", 3))
++ 	    return FAIL;
++ 	eap->arg = skipwhite(arg);
++ 	return OK;
++     }
++ 
+      if (STRNCMP(arg, "ff", 2) == 0)
+      {
+  	arg += 2;
+***************
+*** 6057,6070 ****
+       * Move to the first file.
+       */
+      /* Fake up a minimal "next" command for do_argfile() */
+      ea.cmd = (char_u *)"next";
+-     ea.forceit = FALSE;
+-     ea.do_ecmd_cmd = NULL;
+-     ea.do_ecmd_lnum = 0;
+-     ea.force_ff = 0;
+- # ifdef FEAT_MBYTE
+-     ea.force_enc = 0;
+- # endif
+      do_argfile(&ea, 0);
+  
+      /* do_ecmd() may set need_start_insertmode, but since we never left Insert
+--- 6071,6078 ----
+       * Move to the first file.
+       */
+      /* Fake up a minimal "next" command for do_argfile() */
++     vim_memset(&ea, 0, sizeof(ea));
+      ea.cmd = (char_u *)"next";
+      do_argfile(&ea, 0);
+  
+      /* do_ecmd() may set need_start_insertmode, but since we never left Insert
+*** ../vim-6.2.419/src/fileio.c	Sat Mar 20 21:21:41 2004
+--- src/fileio.c	Tue Mar 30 21:12:07 2004
+***************
+*** 409,414 ****
+--- 409,423 ----
+  	    set_fileformat(default_fileformat(), OPT_LOCAL);
+      }
+  
++     /* set or reset 'binary' */
++     if (eap != NULL && eap->force_bin != 0)
++     {
++ 	int	oldval = curbuf->b_p_bin;
++ 
++ 	curbuf->b_p_bin = (eap->force_bin == FORCE_BIN);
++ 	set_options_bin(oldval, curbuf->b_p_bin, OPT_LOCAL);
++     }
++ 
+      /*
+       * When opening a new file we take the readonly flag from the file.
+       * Default is r/w, can be set to r/o below.
+***************
+*** 2420,2425 ****
+--- 2429,2435 ----
+  #endif
+      int		    attr;
+      int		    fileformat;
++     int		    write_bin;
+      struct bw_info  write_info;		/* info for buf_write_bytes() */
+  #ifdef FEAT_MBYTE
+      int		    converted = FALSE;
+***************
+*** 3593,3603 ****
+      write_info.bw_buf = buffer;
+      nchars = 0;
+  
+  #ifdef FEAT_MBYTE
+      /*
+       * The BOM is written just after the encryption magic number.
+       */
+!     if (buf->b_p_bomb && !buf->b_p_bin)
+      {
+  	write_info.bw_len = make_bom(buffer, fenc);
+  	if (write_info.bw_len > 0)
+--- 3603,3619 ----
+      write_info.bw_buf = buffer;
+      nchars = 0;
+  
++     /* use "++bin", "++nobin" or 'binary' */
++     if (eap != NULL && eap->force_bin != 0)
++ 	write_bin = (eap->force_bin == FORCE_BIN);
++     else
++ 	write_bin = buf->b_p_bin;
++ 
+  #ifdef FEAT_MBYTE
+      /*
+       * The BOM is written just after the encryption magic number.
+       */
+!     if (buf->b_p_bomb && !write_bin)
+      {
+  	write_info.bw_len = make_bom(buffer, fenc);
+  	if (write_info.bw_len > 0)
+***************
+*** 3649,3655 ****
+  	/* write failed or last line has no EOL: stop here */
+  	if (end == 0
+  		|| (lnum == end
+! 		    && buf->b_p_bin
+  		    && (lnum == write_no_eol_lnum
+  			|| (lnum == buf->b_ml.ml_line_count && !buf->b_p_eol))))
+  	{
+--- 3665,3671 ----
+  	/* write failed or last line has no EOL: stop here */
+  	if (end == 0
+  		|| (lnum == end
+! 		    && write_bin
+  		    && (lnum == write_no_eol_lnum
+  			|| (lnum == buf->b_ml.ml_line_count && !buf->b_p_eol))))
+  	{
+*** ../vim-6.2.419/src/misc2.c	Tue Mar 23 21:19:08 2004
+--- src/misc2.c	Tue Mar 30 21:01:29 2004
+***************
+*** 2488,2494 ****
+  	c = eap->cmd[eap->force_ff];
+      else
+      {
+! 	if (buf->b_p_bin)
+  	    return EOL_UNIX;
+  	c = *buf->b_p_ff;
+      }
+--- 2488,2495 ----
+  	c = eap->cmd[eap->force_ff];
+      else
+      {
+! 	if ((eap != NULL && eap->force_bin != 0)
+! 			       ? (eap->force_bin == FORCE_BIN) : buf->b_p_bin)
+  	    return EOL_UNIX;
+  	c = *buf->b_p_ff;
+      }
+*** ../vim-6.2.419/src/version.c	Tue Mar 30 22:11:17 2004
+--- src/version.c	Tue Mar 30 22:13:54 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     420,
+  /**/
+
+-- 
+Some of the well know MS-Windows errors:
+	EMEMORY		Memory error caused by..., eh...
+	ELICENSE	Your license has expired, give us more money!
+	EMOUSE		Mouse moved, reinstall Windows
+	EILLEGAL	Illegal error, you are not allowed to see this
+	EVIRUS		Undetectable virus found
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

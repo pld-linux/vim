@@ -1,0 +1,244 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.404
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.404
+Problem:    Our own function to determine width of Unicode characters may get
+	    outdated. (Markus Kuhn)
+Solution:   Use wcwidth() when it is available.  Also use iswprint().
+Files:	    src/auto/configure, src/configure.in, src/config.h.in, src/mbyte.c
+
+
+*** ../vim-6.2.403/src/auto/configure	Tue Mar 16 18:03:23 2004
+--- src/auto/configure	Fri Mar 26 13:15:11 2004
+***************
+*** 5562,5582 ****
+  	sys/stream.h sys/ptem.h termios.h libc.h sys/statfs.h \
+  	poll.h sys/poll.h pwd.h utime.h sys/param.h libintl.h \
+  	libgen.h util/debug.h util/msg18n.h frame.h \
+! 	sys/acl.h sys/access.h sys/sysctl.h sys/sysinfo.h
+  do
+  ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
+  echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
+! echo "configure:5421: checking for $ac_hdr" >&5
+  if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
+    echo $ac_n "(cached) $ac_c" 1>&6
+  else
+    cat > conftest.$ac_ext <<EOF
+! #line 5426 "configure"
+  #include "confdefs.h"
+  #include <$ac_hdr>
+  EOF
+  ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+! { (eval echo configure:5431: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+  ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+  if test -z "$ac_err"; then
+    rm -rf conftest*
+--- 5566,5586 ----
+  	sys/stream.h sys/ptem.h termios.h libc.h sys/statfs.h \
+  	poll.h sys/poll.h pwd.h utime.h sys/param.h libintl.h \
+  	libgen.h util/debug.h util/msg18n.h frame.h \
+! 	sys/acl.h sys/access.h sys/sysctl.h sys/sysinfo.h wchar.h
+  do
+  ac_safe=`echo "$ac_hdr" | sed 'y%./+-%__p_%'`
+  echo $ac_n "checking for $ac_hdr""... $ac_c" 1>&6
+! echo "configure:5574: checking for $ac_hdr" >&5
+  if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
+    echo $ac_n "(cached) $ac_c" 1>&6
+  else
+    cat > conftest.$ac_ext <<EOF
+! #line 5579 "configure"
+  #include "confdefs.h"
+  #include <$ac_hdr>
+  EOF
+  ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+! { (eval echo configure:5584: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+  ac_err=`grep -v '^ *+' conftest.out | grep -v "^conftest.${ac_ext}\$"`
+  if test -z "$ac_err"; then
+    rm -rf conftest*
+*** ../vim-6.2.403/src/configure.in	Tue Mar 16 18:03:23 2004
+--- src/configure.in	Fri Mar 26 13:12:08 2004
+***************
+*** 1829,1835 ****
+  	sys/stream.h sys/ptem.h termios.h libc.h sys/statfs.h \
+  	poll.h sys/poll.h pwd.h utime.h sys/param.h libintl.h \
+  	libgen.h util/debug.h util/msg18n.h frame.h \
+! 	sys/acl.h sys/access.h sys/sysctl.h sys/sysinfo.h)
+  
+  dnl On Mac OS X strings.h exists but produces a warning message :-(
+  if test "x$MACOSX" != "xyes"; then
+--- 1829,1835 ----
+  	sys/stream.h sys/ptem.h termios.h libc.h sys/statfs.h \
+  	poll.h sys/poll.h pwd.h utime.h sys/param.h libintl.h \
+  	libgen.h util/debug.h util/msg18n.h frame.h \
+! 	sys/acl.h sys/access.h sys/sysctl.h sys/sysinfo.h wchar.h)
+  
+  dnl On Mac OS X strings.h exists but produces a warning message :-(
+  if test "x$MACOSX" != "xyes"; then
+*** ../vim-6.2.403/src/config.h.in	Sun May 25 18:07:42 2003
+--- src/config.h.in	Fri Mar 26 13:14:12 2004
+***************
+*** 222,227 ****
+--- 222,228 ----
+  #undef HAVE_SYS_SYSTEMINFO_H
+  #undef HAVE_SYS_TIME_H
+  #undef HAVE_SYS_UTSNAME_H
++ #undef HAVE_WCHAR_H
+  #undef HAVE_TERMCAP_H
+  #undef HAVE_TERMIOS_H
+  #undef HAVE_TERMIO_H
+*** ../vim-6.2.403/src/mbyte.c	Sun Mar 14 20:12:26 2004
+--- src/mbyte.c	Fri Mar 26 14:06:44 2004
+***************
+*** 109,114 ****
+--- 109,118 ----
+  # endif
+  #endif
+  
++ #ifdef HAVE_WCHAR_H
++ # include <wchar.h>
++ #endif
++ 
+  #if defined(FEAT_MBYTE) || defined(PROTO)
+  
+  static int enc_canon_search __ARGS((char_u *name));
+***************
+*** 1099,1109 ****
+  	{0x2642, 0x2642}, {0x2660, 0x2661}, {0x2663, 0x2665},
+  	{0x2667, 0x266A}, {0x266C, 0x266D}, {0x266F, 0x266F},
+  	{0x273D, 0x273D}, {0x2776, 0x277F}, {0xE000, 0xF8FF},
+! 	{0xFFFD, 0xFFFD}
+      };
+  
+      if (c >= 0x100)
+      {
+  	if (!utf_printable(c))
+  	    return 6;		/* unprintable, displays <xxxx> */
+  	if (c >= 0x1100
+--- 1103,1125 ----
+  	{0x2642, 0x2642}, {0x2660, 0x2661}, {0x2663, 0x2665},
+  	{0x2667, 0x266A}, {0x266C, 0x266D}, {0x266F, 0x266F},
+  	{0x273D, 0x273D}, {0x2776, 0x277F}, {0xE000, 0xF8FF},
+! 	{0xFFFD, 0xFFFD}, /* {0xF0000, 0xFFFFD}, {0x100000, 0x10FFFD} */
+      };
+  
+      if (c >= 0x100)
+      {
++ #ifdef __STDC_ISO_10646__
++ 	/*
++ 	 * Assume the library function wcwidth() works better than our own
++ 	 * stuff.  It should return 1 for ambiguous width chars!
++ 	 */
++ 	int	n = wcwidth(c);
++ 
++ 	if (n < 0)
++ 	    return 6;		/* unprintable, displays <xxxx> */
++ 	if (n > 1)
++ 	    return n;
++ #else
+  	if (!utf_printable(c))
+  	    return 6;		/* unprintable, displays <xxxx> */
+  	if (c >= 0x1100
+***************
+*** 1118,1125 ****
+  		|| (c >= 0xfe30 && c <= 0xfe6f)	/* CJK Compatibility Forms */
+  		|| (c >= 0xff00 && c <= 0xff60)	/* Fullwidth Forms */
+  		|| (c >= 0xffe0 && c <= 0xffe6)
+! 		|| (c >= 0x20000 && c <= 0x2ffff)))
+  	    return 2;
+      }
+  
+      /* Characters below 0x100 are influenced by 'isprint' option */
+--- 1134,1143 ----
+  		|| (c >= 0xfe30 && c <= 0xfe6f)	/* CJK Compatibility Forms */
+  		|| (c >= 0xff00 && c <= 0xff60)	/* Fullwidth Forms */
+  		|| (c >= 0xffe0 && c <= 0xffe6)
+! 		|| (c >= 0x20000 && c <= 0x2fffd)
+! 		|| (c >= 0x30000 && c <= 0x3fffd)))
+  	    return 2;
++ #endif
+      }
+  
+      /* Characters below 0x100 are influenced by 'isprint' option */
+***************
+*** 1748,1753 ****
+--- 1766,1777 ----
+  utf_printable(c)
+      int		c;
+  {
++ #ifdef __STDC_ISO_10646__
++     /*
++      * Assume the iswprint() library function works better than our own stuff.
++      */
++     return iswprint(c);
++ #else
+      /* Sorted list of non-overlapping intervals.
+       * 0xd800-0xdfff is reserved for UTF-16, actually illegal. */
+      static struct interval nonprint[] =
+***************
+*** 1758,1763 ****
+--- 1782,1788 ----
+      };
+  
+      return !intable(nonprint, sizeof(nonprint), c);
++ #endif
+  }
+  
+  /*
+***************
+*** 1771,1777 ****
+      int		c;
+  {
+      /* sorted list of non-overlapping intervals */
+!     static struct interval
+      {
+  	unsigned short first;
+  	unsigned short last;
+--- 1796,1802 ----
+      int		c;
+  {
+      /* sorted list of non-overlapping intervals */
+!     static struct clinterval
+      {
+  	unsigned short first;
+  	unsigned short last;
+***************
+*** 1840,1846 ****
+  	{0xff5b, 0xff65, 1},		/* half/fullwidth ASCII */
+      };
+      int bot = 0;
+!     int top = sizeof(classes) / sizeof(struct interval) - 1;
+      int mid;
+  
+      /* First quick check for Latin1 characters, use 'iskeyword'. */
+--- 1865,1871 ----
+  	{0xff5b, 0xff65, 1},		/* half/fullwidth ASCII */
+      };
+      int bot = 0;
+!     int top = sizeof(classes) / sizeof(struct clinterval) - 1;
+      int mid;
+  
+      /* First quick check for Latin1 characters, use 'iskeyword'. */
+*** ../vim-6.2.403/src/version.c	Fri Mar 26 10:38:21 2004
+--- src/version.c	Fri Mar 26 14:22:51 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     404,
+  /**/
+
+-- 
+You are not really successful until someone claims he sat
+beside you in school.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

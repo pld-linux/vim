@@ -1,0 +1,363 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.419 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.419 (extra)
+Problem:    Win32: Cannot open the Vim window inside another application.
+Solution:   Add the "-P" argument to specify the window title of the
+	    application to run inside. (Zibo Zhao)
+Files:	    runtime/starting.txt, src/main.c, src/gui_w32.c, src/gui_w48.c,
+	    src/if_ole.cpp, src/os_mswin.c, src/proto/gui_w32.pro
+
+
+diff: runtime/starting.txt: No such file or directory
+*** ../vim-6.2.418/src/main.c	Fri Mar 12 21:16:48 2004
+--- src/main.c	Fri Mar 26 16:20:31 2004
+***************
+*** 843,848 ****
+--- 843,851 ----
+  	    case 'u':		/* "-u {vimrc}" vim inits file */
+  	    case 'U':		/* "-U {gvimrc}" gvim inits file */
+  	    case 'W':		/* "-W {scriptout}" overwrite */
++ #ifdef FEAT_GUI_W32
++ 	    case 'P':		/* "-P {parent title}" MDI parent */
++ #endif
+  		want_argument = TRUE;
+  		break;
+  
+***************
+*** 985,990 ****
+--- 988,999 ----
+  			mch_exit(2);
+  		    }
+  		    break;
++ 
++ #ifdef FEAT_GUI_W32
++ 		case 'P':		/* "-P {parent title}" MDI parent */
++ 		    gui_mch_set_parent(argv[0]);
++ 		    break;
++ #endif
+  		}
+  	    }
+  	}
+***************
+*** 2596,2601 ****
+--- 2605,2613 ----
+      main_msg(_("--role <role>\tSet a unique role to identify the main window"));
+  # endif
+      main_msg(_("--socketid <xid>\tOpen Vim inside another GTK widget"));
++ #endif
++ #ifdef FEAT_GUI_W32
++     main_msg(_("-P <parent title>\tOpen Vim inside parent application"));
+  #endif
+  
+  #ifdef FEAT_GUI_GNOME
+*** ../vim-6.2.418/src/gui_w32.c	Mon Mar 15 17:18:54 2004
+--- src/gui_w32.c	Fri Mar 26 17:16:40 2004
+***************
+*** 791,801 ****
+      return 1;
+  }
+  
+  
+  
+  /*
+!  * End of call-back routines
+   */
+  
+      static void
+  ole_error(char *arg)
+--- 791,830 ----
+      return 1;
+  }
+  
++ /*
++  * End of call-back routines
++  */
+  
++ /* parent window, if specified with -P */
++ HWND vim_parent_hwnd = NULL;
++ 
++     static BOOL CALLBACK
++ FindWindowTitle(HWND hwnd, LPARAM lParam)
++ {
++     char	buf[2048];
++     char	*title = (char *)lParam;
++ 
++     if (GetWindowText(hwnd, buf, sizeof(buf)))
++     {
++ 	if (strstr(buf, title) != NULL)
++ 	{
++ 	    /* Found it.  Store the window ref. and quit searching. */
++ 	    vim_parent_hwnd = FindWindowEx(hwnd, NULL, "MDIClient", NULL);
++ 	    return FALSE;
++ 	}
++     }
++     return TRUE;	/* continue searching */
++ }
+  
+  /*
+!  * Invoked for '-P "title"' argument: search for parent application to open
+!  * our window in.
+   */
++     void
++ gui_mch_set_parent(char *title)
++ {
++     EnumWindows(FindWindowTitle, (LPARAM)title);
++ }
+  
+      static void
+  ole_error(char *arg)
+***************
+*** 893,898 ****
+--- 922,928 ----
+  		netbeansArg = argv[arg];
+  		mch_memmove(&argv[arg], &argv[arg + 1],
+  					    (--*argc - arg) * sizeof(char *));
++ 		argv[*argc] = NULL;
+  		break;	/* enough? */
+  	    }
+  
+***************
+*** 986,1000 ****
+  	    return FAIL;
+      }
+  
+!     s_hwnd = CreateWindow(
+! 	szVimWndClass, "Vim MSWindows GUI",
+! 	WS_OVERLAPPEDWINDOW,
+! 	gui_win_x == -1 ? CW_USEDEFAULT : gui_win_x,
+! 	gui_win_y == -1 ? CW_USEDEFAULT : gui_win_y,
+! 	100,				/* Any value will do */
+! 	100,				/* Any value will do */
+! 	NULL, NULL,
+! 	s_hinst, NULL);
+  
+      if (s_hwnd == NULL)
+  	return FAIL;
+--- 1016,1044 ----
+  	    return FAIL;
+      }
+  
+!     if (vim_parent_hwnd != NULL)
+! 	/* Open inside the specified parent window. */
+! 	s_hwnd = CreateWindowEx(
+! 	    WS_EX_MDICHILD,
+! 	    szVimWndClass, "Vim MSWindows GUI",
+! 	    WS_OVERLAPPEDWINDOW | WS_CHILD | WS_CLIPSIBLINGS | 0xC000,
+! 	    gui_win_x == -1 ? CW_USEDEFAULT : gui_win_x,
+! 	    gui_win_y == -1 ? CW_USEDEFAULT : gui_win_y,
+! 	    100,				/* Any value will do */
+! 	    100,				/* Any value will do */
+! 	    vim_parent_hwnd, NULL,
+! 	    s_hinst, NULL);
+!     else
+! 	/* Open toplevel window. */
+! 	s_hwnd = CreateWindow(
+! 	    szVimWndClass, "Vim MSWindows GUI",
+! 	    WS_OVERLAPPEDWINDOW,
+! 	    gui_win_x == -1 ? CW_USEDEFAULT : gui_win_x,
+! 	    gui_win_y == -1 ? CW_USEDEFAULT : gui_win_y,
+! 	    100,				/* Any value will do */
+! 	    100,				/* Any value will do */
+! 	    NULL, NULL,
+! 	    s_hinst, NULL);
+  
+      if (s_hwnd == NULL)
+  	return FAIL;
+***************
+*** 1216,1221 ****
+--- 1260,1268 ----
+       * these two are not compatible. */
+      SetWindowPlacement(s_hwnd, &wndpl);
+  
++     SetActiveWindow(s_hwnd);
++     SetFocus(s_hwnd);
++ 
+  #ifdef FEAT_MENU
+      /* Menu may wrap differently now */
+      gui_mswin_get_menu_height(!gui.starting);
+***************
+*** 2698,2703 ****
+--- 2745,2753 ----
+      vim_free(buttonWidths);
+      vim_free(buttonPositions);
+  
++     /* Focus back to our window (for when MDI is used). */
++     (void)SetFocus(s_hwnd);
++ 
+      return nchar;
+  }
+  
+***************
+*** 2916,2923 ****
+  
+  	if (hfontTools)
+  	{
+! 	    hdc = GetDC (s_hwnd);
+! 	    SelectObject (hdc, hfontTools);
+  	    /*
+  	     * GetTextMetrics() doesn't return the right value in
+  	     * tmAveCharWidth, so we have to figure out the dialog base units
+--- 2966,2973 ----
+  
+  	if (hfontTools)
+  	{
+! 	    hdc = GetDC(s_hwnd);
+! 	    SelectObject(hdc, hfontTools);
+  	    /*
+  	     * GetTextMetrics() doesn't return the right value in
+  	     * tmAveCharWidth, so we have to figure out the dialog base units
+***************
+*** 2926,2932 ****
+  	    GetTextExtentPoint(hdc,
+  		    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+  		    52, &size);
+! 	    ReleaseDC (s_hwnd, hdc);
+  
+  	    s_dlgfntwidth = (WORD)((size.cx / 26 + 1) / 2);
+  	    s_dlgfntheight = (WORD)size.cy;
+--- 2976,2982 ----
+  	    GetTextExtentPoint(hdc,
+  		    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+  		    52, &size);
+! 	    ReleaseDC(s_hwnd, hdc);
+  
+  	    s_dlgfntwidth = (WORD)((size.cx / 26 + 1) / 2);
+  	    s_dlgfntheight = (WORD)size.cy;
+*** ../vim-6.2.418/src/gui_w48.c	Wed Feb  4 21:44:27 2004
+--- src/gui_w48.c	Fri Mar 26 17:20:43 2004
+***************
+*** 87,92 ****
+--- 87,93 ----
+  typedef int BOOL;
+  typedef int BYTE;
+  typedef int DWORD;
++ typedef int WCHAR;
+  typedef int ENUMLOGFONT;
+  typedef int FINDREPLACE;
+  typedef int HANDLE;
+***************
+*** 113,118 ****
+--- 114,120 ----
+  typedef int UINT;
+  typedef int WORD;
+  typedef int WPARAM;
++ typedef int POINT;
+  typedef void *HINSTANCE;
+  typedef void *HMENU;
+  typedef void *HWND;
+***************
+*** 618,623 ****
+--- 620,628 ----
+      int	    button = -1;
+      int	    repeated_click;
+  
++     /* Give main window the focus: this is so the cursor isn't hollow. */
++     (void)SetFocus(s_hwnd);
++ 
+      if (s_uMsg == WM_LBUTTONDOWN || s_uMsg == WM_LBUTTONDBLCLK)
+  	button = MOUSE_LEFT;
+      else if (s_uMsg == WM_MBUTTONDOWN || s_uMsg == WM_MBUTTONDBLCLK)
+***************
+*** 801,807 ****
+      int	    flags = 0;
+      int	    down;
+  
+!     /* if (s_findrep_struct.Flags & FR_DIALOGTERM)  nothing to do */
+  
+      if (s_findrep_struct.Flags & FR_FINDNEXT)
+      {
+--- 806,814 ----
+      int	    flags = 0;
+      int	    down;
+  
+!     if (s_findrep_struct.Flags & FR_DIALOGTERM)
+! 	/* Give main window the focus back. */
+! 	(void)SetFocus(s_hwnd);
+  
+      if (s_findrep_struct.Flags & FR_FINDNEXT)
+      {
+*** ../vim-6.2.418/src/if_ole.cpp	Sun May  4 22:43:33 2003
+--- src/if_ole.cpp	Fri Mar 26 16:59:10 2004
+***************
+*** 19,24 ****
+--- 19,25 ----
+  extern "C" {
+  #include "vim.h"
+  extern HWND s_hwnd;
++ extern HWND vim_parent_hwnd;
+  }
+  
+  #include "if_ole.h"	// Interface definitions
+***************
+*** 184,190 ****
+  
+  CVim::~CVim()
+  {
+!     if (typeinfo)
+  	typeinfo->Release();
+  }
+  
+--- 185,191 ----
+  
+  CVim::~CVim()
+  {
+!     if (typeinfo && vim_parent_hwnd == NULL)
+  	typeinfo->Release();
+  }
+  
+*** ../vim-6.2.418/src/os_mswin.c	Sat Mar 13 16:13:48 2004
+--- src/os_mswin.c	Fri Mar 26 17:14:39 2004
+***************
+*** 2098,2103 ****
+--- 2112,2122 ----
+      di.cbSize = sizeof(DOCINFO);
+      di.lpszDocName = psettings->jobname;
+      ret = StartDoc(prt_dlg.hDC, &di);
++ 
++ #ifdef FEAT_GUI
++     /* Give focus back to main window (when using MDI). */
++     SetFocus(s_hwnd);
++ #endif
+  
+      return (ret > 0);
+  }
+*** ../vim-6.2.418/src/proto/gui_w32.pro	Sun Oct 12 16:42:14 2003
+--- src/proto/gui_w32.pro	Fri Mar 26 17:29:35 2004
+***************
+*** 53,58 ****
+--- 53,59 ----
+  char_u *gui_mch_browse __ARGS((int saving, char_u *title, char_u *dflt, char_u *ext, char_u *initdir, char_u *filter));
+  int get_cmd_args __ARGS((char *prog, char *cmdline, char ***argvp, char **tofree));
+  int gui_is_win32s __ARGS((void));
++ void gui_mch_set_parent __ARGS((char *title));
+  void gui_mch_prepare __ARGS((int *argc, char **argv));
+  int gui_mch_init __ARGS((void));
+  void gui_mch_set_shellsize __ARGS((int width, int height, int min_width, int min_height, int base_width, int base_height));
+*** ../vim-6.2.418/src/version.c	Tue Mar 30 22:00:48 2004
+--- src/version.c	Tue Mar 30 22:02:13 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     419,
+  /**/
+
+-- 
+Some of the well know MS-Windows errors:
+	EMULTI		Multitasking attempted, system confused
+	EKEYBOARD	Keyboard locked, try getting out of this one!
+	EXPLAIN		Unexplained error, please tell us what happened
+	EFUTURE		Reserved for our future mistakes
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,270 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.408
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.408
+Problem:    ":compiler" is not consistent: Sets local options and a global
+	    variable. (Douglas Potts)  There is no error message when a
+	    compiler is not supported.
+Solution:   Use ":compiler!" to set a compiler globally, otherwise it's local
+	    to the buffer and "b:current_compiler" is used.  Give an error
+	    when no compiler script could be found.
+	    Note: updated compiler plugins can be found at
+	    ftp://ftp.vim.org/pub/vim/runtime/compiler/
+Files:	    runtime/compiler/msvc.vim, runtime/doc/quickfix.txt, src/eval.c,
+	    src/ex_cmds2.c
+
+
+*** ../vim-6.2.407/runtime/compiler/msvc.vim	Mon Sep 24 19:58:35 2001
+--- runtime/compiler/msvc.vim	Fri Mar 19 20:48:09 2004
+***************
+*** 1,13 ****
+  " Vim compiler file
+  " Compiler:	Miscrosoft Visual C
+  " Maintainer:	Bram Moolenaar <Bram@vim.org>
+! " Last Change:	2001 Sep 24
+  
+  if exists("current_compiler")
+    finish
+  endif
+  let current_compiler = "msvc"
+  
+  " The errorformat for MSVC is the default.
+! setlocal errorformat&
+! setlocal makeprg=nmake
+--- 1,17 ----
+  " Vim compiler file
+  " Compiler:	Miscrosoft Visual C
+  " Maintainer:	Bram Moolenaar <Bram@vim.org>
+! " Last Change:	2004 Mar 19
+  
+  if exists("current_compiler")
+    finish
+  endif
+  let current_compiler = "msvc"
+  
++ if exists(":CompilerSet") != 2		" older Vim always used :setlocal
++   command -nargs=* CompilerSet setlocal <args>
++ endif
++ 
+  " The errorformat for MSVC is the default.
+! CompilerSet errorformat&
+! CompilerSet makeprg=nmake
+*** ../vim-6.2.407/runtime/doc/quickfix.txt	Tue Feb 10 19:35:15 2004
+--- runtime/doc/quickfix.txt	Sat Mar 27 12:57:25 2004
+***************
+*** 1,4 ****
+! *quickfix.txt*  For Vim version 6.2.  Last change: 2004 Feb 10
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *quickfix.txt*  For Vim version 6.2.  Last change: 2004 Mar 27
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 365,379 ****
+  =============================================================================
+  6. Selecting a compiler					*compiler-select*
+  
+! 							*:comp* *:compiler*
+! :comp[iler] {name}		Set options to work with compiler {name}.
+  				{not available when compiled without the
+  				|+eval| feature}
+  
+  
+! What this command actually does is:
+! - delete the "current_compiler" variable		*current_compiler*
+! - execute ":runtime! compiler/{name}.vim"
+  
+  For writing a compiler plugin, see |write-compiler-plugin|.
+  
+--- 365,399 ----
+  =============================================================================
+  6. Selecting a compiler					*compiler-select*
+  
+! 						*:comp* *:compiler* *E666*
+! :comp[iler][!] {name}		Set options to work with compiler {name}.
+! 				Without the "!" options are set for the
+! 				current buffer.  With "!" global options are
+! 				set.
+! 				If you use ":compiler foo" in "file.foo" and
+! 				then ":compiler! bar" in another buffer, Vim
+! 				will keep on using "foo" in "file.foo".
+  				{not available when compiled without the
+  				|+eval| feature}
+  
+  
+! The Vim plugins in the "compiler" directory will set options to use the
+! selected compiler.  For ":compiler" local options are set, for ":compiler!"
+! global options.
+! 							*current_compiler*
+! To support older Vim versions, the plugins always use "current_compiler" and
+! not "b:current_compiler".  What the command actually does is the following:
+! 
+! - Delete the "current_compiler" and "b:current_compiler" variables.
+! - Define the "CompilerSet" user command.  With "!" it does ":set", without "!"
+!   it does ":setlocal".
+! - Execute ":runtime! compiler/{name}.vim".  The plugins are expected to set
+!   options with "CompilerSet" and set the "current_compiler" variable to the
+!   name of the compiler.
+! - Delete the "CompilerSet user command.
+! - Set "b:current_compiler" to the value of "current_compiler".
+! - Without "!" the old value of "current_compiler" is restored.
+! 
+  
+  For writing a compiler plugin, see |write-compiler-plugin|.
+  
+*** ../vim-6.2.407/src/eval.c	Wed Mar 17 14:08:56 2004
+--- src/eval.c	Fri Mar 26 12:05:28 2004
+***************
+*** 418,424 ****
+  static char_u * make_expanded_name __ARGS((char_u *in_start,  char_u *expr_start,  char_u *expr_end,  char_u *in_end));
+  #endif
+  
+- #if defined(FEAT_STL_OPT) || defined(PROTO)
+  /*
+   * Set an internal variable to a string value. Creates the variable if it does
+   * not already exist.
+--- 418,423 ----
+***************
+*** 442,448 ****
+  	}
+      }
+  }
+- #endif
+  
+  # if defined(FEAT_MBYTE) || defined(PROTO)
+      int
+--- 441,446 ----
+*** ../vim-6.2.407/src/ex_cmds2.c	Sun Mar  7 19:33:55 2004
+--- src/ex_cmds2.c	Sat Mar 27 13:02:59 2004
+***************
+*** 1756,1783 ****
+  
+  #ifdef FEAT_EVAL
+  /*
+!  * ":compiler {name}"
+   */
+      void
+  ex_compiler(eap)
+      exarg_T	*eap;
+  {
+      char_u	*buf;
+  
+      if (*eap->arg == NUL)
+      {
+  	/* List all compiler scripts. */
+  	do_cmdline_cmd((char_u *)"echo globpath(&rtp, 'compiler/*.vim')");
+      }
+      else
+      {
+  	buf = alloc((unsigned)(STRLEN(eap->arg) + 14));
+  	if (buf != NULL)
+  	{
+  	    do_unlet((char_u *)"current_compiler");
+  	    sprintf((char *)buf, "compiler/%s.vim", eap->arg);
+! 	    (void)cmd_runtime(buf, TRUE);
+  	    vim_free(buf);
+  	}
+      }
+  }
+--- 1756,1828 ----
+  
+  #ifdef FEAT_EVAL
+  /*
+!  * ":compiler[!] {name}"
+   */
+      void
+  ex_compiler(eap)
+      exarg_T	*eap;
+  {
+      char_u	*buf;
++     char_u	*old_cur_comp = NULL;
++     char_u	*p;
+  
+      if (*eap->arg == NUL)
+      {
+  	/* List all compiler scripts. */
+  	do_cmdline_cmd((char_u *)"echo globpath(&rtp, 'compiler/*.vim')");
++ 					/* ) keep the indenter happy... */
+      }
+      else
+      {
+  	buf = alloc((unsigned)(STRLEN(eap->arg) + 14));
+  	if (buf != NULL)
+  	{
++ 	    if (eap->forceit)
++ 	    {
++ 		/* ":compiler! {name}" sets global options */
++ 		do_cmdline_cmd((char_u *)
++ 				   "command -nargs=* CompilerSet set <args>");
++ 	    }
++ 	    else
++ 	    {
++ 		/* ":compiler! {name}" sets local options.
++ 		 * To remain backwards compatible "current_compiler" is always
++ 		 * used.  A user's compiler plugin may set it, the distributed
++ 		 * plugin will then skip the settings.  Afterwards set
++ 		 * "b:current_compiler" and restore "current_compiler". */
++ 		old_cur_comp = get_var_value((char_u *)"current_compiler");
++ 		if (old_cur_comp != NULL)
++ 		    old_cur_comp = vim_strsave(old_cur_comp);
++ 		do_cmdline_cmd((char_u *)
++ 			      "command -nargs=* CompilerSet setlocal <args>");
++ 	    }
+  	    do_unlet((char_u *)"current_compiler");
++ 	    do_unlet((char_u *)"b:current_compiler");
++ 
+  	    sprintf((char *)buf, "compiler/%s.vim", eap->arg);
+! 	    if (cmd_runtime(buf, TRUE) == FAIL)
+! 		EMSG2(_("E666: compiler not supported: %s"), eap->arg);
+  	    vim_free(buf);
++ 
++ 	    do_cmdline_cmd((char_u *)":delcommand CompilerSet");
++ 
++ 	    /* Set "b:current_compiler" from "current_compiler". */
++ 	    p = get_var_value((char_u *)"current_compiler");
++ 	    if (p != NULL)
++ 		set_internal_string_var((char_u *)"b:current_compiler", p);
++ 
++ 	    /* Restore "current_compiler" for ":compiler {name}". */
++ 	    if (!eap->forceit)
++ 	    {
++ 		if (old_cur_comp != NULL)
++ 		{
++ 		    set_internal_string_var((char_u *)"current_compiler",
++ 								old_cur_comp);
++ 		    vim_free(old_cur_comp);
++ 		}
++ 		else
++ 		    do_unlet((char_u *)"current_compiler");
++ 	    }
+  	}
+      }
+  }
+*** ../vim-6.2.407/src/version.c	Fri Mar 26 22:33:25 2004
+--- src/version.c	Sat Mar 27 13:20:14 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     408,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+163. You go outside for the fresh air (at -30 degrees) but open the
+     window first to hear new mail arrive.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

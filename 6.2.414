@@ -1,0 +1,352 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.414
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.414
+Problem:    The function used for custom completion of user commands cannot
+	    have <SID> to make it local. (Hari Krishna Dara)
+Solution:   Pass the SID of the script where the user command was defined on
+	    to the completion.  Also clean up #ifdefs.
+Files:	    src/ex_docmd.c, src/eval.c, src/ex_getln.c, src/structs.h
+
+
+*** ../vim-6.2.413/src/ex_docmd.c	Fri Mar 26 10:38:21 2004
+--- src/ex_docmd.c	Tue Mar 30 20:28:50 2004
+***************
+*** 32,38 ****
+--- 32,40 ----
+      long	uc_def;		/* The default value for a range/count */
+      scid_T	uc_scriptID;	/* SID where the command was defined */
+      int		uc_compl;	/* completion type */
++ # if defined(FEAT_EVAL) && defined(FEAT_CMDL_COMPL)
+      char_u	*uc_compl_arg;	/* completion argument if any */
++ # endif
+  } ucmd_T;
+  
+  #define UC_BUFFER	1	/* -buffer: local to current buffer */
+***************
+*** 2813,2819 ****
+--- 2813,2821 ----
+      xp->xp_pattern = buff;
+      xp->xp_context = EXPAND_COMMANDS;	/* Default until we get past command */
+      xp->xp_backslash = XP_BS_NONE;
++ #if defined(FEAT_USR_CMDS) && defined(FEAT_EVAL) && defined(FEAT_CMDL_COMPL)
+      xp->xp_arg = NULL;
++ #endif
+  
+  /*
+   * 2. skip comment lines and leading space, colons or bars
+***************
+*** 2883,2890 ****
+  					 cmdidx = (cmdidx_T)((int)cmdidx + 1))
+  	    if (STRNCMP(cmdnames[(int)cmdidx].cmd_name, cmd, (size_t)i) == 0)
+  		break;
+- #ifdef FEAT_USR_CMDS
+  
+  	if (cmd[0] >= 'A' && cmd[0] <= 'Z')
+  	{
+  	    while (ASCII_ISALNUM(*p) || *p == '*')	/* Allow * wild card */
+--- 2885,2892 ----
+  					 cmdidx = (cmdidx_T)((int)cmdidx + 1))
+  	    if (STRNCMP(cmdnames[(int)cmdidx].cmd_name, cmd, (size_t)i) == 0)
+  		break;
+  
++ #ifdef FEAT_USR_CMDS
+  	if (cmd[0] >= 'A' && cmd[0] <= 'Z')
+  	{
+  	    while (ASCII_ISALNUM(*p) || *p == '*')	/* Allow * wild card */
+***************
+*** 2955,2961 ****
+--- 2957,2966 ----
+  			    argt = uc->uc_argt;
+  #ifdef FEAT_CMDL_COMPL
+  			    compl = uc->uc_compl;
++ # ifdef FEAT_EVAL
+  			    xp->xp_arg = uc->uc_compl_arg;
++ 			    xp->xp_scriptID = uc->uc_scriptID;
++ # endif
+  #endif
+  			    /* Do not search for further abbreviations
+  			     * if this is an exact match
+***************
+*** 4662,4677 ****
+      cmd->uc_argt = argt;
+      cmd->uc_def = def;
+      cmd->uc_compl = compl;
+-     cmd->uc_compl_arg = compl_arg;
+  #ifdef FEAT_EVAL
+      cmd->uc_scriptID = current_SID;
+  #endif
+  
+      return OK;
+  
+  fail:
+      vim_free(rep_buf);
+      vim_free(compl_arg);
+      return FAIL;
+  }
+  
+--- 4683,4702 ----
+      cmd->uc_argt = argt;
+      cmd->uc_def = def;
+      cmd->uc_compl = compl;
+  #ifdef FEAT_EVAL
+      cmd->uc_scriptID = current_SID;
++ # ifdef FEAT_CMDL_COMPL
++     cmd->uc_compl_arg = compl_arg;
++ # endif
+  #endif
+  
+      return OK;
+  
+  fail:
+      vim_free(rep_buf);
++ #if defined(FEAT_EVAL) && defined(FEAT_CMDL_COMPL)
+      vim_free(compl_arg);
++ #endif
+      return FAIL;
+  }
+  
+***************
+*** 4688,4694 ****
+      {EXPAND_AUGROUP, "augroup"},
+      {EXPAND_BUFFERS, "buffer"},
+      {EXPAND_COMMANDS, "command"},
+! #ifdef FEAT_EVAL
+      {EXPAND_USER_DEFINED, "custom"},
+  #endif
+      {EXPAND_DIRECTORIES, "dir"},
+--- 4713,4719 ----
+      {EXPAND_AUGROUP, "augroup"},
+      {EXPAND_BUFFERS, "buffer"},
+      {EXPAND_COMMANDS, "command"},
+! #if defined(FEAT_EVAL) && defined(FEAT_CMDL_COMPL)
+      {EXPAND_USER_DEFINED, "custom"},
+  #endif
+      {EXPAND_DIRECTORIES, "dir"},
+***************
+*** 4998,5015 ****
+  		EMSG2(_("E180: Invalid complete value: %s"), val);
+  		return FAIL;
+  	    }
+! 	    if (*compl == EXPAND_USER_DEFINED && arg == NULL)
+  	    {
+! 		EMSG(_("E467: Custom completion requires a function argument"));
+  		return FAIL;
+  	    }
+! 	    if (*compl != EXPAND_USER_DEFINED && arg != NULL)
+  	    {
+! 		EMSG(_("E468: Completion argument only allowed for custom completion"));
+  		return FAIL;
+  	    }
+  	    if (arg != NULL)
+  		*compl_arg = vim_strnsave(arg, (int)arglen);
+  	}
+  	else
+  	{
+--- 5023,5046 ----
+  		EMSG2(_("E180: Invalid complete value: %s"), val);
+  		return FAIL;
+  	    }
+! #if defined(FEAT_EVAL) && defined(FEAT_CMDL_COMPL)
+! 	    if (*compl != EXPAND_USER_DEFINED && arg != NULL)
+! #else
+! 	    if (arg != NULL)
+! #endif
+  	    {
+! 		EMSG(_("E468: Completion argument only allowed for custom completion"));
+  		return FAIL;
+  	    }
+! #if defined(FEAT_EVAL) && defined(FEAT_CMDL_COMPL)
+! 	    if (*compl == EXPAND_USER_DEFINED && arg == NULL)
+  	    {
+! 		EMSG(_("E467: Custom completion requires a function argument"));
+  		return FAIL;
+  	    }
+  	    if (arg != NULL)
+  		*compl_arg = vim_strnsave(arg, (int)arglen);
++ #endif
+  	}
+  	else
+  	{
+***************
+*** 5111,5117 ****
+--- 5142,5150 ----
+  	cmd = USER_CMD_GA(gap, i);
+  	vim_free(cmd->uc_name);
+  	vim_free(cmd->uc_rep);
++ # if defined(FEAT_EVAL) && defined(FEAT_CMDL_COMPL)
+  	vim_free(cmd->uc_compl_arg);
++ # endif
+      }
+      ga_clear(gap);
+  }
+***************
+*** 5148,5154 ****
+--- 5181,5189 ----
+  
+      vim_free(cmd->uc_name);
+      vim_free(cmd->uc_rep);
++ # if defined(FEAT_EVAL) && defined(FEAT_CMDL_COMPL)
+      vim_free(cmd->uc_compl_arg);
++ # endif
+  
+      --gap->ga_len;
+      ++gap->ga_room;
+*** ../vim-6.2.413/src/eval.c	Mon Mar 29 16:12:14 2004
+--- src/eval.c	Tue Mar 30 20:27:02 2004
+***************
+*** 695,700 ****
+--- 695,701 ----
+      return retval;
+  }
+  
++ #if (defined(FEAT_USR_CMDS) && defined(FEAT_CMDL_COMPL)) || defined(PROTO)
+  /*
+   * Call some vimL function and return the result as a string
+   * Uses argv[argc] for the function arguments.
+***************
+*** 757,762 ****
+--- 758,764 ----
+      }
+      return retval;
+  }
++ #endif
+  
+  /*
+   * Save the current function call pointer, and set it to NULL.
+*** ../vim-6.2.413/src/ex_getln.c	Wed Mar 17 14:08:56 2004
+--- src/ex_getln.c	Sun Mar 28 14:39:02 2004
+***************
+*** 93,99 ****
+--- 93,101 ----
+  static int	glob_in_path_prefix __ARGS((expand_T *xp));
+  #ifdef FEAT_CMDL_COMPL
+  static int	ExpandRTDir __ARGS((char_u *pat, int *num_file, char_u ***file, char *dirname));
++ # if defined(FEAT_USR_CMDS) && defined(FEAT_EVAL)
+  static int	ExpandUserDefined __ARGS((expand_T *xp, regmatch_T *regmatch, int *num_file, char_u ***file));
++ # endif
+  #endif
+  
+  #ifdef FEAT_CMDWIN
+***************
+*** 3733,3740 ****
+--- 3735,3744 ----
+  	ret = ExpandSettings(xp, &regmatch, num_file, file);
+      else if (xp->xp_context == EXPAND_MAPPINGS)
+  	ret = ExpandMappings(&regmatch, num_file, file);
++ # if defined(FEAT_USR_CMDS) && defined(FEAT_EVAL)
+      else if (xp->xp_context == EXPAND_USER_DEFINED)
+  	ret = ExpandUserDefined(xp, &regmatch, num_file, file);
++ # endif
+      else
+      {
+  	static struct expgen
+***************
+*** 3872,3877 ****
+--- 3876,3882 ----
+      return OK;
+  }
+  
++ # if defined(FEAT_USR_CMDS) && defined(FEAT_EVAL)
+  /*
+   * Expand names with a function defined by the user.
+   */
+***************
+*** 3882,3888 ****
+      int		*num_file;
+      char_u	***file;
+  {
+- #ifdef FEAT_EVAL
+      char_u	*args[3];
+      char_u	*all;
+      char_u	*s;
+--- 3887,3892 ----
+***************
+*** 3890,3895 ****
+--- 3894,3900 ----
+      char_u      keep;
+      char_u      num[50];
+      garray_T	ga;
++     int		save_current_SID = current_SID;
+  
+      if (xp->xp_arg == NULL || xp->xp_arg[0] == '\0')
+  	return FAIL;
+***************
+*** 3903,3909 ****
+--- 3908,3916 ----
+      args[1] = ccline.cmdbuff;
+      args[2] = num;
+  
++     current_SID = xp->xp_scriptID;
+      all = call_vim_function(xp->xp_arg, 3, args, FALSE);
++     current_SID = save_current_SID;
+      ccline.cmdbuff[ccline.cmdlen] = keep;
+      if (all == NULL)
+  	return FAIL;
+***************
+*** 3940,3949 ****
+      *file = ga.ga_data;
+      *num_file = ga.ga_len;
+      return OK;
+- #else
+-     return FAIL;
+- #endif
+  }
+  
+  /*
+   * Expand color scheme names: 'runtimepath'/colors/{pat}.vim
+--- 3947,3954 ----
+      *file = ga.ga_data;
+      *num_file = ga.ga_len;
+      return OK;
+  }
++ #endif
+  
+  /*
+   * Expand color scheme names: 'runtimepath'/colors/{pat}.vim
+*** ../vim-6.2.413/src/structs.h	Tue Mar 23 14:04:16 2004
+--- src/structs.h	Sun Mar 28 11:52:48 2004
+***************
+*** 383,389 ****
+  {
+      int		xp_context;		/* type of expansion */
+      char_u	*xp_pattern;		/* start of item to expand */
+!     char_u	*xp_arg;		/* generic expansion argument */
+      int		xp_backslash;		/* one of the XP_BS_ values */
+      int		xp_numfiles;		/* number of files found by
+  						    file name completion */
+--- 383,392 ----
+  {
+      int		xp_context;		/* type of expansion */
+      char_u	*xp_pattern;		/* start of item to expand */
+! #if defined(FEAT_USR_CMDS) && defined(FEAT_EVAL) && defined(FEAT_CMDL_COMPL)
+!     char_u	*xp_arg;		/* completion function */
+!     int		xp_scriptID;		/* SID for completion function */
+! #endif
+      int		xp_backslash;		/* one of the XP_BS_ values */
+      int		xp_numfiles;		/* number of files found by
+  						    file name completion */
+*** ../vim-6.2.413/src/version.c	Tue Mar 30 10:43:14 2004
+--- src/version.c	Tue Mar 30 21:42:05 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     414,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+195. Your cat has its own home page.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,209 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.417
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.417 (after 6.2.393)
+Problem:    Many people forget that the '"' item in 'viminfo' needs to be
+	    preceded with a backslash,
+Solution:   Add '<' as an alias for the '"' item.
+Files:	    runtime/doc/options.txt, src/ops.c, src/option.c
+
+
+*** ../vim-6.2.416/runtime/doc/options.txt	Mon Mar 22 21:11:50 2004
+--- runtime/doc/options.txt	Tue Mar 30 21:21:44 2004
+***************
+*** 1,4 ****
+! *options.txt*	For Vim version 6.2.  Last change: 2004 Mar 22
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+--- 1,4 ----
+! *options.txt*	For Vim version 6.2.  Last change: 2004 Mar 30
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+***************
+*** 6275,6283 ****
+  
+  				*'viminfo'* *'vi'* *E526* *E527* *E528*
+  'viminfo' 'vi'		string	(Vi default: "", Vim default for MS-DOS,
+! 				   Windows and OS/2: '20,"50,s10,h,rA:,rB:,
+! 				   for Amiga: '20,"50,s10,h,rdf0:,rdf1:,rdf2:
+! 				   for others: '20,"50,s10,h)
+  			global
+  			{not in Vi}
+  			{not available when compiled without the  |+viminfo|
+--- 6335,6343 ----
+  
+  				*'viminfo'* *'vi'* *E526* *E527* *E528*
+  'viminfo' 'vi'		string	(Vi default: "", Vim default for MS-DOS,
+! 				   Windows and OS/2: '20,<50,s10,h,rA:,rB:,
+! 				   for Amiga: '20,<50,s10,h,rdf0:,rdf1:,rdf2:
+! 				   for others: '20,<50,s10,h)
+  			global
+  			{not in Vi}
+  			{not available when compiled without the  |+viminfo|
+***************
+*** 6295,6305 ****
+  		with an uppercase letter, and don't contain a lowercase
+  		letter.  Thus "KEEPTHIS and "K_L_M" are stored, but "KeepThis"
+  		and "_K_L_M" are not.
+! 	"	Maximum number of lines saved for each register.  If zero then
+! 		registers are not saved.  When not included, all lines are
+! 		saved.	Dont forget to put a backslash before the ", otherwise
+! 		it will be recognized as the start of a comment!
+! 		Also see the 's' item below: limit specified in Kbyte.
+  	%	When included, save and restore the buffer list.  If Vim is
+  		started with a file name argument, the buffer list is not
+  		restored.  If Vim is started without a file name argument, the
+--- 6355,6364 ----
+  		with an uppercase letter, and don't contain a lowercase
+  		letter.  Thus "KEEPTHIS and "K_L_M" are stored, but "KeepThis"
+  		and "_K_L_M" are not.
+! 	"	Maximum number of lines saved for each register.  Old name of
+! 		the '<' item, with the disadvantage that you need to put a
+! 		backslash before the ", otherwise it will be recognized as the
+! 		start of a comment!
+  	%	When included, save and restore the buffer list.  If Vim is
+  		started with a file name argument, the buffer list is not
+  		restored.  If Vim is started without a file name argument, the
+***************
+*** 6317,6322 ****
+--- 6376,6385 ----
+  		'history' is used.
+  	:	Maximum number of items in the command-line history to be
+  		saved.	When not included, the value of 'history' is used.
++ 	<	Maximum number of lines saved for each register.  If zero then
++ 		registers are not saved.  When not included, all lines are
++ 		saved.  '"' is the old name for this item.
++ 		Also see the 's' item below: limit specified in Kbyte.
+  	@	Maximum number of items in the input-line history to be
+  		saved.	When not included, the value of 'history' is used.
+  	c	When included, convert the text in the viminfo file from the
+***************
+*** 6345,6358 ****
+  	s	Maximum size of an item in Kbyte.  If zero then registers are
+  		not saved.  Currently only applies to registers.  The default
+  		"s10" will exclude registers with more than 10 Kbyte of text.
+! 		Also see the '"' item above: line count limit.
+  
+  	Example: >
+! 	    :set viminfo='50,\"1000,s100,:0,n~/vim/viminfo
+  <
+  	'50		Marks will be remembered for the last 50 files you
+  			edited.
+! 	"1000		Contents of registers (up to 1000 lines each) will be
+  			remembered.
+  	s100		Registers with more than 100 Kbyte text are skipped.
+  	:0		Command-line history will not be saved.
+--- 6408,6421 ----
+  	s	Maximum size of an item in Kbyte.  If zero then registers are
+  		not saved.  Currently only applies to registers.  The default
+  		"s10" will exclude registers with more than 10 Kbyte of text.
+! 		Also see the '<' item above: line count limit.
+  
+  	Example: >
+! 	    :set viminfo='50,<1000,s100,:0,n~/vim/viminfo
+  <
+  	'50		Marks will be remembered for the last 50 files you
+  			edited.
+! 	<1000		Contents of registers (up to 1000 lines each) will be
+  			remembered.
+  	s100		Registers with more than 100 Kbyte text are skipped.
+  	:0		Command-line history will not be saved.
+*** ../vim-6.2.416/src/ops.c	Mon Mar 22 21:11:50 2004
+--- src/ops.c	Mon Mar 29 22:22:17 2004
+***************
+*** 5057,5063 ****
+  
+      fprintf(fp, _("\n# Registers:\n"));
+  
+!     max_num_lines = get_viminfo_parameter('"');
+      if (max_num_lines == 0)
+  	return;
+      max_kbyte = get_viminfo_parameter('s');
+--- 5057,5066 ----
+  
+      fprintf(fp, _("\n# Registers:\n"));
+  
+!     /* Get '<' value, use old '"' value if '<' is not found. */
+!     max_num_lines = get_viminfo_parameter('<');
+!     if (max_num_lines < 0)
+! 	max_num_lines = get_viminfo_parameter('"');
+      if (max_num_lines == 0)
+  	return;
+      max_kbyte = get_viminfo_parameter('s');
+*** ../vim-6.2.416/src/option.c	Tue Mar 23 23:11:09 2004
+--- src/option.c	Mon Mar 29 11:51:21 2004
+***************
+*** 2178,2190 ****
+  #ifdef FEAT_VIMINFO
+  			    (char_u *)&p_viminfo, PV_NONE,
+  #if defined(MSDOS) || defined(MSWIN) || defined(OS2)
+! 			    {(char_u *)"", (char_u *)"'20,\"50,s10,h,rA:,rB:"}
+  #else
+  # ifdef AMIGA
+  			    {(char_u *)"",
+! 				 (char_u *)"'20,\"50,s10,h,rdf0:,rdf1:,rdf2:"}
+  # else
+! 			    {(char_u *)"", (char_u *)"'20,\"50,s10,h"}
+  # endif
+  #endif
+  #else
+--- 2190,2202 ----
+  #ifdef FEAT_VIMINFO
+  			    (char_u *)&p_viminfo, PV_NONE,
+  #if defined(MSDOS) || defined(MSWIN) || defined(OS2)
+! 			    {(char_u *)"", (char_u *)"'20,<50,s10,h,rA:,rB:"}
+  #else
+  # ifdef AMIGA
+  			    {(char_u *)"",
+! 				 (char_u *)"'20,<50,s10,h,rdf0:,rdf1:,rdf2:"}
+  # else
+! 			    {(char_u *)"", (char_u *)"'20,<50,s10,h"}
+  # endif
+  #endif
+  #else
+***************
+*** 5049,5055 ****
+  	for (s = p_viminfo; *s;)
+  	{
+  	    /* Check it's a valid character */
+! 	    if (vim_strchr((char_u *)"!\"%'/:@cfhnrs", *s) == NULL)
+  	    {
+  		errmsg = illegal_char(errbuf, *s);
+  		break;
+--- 5061,5067 ----
+  	for (s = p_viminfo; *s;)
+  	{
+  	    /* Check it's a valid character */
+! 	    if (vim_strchr((char_u *)"!\"%'/:<@cfhnrs", *s) == NULL)
+  	    {
+  		errmsg = illegal_char(errbuf, *s);
+  		break;
+*** ../vim-6.2.416/src/version.c	Tue Mar 30 21:52:46 2004
+--- src/version.c	Tue Mar 30 21:55:01 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     417,
+  /**/
+
+-- 
+Some of the well know MS-Windows errors:
+	ESLEEP		Operator fell asleep
+	ENOERR		No error yet
+	EDOLLAR		OS too expensive
+	EWINDOWS	MS-Windows loaded, system in danger
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

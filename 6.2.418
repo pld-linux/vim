@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.418
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.418
+Problem:    Using ":nnoremap <F12> :echo "cheese" and ":cabbr cheese xxx":
+	    when pressing <F12> still uses the abbreviation. (Hari Krishna)
+Solution:   Also apply "noremap" to abbreviations.
+Files:	    src/getchar.c
+
+
+*** ../vim-6.2.417/src/getchar.c	Fri Mar 26 22:02:11 2004
+--- src/getchar.c	Mon Mar 29 22:18:46 2004
+***************
+*** 76,81 ****
+--- 76,83 ----
+   */
+  static mapblock_T	*first_abbr = NULL; /* first entry in abbrlist */
+  
++ static int		KeyNoremap = FALSE; /* remapping disabled */
++ 
+  /*
+   * variables used by vgetorpeek() and flush_buffers()
+   *
+***************
+*** 2118,2123 ****
+--- 2120,2127 ----
+  					gotchars(typebuf.tb_buf
+  							 + typebuf.tb_off, 1);
+  				    }
++ 				    KeyNoremap = (typebuf.tb_noremap[
++ 						typebuf.tb_off] != REMAP_YES);
+  				    del_typebuf(1, 0);
+  				}
+  				break;	    /* got character, break for loop */
+***************
+*** 3903,3908 ****
+--- 3907,3914 ----
+      int		vim_abbr;
+  
+      if (typebuf.tb_no_abbr_cnt)	/* abbrev. are not recursive */
++ 	return FALSE;
++     if (KeyNoremap)		/* no remapping implies no abbreviation */
+  	return FALSE;
+  
+      /*
+*** ../vim-6.2.417/src/version.c	Tue Mar 30 21:58:19 2004
+--- src/version.c	Tue Mar 30 21:59:55 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     418,
+  /**/
+
+-- 
+Some of the well know MS-Windows errors:
+	EHUH		Unexpected error
+	EUSER		User error, not our fault!
+	EGOD		Horrible problem, god knows what has happened
+	EERR		Errornous error: nothing wrong
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

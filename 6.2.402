@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.402
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.402
+Problem:    Mac: "make install" doesn't generate help tags. (Benji Fisher)
+Solution:   Generate help tags before copying the runtime files.
+Files:	    src/Makefile
+
+
+*** ../vim-6.2.401/src/Makefile	Tue Mar 16 22:48:43 2004
+--- src/Makefile	Thu Mar 25 13:18:57 2004
+***************
+*** 2346,2352 ****
+  install_macosx: bundle-dir bundle-executable bundle-info bundle-resource \
+  	bundle-language
+  
+! bundle-dir: $(APPDIR)/Contents
+  	cp -R ../runtime $(APPDIR)
+  
+  bundle-executable: $(VIMTARGET)
+--- 2362,2369 ----
+  install_macosx: bundle-dir bundle-executable bundle-info bundle-resource \
+  	bundle-language
+  
+! bundle-dir: $(APPDIR)/Contents $(VIMTARGET)
+! 	-@srcdir=`pwd`; cd $(HELPSOURCE); $(MAKE) VIMEXE=$$srcdir/$(VIMTARGET) vimtags
+  	cp -R ../runtime $(APPDIR)
+  
+  bundle-executable: $(VIMTARGET)
+*** ../vim-6.2.401/src/version.c	Thu Mar 25 19:27:28 2004
+--- src/version.c	Thu Mar 25 19:28:39 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     402,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+143. You dream in pallettes of 216 websafe colors.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
