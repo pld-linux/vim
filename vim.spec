@@ -12,7 +12,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.0
-%define		_patchlevel	158
+%define		_patchlevel	208
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
 Summary(es):	Editor visual incrementado
@@ -22,7 +22,7 @@ Summary(pt_BR):	Editor visual incrementado
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	6.0.%{_patchlevel}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -246,7 +246,7 @@ bibliotek GNOME.
 %{?_with_ispell:%patch4 -p1}
 
 # these patches are to "extra" package which we don't need (nor use)
-rm -f patches/6.0.{027,048,053,064,070,073,093,106,107,115,116,117,119,123,121,122,125,135}
+rm -f patches/6.0.{027,048,053,064,070,073,093,106,107,115,116,117,119,123,121,122,125,135,161,162,164,165,179,186,188,205,207}
 # apply the rest of official patches
 for f in patches/6.0.* ; do
 	echo "Applying official patch `basename $f` ..."
