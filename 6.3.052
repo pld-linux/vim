@@ -1,0 +1,116 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.052 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.052 (extra)
+Problem:    Windows 98: typed keys that are not ASCII may not work properly.
+	    For example with a Russian input method. (Jiri Jezdinsky)
+Solution:   Assume that the characters arrive in the current codepage instead
+	    of UCS-2.  Perform conversion based on that.
+Files:	    src/gui_w48.c
+
+
+*** ../vim-6.3.051/src/gui_w48.c	Sat Dec  4 17:23:22 2004
+--- src/gui_w48.c	Sun Dec  5 19:34:54 2004
+***************
+*** 488,514 ****
+      WCHAR	wstring[2];
+      char_u	*ws = NULL;;
+  
+!     /* "ch" is a UTF-16 character.  Convert it to a string of bytes.  When
+!      * "enc_codepage" is non-zero use the standard Win32 function, otherwise
+!      * use our own conversion function (e.g., for UTF-8). */
+!     wstring[0] = ch;
+!     if (enc_codepage > 0)
+! 	len = WideCharToMultiByte(enc_codepage, 0, wstring, 1, string, slen,
+! 								     0, NULL);
+      else
+      {
+  	len = 1;
+! 	ws = ucs2_to_enc(wstring, &len);
+! 	if (ws == NULL)
+! 	    len = 0;
+  	else
+  	{
+! 	    if (len > slen)	/* just in case */
+! 		len = slen;
+! 	    mch_memmove(string, ws, len);
+! 	    vim_free(ws);
+  	}
+      }
+      if (len == 0)
+  #endif
+      {
+--- 488,536 ----
+      WCHAR	wstring[2];
+      char_u	*ws = NULL;;
+  
+!     if (os_version.dwPlatformId != VER_PLATFORM_WIN32_NT)
+!     {
+! 	/* On Windows 95/98 we apparently get the character in the active
+! 	 * codepage, not in UCS-2.  If conversion is needed convert it to
+! 	 * UCS-2 first. */
+! 	if ((int)GetACP() == enc_codepage)
+! 	    len = 0;	    /* no conversion required */
+! 	else
+! 	{
+! 	    string[0] = ch;
+! 	    len = MultiByteToWideChar(GetACP(), 0, string, 1, wstring, 2);
+! 	}
+!     }
+      else
+      {
++ 	wstring[0] = ch;
+  	len = 1;
+!     }
+! 
+!     if (len > 0)
+!     {
+! 	/* "ch" is a UTF-16 character.  Convert it to a string of bytes.  When
+! 	 * "enc_codepage" is non-zero use the standard Win32 function,
+! 	 * otherwise use our own conversion function (e.g., for UTF-8). */
+! 	if (enc_codepage > 0)
+! 	    len = WideCharToMultiByte(enc_codepage, 0, wstring, len,
+! 						       string, slen, 0, NULL);
+  	else
+  	{
+! 	    len = 1;
+! 	    ws = ucs2_to_enc(wstring, &len);
+! 	    if (ws == NULL)
+! 		len = 0;
+! 	    else
+! 	    {
+! 		if (len > slen)	/* just in case */
+! 		    len = slen;
+! 		mch_memmove(string, ws, len);
+! 		vim_free(ws);
+! 	    }
+  	}
+      }
++ 
+      if (len == 0)
+  #endif
+      {
+*** ../vim-6.3.051/src/version.c	Thu Dec 16 12:48:12 2004
+--- src/version.c	Thu Dec 16 12:53:28 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     52,
+  /**/
+
+-- 
+From "know your smileys":
+ y:-)	Bad toupee
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

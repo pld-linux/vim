@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.051
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.051
+Problem:    When 'wildmenu' is set and completed file names contain multi-byte
+	    characters Vim may crash.
+Solution:   Reserve room for multi-byte characters. (Yasuhiro Matsumoto)
+Files:	    src/screen.c
+
+
+*** ../vim-6.3.050/src/screen.c	Tue Dec  7 13:12:08 2004
+--- src/screen.c	Thu Dec 16 12:45:06 2004
+***************
+*** 4830,4836 ****
+      if (matches == NULL)	/* interrupted completion? */
+  	return;
+  
+!     buf = alloc((unsigned)Columns + 1);
+      if (buf == NULL)
+  	return;
+  
+--- 4830,4841 ----
+      if (matches == NULL)	/* interrupted completion? */
+  	return;
+  
+! #ifdef FEAT_MBYTE
+!     if (has_mbyte)
+! 	buf = alloc((unsigned)Columns * MB_MAXBYTES + 1);
+!     else
+! #endif
+! 	buf = alloc((unsigned)Columns + 1);
+      if (buf == NULL)
+  	return;
+  
+*** ../vim-6.3.050/src/version.c	Thu Dec 16 12:41:08 2004
+--- src/version.c	Thu Dec 16 12:47:40 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     51,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+88. Every single time you press the 'Get mail' button...it does get new mail.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

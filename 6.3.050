@@ -1,0 +1,69 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.050
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.050
+Problem:    When SIGHUP is received while busy exiting, non-reentrant
+	    functions such as free() may cause a crash.
+Solution:   Ignore SIGHUP when exiting because of an error. (Scott Anderson)
+Files:	    src/misc1.c, src/main.c
+
+
+*** ../vim-6.3.049/src/misc1.c	Sat Sep 18 20:28:07 2004
+--- src/misc1.c	Thu Dec 16 12:13:01 2004
+***************
+*** 7544,7549 ****
+--- 7544,7556 ----
+      void
+  prepare_to_exit()
+  {
++ #if defined(SIGHUP) && defined(SIG_IGN)
++     /* Ignore SIGHUP, because a dropped connection causes a read error, which
++      * makes Vim exit and then handling SIGHUP causes various reentrance
++      * problems. */
++     signal(SIGHUP, SIG_IGN);
++ #endif
++ 
+  #ifdef FEAT_GUI
+      if (gui.in_use)
+      {
+*** ../vim-6.3.049/src/main.c	Mon Aug 30 19:46:07 2004
+--- src/main.c	Thu Dec 16 12:09:56 2004
+***************
+*** 2193,2198 ****
+--- 2193,2205 ----
+  getout_preserve_modified(exitval)
+      int		exitval;
+  {
++ # if defined(SIGHUP) && defined(SIG_IGN)
++     /* Ignore SIGHUP, because a dropped connection causes a read error, which
++      * makes Vim exit and then handling SIGHUP causes various reentrance
++      * problems. */
++     signal(SIGHUP, SIG_IGN);
++ # endif
++ 
+      ml_close_notmod();		    /* close all not-modified buffers */
+      ml_sync_all(FALSE, FALSE);	    /* preserve all swap files */
+      ml_close_all(FALSE);	    /* close all memfiles, without deleting */
+*** ../vim-6.3.049/src/version.c	Thu Dec 16 12:05:19 2004
+--- src/version.c	Thu Dec 16 12:33:16 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     50,
+  /**/
+
+-- 
+Ed's Radiator Shop: The Best Place in Town to Take a Leak.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
