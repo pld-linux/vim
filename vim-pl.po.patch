@@ -1,0 +1,21 @@
+diff -burN vim63.orig/src/po/pl.po vim63/src/po/pl.po
+--- vim63.orig/src/po/pl.po	2004-05-24 09:45:26.000000000 +0200
++++ vim63/src/po/pl.po	2004-06-10 11:05:03.000000000 +0200
+@@ -4444,7 +4444,7 @@
+ #: ops.c:6056
+ #, c-format
+ msgid "%ld Cols; "
+-msgstr "%ld Wierszy; "
++msgstr "%ld Kolumn; "
+ 
+ #: ops.c:6063
+ #, c-format
+@@ -6018,7 +6018,7 @@
+ 
+ #: version.c:2080
+ msgid "type  :help iccf<Enter>       for information "
+-msgstr "wprowad¼ :help iccf<Enter>        dla informacji to tym  "
++msgstr "wprowad¼ :help iccf<Enter>        dla informacji o tym  "
+ 
+ #: version.c:2082
+ msgid "type  :q<Enter>               to exit         "
