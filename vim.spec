@@ -188,11 +188,11 @@ Obsoletes:	vim-X11
 
 %description -n gvim-gtk
 The classic Unix text editor now also under X Window System! This
-version is build with GTK and GNOME.
+version is build with GTK.
 
 %description -n gvim-gtk -l pl
 Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
-biblioteki GTK oraz GNOME.
+biblioteki GTK.
 
 %package -n gvim-gnome
 Summary:	Vim for X Window built with gnome
@@ -210,7 +210,7 @@ version is build with GNOME.
 
 %description -n gvim-gnome -l pl
 Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
-biblioteki GNOME.
+bibliotek GNOME.
 
 %prep
 %setup -q -b1 -b2 -b3 -b4 -b5 -n %{name}%(echo %{version} | sed -e "s#\.##g")
