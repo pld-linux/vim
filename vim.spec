@@ -11,7 +11,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.1
-%define		_patchlevel	300
+%define		_patchlevel	320
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -48,14 +48,20 @@ Patch6:		%{name}-vimrc.patch
 Patch7:		%{name}-no_libelf.patch
 Patch8:		%{name}-egrep.patch
 Patch9:		%{name}-ocaml.patch
+Patch10:	http://regexxer.sourceforge.net/vim/vim-gtk2-20030206.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
+%if %{?_with_gtk1:1}0
 %{!?_without_gnome:BuildRequires:	gnome-libs-devel}
 %{!?_without_gtk:BuildRequires:		gtk+-devel}
+%else
+%{!?_without_gtk:BuildRequires:		gtk+2-devel >= 2.2.1}
+%{!?_without_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
+%endif
 %{!?_without_motif:BuildRequires:	motif-devel}
 %{!?_without_static:BuildRequires:	glibc-static}
 %{!?_without_static:BuildRequires:	ncurses-static}
@@ -447,6 +453,7 @@ done
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p0
 
 %build
 cd src
@@ -572,6 +579,7 @@ mv -f vim gvim.motif
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gtk \
+	%{!?_with_gtk1:--enable-gtk2-check} \
 	--with-x \
 	%{!?_with_perl:--disable-perlinterp} \
 	%{?_with_perl:--enable-perlinterp} \
@@ -583,7 +591,7 @@ mv -f vim gvim.motif
 	%{?_with_tcl:--enable-tclinterp} \
 	--disable-gpm \
 	--enable-cscope \
-	--enable-fontset \
+	%{?_with_gtk1:--enable-fontset} \
 	--enable-nls
 %{__make} vim
 mv -f vim gvim.gtk
@@ -594,6 +602,8 @@ mv -f vim gvim.gtk
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome \
+	%{!?_with_gtk1:--enable-gtk2-check} \
+	%{!?_with_gtk1:--enable-gnome-check} \
 	--with-x \
 	%{!?_with_perl:--disable-perlinterp} \
 	%{?_with_perl:--enable-perlinterp} \
@@ -605,7 +615,7 @@ mv -f vim gvim.gtk
 	%{?_with_tcl:--enable-tclinterp} \
 	--disable-gpm \
 	--enable-cscope \
-	--enable-fontset \
+	%{?_with_gtk1:--enable-fontset} \
 	--enable-nls
 %{__make} vim
 mv -f vim gvim.gnome
@@ -728,6 +738,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/lang/README*
 
 %lang(af) %{_datadir}/vim/v*/lang/af
+%lang(cs) %{_datadir}/vim/v*/lang/cs
 %lang(de) %{_datadir}/vim/v*/lang/de
 %lang(es) %{_datadir}/vim/v*/lang/es
 %lang(fr) %{_datadir}/vim/v*/lang/fr
