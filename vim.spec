@@ -21,7 +21,7 @@ BuildRequires:	gtk+-devel
 BuildRequires:	glib-devel
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-enhanced
-Buildroot:	/tmp/%{name}-%{version}-root
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Text editor similar to Vi. Important improvements: multiple windows, 
