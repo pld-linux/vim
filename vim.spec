@@ -14,7 +14,7 @@
 %bcond_without  selinux # without selinux
 #
 %define		_ver		6.2
-%define		_patchlevel	430
+%define		_patchlevel	479
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -27,7 +27,7 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -97,7 +97,56 @@ Patch527:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.427
 Patch528:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.428
 Patch529:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.429
 Patch530:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.430
-Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.412.diff.bz2
+Patch531:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.431
+Patch532:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.432
+Patch533:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.433
+Patch534:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.434
+Patch535:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.435
+Patch536:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.436
+Patch537:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.437
+Patch538:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.438
+Patch539:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.439
+Patch540:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.440
+Patch541:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.441
+Patch542:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.442
+Patch543:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.443
+Patch544:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.444
+Patch545:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.445
+Patch546:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.446
+Patch547:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.447
+Patch548:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.448
+Patch549:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.449
+Patch550:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.450
+Patch551:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.451
+Patch552:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.452
+Patch553:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.453
+Patch554:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.454
+Patch555:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.455
+Patch556:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.456
+Patch557:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.457
+Patch558:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.458
+Patch559:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.459
+Patch560:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.460
+Patch561:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.461
+Patch562:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.462
+Patch563:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.463
+Patch564:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.464
+Patch565:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.465
+Patch566:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.466
+Patch567:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.467
+Patch568:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.468
+Patch569:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.469
+Patch570:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.470
+Patch571:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.471
+Patch572:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.472
+Patch573:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.473
+Patch574:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.474
+Patch575:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.475
+Patch576:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.476
+Patch577:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.477
+Patch578:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.478
+Patch579:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.479
+Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.479.diff.bz2
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -565,6 +614,55 @@ element bonobo.
 %patch528 -p0
 %patch529 -p0
 %patch530 -p0
+%patch531 -p0
+%patch532 -p0
+%patch533 -p0
+%patch534 -p0
+%patch535 -p0
+%patch536 -p0
+%patch537 -p0
+%patch538 -p0
+%patch539 -p0
+%patch540 -p0
+%patch541 -p0
+%patch542 -p0
+%patch543 -p0
+%patch544 -p0
+%patch545 -p0
+%patch546 -p0
+%patch547 -p0
+%patch548 -p0
+%patch549 -p0
+%patch550 -p0
+%patch551 -p0
+%patch552 -p0
+%patch553 -p0
+%patch554 -p0
+%patch555 -p0
+%patch556 -p0
+%patch557 -p0
+%patch558 -p0
+%patch559 -p0
+%patch560 -p0
+%patch561 -p0
+%patch562 -p0
+%patch563 -p0
+%patch564 -p0
+%patch565 -p0
+%patch566 -p0
+%patch567 -p0
+%patch568 -p0
+%patch569 -p0
+%patch570 -p0
+%patch571 -p0
+%patch572 -p0
+%patch573 -p0
+%patch574 -p0
+%patch575 -p0
+%patch576 -p0
+%patch577 -p0
+%patch578 -p0
+%patch579 -p0
 
 # kvim
 %patch999 -p1
