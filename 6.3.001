@@ -1,0 +1,105 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.001
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.001
+Problem:    ":browse split" gives the file selection dialog twice. (Gordon
+	    Bazeley)  Same problem for ":browse diffpatch".
+Solution:   Reset cmdmod.browse before calling do_ecmd().
+Files:	    src/diff.c, src/ex_docmd.c
+
+
+*** ../vim-6.3.000/src/diff.c	Wed Jun  9 14:56:26 2004
+--- src/diff.c	Wed Jun  9 14:43:17 2004
+***************
+*** 810,815 ****
+--- 810,816 ----
+  #endif
+  #ifdef FEAT_BROWSE
+      char_u	*browseFile = NULL;
++     int		browse_flag = cmdmod.browse;
+  #endif
+  
+  #ifdef FEAT_BROWSE
+***************
+*** 820,825 ****
+--- 821,827 ----
+  	if (browseFile == NULL)
+  	    return;		/* operation cancelled */
+  	eap->arg = browseFile;
++ 	cmdmod.browse = FALSE;	/* don't let do_ecmd() browse again */
+      }
+  #endif
+  
+***************
+*** 960,965 ****
+--- 962,968 ----
+  #endif
+  #ifdef FEAT_BROWSE
+      vim_free(browseFile);
++     cmdmod.browse = browse_flag;
+  #endif
+  }
+  
+*** ../vim-6.3.000/src/ex_docmd.c	Wed Jun  9 14:56:25 2004
+--- src/ex_docmd.c	Wed Jun  9 14:28:58 2004
+***************
+*** 6342,6347 ****
+--- 6342,6350 ----
+  #if defined(FEAT_SEARCHPATH) || defined(FEAT_BROWSE)
+      char_u	*fname = NULL;
+  #endif
++ #ifdef FEAT_BROWSE
++     int		browse_flag = cmdmod.browse;
++ #endif
+  
+  #ifndef FEAT_VERTSPLIT
+      if (eap->cmdidx == CMD_vsplit || eap->cmdidx == CMD_vnew)
+***************
+*** 6396,6402 ****
+--- 6399,6407 ----
+  	    goto theend;
+  	eap->arg = fname;
+      }
++     cmdmod.browse = FALSE;	/* Don't browse again in do_ecmd(). */
+  #endif
++ 
+      if (win_split(eap->addr_count > 0 ? (int)eap->line2 : 0,
+  				     *eap->cmd == 'v' ? WSP_VERT : 0) != FAIL)
+      {
+***************
+*** 6414,6419 ****
+--- 6419,6428 ----
+  #endif
+  	do_exedit(eap, old_curwin);
+      }
++ 
++ #ifdef FEAT_BROWSE
++     cmdmod.browse = browse_flag;
++ #endif
+  
+  #if defined(FEAT_SEARCHPATH) || defined(FEAT_BROWSE)
+  theend:
+*** ../vim-6.3.000/src/version.c	Wed Jun  9 14:56:26 2004
+--- src/version.c	Wed Jun  9 14:53:52 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     1,
+  /**/
+
+-- 
+From "know your smileys":
+ (:-#	Said something he shouldn't have
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
