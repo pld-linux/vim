@@ -84,6 +84,7 @@ Patch111:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.011
 Patch112:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.012
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
+%{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
