@@ -2,7 +2,7 @@ Summary:	Vim built with ncurses
 Summary(pl):	Vim korzystaj±cy z bibliotek ncurses
 Name:		vim
 Version:	5.4k
-Release:	1
+Release:	2
 Source0:        ftp://ftp.nl.vim.org/pub/vim/unreleased/unix/%{name}-%{version}-src.tar.gz
 Source1:        ftp://ftp.nl.vim.org/pub/vim/unreleased/unix/%{name}-%{version}-rt.tar.gz
 Source2:        ftp://ftp.nl.vim.org/pub/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
@@ -149,7 +149,7 @@ mv vim vim.static
 mv xxd/xxd xxd.static
 
 make distclean
-LDFLAGS="-static -s"; export LDFLAGS
+LDFLAGS="-s"; export LDFLAGS
 %configure \
 	--enable-max-features \
 	--disable-gui \
@@ -164,7 +164,7 @@ make vim
 mv vim vim.ncurses
 
 make distclean
-LDFLAGS="-static -s"; export LDFLAGS
+LDFLAGS="-s"; export LDFLAGS
 %configure \
         --enable-max-features \
 	--enable-gui=athena \
@@ -179,7 +179,7 @@ make vim
 mv vim vim.athena
 
 make distclean
-LDFLAGS="-static -s"; export LDFLAGS
+LDFLAGS="-s"; export LDFLAGS
 %configure \
         --enable-max-features \
 	--enable-gui=motif \
@@ -194,7 +194,7 @@ make vim
 mv vim vim.lesstif
 
 make distclean
-LDFLAGS="-static -s"; export LDFLAGS
+LDFLAGS="-s"; export LDFLAGS
 %configure \
         --enable-max-features \
 	--enable-gui=gtk \
@@ -215,7 +215,7 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/etc/X11/wmconfig
 install -d $RPM_BUILD_ROOT/bin
-install -d $RPM_BUILD_ROOT/usr/{bin,X11R6/bin,share/vim/{doc,tutor},man/man1}
+install -d $RPM_BUILD_ROOT/usr/{bin,X11R6/bin,share/vim/{doc,tutor},share/man/man1}
 
 # make prefix=$RPM_BUILD_ROOT/usr install
 
@@ -358,6 +358,10 @@ ln -sf /usr/X11R6/bin/gvim %{_bindir}/vim
 %config %verify(not size mtime md5) %{_datadir}/vim/vimrc
 
 %changelog
+* Mon Jun 07 1999 Jan Rêkorajski <baggins@pld.org.pl>
+  [5.4k-2]
+- fixed non-static builds
+
 * Wed Apr 21 1999 Artur Frysiak <wiget@pld.org.pl>
   [5.4h-1]
 - build on rpm 3  
