@@ -38,7 +38,7 @@ Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
 # packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.3*
 Source3:	%{name}-patches-%{_ver}.401-%{_patchlevel}.tar.bz2
 # Source3-md5: 92712276457a367a56a9389e178c0c3d
-Source4:	%{name}-non-english-man-pages.tar.bz2
+Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5: bc4d1e115ca506ad7751b9bd2b773a7f
 Source10:	g%{name}-athena.desktop
 # Source10-md5:	181a554b04f83b5eab64cd570a40d8cd
