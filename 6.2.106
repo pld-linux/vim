@@ -1,0 +1,80 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.106
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.106
+Problem:    Tag searching gets stuck on a very long line in the tags file.
+Solution:   When skipping back to search the first matching tag remember the
+	    offset where searching started looking for a line break.
+Files:	    src/tag.c
+
+
+*** ../vim-6.2.105/src/tag.c	Tue Aug 12 19:58:43 2003
+--- src/tag.c	Sat Sep 27 20:11:51 2003
+***************
+*** 1022,1027 ****
+--- 1022,1028 ----
+  	off_t	high_offset;	/* offset of char after last line that could
+  				   match */
+  	off_t	curr_offset;	/* Current file offset in search range */
++ 	off_t	curr_offset_used; /* curr_offset used when skipping back */
+  	off_t	match_offset;	/* Where the binary search found a tag */
+  	int	low_char;	/* first char at low_offset */
+  	int	high_char;	/* first char at high_offset */
+***************
+*** 1271,1276 ****
+--- 1272,1278 ----
+  	    if (state == TS_BINARY || state == TS_SKIP_BACK)
+  	    {
+  		/* Adjust the search file offset to the correct position */
++ 		search_info.curr_offset_used = search_info.curr_offset;
+  #ifdef HAVE_FSEEKO
+  		fseeko(fp, search_info.curr_offset, SEEK_SET);
+  #else
+***************
+*** 1303,1308 ****
+--- 1305,1311 ----
+  		    /* Hit end of file.  Skip backwards. */
+  		    state = TS_SKIP_BACK;
+  		    search_info.match_offset = ftell(fp);
++ 		    search_info.curr_offset = search_info.curr_offset_used;
+  		    continue;
+  		}
+  	    }
+***************
+*** 1628,1633 ****
+--- 1631,1640 ----
+  		{
+  		    if (MB_STRNICMP(tagp.tagname, pathead, cmplen) != 0)
+  			state = TS_STEP_FORWARD;
++ 		    else
++ 			/* Have to skip back more.  Restore the curr_offset
++ 			 * used, otherwise we get stuck at a long line. */
++ 			search_info.curr_offset = search_info.curr_offset_used;
+  		    continue;
+  		}
+  		else if (state == TS_STEP_FORWARD)
+*** ../vim-6.2.105/src/version.c	Sat Sep 27 19:48:50 2003
+--- src/version.c	Sat Sep 27 20:17:22 2003
+***************
+*** 632,633 ****
+--- 638,641 ----
+  {   /* Add new patch number below this line */
++ /**/
++     106,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+38. You wake up at 3 a.m. to go to the bathroom and stop and check your e-mail
+    on the way back to bed.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

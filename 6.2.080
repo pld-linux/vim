@@ -1,0 +1,122 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.080
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.080
+Problem:    When 't_ti' is not empty but doesn't swap screens, using "ZZ" in
+	    an unmodified file doesn't clear the last line.
+Solution:   Call msg_clr_eos() when needed. (Michael Schroeder)
+Files:	    src/os_unix.c
+
+
+*** ../vim-6.2.079/src/os_unix.c	Sat Jul 26 21:22:37 2003
+--- src/os_unix.c	Sun Sep  7 23:27:25 2003
+***************
+*** 2553,2567 ****
+      static void
+  exit_scroll()
+  {
+!     if (msg_use_printf())
+      {
+! 	if (info_message)
+! 	    mch_msg("\n");
+  	else
+! 	    mch_errmsg("\r\n");
+      }
+      else
+! 	out_char('\n');
+  }
+  
+      void
+--- 2553,2576 ----
+      static void
+  exit_scroll()
+  {
+!     if (newline_on_exit || msg_didout)
+      {
+! 	if (msg_use_printf())
+! 	{
+! 	    if (info_message)
+! 		mch_msg("\n");
+! 	    else
+! 		mch_errmsg("\r\n");
+! 	}
+  	else
+! 	    out_char('\n');
+      }
+      else
+!     {
+! 	restore_cterm_colors();	/* get original colors back */
+! 	msg_clr_eos();		/* clear the rest of the display */
+! 	windgoto((int)Rows - 1, 0);	/* may have moved the cursor */
+!     }
+  }
+  
+      void
+***************
+*** 2588,2594 ****
+  	 * t_ti does swap pages it should not go to the shell page.  Do this
+  	 * before stoptermcap().
+  	 */
+! 	if (swapping_screen() && !newline_on_exit && msg_didout)
+  	    exit_scroll();
+  
+  	/* Stop termcap: May need to check for T_CRV response, which
+--- 2597,2603 ----
+  	 * t_ti does swap pages it should not go to the shell page.  Do this
+  	 * before stoptermcap().
+  	 */
+! 	if (swapping_screen() && !newline_on_exit)
+  	    exit_scroll();
+  
+  	/* Stop termcap: May need to check for T_CRV response, which
+***************
+*** 2600,2615 ****
+  	 * This is set to TRUE by wait_return().
+  	 */
+  	if (!swapping_screen() || newline_on_exit)
+! 	{
+! 	    if (newline_on_exit || msg_didout)
+! 		exit_scroll();
+! 	    else
+! 	    {
+! 		restore_cterm_colors();	/* get original colors back */
+! 		msg_clr_eos();		/* clear the rest of the display */
+! 		windgoto((int)Rows - 1, 0);	/* may have moved the cursor */
+! 	    }
+! 	}
+  
+  	/* Cursor may have been switched off without calling starttermcap()
+  	 * when doing "vim -u vimrc" and vimrc contains ":q". */
+--- 2609,2615 ----
+  	 * This is set to TRUE by wait_return().
+  	 */
+  	if (!swapping_screen() || newline_on_exit)
+! 	    exit_scroll();
+  
+  	/* Cursor may have been switched off without calling starttermcap()
+  	 * when doing "vim -u vimrc" and vimrc contains ":q". */
+*** ../vim-6.2.079/src/version.c	Wed Sep 10 22:41:46 2003
+--- src/version.c	Wed Sep 10 22:49:21 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     80,
+  /**/
+
+-- 
+To the optimist, the glass is half full.
+To the pessimist, the glass is half empty.  
+To the engineer, the glass is twice as big as it needs to be.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

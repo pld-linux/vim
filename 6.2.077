@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.077
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.077
+Problem:    When a user function specifies custom completion, the function
+	    gets a zero argument instead of an empty string when there is no
+	    word before the cursor. (Preben Guldberg)
+Solution:   Don't convert an empty string to a zero.
+Files:	    src/eval.c
+
+
+*** ../vim-6.2.076/src/eval.c	Mon Aug 11 23:03:53 2003
+--- src/eval.c	Sun Sep  7 23:18:06 2003
+***************
+*** 694,700 ****
+      {
+  	/* Recognize a number argument, the others must be strings. */
+  	vim_str2nr(argv[i], NULL, &len, TRUE, TRUE, &n, NULL);
+! 	if (len == (int)STRLEN(argv[i]))
+  	{
+  	    argvars[i].var_type = VAR_NUMBER;
+  	    argvars[i].var_val.var_number = n;
+--- 694,700 ----
+      {
+  	/* Recognize a number argument, the others must be strings. */
+  	vim_str2nr(argv[i], NULL, &len, TRUE, TRUE, &n, NULL);
+! 	if (len != 0 && len == (int)STRLEN(argv[i]))
+  	{
+  	    argvars[i].var_type = VAR_NUMBER;
+  	    argvars[i].var_val.var_number = n;
+*** ../vim-6.2.076/src/version.c	Wed Sep 10 21:35:55 2003
+--- src/version.c	Wed Sep 10 21:39:04 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     77,
+  /**/
+
+-- 
+LAUNCELOT: Isn't there a St. Aaaaarrrrrrggghhh's in Cornwall?
+ARTHUR:    No, that's Saint Ives.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

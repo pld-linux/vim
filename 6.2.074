@@ -1,0 +1,131 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.074
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.074
+Problem:    Warnings when compiling the Python interface. (Ajit Thakkar)
+Solution:   Use ANSI function declarations.
+Files:	    src/if_python.c
+
+
+*** ../vim-6.2.073/src/if_python.c	Sun Jul 27 14:32:03 2003
+--- src/if_python.c	Wed Aug 13 20:32:14 2003
+***************
+*** 242,248 ****
+   * Free python.dll
+   */
+      static void
+! end_dynamic_python()
+  {
+      if (hinstPython)
+      {
+--- 242,248 ----
+   * Free python.dll
+   */
+      static void
+! end_dynamic_python(void)
+  {
+      if (hinstPython)
+      {
+***************
+*** 273,280 ****
+  
+      for (i = 0; python_funcname_table[i].ptr; ++i)
+      {
+! 	if (!(*python_funcname_table[i].ptr = GetProcAddress(hinstPython,
+! 			python_funcname_table[i].name)))
+  	{
+  	    FreeLibrary(hinstPython);
+  	    hinstPython = 0;
+--- 273,280 ----
+  
+      for (i = 0; python_funcname_table[i].ptr; ++i)
+      {
+! 	if ((*python_funcname_table[i].ptr = GetProcAddress(hinstPython,
+! 			python_funcname_table[i].name)) == NULL)
+  	{
+  	    FreeLibrary(hinstPython);
+  	    hinstPython = 0;
+***************
+*** 365,390 ****
+  /* suspend a thread of the python interpreter
+     - other threads are allowed to run */
+  
+! static void Python_SaveThread() {
+! 	saved_python_thread = PyEval_SaveThread();
+  }
+  
+  /* restore a thread of the python interpreter
+     - waits for other threads to block */
+  
+! static void Python_RestoreThread() {
+! 	PyEval_RestoreThread( saved_python_thread );
+! 	saved_python_thread = NULL;
+  }
+  
+  /* obtain a lock on the Vim data structures */
+  
+! static void Python_Lock_Vim() {
+  }
+  
+  /* release a lock on the Vim data structures */
+  
+! static void Python_Release_Vim() {
+  }
+  
+      void
+--- 365,394 ----
+  /* suspend a thread of the python interpreter
+     - other threads are allowed to run */
+  
+! static void Python_SaveThread(void)
+! {
+!     saved_python_thread = PyEval_SaveThread();
+  }
+  
+  /* restore a thread of the python interpreter
+     - waits for other threads to block */
+  
+! static void Python_RestoreThread(void)
+! {
+!     PyEval_RestoreThread( saved_python_thread );
+!     saved_python_thread = NULL;
+  }
+  
+  /* obtain a lock on the Vim data structures */
+  
+! static void Python_Lock_Vim(void)
+! {
+  }
+  
+  /* release a lock on the Vim data structures */
+  
+! static void Python_Release_Vim(void)
+! {
+  }
+  
+      void
+*** ../vim-6.2.073/src/version.c	Tue Sep  9 22:18:18 2003
+--- src/version.c	Tue Sep  9 22:29:19 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     74,
+  /**/
+
+-- 
+TALL KNIGHT: When you have found the shrubbery, then you must cut down the
+             mightiest tree in the forest ... with a herring.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

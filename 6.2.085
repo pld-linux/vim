@@ -1,0 +1,144 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.085
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.085
+Problem:    ":verbose set ts" doesn't say an option was set with a "-c" or
+	    "--cmd" argument.
+Solution:   Remember the option was set from a Vim argument.
+Files:	    src/main.c, src/ex_cmds2.c, src/vim.h
+
+
+*** ../vim-6.2.084/src/main.c	Mon Jun  2 22:26:17 2003
+--- src/main.c	Mon Sep  1 22:48:42 2003
+***************
+*** 1264,1272 ****
+--- 1267,1281 ----
+      {
+  	curwin->w_cursor.lnum = 0; /* just in case.. */
+  	sourcing_name = (char_u *)_("pre-vimrc command line");
++ # ifdef FEAT_EVAL
++ 	current_SID = SID_CMDARG;
++ # endif
+  	for (i = 0; i < p_commands; ++i)
+  	    do_cmdline_cmd(pre_commands[i]);
+  	sourcing_name = NULL;
++ # ifdef FEAT_EVAL
++ 	current_SID = 0;
++ # endif
+      }
+  #endif
+  
+***************
+*** 1876,1884 ****
+--- 1890,1904 ----
+  	if (tagname == NULL)
+  	    curwin->w_cursor.lnum = 0;
+  	sourcing_name = (char_u *)"command line";
++ #ifdef FEAT_EVAL
++ 	current_SID = SID_CARG;
++ #endif
+  	for (i = 0; i < n_commands; ++i)
+  	    do_cmdline_cmd(commands[i]);
+  	sourcing_name = NULL;
++ #ifdef FEAT_EVAL
++ 	current_SID = 0;
++ #endif
+  	if (curwin->w_cursor.lnum == 0)
+  	    curwin->w_cursor.lnum = 1;
+  
+***************
+*** 2277,2282 ****
+--- 2297,2305 ----
+      char_u	*initstr;
+      char_u	*save_sourcing_name;
+      linenr_T	save_sourcing_lnum;
++ #ifdef FEAT_EVAL
++     scid_T	save_sid;
++ #endif
+  
+      if ((initstr = mch_getenv(env)) != NULL && *initstr != NUL)
+      {
+***************
+*** 2286,2294 ****
+--- 2309,2324 ----
+  	save_sourcing_lnum = sourcing_lnum;
+  	sourcing_name = env;
+  	sourcing_lnum = 0;
++ #ifdef FEAT_EVAL
++ 	save_sid = current_SID;
++ 	current_SID = SID_ENV;
++ #endif
+  	do_cmdline_cmd(initstr);
+  	sourcing_name = save_sourcing_name;
+  	sourcing_lnum = save_sourcing_lnum;
++ #ifdef FEAT_EVAL
++ 	current_SID = save_sid;;
++ #endif
+  	return OK;
+      }
+      return FAIL;
+*** ../vim-6.2.084/src/ex_cmds2.c	Sun Aug 10 22:34:58 2003
+--- src/ex_cmds2.c	Sun Sep  7 23:19:35 2003
+***************
+*** 2345,2350 ****
+--- 2345,2356 ----
+  {
+      if (id == SID_MODELINE)
+  	return (char_u *)"modeline";
++     if (id == SID_CMDARG)
++ 	return (char_u *)"--cmd argument";
++     if (id == SID_CARG)
++ 	return (char_u *)"-c argument";
++     if (id == SID_ENV)
++ 	return (char_u *)"environment variable";
+      return SCRIPT_NAME(id);
+  }
+  #endif
+*** ../vim-6.2.084/src/vim.h	Tue Aug 12 20:01:59 2003
+--- src/vim.h	Sun Sep  7 23:53:24 2003
+***************
+*** 954,960 ****
+  #define MIN_SWAP_PAGE_SIZE 1048
+  #define MAX_SWAP_PAGE_SIZE 50000
+  
+! #define SID_MODELINE	-1	/* script ID when using a modeline */
+  
+  /*
+   * Events for autocommands.
+--- 956,966 ----
+  #define MIN_SWAP_PAGE_SIZE 1048
+  #define MAX_SWAP_PAGE_SIZE 50000
+  
+! /* Special values for current_SID. */
+! #define SID_MODELINE	-1	/* when using a modeline */
+! #define SID_CMDARG	-2	/* for "--cmd" argument */
+! #define SID_CARG	-3	/* for "-c" argument */
+! #define SID_ENV		-4	/* for sourcing environment variable */
+  
+  /*
+   * Events for autocommands.
+*** ../vim-6.2.084/src/version.c	Thu Sep 11 21:21:21 2003
+--- src/version.c	Thu Sep 11 21:23:06 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     85,
+  /**/
+
+-- 
+Snoring is prohibited unless all bedroom windows are closed and securely
+locked.
+		[real standing law in Massachusetts, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,114 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.090 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.090 (extra)
+Problem:    Win32: MingW compiler complains about #pragmas. (Bill McCarthy)
+Solution:   Put an #ifdef around the #pragmas.
+Files:	    src/os_win32.c
+
+
+*** ../vim-6.2.089/src/os_win32.c	Sun Jul 27 14:29:34 2003
+--- src/os_win32.c	Fri Sep  5 22:52:38 2003
+***************
+*** 504,513 ****
+  };
+  
+  
+  // The ToAscii bug destroys several registers.	Need to turn off optimization
+  // or the GetConsoleKeyboardLayoutName hack will fail in non-debug versions
+! 
+! #pragma optimize("", off)
+  
+  #if defined(__GNUC__) && !defined(__MINGW32__)  && !defined(__CYGWIN__)
+  # define AChar AsciiChar
+--- 504,514 ----
+  };
+  
+  
++ #ifdef _MSC_VER
+  // The ToAscii bug destroys several registers.	Need to turn off optimization
+  // or the GetConsoleKeyboardLayoutName hack will fail in non-debug versions
+! # pragma optimize("", off)
+! #endif
+  
+  #if defined(__GNUC__) && !defined(__MINGW32__)  && !defined(__CYGWIN__)
+  # define AChar AsciiChar
+***************
+*** 573,587 ****
+      return s_iIsDead;
+  }
+  
+  /* MUST switch optimization on again here, otherwise a call to
+   * decode_key_event() may crash (e.g. when hitting caps-lock) */
+! #pragma optimize("", on)
+  
+! #if (_MSC_VER < 1100)
+  /* MUST turn off global optimisation for this next function, or
+   * pressing ctrl-minus in insert mode crashes Vim when built with
+   * VC4.1. -- negri. */
+! #pragma optimize("g", off)
+  #endif
+  
+  static BOOL g_fJustGotFocus = FALSE;
+--- 574,590 ----
+      return s_iIsDead;
+  }
+  
++ #ifdef _MSC_VER
+  /* MUST switch optimization on again here, otherwise a call to
+   * decode_key_event() may crash (e.g. when hitting caps-lock) */
+! # pragma optimize("", on)
+  
+! # if (_MSC_VER < 1100)
+  /* MUST turn off global optimisation for this next function, or
+   * pressing ctrl-minus in insert mode crashes Vim when built with
+   * VC4.1. -- negri. */
+! #  pragma optimize("g", off)
+! # endif
+  #endif
+  
+  static BOOL g_fJustGotFocus = FALSE;
+***************
+*** 691,697 ****
+  
+      return (*pch != NUL);
+  }
+! #pragma optimize("", on)
+  #endif /* FEAT_GUI_W32 */
+  
+  
+--- 694,704 ----
+  
+      return (*pch != NUL);
+  }
+! 
+! #ifdef _MSC_VER
+! # pragma optimize("", on)
+! #endif
+! 
+  #endif /* FEAT_GUI_W32 */
+  
+  
+*** ../vim-6.2.089/src/version.c	Thu Sep 11 21:46:06 2003
+--- src/version.c	Thu Sep 11 21:48:24 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     90,
+  /**/
+
+-- 
+Zen Microsystems: we're the om in .commmmmmmmm
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

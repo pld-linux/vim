@@ -1,0 +1,1176 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.102
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.102
+Problem:    The macros equal() and CR conflict with a Carbon header file.
+Solution:   Rename equal() to equalpos().  Rename CR to CAR.
+	    Do this in the non-extra files only.
+Files:	    src/ascii.h, src/buffer.c, src/charset.c, src/edit.c, src/eval.c,
+	    src/ex_cmds.c, src/ex_cmds2.c, src/ex_getln.c, src/fileio.c,
+	    src/getchar.c, src/gui.c, src/gui_athena.c,
+	    src/gui_gtk_x11.c, src/gui_motif.c, src/macros.h,
+	    src/mark.c, src/message.c, src/misc1.c, src/misc2.c,
+	    src/normal.c, src/ops.c, src/os_unix.c, src/regexp.c,
+	    src/search.c, src/ui.c, src/workshop.c
+
+
+*** ../vim-6.2.101/src/ascii.h	Sun Oct  6 20:29:01 2002
+--- src/ascii.h	Sun Sep  7 23:16:15 2003
+***************
+*** 28,34 ****
+  #define NL		'\012'
+  #define NL_STR		(char_u *)"\012"
+  #define FF		'\014'
+! #define CR		'\015'
+  #define ESC		'\033'
+  #define ESC_STR		(char_u *)"\033"
+  #define ESC_STR_nc	"\033"
+--- 28,34 ----
+  #define NL		'\012'
+  #define NL_STR		(char_u *)"\012"
+  #define FF		'\014'
+! #define CAR		'\015'	/* CR is used by Mac OS X */
+  #define ESC		'\033'
+  #define ESC_STR		(char_u *)"\033"
+  #define ESC_STR_nc	"\033"
+***************
+*** 112,118 ****
+  #define NL		'\x15'
+  #define NL_STR		(char_u *)"\x15"
+  #define FF		'\x0C'
+! #define CR		'\x0D'
+  #define ESC		'\x27'
+  #define ESC_STR		(char_u *)"\x27"
+  #define ESC_STR_nc	"\x27"
+--- 112,118 ----
+  #define NL		'\x15'
+  #define NL_STR		(char_u *)"\x15"
+  #define FF		'\x0C'
+! #define CAR		'\x0D'
+  #define ESC		'\x27'
+  #define ESC_STR		(char_u *)"\x27"
+  #define ESC_STR_nc	"\x27"
+*** ../vim-6.2.101/src/buffer.c	Fri Sep 12 20:23:50 2003
+--- src/buffer.c	Sun Sep  7 23:17:03 2003
+***************
+*** 3423,3429 ****
+  	    }
+  	    if (num == NL)
+  		num = 0;
+! 	    else if (num == CR && get_fileformat(wp->w_buffer) == EOL_MAC)
+  		num = NL;
+  	    break;
+  
+--- 3423,3429 ----
+  	    }
+  	    if (num == NL)
+  		num = 0;
+! 	    else if (num == CAR && get_fileformat(wp->w_buffer) == EOL_MAC)
+  		num = NL;
+  	    break;
+  
+*** ../vim-6.2.101/src/charset.c	Tue Jun  3 22:29:09 2003
+--- src/charset.c	Sun Sep  7 23:17:11 2003
+***************
+*** 550,556 ****
+  {
+      if (c == NL)
+  	c = NUL;		/* we use newline in place of a NUL */
+!     else if (c == CR && get_fileformat(curbuf) == EOL_MAC)
+  	c = NL;			/* we use CR in place of  NL in this case */
+  
+      if (dy_flags & DY_UHEX)		/* 'display' has "uhex" */
+--- 550,556 ----
+  {
+      if (c == NL)
+  	c = NUL;		/* we use newline in place of a NUL */
+!     else if (c == CAR && get_fileformat(curbuf) == EOL_MAC)
+  	c = NL;			/* we use CR in place of  NL in this case */
+  
+      if (dy_flags & DY_UHEX)		/* 'display' has "uhex" */
+*** ../vim-6.2.101/src/edit.c	Tue Sep 16 14:15:52 2003
+--- src/edit.c	Sat Sep 13 13:43:36 2003
+***************
+*** 1117,1130 ****
+  	    break;
+  
+  	case K_KENTER:
+! 	    c = CR;
+  	    /* FALLTHROUGH */
+! 	case CR:
+  	case NL:
+  #if defined(FEAT_WINDOWS) && defined(FEAT_QUICKFIX)
+  	    /* In a quickfix window a <CR> jumps to the error under the
+  	     * cursor. */
+! 	    if (bt_quickfix(curbuf) && c == CR)
+  	    {
+  		do_cmdline_cmd((char_u *)".cc");
+  		break;
+--- 1117,1130 ----
+  	    break;
+  
+  	case K_KENTER:
+! 	    c = CAR;
+  	    /* FALLTHROUGH */
+! 	case CAR:
+  	case NL:
+  #if defined(FEAT_WINDOWS) && defined(FEAT_QUICKFIX)
+  	    /* In a quickfix window a <CR> jumps to the error under the
+  	     * cursor. */
+! 	    if (bt_quickfix(curbuf) && c == CAR)
+  	    {
+  		do_cmdline_cmd((char_u *)".cc");
+  		break;
+***************
+*** 1134,1140 ****
+  	    if (cmdwin_type != 0)
+  	    {
+  		/* Execute the command in the cmdline window. */
+! 		cmdwin_result = CR;
+  		goto doESCkey;
+  	    }
+  #endif
+--- 1134,1140 ----
+  	    if (cmdwin_type != 0)
+  	    {
+  		/* Execute the command in the cmdline window. */
+! 		cmdwin_result = CAR;
+  		goto doESCkey;
+  	    }
+  #endif
+***************
+*** 6680,6686 ****
+      curbuf = curwin->w_buffer;
+  # endif
+  
+!     if (!equal(curwin->w_cursor, tpos))
+      {
+  	start_arrow(&tpos);
+  # ifdef FEAT_CINDENT
+--- 6680,6686 ----
+      curbuf = curwin->w_buffer;
+  # endif
+  
+!     if (!equalpos(curwin->w_cursor, tpos))
+      {
+  	start_arrow(&tpos);
+  # ifdef FEAT_CINDENT
+*** ../vim-6.2.101/src/eval.c	Wed Sep 10 21:40:26 2003
+--- src/eval.c	Wed Sep 17 21:53:22 2003
+***************
+*** 2516,2522 ****
+  		case 'e': name[i++] = ESC; break;
+  		case 'f': name[i++] = FF; break;
+  		case 'n': name[i++] = NL; break;
+! 		case 'r': name[i++] = CR; break;
+  		case 't': name[i++] = TAB; break;
+  
+  		case 'X': /* hex: "\x1", "\x12" */
+--- 2516,2522 ----
+  		case 'e': name[i++] = ESC; break;
+  		case 'f': name[i++] = FF; break;
+  		case 'n': name[i++] = NL; break;
+! 		case 'r': name[i++] = CAR; break;
+  		case 't': name[i++] = TAB; break;
+  
+  		case 'X': /* hex: "\x1", "\x12" */
+***************
+*** 6124,6130 ****
+      {
+  	n = searchit(curwin, curbuf, &pos, dir, pat, 1L,
+  						      SEARCH_KEEP, RE_SEARCH);
+! 	if (n == FAIL || (firstpos.lnum != 0 && equal(pos, firstpos)))
+  	    /* didn't find it or found the first match again: FAIL */
+  	    break;
+  
+--- 6124,6130 ----
+      {
+  	n = searchit(curwin, curbuf, &pos, dir, pat, 1L,
+  						      SEARCH_KEEP, RE_SEARCH);
+! 	if (n == FAIL || (firstpos.lnum != 0 && equalpos(pos, firstpos)))
+  	    /* didn't find it or found the first match again: FAIL */
+  	    break;
+  
+***************
+*** 7072,7078 ****
+  
+  	for (s = p; *s; ++s)
+  	{
+! 	    if (*s == CR)
+  		*s = NL;
+  	}
+      }
+--- 7072,7078 ----
+  
+  	for (s = p; *s; ++s)
+  	{
+! 	    if (*s == CAR)
+  		*s = NL;
+  	}
+      }
+***************
+*** 7086,7092 ****
+  	d = p;
+  	for (s = p; *s; ++s)
+  	{
+! 	    if (s[0] == CR && s[1] == NL)
+  		++s;
+  	    *d++ = *s;
+  	}
+--- 7086,7092 ----
+  	d = p;
+  	for (s = p; *s; ++s)
+  	{
+! 	    if (s[0] == CAR && s[1] == NL)
+  		++s;
+  	    *d++ = *s;
+  	}
+*** ../vim-6.2.101/src/ex_cmds.c	Fri Sep 12 20:07:18 2003
+--- src/ex_cmds.c	Tue Sep  9 22:03:12 2003
+***************
+*** 4000,4006 ****
+  		{
+  		    if (p1[0] == '\\' && p1[1] != NUL)  /* remove backslash */
+  			mch_memmove(p1, p1 + 1, STRLEN(p1));
+! 		    else if (*p1 == CR)
+  		    {
+  			if (u_inssub(lnum) == OK)   /* prepare for undo */
+  			{
+--- 4000,4006 ----
+  		{
+  		    if (p1[0] == '\\' && p1[1] != NUL)  /* remove backslash */
+  			mch_memmove(p1, p1 + 1, STRLEN(p1));
+! 		    else if (*p1 == CAR)
+  		    {
+  			if (u_inssub(lnum) == OK)   /* prepare for undo */
+  			{
+*** ../vim-6.2.101/src/ex_cmds2.c	Thu Sep 11 21:25:44 2003
+--- src/ex_cmds2.c	Sun Sep  7 23:19:35 2003
+***************
+*** 5193,5199 ****
+  	    case TAB:  ga_append(&prt_ps_buffer, IF_EB('t', 0164)); break;
+  	    case NL:   ga_append(&prt_ps_buffer, IF_EB('n', 0156)); break;
+  	    case FF:   ga_append(&prt_ps_buffer, IF_EB('f', 0146)); break;
+! 	    case CR:   ga_append(&prt_ps_buffer, IF_EB('r', 0162)); break;
+  	    case '(':  ga_append(&prt_ps_buffer, IF_EB('(', 0050)); break;
+  	    case ')':  ga_append(&prt_ps_buffer, IF_EB(')', 0051)); break;
+  	    case '\\': ga_append(&prt_ps_buffer, IF_EB('\\', 0134)); break;
+--- 5193,5199 ----
+  	    case TAB:  ga_append(&prt_ps_buffer, IF_EB('t', 0164)); break;
+  	    case NL:   ga_append(&prt_ps_buffer, IF_EB('n', 0156)); break;
+  	    case FF:   ga_append(&prt_ps_buffer, IF_EB('f', 0146)); break;
+! 	    case CAR:  ga_append(&prt_ps_buffer, IF_EB('r', 0162)); break;
+  	    case '(':  ga_append(&prt_ps_buffer, IF_EB('(', 0050)); break;
+  	    case ')':  ga_append(&prt_ps_buffer, IF_EB(')', 0051)); break;
+  	    case '\\': ga_append(&prt_ps_buffer, IF_EB('\\', 0134)); break;
+*** ../vim-6.2.101/src/ex_getln.c	Sun Aug 10 22:24:37 2003
+--- src/ex_getln.c	Sun Sep  7 23:20:11 2003
+***************
+*** 4993,5004 ****
+  	if (cmdwin_result == K_XF1)		/* :qa! typed */
+  	{
+  	    ccline.cmdbuff = vim_strsave((char_u *)"qa!");
+! 	    cmdwin_result = CR;
+  	}
+  	else if (cmdwin_result == K_XF2)	/* :qa typed */
+  	{
+  	    ccline.cmdbuff = vim_strsave((char_u *)"qa");
+! 	    cmdwin_result = CR;
+  	}
+  	else
+  	    ccline.cmdbuff = vim_strsave(ml_get_curline());
+--- 4995,5006 ----
+  	if (cmdwin_result == K_XF1)		/* :qa! typed */
+  	{
+  	    ccline.cmdbuff = vim_strsave((char_u *)"qa!");
+! 	    cmdwin_result = CAR;
+  	}
+  	else if (cmdwin_result == K_XF2)	/* :qa typed */
+  	{
+  	    ccline.cmdbuff = vim_strsave((char_u *)"qa");
+! 	    cmdwin_result = CAR;
+  	}
+  	else
+  	    ccline.cmdbuff = vim_strsave(ml_get_curline());
+*** ../vim-6.2.101/src/fileio.c	Sun Jul 27 14:19:17 2003
+--- src/fileio.c	Wed Sep 17 22:01:56 2003
+***************
+*** 1596,1602 ****
+  			if (*p == NL)
+  			{
+  			    if (!try_unix
+! 				    || (try_dos && p > ptr && p[-1] == CR))
+  				fileformat = EOL_DOS;
+  			    else
+  				fileformat = EOL_UNIX;
+--- 1592,1598 ----
+  			if (*p == NL)
+  			{
+  			    if (!try_unix
+! 				    || (try_dos && p > ptr && p[-1] == CAR))
+  				fileformat = EOL_DOS;
+  			    else
+  				fileformat = EOL_UNIX;
+***************
+*** 1610,1616 ****
+  			/* Need to reset the counters when retrying fenc. */
+  			try_mac = 1;
+  			try_unix = 1;
+! 			for (; p >= ptr && *p != CR; p--)
+  			    ;
+  			if (p >= ptr)
+  			{
+--- 1606,1612 ----
+  			/* Need to reset the counters when retrying fenc. */
+  			try_mac = 1;
+  			try_unix = 1;
+! 			for (; p >= ptr && *p != CAR; p--)
+  			    ;
+  			if (p >= ptr)
+  			{
+***************
+*** 1618,1624 ****
+  			    {
+  				if (*p == NL)
+  				    try_unix++;
+! 				else if (*p == CR)
+  				    try_mac++;
+  			    }
+  			    if (try_mac > try_unix)
+--- 1614,1620 ----
+  			    {
+  				if (*p == NL)
+  				    try_unix++;
+! 				else if (*p == CAR)
+  				    try_mac++;
+  			    }
+  			    if (try_mac > try_unix)
+***************
+*** 1651,1662 ****
+  	    while (++ptr, --size >= 0)
+  	    {
+  		/* catch most common case first */
+! 		if ((c = *ptr) != NUL && c != CR && c != NL)
+  		    continue;
+  		if (c == NUL)
+  		    *ptr = NL;	/* NULs are replaced by newlines! */
+  		else if (c == NL)
+! 		    *ptr = CR;	/* NLs are replaced by CRs! */
+  		else
+  		{
+  		    if (skip_count == 0)
+--- 1647,1658 ----
+  	    while (++ptr, --size >= 0)
+  	    {
+  		/* catch most common case first */
+! 		if ((c = *ptr) != NUL && c != CAR && c != NL)
+  		    continue;
+  		if (c == NUL)
+  		    *ptr = NL;	/* NULs are replaced by newlines! */
+  		else if (c == NL)
+! 		    *ptr = CAR;	/* NLs are replaced by CRs! */
+  		else
+  		{
+  		    if (skip_count == 0)
+***************
+*** 1699,1705 ****
+  			len = (colnr_T)(ptr - line_start + 1);
+  			if (fileformat == EOL_DOS)
+  			{
+! 			    if (ptr[-1] == CR)	/* remove CR */
+  			    {
+  				ptr[-1] = NUL;
+  				--len;
+--- 1695,1701 ----
+  			len = (colnr_T)(ptr - line_start + 1);
+  			if (fileformat == EOL_DOS)
+  			{
+! 			    if (ptr[-1] == CAR)	/* remove CR */
+  			    {
+  				ptr[-1] = NUL;
+  				--len;
+***************
+*** 3569,3575 ****
+  	{
+  	    if (c == NL)
+  		*s = NUL;		/* replace newlines with NULs */
+! 	    else if (c == CR && fileformat == EOL_MAC)
+  		*s = NL;		/* Mac: replace CRs with NLs */
+  	    else
+  		*s = c;
+--- 3565,3571 ----
+  	{
+  	    if (c == NL)
+  		*s = NUL;		/* replace newlines with NULs */
+! 	    else if (c == CAR && fileformat == EOL_MAC)
+  		*s = NL;		/* Mac: replace CRs with NLs */
+  	    else
+  		*s = c;
+***************
+*** 3600,3606 ****
+  	    *s++ = NL;
+  	else
+  	{
+! 	    *s++ = CR;			/* EOL_MAC or EOL_DOS: write CR */
+  	    if (fileformat == EOL_DOS)	/* write CR-NL */
+  	    {
+  		if (++len == bufsize)
+--- 3596,3602 ----
+  	    *s++ = NL;
+  	else
+  	{
+! 	    *s++ = CAR;			/* EOL_MAC or EOL_DOS: write CR */
+  	    if (fileformat == EOL_DOS)	/* write CR-NL */
+  	    {
+  		if (++len == bufsize)
+*** ../vim-6.2.101/src/getchar.c	Tue May 20 21:33:40 2003
+--- src/getchar.c	Sun Sep  7 23:21:09 2003
+***************
+*** 1485,1491 ****
+  		case K_KMINUS:		c = '-'; break;
+  		case K_KDIVIDE:		c = '/'; break;
+  		case K_KMULTIPLY:	c = '*'; break;
+! 		case K_KENTER:		c = CR; break;
+  		case K_KPOINT:		c = '.'; break;
+  		case K_K0:		c = '0'; break;
+  		case K_K1:		c = '1'; break;
+--- 1485,1491 ----
+  		case K_KMINUS:		c = '-'; break;
+  		case K_KDIVIDE:		c = '/'; break;
+  		case K_KMULTIPLY:	c = '*'; break;
+! 		case K_KENTER:		c = CAR; break;
+  		case K_KPOINT:		c = '.'; break;
+  		case K_K0:		c = '0'; break;
+  		case K_K1:		c = '1'; break;
+***************
+*** 1810,1816 ****
+  				    && typebuf.tb_noremap[typebuf.tb_off]
+  								  != RM_NONE))
+  			    && !(p_paste && (State & (INSERT + CMDLINE)))
+! 			    && !(State == HITRETURN && (c1 == CR || c1 == ' '))
+  			    && State != ASKMORE
+  			    && State != CONFIRM
+  #ifdef FEAT_INS_EXPAND
+--- 1810,1816 ----
+  				    && typebuf.tb_noremap[typebuf.tb_off]
+  								  != RM_NONE))
+  			    && !(p_paste && (State & (INSERT + CMDLINE)))
+! 			    && !(State == HITRETURN && (c1 == CAR || c1 == ' '))
+  			    && State != ASKMORE
+  			    && State != CONFIRM
+  #ifdef FEAT_INS_EXPAND
+*** ../vim-6.2.101/src/gui.c	Sat May 17 21:46:27 2003
+--- src/gui.c	Sun Sep  7 22:45:17 2003
+***************
+*** 3767,3773 ****
+  	updateWindow(wp);   /* update window, status line, and cmdline */
+      }
+  
+!     return (wp == curwin && !equal(curwin->w_cursor, old_cursor));
+  }
+  
+  
+--- 3767,3773 ----
+  	updateWindow(wp);   /* update window, status line, and cmdline */
+      }
+  
+!     return (wp == curwin && !equalpos(curwin->w_cursor, old_cursor));
+  }
+  
+  
+*** ../vim-6.2.101/src/gui_athena.c	Sun May 25 19:43:14 2003
+--- src/gui_athena.c	Sun Sep  7 23:21:28 2003
+***************
+*** 1984,1990 ****
+  
+      if (XLookupString(&(event->xkey), buf, 2, NULL, NULL) == 1)
+      {
+! 	if (*buf == CR)
+  	    dialogStatus = 1;
+  	else if (*buf == ESC)
+  	    dialogStatus = 0;
+--- 1984,1990 ----
+  
+      if (XLookupString(&(event->xkey), buf, 2, NULL, NULL) == 1)
+      {
+! 	if (*buf == CAR)
+  	    dialogStatus = 1;
+  	else if (*buf == ESC)
+  	    dialogStatus = 0;
+*** ../vim-6.2.101/src/gui_gtk_x11.c	Mon Jun  2 22:16:24 2003
+--- src/gui_gtk_x11.c	Sun Sep  7 23:21:49 2003
+***************
+*** 864,870 ****
+  		string[0] = NL;
+  		break;
+  	    case GDK_Return: case GDK_ISO_Enter: case GDK_3270_Enter:
+! 		string[0] = CR;
+  		break;
+  	    case GDK_Escape:
+  		string[0] = ESC;
+--- 864,870 ----
+  		string[0] = NL;
+  		break;
+  	    case GDK_Return: case GDK_ISO_Enter: case GDK_3270_Enter:
+! 		string[0] = CAR;
+  		break;
+  	    case GDK_Escape:
+  		string[0] = ESC;
+*** ../vim-6.2.101/src/gui_motif.c	Sat May 24 19:30:02 2003
+--- src/gui_motif.c	Sun Sep  7 23:22:40 2003
+***************
+*** 1726,1732 ****
+  
+      if (XLookupString(&(event->xkey), buf, 2, &key_sym, NULL) == 1)
+      {
+! 	if (*buf == CR)
+  	    dialogStatus = 1;
+  	else if (*buf == ESC)
+  	    dialogStatus = 2;
+--- 1726,1732 ----
+  
+      if (XLookupString(&(event->xkey), buf, 2, &key_sym, NULL) == 1)
+      {
+! 	if (*buf == CAR)
+  	    dialogStatus = 1;
+  	else if (*buf == ESC)
+  	    dialogStatus = 2;
+*** ../vim-6.2.101/src/macros.h	Sat May  3 15:51:27 2003
+--- src/macros.h	Sun Sep  7 22:45:38 2003
+***************
+*** 29,44 ****
+  		   : (a)->col != (b)->col \
+  		       ? (a)->col < (b)->col \
+  		       : (a)->coladd < (b)->coladd)
+! # define equal(a, b) (((a).lnum == (b).lnum) && ((a).col == (b).col) && ((a).coladd == (b).coladd))
+  #else
+  # define lt(a, b) (((a).lnum != (b).lnum) \
+  		   ? ((a).lnum < (b).lnum) : ((a).col < (b).col))
+  # define ltp(a, b) (((a)->lnum != (b)->lnum) \
+  		   ? ((a)->lnum < (b)->lnum) : ((a)->col < (b)->col))
+! # define equal(a, b) (((a).lnum == (b).lnum) && ((a).col == (b).col))
+  #endif
+  
+! #define ltoreq(a, b) (lt(a, b) || equal(a, b))
+  
+  /*
+   * lineempty() - return TRUE if the line is empty
+--- 29,44 ----
+  		   : (a)->col != (b)->col \
+  		       ? (a)->col < (b)->col \
+  		       : (a)->coladd < (b)->coladd)
+! # define equalpos(a, b) (((a).lnum == (b).lnum) && ((a).col == (b).col) && ((a).coladd == (b).coladd))
+  #else
+  # define lt(a, b) (((a).lnum != (b).lnum) \
+  		   ? ((a).lnum < (b).lnum) : ((a).col < (b).col))
+  # define ltp(a, b) (((a)->lnum != (b)->lnum) \
+  		   ? ((a)->lnum < (b)->lnum) : ((a)->col < (b)->col))
+! # define equalpos(a, b) (((a).lnum == (b).lnum) && ((a).col == (b).col))
+  #endif
+  
+! #define ltoreq(a, b) (lt(a, b) || equalpos(a, b))
+  
+  /*
+   * lineempty() - return TRUE if the line is empty
+*** ../vim-6.2.101/src/mark.c	Sun Jul 27 14:22:19 2003
+--- src/mark.c	Sun Sep  7 22:45:54 2003
+***************
+*** 151,157 ****
+  checkpcmark()
+  {
+      if (curwin->w_prev_pcmark.lnum != 0
+! 	    && (equal(curwin->w_pcmark, curwin->w_cursor)
+  		|| curwin->w_pcmark.lnum == 0))
+      {
+  	curwin->w_pcmark = curwin->w_prev_pcmark;
+--- 151,157 ----
+  checkpcmark()
+  {
+      if (curwin->w_prev_pcmark.lnum != 0
+! 	    && (equalpos(curwin->w_pcmark, curwin->w_cursor)
+  		|| curwin->w_pcmark.lnum == 0))
+      {
+  	curwin->w_pcmark = curwin->w_prev_pcmark;
+*** ../vim-6.2.101/src/message.c	Sun Aug 10 22:39:59 2003
+--- src/message.c	Sun Sep  7 23:25:22 2003
+***************
+*** 786,803 ****
+  	return;
+      }
+  
+!     redir_off = TRUE;		    /* don't redirect this message */
+      oldState = State;
+      if (quit_more)
+      {
+! 	c = CR;			    /* just pretend CR was hit */
+  	quit_more = FALSE;
+  	got_int = FALSE;
+      }
+      else if (exmode_active)
+      {
+! 	MSG_PUTS(" ");	  /* make sure the cursor is on the right line */
+! 	c = CR;			    /* no need for a return in ex mode */
+  	got_int = FALSE;
+      }
+      else
+--- 786,803 ----
+  	return;
+      }
+  
+!     redir_off = TRUE;		/* don't redirect this message */
+      oldState = State;
+      if (quit_more)
+      {
+! 	c = CAR;		/* just pretend CR was hit */
+  	quit_more = FALSE;
+  	got_int = FALSE;
+      }
+      else if (exmode_active)
+      {
+! 	MSG_PUTS(" ");		/* make sure the cursor is on the right line */
+! 	c = CAR;		/* no need for a return in ex mode */
+  	got_int = FALSE;
+      }
+      else
+***************
+*** 1858,1864 ****
+  			more_back = 1;
+  			lines_left = 1;
+  			break;
+! 		    case CR:		/* one extra line */
+  		    case NL:
+  		    case 'j':
+  		    case K_DOWN:
+--- 1858,1864 ----
+  			more_back = 1;
+  			lines_left = 1;
+  			break;
+! 		    case CAR:		/* one extra line */
+  		    case NL:
+  		    case 'j':
+  		    case K_DOWN:
+***************
+*** 2575,2581 ****
+  	    c = get_keystroke();
+  	    switch (c)
+  	    {
+! 	    case CR:		/* User accepts default option */
+  	    case NL:
+  		retval = dfltbutton;
+  		break;
+--- 2575,2581 ----
+  	    c = get_keystroke();
+  	    switch (c)
+  	    {
+! 	    case CAR:		/* User accepts default option */
+  	    case NL:
+  		retval = dfltbutton;
+  		break;
+*** ../vim-6.2.101/src/misc1.c	Sun Aug 10 22:24:37 2003
+--- src/misc1.c	Fri Sep 26 22:09:58 2003
+***************
+*** 2884,2890 ****
+  	    do_redraw = FALSE;
+  	    break;
+  	}
+! 	else if (c == CR || c == NL || c == Ctrl_C || c == ESC)
+  	    break;
+      }
+      --no_mapping;
+--- 2884,2890 ----
+  	    do_redraw = FALSE;
+  	    break;
+  	}
+! 	else if (c == CAR || c == NL || c == Ctrl_C || c == ESC)
+  	    break;
+      }
+      --no_mapping;
+*** ../vim-6.2.101/src/misc2.c	Fri Sep 12 20:20:20 2003
+--- src/misc2.c	Sun Sep  7 23:25:58 2003
+***************
+*** 1759,1767 ****
+      {NL,		(char_u *)"NewLine"},	/* Alternative name */
+      {NL,		(char_u *)"LineFeed"},	/* Alternative name */
+      {NL,		(char_u *)"LF"},	/* Alternative name */
+!     {CR,		(char_u *)"CR"},
+!     {CR,		(char_u *)"Return"},	/* Alternative name */
+!     {CR,		(char_u *)"Enter"},	/* Alternative name */
+      {K_BS,		(char_u *)"BS"},
+      {K_BS,		(char_u *)"BackSpace"},	/* Alternative name */
+      {ESC,		(char_u *)"Esc"},
+--- 1759,1767 ----
+      {NL,		(char_u *)"NewLine"},	/* Alternative name */
+      {NL,		(char_u *)"LineFeed"},	/* Alternative name */
+      {NL,		(char_u *)"LF"},	/* Alternative name */
+!     {CAR,		(char_u *)"CR"},
+!     {CAR,		(char_u *)"Return"},	/* Alternative name */
+!     {CAR,		(char_u *)"Enter"},	/* Alternative name */
+      {K_BS,		(char_u *)"BS"},
+      {K_BS,		(char_u *)"BackSpace"},	/* Alternative name */
+      {ESC,		(char_u *)"Esc"},
+*** ../vim-6.2.101/src/normal.c	Thu Sep 11 21:21:21 2003
+--- src/normal.c	Sun Sep  7 23:26:22 2003
+***************
+*** 227,233 ****
+      {NL,	nv_down,	0,			FALSE},
+      {Ctrl_K,	nv_error,	0,			0},
+      {Ctrl_L,	nv_clear,	0,			0},
+!     {CR,	nv_down,	0,			TRUE},
+      {Ctrl_N,	nv_down,	NV_STS,			FALSE},
+      {Ctrl_O,	nv_ctrlo,	0,			0},
+      {Ctrl_P,	nv_up,		NV_STS,			FALSE},
+--- 227,233 ----
+      {NL,	nv_down,	0,			FALSE},
+      {Ctrl_K,	nv_error,	0,			0},
+      {Ctrl_L,	nv_clear,	0,			0},
+!     {CAR,	nv_down,	0,			TRUE},
+      {Ctrl_N,	nv_down,	NV_STS,			FALSE},
+      {Ctrl_O,	nv_ctrlo,	0,			0},
+      {Ctrl_P,	nv_up,		NV_STS,			FALSE},
+***************
+*** 630,636 ****
+       */
+      if (VIsual_active
+  	    && VIsual_select
+! 	    && (vim_isprintc(c) || c == NL || c == CR || c == K_KENTER))
+      {
+  # ifdef FEAT_MBYTE
+  	char_u	    buf[MB_MAXBYTES + 1];
+--- 630,636 ----
+       */
+      if (VIsual_active
+  	    && VIsual_select
+! 	    && (vim_isprintc(c) || c == NL || c == CAR || c == K_KENTER))
+      {
+  # ifdef FEAT_MBYTE
+  	char_u	    buf[MB_MAXBYTES + 1];
+***************
+*** 1671,1677 ****
+  		    && (!oap->inclusive
+  			|| (oap->op_type == OP_YANK
+  			    && gchar_pos(&oap->end) == NUL))
+! 		    && equal(oap->start, oap->end)
+  #ifdef FEAT_VIRTUALEDIT
+  		    && !(virtual_op && oap->start.coladd != oap->end.coladd)
+  #endif
+--- 1671,1677 ----
+  		    && (!oap->inclusive
+  			|| (oap->op_type == OP_YANK
+  			    && gchar_pos(&oap->end) == NUL))
+! 		    && equalpos(oap->start, oap->end)
+  #ifdef FEAT_VIRTUALEDIT
+  		    && !(virtual_op && oap->start.coladd != oap->end.coladd)
+  #endif
+***************
+*** 2743,2749 ****
+  		if (oap != NULL
+  			&& VIsual_mode == 'v'
+  			&& !vim_iswordc(gchar_pos(&end_visual))
+! 			&& equal(curwin->w_cursor, VIsual)
+  			&& (pos = findmatch(oap, NUL)) != NULL)
+  		{
+  		    curwin->w_cursor = *pos;
+--- 2743,2749 ----
+  		if (oap != NULL
+  			&& VIsual_mode == 'v'
+  			&& !vim_iswordc(gchar_pos(&end_visual))
+! 			&& equalpos(curwin->w_cursor, VIsual)
+  			&& (pos = findmatch(oap, NUL)) != NULL)
+  		{
+  		    curwin->w_cursor = *pos;
+***************
+*** 4119,4125 ****
+  		n /= 10;
+  	    else if (vim_isdigit(nchar))
+  		n = n * 10 + (nchar - '0');
+! 	    else if (nchar == CR)
+  	    {
+  #ifdef FEAT_GUI
+  		need_mouse_correct = TRUE;
+--- 4119,4125 ----
+  		n /= 10;
+  	    else if (vim_isdigit(nchar))
+  		n = n * 10 + (nchar - '0');
+! 	    else if (nchar == CAR)
+  	    {
+  #ifdef FEAT_GUI
+  		need_mouse_correct = TRUE;
+***************
+*** 4189,4195 ****
+  		}
+  		/* FALLTHROUGH */
+      case NL:
+!     case CR:
+      case K_KENTER:
+  		beginline(BL_WHITE | BL_FIX);
+  		/* FALLTHROUGH */
+--- 4189,4195 ----
+  		}
+  		/* FALLTHROUGH */
+      case NL:
+!     case CAR:
+      case K_KENTER:
+  		beginline(BL_WHITE | BL_FIX);
+  		/* FALLTHROUGH */
+***************
+*** 5234,5240 ****
+  #ifdef FEAT_CMDWIN
+  	/* In the cmdline window a <CR> executes the command. */
+  	if (cmdwin_type != 0 && cap->cmdchar == '\r')
+! 	    cmdwin_result = CR;
+  	else
+  #endif
+  	{
+--- 5234,5240 ----
+  #ifdef FEAT_CMDWIN
+  	/* In the cmdline window a <CR> executes the command. */
+  	if (cmdwin_type != 0 && cap->cmdchar == '\r')
+! 	    cmdwin_result = CAR;
+  	else
+  #endif
+  	{
+***************
+*** 7612,7618 ****
+  {
+      pos_T	*pp;
+  
+!     if (*p_sel == 'e' && !equal(VIsual, curwin->w_cursor))
+      {
+  	if (lt(VIsual, curwin->w_cursor))
+  	    pp = &curwin->w_cursor;
+--- 7612,7618 ----
+  {
+      pos_T	*pp;
+  
+!     if (*p_sel == 'e' && !equalpos(VIsual, curwin->w_cursor))
+      {
+  	if (lt(VIsual, curwin->w_cursor))
+  	    pp = &curwin->w_cursor;
+*** ../vim-6.2.101/src/ops.c	Fri Sep 12 20:29:23 2003
+--- src/ops.c	Wed Sep 17 21:59:01 2003
+***************
+*** 1478,1484 ****
+  	    else
+  #endif
+  		c = *s++;
+! 	    if (cv == Ctrl_V || c == ESC || c == Ctrl_C || c == CR || c == NL
+  #ifdef UNIX
+  		    || c == intr_char
+  #endif
+--- 1478,1484 ----
+  	    else
+  #endif
+  		c = *s++;
+! 	    if (cv == Ctrl_V || c == ESC || c == Ctrl_C || c == CAR || c == NL
+  #ifdef UNIX
+  		    || c == intr_char
+  #endif
+*** ../vim-6.2.101/src/os_unix.c	Wed Sep 10 22:51:29 2003
+--- src/os_unix.c	Sun Sep  7 23:27:25 2003
+***************
+*** 4862,4868 ****
+      /* Translate <CR><NL> into <NL>.  Caution, buffer may contain NUL. */
+      p = buffer;
+      for (i = 0; i < len; ++i)
+! 	if (!(buffer[i] == CR && buffer[i + 1] == NL))
+  	    *p++ = buffer[i];
+      len = p - buffer;
+  # endif
+--- 4862,4868 ----
+      /* Translate <CR><NL> into <NL>.  Caution, buffer may contain NUL. */
+      p = buffer;
+      for (i = 0; i < len; ++i)
+! 	if (!(buffer[i] == CAR && buffer[i + 1] == NL))
+  	    *p++ = buffer[i];
+      len = p - buffer;
+  # endif
+*** ../vim-6.2.101/src/regexp.c	Sun Jul 27 14:49:17 2003
+--- src/regexp.c	Sun Sep  7 23:28:09 2003
+***************
+*** 393,399 ****
+  {
+      switch (c)
+      {
+! 	case 'r':   return CR;
+  	case 't':   return TAB;
+  	case 'e':   return ESC;
+  	case 'b':   return BS;
+--- 393,399 ----
+  {
+      switch (c)
+      {
+! 	case 'r':   return CAR;
+  	case 't':   return TAB;
+  	case 'e':   return ESC;
+  	case 'b':   return BS;
+***************
+*** 5711,5717 ****
+  		    /* Change NL to CR, so that it becomes a line break.
+  		     * Skip over a backslashed character. */
+  		    if (*s == NL)
+! 			*s = CR;
+  		    else if (*s == '\\' && s[1] != NUL)
+  			++s;
+  #ifdef FEAT_MBYTE
+--- 5711,5717 ----
+  		    /* Change NL to CR, so that it becomes a line break.
+  		     * Skip over a backslashed character. */
+  		    if (*s == NL)
+! 			*s = CAR;
+  		    else if (*s == '\\' && s[1] != NUL)
+  			++s;
+  #ifdef FEAT_MBYTE
+***************
+*** 5773,5779 ****
+  		/* Check for abbreviations -- webb */
+  		switch (*src)
+  		{
+! 		    case 'r':	c = CR;		++src;	break;
+  		    case 'n':	c = NL;		++src;	break;
+  		    case 't':	c = TAB;	++src;	break;
+  		 /* Oh no!  \e already has meaning in subst pat :-( */
+--- 5773,5779 ----
+  		/* Check for abbreviations -- webb */
+  		switch (*src)
+  		{
+! 		    case 'r':	c = CAR;	++src;	break;
+  		    case 'n':	c = NL;		++src;	break;
+  		    case 't':	c = TAB;	++src;	break;
+  		 /* Oh no!  \e already has meaning in subst pat :-( */
+***************
+*** 5854,5860 ****
+  			    if (reg_mmatch->endpos[no].lnum == clnum)
+  				break;
+  			    if (copy)
+! 				*dst = CR;
+  			    ++dst;
+  			    s = reg_getline(++clnum);
+  			    if (reg_mmatch->endpos[no].lnum == clnum)
+--- 5854,5860 ----
+  			    if (reg_mmatch->endpos[no].lnum == clnum)
+  				break;
+  			    if (copy)
+! 				*dst = CAR;
+  			    ++dst;
+  			    s = reg_getline(++clnum);
+  			    if (reg_mmatch->endpos[no].lnum == clnum)
+***************
+*** 5873,5879 ****
+  		    }
+  		    else
+  		    {
+! 			if (backslash && (*s == CR || *s == '\\'))
+  			{
+  			    /*
+  			     * Insert a backslash in front of a CR, otherwise
+--- 5873,5879 ----
+  		    }
+  		    else
+  		    {
+! 			if (backslash && (*s == CAR || *s == '\\'))
+  			{
+  			    /*
+  			     * Insert a backslash in front of a CR, otherwise
+*** ../vim-6.2.101/src/search.c	Thu Sep 11 21:42:32 2003
+--- src/search.c	Sun Sep  7 22:47:43 2003
+***************
+*** 2886,2892 ****
+       * When Visual mode is not active, or when the VIsual area is only one
+       * character, select the word and/or white space under the cursor.
+       */
+!     if (!VIsual_active || equal(curwin->w_cursor, VIsual))
+  #endif
+      {
+  	/*
+--- 2886,2892 ----
+       * When Visual mode is not active, or when the VIsual area is only one
+       * character, select the word and/or white space under the cursor.
+       */
+!     if (!VIsual_active || equalpos(curwin->w_cursor, VIsual))
+  #endif
+      {
+  	/*
+***************
+*** 3055,3061 ****
+      /*
+       * When visual area is bigger than one character: Extend it.
+       */
+!     if (VIsual_active && !equal(start_pos, VIsual))
+      {
+  extend:
+  	if (lt(start_pos, VIsual))
+--- 3055,3061 ----
+      /*
+       * When visual area is bigger than one character: Extend it.
+       */
+!     if (VIsual_active && !equalpos(start_pos, VIsual))
+      {
+  extend:
+  	if (lt(start_pos, VIsual))
+***************
+*** 3082,3088 ****
+  	    if (!at_start_sent)
+  	    {
+  		findsent(BACKWARD, 1L);
+! 		if (equal(curwin->w_cursor, start_pos))
+  		    at_start_sent = TRUE;  /* exactly at start of sentence */
+  		else
+  		    /* inside a sentence, go to its end (start of next) */
+--- 3082,3088 ----
+  	    if (!at_start_sent)
+  	    {
+  		findsent(BACKWARD, 1L);
+! 		if (equalpos(curwin->w_cursor, start_pos))
+  		    at_start_sent = TRUE;  /* exactly at start of sentence */
+  		else
+  		    /* inside a sentence, go to its end (start of next) */
+***************
+*** 3111,3117 ****
+  	     */
+  	    incl(&pos);
+  	    at_start_sent = TRUE;
+! 	    if (!equal(pos, curwin->w_cursor))	/* not just before a sentence */
+  	    {
+  		at_start_sent = FALSE;
+  		while (lt(pos, curwin->w_cursor))
+--- 3111,3117 ----
+  	     */
+  	    incl(&pos);
+  	    at_start_sent = TRUE;
+! 	    if (!equalpos(pos, curwin->w_cursor)) /* not just before a sentence */
+  	    {
+  		at_start_sent = FALSE;
+  		while (lt(pos, curwin->w_cursor))
+***************
+*** 3146,3152 ****
+       */
+      while (c = gchar_pos(&pos), vim_iswhite(c))	/* vim_iswhite() is a macro */
+  	incl(&pos);
+!     if (equal(pos, curwin->w_cursor))
+      {
+  	start_blank = TRUE;
+  	find_first_blank(&start_pos);	/* go back to first blank */
+--- 3146,3152 ----
+       */
+      while (c = gchar_pos(&pos), vim_iswhite(c))	/* vim_iswhite() is a macro */
+  	incl(&pos);
+!     if (equalpos(pos, curwin->w_cursor))
+      {
+  	start_blank = TRUE;
+  	find_first_blank(&start_pos);	/* go back to first blank */
+***************
+*** 3192,3198 ****
+      if (VIsual_active)
+      {
+  	/* avoid getting stuck with "is" on a single space before a sent. */
+! 	if (equal(start_pos, curwin->w_cursor))
+  	    goto extend;
+  	if (*p_sel == 'e')
+  	    ++curwin->w_cursor.col;
+--- 3192,3198 ----
+      if (VIsual_active)
+      {
+  	/* avoid getting stuck with "is" on a single space before a sent. */
+! 	if (equalpos(start_pos, curwin->w_cursor))
+  	    goto extend;
+  	if (*p_sel == 'e')
+  	    ++curwin->w_cursor.col;
+***************
+*** 3238,3244 ****
+       * If we start on '(', '{', ')', '}', etc., use the whole block inclusive.
+       */
+  #ifdef FEAT_VISUAL
+!     if (!VIsual_active || equal(VIsual, curwin->w_cursor))
+  #endif
+      {
+  	setpcmark();
+--- 3238,3244 ----
+       * If we start on '(', '{', ')', '}', etc., use the whole block inclusive.
+       */
+  #ifdef FEAT_VISUAL
+!     if (!VIsual_active || equalpos(VIsual, curwin->w_cursor))
+  #endif
+      {
+  	setpcmark();
+*** ../vim-6.2.101/src/ui.c	Sat May 17 16:12:34 2003
+--- src/ui.c	Sun Sep  7 23:28:45 2003
+***************
+*** 149,155 ****
+  # endif
+  	if (wtime == -1 && ++count == 1000)
+  	    read_error_exit();
+! 	buf[0] = CR;
+  	return 1;
+      }
+  #endif
+--- 149,155 ----
+  # endif
+  	if (wtime == -1 && ++count == 1000)
+  	    read_error_exit();
+! 	buf[0] = CAR;
+  	return 1;
+      }
+  #endif
+***************
+*** 413,420 ****
+  	    start = curwin->w_cursor;
+  	    end = VIsual;
+  	}
+! 	if (!equal(clip_star.start, start) || !equal(clip_star.end, end)
+! 					    || clip_star.vmode != VIsual_mode)
+  	{
+  	    clip_clear_selection();
+  	    clip_star.start = start;
+--- 413,421 ----
+  	    start = curwin->w_cursor;
+  	    end = VIsual;
+  	}
+! 	if (!equalpos(clip_star.start, start)
+! 		|| !equalpos(clip_star.end, end)
+! 		|| clip_star.vmode != VIsual_mode)
+  	{
+  	    clip_clear_selection();
+  	    clip_star.start = start;
+*** ../vim-6.2.101/src/workshop.c	Mon Mar 10 20:04:17 2003
+--- src/workshop.c	Sat Sep 13 16:09:50 2003
+***************
+*** 1136,1142 ****
+      *curCol = curwin->w_cursor.col;
+  
+      if (curbuf->b_visual_mode == 'v' &&
+! 	    equal(curwin->w_cursor, curbuf->b_visual_end))
+      {
+  	*selStartLine = curbuf->b_visual_start.lnum;
+  	*selStartCol = curbuf->b_visual_start.col;
+--- 1136,1142 ----
+      *curCol = curwin->w_cursor.col;
+  
+      if (curbuf->b_visual_mode == 'v' &&
+! 	    equalpos(curwin->w_cursor, curbuf->b_visual_end))
+      {
+  	*selStartLine = curbuf->b_visual_start.lnum;
+  	*selStartCol = curbuf->b_visual_start.col;
+*** ../vim-6.2.101/src/version.c	Sat Sep 27 19:26:33 2003
+--- src/version.c	Sat Sep 27 19:31:42 2003
+***************
+*** 632,633 ****
+--- 638,641 ----
+  {   /* Add new patch number below this line */
++ /**/
++     102,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+34. You laugh at people with 14400 baud modems.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

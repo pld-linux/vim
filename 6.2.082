@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.082
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.082
+Problem:    Can't compile with Perl 5.8.1.
+Solution:   Rename "e_number" to "e_number_exp". (Sascha Blank)
+Files:	    src/digraph.c, src/globals.h
+
+
+*** ../vim-6.2.081/src/digraph.c	Fri May  2 20:44:37 2003
+--- src/digraph.c	Fri Aug 22 20:39:59 2003
+***************
+*** 2175,2181 ****
+  	str = skipwhite(str);
+  	if (!isdigit(*str))
+  	{
+! 	    EMSG(_(e_number));
+  	    return;
+  	}
+  	n = getdigits(&str);
+--- 2175,2181 ----
+  	str = skipwhite(str);
+  	if (!isdigit(*str))
+  	{
+! 	    EMSG(_(e_number_exp));
+  	    return;
+  	}
+  	n = getdigits(&str);
+*** ../vim-6.2.081/src/globals.h	Wed May 28 20:24:00 2003
+--- src/globals.h	Fri Aug 22 20:40:04 2003
+***************
+*** 1253,1259 ****
+  EXTERN char_u e_nowrtmsg[]	INIT(=N_("E37: No write since last change (add ! to override)"));
+  EXTERN char_u e_null[]		INIT(=N_("E38: Null argument"));
+  #ifdef FEAT_DIGRAPHS
+! EXTERN char_u e_number[]	INIT(=N_("E39: Number expected"));
+  #endif
+  #ifdef FEAT_QUICKFIX
+  EXTERN char_u e_openerrf[]	INIT(=N_("E40: Can't open errorfile %s"));
+--- 1253,1259 ----
+  EXTERN char_u e_nowrtmsg[]	INIT(=N_("E37: No write since last change (add ! to override)"));
+  EXTERN char_u e_null[]		INIT(=N_("E38: Null argument"));
+  #ifdef FEAT_DIGRAPHS
+! EXTERN char_u e_number_exp[]	INIT(=N_("E39: Number expected"));
+  #endif
+  #ifdef FEAT_QUICKFIX
+  EXTERN char_u e_openerrf[]	INIT(=N_("E40: Can't open errorfile %s"));
+*** ../vim-6.2.081/src/version.c	Thu Sep 11 21:08:22 2003
+--- src/version.c	Thu Sep 11 21:10:21 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     82,
+  /**/
+
+-- 
+It is illegal to rob a bank and then shoot at the bank teller with a water
+pistol.
+		[real standing law in Louisana, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

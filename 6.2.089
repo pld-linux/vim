@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.089
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.089
+Problem:    ":set isk+=" adds a comma. (Mark Waggoner)
+Solution:   Don't add a comma when the added value is empty.
+Files:	    src/option.c
+
+
+*** ../vim-6.2.088/src/option.c	Mon Jun  2 22:01:43 2003
+--- src/option.c	Wed Sep 10 20:12:09 2003
+***************
+*** 3818,3824 ****
+  			     * needed */
+  			    if (adding || prepending)
+  			    {
+! 				comma = ((flags & P_COMMA) && *origval);
+  				if (adding)
+  				{
+  				    i = (int)STRLEN(origval);
+--- 3818,3825 ----
+  			     * needed */
+  			    if (adding || prepending)
+  			    {
+! 				comma = ((flags & P_COMMA) && *origval != NUL
+! 							   && *newval != NUL);
+  				if (adding)
+  				{
+  				    i = (int)STRLEN(origval);
+*** ../vim-6.2.088/src/version.c	Thu Sep 11 21:42:32 2003
+--- src/version.c	Thu Sep 11 21:44:22 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     89,
+  /**/
+
+-- 
+So when I saw the post to comp.editors, I rushed over to the FTP site to
+grab it.  So I yank apart the tarball, light x candles, where x= the
+vim version multiplied by the md5sum of the source divided by the MAC of
+my NIC (8A3FA78155A8A1D346C3C4A), put on black robes, dim the lights,
+wave a dead chicken over the hard drive, and summon the power of GNU GCC
+with the magic words "make config ; make!".
+		[Jason Spence, compiling Vim 5.0]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

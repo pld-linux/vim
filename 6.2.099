@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.099 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.099 (extra)
+Problem:    Test 49 fails. (Mikolaj Machowski)
+Solution:   The Polish translation must not change "E116" to "R116".
+Files:	    src/po/pl.po
+
+
+*** ../vim-6.2.098/src/po/pl.po	Sun Jun  1 15:36:35 2003
+--- src/po/pl.po	Sat Sep 13 13:34:39 2003
+***************
+*** 435,441 ****
+  #: eval.c:2531
+  #, c-format
+  msgid "E116: Invalid arguments for function %s"
+! msgstr "R116: Niew³a¶ciwe argumenty dla funkcji %s"
+  
+  #: eval.c:2532
+  #, c-format
+--- 435,441 ----
+  #: eval.c:2531
+  #, c-format
+  msgid "E116: Invalid arguments for function %s"
+! msgstr "E116: Niew³a¶ciwe argumenty dla funkcji %s"
+  
+  #: eval.c:2532
+  #, c-format
+*** ../vim-6.2.098/src/version.c	Tue Sep 16 14:15:52 2003
+--- src/version.c	Sat Sep 27 19:09:24 2003
+***************
+*** 632,633 ****
+--- 638,641 ----
+  {   /* Add new patch number below this line */
++ /**/
++     99,
+  /**/
+
+-- 
+Q. What happens to programmers when they die?
+A: MS-Windows programmers are reinstalled.  C++ programmers become undefined,
+   anyone who refers to them will die as well.  Java programmers reincarnate
+   after being garbage collected.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,67 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.097
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.097
+Problem:    Setting or resetting 'insertmode' in a BufEnter autocommand
+	    doesn't always have immediate effect. (Nagger)
+Solution:   When 'insertmode' is set, set need_start_insertmode, when it's
+	    reset set stop_insert_mode.
+Files:	    src/option.c
+
+
+*** ../vim-6.2.096/src/option.c	Thu Sep 11 21:46:06 2003
+--- src/option.c	Wed Sep 10 20:12:09 2003
+***************
+*** 5994,5999 ****
+--- 5994,6018 ----
+  	paste_option_changed();
+      }
+  
++     /* when 'insertmode' is set from an autocommand need to do work here */
++     else if ((int *)varp == &p_im)
++     {
++ 	if (p_im)
++ 	{
++ 	    if ((State & INSERT) == 0)
++ 		need_start_insertmode = TRUE;
++ 	    stop_insert_mode = FALSE;
++ 	}
++ 	else
++ 	{
++ 	    need_start_insertmode = FALSE;
++ 	    stop_insert_mode = TRUE;
++ 	    if (p_smd && restart_edit != 0)
++ 		clear_cmdline = TRUE;	/* remove "(insert)" */
++ 	    restart_edit = 0;
++ 	}
++     }
++ 
+      /* when 'ignorecase' is set or reset and 'hlsearch' is set, redraw */
+      else if ((int *)varp == &p_ic && p_hls)
+      {
+*** ../vim-6.2.096/src/version.c	Fri Sep 12 20:29:23 2003
+--- src/version.c	Fri Sep 12 20:50:17 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     97,
+  /**/
+
+-- 
+TERRY GILLIAM PLAYED: PATSY (ARTHUR'S TRUSTY STEED), THE GREEN KNIGHT
+                      SOOTHSAYER, BRIDGEKEEPER, SIR GAWAIN (THE FIRST TO BE
+                      KILLED BY THE RABBIT)
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,103 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.098
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.098 (after 6.2.097)
+Problem:    Can't build Vim with tiny features. (Christian J. Robinson)
+Solution:   Declare stop_insert_mode always.
+Files:	    src/edit.c, src/globals.h
+
+
+*** ../vim-6.2.097/src/edit.c	Sun Jul 27 15:06:48 2003
+--- src/edit.c	Sat Sep 13 13:43:36 2003
+***************
+*** 335,343 ****
+      else
+  	State = INSERT;
+  
+- #ifdef FEAT_EX_EXTRA
+      stop_insert_mode = FALSE;
+- #endif
+  
+      /*
+       * Need to recompute the cursor position, it might move when the cursor is
+--- 335,341 ----
+***************
+*** 494,507 ****
+  	if (arrow_used)	    /* don't repeat insert when arrow key used */
+  	    count = 0;
+  
+- #ifdef FEAT_EX_EXTRA
+  	if (stop_insert_mode)
+  	{
+! 	    /* ":stopinsert" used */
+  	    count = 0;
+  	    goto doESCkey;
+  	}
+- #endif
+  
+  	/* set curwin->w_curswant for next K_DOWN or K_UP */
+  	if (!arrow_used)
+--- 492,503 ----
+  	if (arrow_used)	    /* don't repeat insert when arrow key used */
+  	    count = 0;
+  
+  	if (stop_insert_mode)
+  	{
+! 	    /* ":stopinsert" used or 'insertmode' reset */
+  	    count = 0;
+  	    goto doESCkey;
+  	}
+  
+  	/* set curwin->w_curswant for next K_DOWN or K_UP */
+  	if (!arrow_used)
+*** ../vim-6.2.097/src/globals.h	Thu Sep 11 21:11:22 2003
+--- src/globals.h	Sat Sep 13 13:44:02 2003
+***************
+*** 814,821 ****
+  		    ;
+  #ifdef FEAT_EX_EXTRA
+  EXTERN int	ex_normal_busy INIT(= 0); /* recursivenes of ex_normal() */
+- EXTERN int	stop_insert_mode;	/* for ":stopinsert" */
+  #endif
+  
+  EXTERN int	KeyTyped;		/* TRUE if user typed current char */
+  EXTERN int	KeyStuffed;		/* TRUE if current char from stuffbuf */
+--- 814,821 ----
+  		    ;
+  #ifdef FEAT_EX_EXTRA
+  EXTERN int	ex_normal_busy INIT(= 0); /* recursivenes of ex_normal() */
+  #endif
++ EXTERN int	stop_insert_mode;	/* for ":stopinsert" and 'insertmode' */
+  
+  EXTERN int	KeyTyped;		/* TRUE if user typed current char */
+  EXTERN int	KeyStuffed;		/* TRUE if current char from stuffbuf */
+*** ../vim-6.2.097/src/version.c	Fri Sep 12 20:56:50 2003
+--- src/version.c	Sat Sep 13 21:13:01 2003
+***************
+*** 632,633 ****
+--- 638,641 ----
+  {   /* Add new patch number below this line */
++ /**/
++     98,
+  /**/
+
+-- 
+Any resemblance between the above views and those of my employer, my terminal,
+or the view out my window are purely coincidental.  Any resemblance between
+the above and my own views is non-deterministic.  The question of the
+existence of views in the absence of anyone to hold them is left as an
+exercise for the reader.  The question of the existence of the reader is left
+as an exercise for the second god coefficient.  (A discussion of
+non-orthogonal, non-integral polytheism is beyond the scope of this article.)
+						(Ralph Jennings)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,79 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.079
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.079
+Problem:    ":w ++enc=utf-8 !cmd" doesn't work.
+Solution:   Check for the "++" argument before the "!".
+Files:	    src/ex_docmd.c
+
+
+*** ../vim-6.2.078/src/ex_docmd.c	Sun Aug 10 22:24:37 2003
+--- src/ex_docmd.c	Sun Sep  7 14:26:29 2003
+***************
+*** 1867,1872 ****
+--- 1867,1884 ----
+      else
+  	ea.arg = skipwhite(p);
+  
++     /*
++      * Check for "++opt=val" argument.
++      * Must be first, allow ":w ++enc=utf8 !cmd"
++      */
++     if (ea.argt & ARGOPT)
++ 	while (ea.arg[0] == '+' && ea.arg[1] == '+')
++ 	    if (getargopt(&ea) == FAIL && !ni)
++ 	    {
++ 		errormsg = (char_u *)_(e_invarg);
++ 		goto doend;
++ 	    }
++ 
+      if (ea.cmdidx == CMD_write || ea.cmdidx == CMD_update)
+      {
+  	if (*ea.arg == '>')			/* append */
+***************
+*** 1912,1928 ****
+      }
+  
+      /*
+-      * Check for "++opt=val" argument.
+-      */
+-     if (ea.argt & ARGOPT)
+- 	while (ea.arg[0] == '+' && ea.arg[1] == '+')
+- 	    if (getargopt(&ea) == FAIL && !ni)
+- 	    {
+- 		errormsg = (char_u *)_(e_invarg);
+- 		goto doend;
+- 	    }
+- 
+-     /*
+       * Check for "+command" argument, before checking for next command.
+       * Don't do this for ":read !cmd" and ":write !cmd".
+       */
+--- 1924,1929 ----
+*** ../vim-6.2.078/src/version.c	Wed Sep 10 21:51:27 2003
+--- src/version.c	Wed Sep 10 22:39:12 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     79,
+  /**/
+
+-- 
+BEDEVERE: Look!  It's the old man from scene 24 - what's he Doing here?
+ARTHUR:   He is the keeper of the Bridge.  He asks each traveler five
+          questions ...
+GALAHAD:  Three questions.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
