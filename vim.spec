@@ -5,7 +5,8 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	5.7
-Release:	8
+Release:	9
+Epoch:		1
 License:	Charityware
 Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
@@ -30,6 +31,18 @@ Patch10:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.006
 Patch11:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.007
 Patch12:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.008
 Patch13:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.009
+Patch14:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.010
+Patch15:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.011
+Patch16:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.012
+Patch15:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.011
+Patch16:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.012
+Patch17:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.013
+Patch18:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.014
+Patch19:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.015
+Patch20:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.016
+Patch21:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.017
+Patch22:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.018
+Patch23:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.019
 URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
 %{!?bcond_off_static:BuildRequires:	ncurses-static}
@@ -176,6 +189,16 @@ biblioteki GTK.
 %patch11 -p2
 %patch12 -p2
 %patch13 -p2
+%patch14 -p2
+%patch15 -p2
+%patch16 -p2
+%patch17 -p2
+%patch18 -p2
+%patch19 -p2
+%patch20 -p2
+%patch21 -p2
+%patch22 -p2
+%patch23 -p2
 
 %build
 cd src
