@@ -24,7 +24,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -46,6 +46,7 @@ Patch4:		%{name}-ispell-axp.patch
 Patch5:		%{name}-ac25x.patch
 Patch6:		%{name}-vimrc.patch
 Patch7:		%{name}-no_libelf.patch
+Patch8:		%{name}-egrep.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -441,6 +442,7 @@ done
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 %build
 cd src
