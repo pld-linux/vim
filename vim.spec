@@ -5,6 +5,7 @@
 # _without_motif	- without Motif-based gvim
 # _without_gtk		- without gtk+-based gvim support
 # _without_gnome	- without gnome-based gvim support
+# _with_ispell		- with spell checking (non-standard feature; disables RIGHTLEFT and FKMAP)
 #
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -33,6 +34,7 @@ Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-phphighlight.patch
 Patch3:		%{name}-paths.patch
+Patch4:		%{name}-ispell.patch
 URL:		http://www.vim.org/
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
@@ -215,6 +217,7 @@ biblioteki GNOME.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%{?_with_ispell:%patch4 -p1}
 
 %build
 cd src
