@@ -1,0 +1,315 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.210 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.210 (extra)
+Problem:    Mac OSX: antialiased fonts are not supported.
+Solution:   Add the 'antialias' option to switch on antialiasing on Mac OSX
+            10.2 and later. (Peter Cucka)
+Files:      runtime/doc/options.txt, src/gui_mac.c, src/option.h, src/option.c
+
+
+*** ../vim-6.2.209/runtime/doc/options.txt	Tue Aug 12 20:01:59 2003
+--- runtime/doc/options.txt	Thu Jan 22 10:47:26 2004
+***************
+*** 1,4 ****
+! *options.txt*	For Vim version 6.2.  Last change: 2003 Aug 12
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+--- 1,4 ----
+! *options.txt*	For Vim version 6.2.  Last change: 2004 Jan 22
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+***************
+*** 619,644 ****
+  	Registered sign, Greek/Cyrillic letters are represented by two octets,
+  	therefore those fonts have "wide" glyphs for them. This is also
+  	true of some line drawing characters used to make tables in text
+! 	file. Therefore, when a CJK font is used for GUI vim or
+! 	vim is running inside a terminal (emulators) that uses a CJK font
+! 	(or vim is run inside an xterm invoked with "-cjkwidth" option.),
+  	this option should be set to "double" to match the width perceived
+  	by Vim with the width of glyphs in the font.  Perhaps it also has
+  	to be set to "double" under CJK Windows 9x/ME or Windows 2k/XP
+  	when the system locale is set to one of CJK locales.  See Unicode
+  	Standard Annex #11 (http://www.unicode.org/reports/tr11).
+  
+! 			*'autochdir'* *'acd'* *'noatuochdir'* *'noacd'*
+  'autochdir' 'acd'	boolean (default off)
+  			global
+  			{not in Vi}
+  			{only available when compiled with the
+  			|+netbeans_intg| or |+sun_workshop| feature}
+! 	When on, vim will change its value for the current working directory
+  	whenever you open a file, switch buffers, delete a buffer or
+  	open/close a window. It will change to the directory containing the
+  	file which was opened or selected.  This option is provided for
+! 	backward compatibility with the vim released with Sun ONE Studio 4
+  	Enterprise Edition.
+  
+  				*'arabic'* *'arab'* *'noarabic'* *'noarab'*
+--- 621,658 ----
+  	Registered sign, Greek/Cyrillic letters are represented by two octets,
+  	therefore those fonts have "wide" glyphs for them. This is also
+  	true of some line drawing characters used to make tables in text
+! 	file. Therefore, when a CJK font is used for GUI Vim or
+! 	Vim is running inside a terminal (emulators) that uses a CJK font
+! 	(or Vim is run inside an xterm invoked with "-cjkwidth" option.),
+  	this option should be set to "double" to match the width perceived
+  	by Vim with the width of glyphs in the font.  Perhaps it also has
+  	to be set to "double" under CJK Windows 9x/ME or Windows 2k/XP
+  	when the system locale is set to one of CJK locales.  See Unicode
+  	Standard Annex #11 (http://www.unicode.org/reports/tr11).
+  
+! 			*'antialias'* *'anti'* *'noantialias'* *'noanti'*
+! 'antialias' 'anti'	boolean (default: off)
+! 			global
+! 			{not in Vi}
+! 			{only available when compiled with GUI enabled
+!                         on Mac OS X}
+! 	This option only has an effect in the GUI version of Vim on Mac OS X
+!         v10.2 or later.  When on, Vim will use smooth ("antialiased") fonts,
+!         which can be easier to read at certain sizes on certain displays.
+! 	Setting this option can sometimes cause problems if |guifont| is set 
+! 	to its default (empty string).
+! 
+! 			*'autochdir'* *'acd'* *'noautochdir'* *'noacd'*
+  'autochdir' 'acd'	boolean (default off)
+  			global
+  			{not in Vi}
+  			{only available when compiled with the
+  			|+netbeans_intg| or |+sun_workshop| feature}
+! 	When on, Vim will change its value for the current working directory
+  	whenever you open a file, switch buffers, delete a buffer or
+  	open/close a window. It will change to the directory containing the
+  	file which was opened or selected.  This option is provided for
+! 	backward compatibility with the Vim released with Sun ONE Studio 4
+  	Enterprise Edition.
+  
+  				*'arabic'* *'arab'* *'noarabic'* *'noarab'*
+*** ../vim-6.2.209/src/gui_mac.c	Sun Nov  2 15:27:37 2003
+--- src/gui_mac.c	Thu Jan 22 10:44:31 2004
+***************
+*** 2794,2799 ****
+--- 2850,2861 ----
+      gui.scrollbar_height = gui.scrollbar_width = 15; /* cheat 1 overlap */
+      gui.border_offset = gui.border_width = 2;
+  
++ #if defined(FEAT_GUI) && defined(MACOS_X)
++     /* If Quartz-style text antialiasing is available (see
++        gui_mch_draw_string() below), enable it for all font sizes. */
++     vim_setenv((char_u *)"QDTEXT_MINSIZE", (char_u *)"1");
++ #endif
++ 
+      /* TODO: Load bitmap if using TOOLBAR */
+      return OK;
+  }
+***************
+*** 3265,3295 ****
+      int		len;
+      int		flags;
+  {
+-     TextMode (srcCopy);
+-     TextFace (normal);
+  
+! /*  SelectFont(hdc, gui.currFont); */
+  
+!     if (flags & DRAW_TRANSP)
+      {
+! 	TextMode (srcOr);
+      }
+  
+!     MoveTo (TEXT_X(col), TEXT_Y(row));
+!     DrawText ((char *)s, 0, len);
+  
+  
+!     if (flags & DRAW_BOLD)
+!     {
+! 	TextMode (srcOr);
+! 	MoveTo (TEXT_X(col) + 1, TEXT_Y(row));
+  	DrawText ((char *)s, 0, len);
+-     }
+  
+!     if (flags & DRAW_UNDERL)
+!     {
+! 	MoveTo (FILL_X(col), FILL_Y(row + 1) - 1);
+! 	LineTo (FILL_X(col + len) - 1, FILL_Y(row + 1) - 1);
+      }
+  }
+  
+--- 3327,3411 ----
+      int		len;
+      int		flags;
+  {
+  
+! #if defined(FEAT_GUI) && defined(MACOS_X)
+!     /*
+!      * On OS X, try using Quartz-style text antialiasing.
+!      */
+!     SInt32 sys_version = 0;
+  
+!     Gestalt(gestaltSystemVersion, &sys_version);
+!     if (sys_version >= 0x1020)
+      {
+!         /* Quartz antialiasing is available only in OS 10.2 and later. */
+!         UInt32 qd_flags = (p_antialias ?
+! 			     kQDUseCGTextRendering | kQDUseCGTextMetrics : 0);
+!         (void)SwapQDTextFlags(qd_flags);
+!     }
+! 
+!     if (sys_version >= 0x1020 && p_antialias)
+!     {
+!         StyleParameter face;
+! 
+!         face = normal;
+!         if (flags & DRAW_BOLD)
+!             face |= bold;
+!         if (flags & DRAW_UNDERL)
+!             face |= underline;
+!         TextFace(face);
+! 
+!         /* Quartz antialiasing works only in srcOr transfer mode. */
+!         TextMode(srcOr);
+! 
+!         if (!(flags & DRAW_TRANSP))
+!         {
+!             /*
+!              * Since we're using srcOr mode, we have to clear the block
+!              * before drawing the text.  The following is like calling
+!              * gui_mch_clear_block(row, col, row, col + len - 1),
+!              * but without setting the bg color to gui.back_pixel.
+!              */
+!             Rect rc;
+!             rc.left = FILL_X(col);
+!             rc.top = FILL_Y(row);
+!             rc.right = FILL_X(col + len) + (col + len == Columns);
+!             rc.bottom = FILL_Y(row + 1);
+!             EraseRect(&rc);
+!         }
+! 
+!         MoveTo(TEXT_X(col), TEXT_Y(row));
+!         DrawText((char*)s, 0, len);
+      }
++     else
++ #endif
++     {
++ 	/* Use old-style, non-antialiased QuickDraw text rendering. */
++ 	TextMode (srcCopy);
++ 	TextFace (normal);
+  
+!     /*  SelectFont(hdc, gui.currFont); */
+  
++ 	if (flags & DRAW_TRANSP)
++ 	{
++ 	    TextMode (srcOr);
++ 	}
+  
+! 	MoveTo (TEXT_X(col), TEXT_Y(row));
+  	DrawText ((char *)s, 0, len);
+  
+! 
+! 	if (flags & DRAW_BOLD)
+! 	{
+! 	    TextMode (srcOr);
+! 	    MoveTo (TEXT_X(col) + 1, TEXT_Y(row));
+! 	    DrawText ((char *)s, 0, len);
+! 	}
+! 
+! 	if (flags & DRAW_UNDERL)
+! 	{
+! 	    MoveTo (FILL_X(col), FILL_Y(row + 1) - 1);
+! 	    LineTo (FILL_X(col + len) - 1, FILL_Y(row + 1) - 1);
+! 	}
+      }
+  }
+  
+***************
+*** 4045,4050 ****
+--- 4161,4167 ----
+  	int	    key = 0;
+  	int	    modifiers = 0;
+  	char_u	    *p_actext;
++ 
+  	p_actext = menu->actext;
+  	key = find_special_key(&p_actext, &modifiers, /*keycode=*/0);
+  	if (*p_actext != 0)
+***************
+*** 5110,5116 ****
+  #if defined(FEAT_CW_EDITOR) || defined(PROTO)
+  /* TODO: Is it need for MACOS_X? (Dany) */
+      void
+! mch_post_buffer_write (buf_T *buf)
+  {
+  # ifdef USE_SIOUX
+      printf ("Writing Buf...\n");
+--- 5227,5233 ----
+  #if defined(FEAT_CW_EDITOR) || defined(PROTO)
+  /* TODO: Is it need for MACOS_X? (Dany) */
+      void
+! mch_post_buffer_write(buf_T *buf)
+  {
+  # ifdef USE_SIOUX
+      printf ("Writing Buf...\n");
+*** ../vim-6.2.209/src/option.h	Sun Jan 18 23:21:49 2004
+--- src/option.h	Thu Jan 22 10:37:55 2004
+***************
+*** 290,295 ****
+--- 290,298 ----
+  #ifdef FEAT_MBYTE
+  EXTERN char_u	*p_ambw;	/* 'ambiwidth' */
+  #endif
++ #if defined(FEAT_GUI) && defined(MACOS_X)
++ EXTERN int	*p_antialias;	/* 'antialias' */
++ #endif
+  EXTERN int	p_ar;		/* 'autoread' */
+  EXTERN int	p_aw;		/* 'autowrite' */
+  EXTERN int	p_awa;		/* 'autowriteall' */
+*** ../vim-6.2.209/src/option.c	Sun Jan 18 20:58:01 2004
+--- src/option.c	Thu Jan 22 10:39:02 2004
+***************
+*** 320,325 ****
+--- 320,334 ----
+  			    (char_u *)224L,
+  #endif
+  					    (char_u *)0L}},
++     {"antialias",   "anti", P_BOOL|P_VI_DEF|P_VIM|P_RCLR,
++ #if defined(FEAT_GUI) && defined(MACOS_X)
++ 			    (char_u *)&p_antialias, PV_NONE,
++ 			    {(char_u *)FALSE, (char_u *)FALSE}
++ #else
++ 			    (char_u *)NULL, PV_NONE,
++ 			    {(char_u *)FALSE, (char_u *)FALSE}
++ #endif
++                             },
+      {"arabic",	    "arab", P_BOOL|P_VI_DEF|P_VIM,
+  #ifdef FEAT_ARABIC
+  			    (char_u *)VAR_WIN, PV_ARAB,
+*** ../vim-6.2.209/src/version.c	Sun Jan 25 20:37:29 2004
+--- src/version.c	Sun Jan 25 20:39:47 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     210,
+  /**/
+
+-- 
+ERIC IDLE PLAYED: THE DEAD COLLECTOR, MR BINT (A VILLAGE NE'ER-DO -WELL VERY
+                  KEEN ON BURNING WITCHES), SIR ROBIN, THE GUARD WHO DOESN'T
+                  HICOUGH BUT TRIES TO GET THINGS STRAIGHT, CONCORDE (SIR
+                  LAUNCELOT'S TRUSTY STEED), ROGER THE SHRUBBER (A SHRUBBER),
+                  BROTHER MAYNARD
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

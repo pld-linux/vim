@@ -1,0 +1,59 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.172
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.172 (after 6.2.169)
+Problem:    The prototype for _Xmblen() still causes trouble.
+Solution:   Include the X11 header file that defines the prototype.
+Files:	    src/osdef2.h.in, src/osdef.sh
+
+
+*** ../vim-6.2.171/src/osdef2.h.in	Mon Dec 29 21:17:44 2003
+--- src/osdef2.h.in	Mon Jan  5 10:03:41 2004
+***************
+*** 83,87 ****
+--- 83,88 ----
+  #ifdef ISC
+  extern int	_Xmblen __ARGS((char const *, size_t));
+  #else
++ 		/* This is different from the header but matches mblen() */
+  extern int	_Xmblen __ARGS((char *, size_t));
+  #endif
+*** ../vim-6.2.171/src/osdef.sh	Thu Jul 24 22:09:03 2003
+--- src/osdef.sh	Mon Jan  5 10:05:41 2004
+***************
+*** 41,46 ****
+--- 41,50 ----
+  # include <sys/types.h>
+  # include <sys/statfs.h>	/* only for memfile.c */
+  #endif
++ 
++ #ifdef HAVE_X11
++ # include <X11/Intrinsic.h>
++ #endif
+  EOF
+  
+  # Mac uses precompiled headers, but we need real headers here.
+*** ../vim-6.2.171/src/version.c	Tue Jan  6 16:20:37 2004
+--- src/version.c	Tue Jan  6 16:24:51 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     172,
+  /**/
+
+-- 
+You are not really successful until someone claims he sat
+beside you in school.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

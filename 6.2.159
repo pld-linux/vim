@@ -1,0 +1,63 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.159
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.159
+Problem:    When using expression folding and 'foldopen' is "undo" an undo
+	    command doesn't always open the fold.
+Solution:   Save and restore the KeyTyped variable when evaluating 'foldexpr'.
+	    (Taro Muraoka)
+Files:	    src/fold.c
+
+
+*** ../vim-6.2.158/src/fold.c	Tue Sep  2 22:25:25 2003
+--- src/fold.c	Tue Dec 16 09:47:43 2003
+***************
+*** 2842,2847 ****
+--- 2842,2848 ----
+      int		n;
+      int		c;
+      linenr_T	lnum = flp->lnum + flp->off;
++     int		save_keytyped;
+  
+      win = curwin;
+      curwin = flp->wp;
+***************
+*** 2854,2860 ****
+--- 2855,2866 ----
+      if (lnum <= 1)
+  	flp->lvl = 0;
+  
++     /* KeyTyped may be reset to 0 when calling a function which invokes
++      * do_cmdline().  To make 'foldopen' work correctly restore KeyTyped. */
++     save_keytyped = KeyTyped;
+      n = eval_foldexpr(flp->wp->w_p_fde, &c);
++     KeyTyped = save_keytyped;
++ 
+      switch (c)
+      {
+  	/* "a1", "a2", .. : add to the fold level */
+*** ../vim-6.2.158/src/version.c	Mon Dec 29 20:27:03 2003
+--- src/version.c	Mon Dec 29 20:29:37 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     159,
+  /**/
+
+-- 
+I AM THANKFUL...
+...for all the complaining I hear about the government
+because it means we have freedom of speech.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

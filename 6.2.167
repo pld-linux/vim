@@ -1,0 +1,106 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.167
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.167
+Problem:    The Python interface leaks memory when assigning lines to a
+	    buffer. (Sergey Khorev)
+Solution:   Do not copy the line when calling ml_replace().
+Files:	    src/if_python.c
+
+
+*** ../vim-6.2.166/src/if_python.c	Wed Nov 12 20:56:23 2003
+--- src/if_python.c	Tue Dec 23 10:26:13 2003
+***************
+*** 2241,2256 ****
+  	if (save == NULL)
+  	    return FAIL;
+  
+! 	/* We do not need to free save, as we pass responsibility for
+! 	 * it to vim, via the final parameter of ml_replace().
+! 	 */
+  	PyErr_Clear();
+  	curbuf = buf;
+  
+  	if (u_savesub((linenr_T)n) == FAIL)
+  	    PyErr_SetVim(_("cannot save undo information"));
+! 	else if (ml_replace((linenr_T)n, (char_u *)save, TRUE) == FAIL)
+  	    PyErr_SetVim(_("cannot replace line"));
+  	else
+  	    changed_bytes((linenr_T)n, 0);
+  
+--- 2246,2265 ----
+  	if (save == NULL)
+  	    return FAIL;
+  
+! 	/* We do not need to free "save" if ml_replace() consumes it. */
+  	PyErr_Clear();
+  	curbuf = buf;
+  
+  	if (u_savesub((linenr_T)n) == FAIL)
++ 	{
+  	    PyErr_SetVim(_("cannot save undo information"));
+! 	    vim_free(save);
+! 	}
+! 	else if (ml_replace((linenr_T)n, (char_u *)save, FALSE) == FAIL)
+! 	{
+  	    PyErr_SetVim(_("cannot replace line"));
++ 	    vim_free(save);
++ 	}
+  	else
+  	    changed_bytes((linenr_T)n, 0);
+  
+***************
+*** 2390,2402 ****
+  	if (!PyErr_Occurred())
+  	{
+  	    for (i = 0; i < old_len && i < new_len; ++i)
+! 		if (ml_replace((linenr_T)(lo+i), (char_u *)array[i], TRUE)
+  								      == FAIL)
+  		{
+  		    PyErr_SetVim(_("cannot replace line"));
+  		    break;
+  		}
+  	}
+  
+  	/* Now we may need to insert the remaining new old_len. If we do, we
+  	 * must free the strings as we finish with them (we can't pass the
+--- 2399,2413 ----
+  	if (!PyErr_Occurred())
+  	{
+  	    for (i = 0; i < old_len && i < new_len; ++i)
+! 		if (ml_replace((linenr_T)(lo+i), (char_u *)array[i], FALSE)
+  								      == FAIL)
+  		{
+  		    PyErr_SetVim(_("cannot replace line"));
+  		    break;
+  		}
+  	}
++ 	else
++ 	    i = 0;
+  
+  	/* Now we may need to insert the remaining new old_len. If we do, we
+  	 * must free the strings as we finish with them (we can't pass the
+*** ../vim-6.2.166/src/version.c	Mon Dec 29 21:04:38 2003
+--- src/version.c	Mon Dec 29 21:06:33 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     167,
+  /**/
+
+-- 
+From "know your smileys":
+ |-(	Contact lenses, but has lost them
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,78 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.201
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.201
+Problem:    When 'autowriteall' is set ":qall" still refuses to exit if there
+	    is a modified buffer. (Antoine Mechelynck)
+Solution:   Attempt writing modified buffers as intended.
+Files:	    src/ex_cmds2.c
+
+
+*** ../vim-6.2.200/src/ex_cmds2.c	Wed Nov 12 20:50:01 2003
+--- src/ex_cmds2.c	Wed Jan 21 16:57:12 2004
+***************
+*** 876,885 ****
+      win_T	*wp;
+  #endif
+  
+- #if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+      for (;;)
+      {
+- #endif
+  	/* check curbuf first: if it was changed we can't abandon it */
+  	if (!hidden && curbufIsChanged())
+  	    buf = curbuf;
+--- 876,883 ----
+***************
+*** 892,907 ****
+  	if (buf == NULL)    /* No buffers changed */
+  	    return FALSE;
+  
+! #if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+! 	if (p_confirm || cmdmod.confirm)
+! 	{
+! 	    if (check_changed(buf, p_awa, TRUE, FALSE, TRUE) && buf_valid(buf))
+! 		break;	    /* didn't save - still changes */
+! 	}
+! 	else
+! 	    break;	    /* confirm not active - has changes */
+      }
+- #endif
+  
+      exiting = FALSE;
+  #if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+--- 890,898 ----
+  	if (buf == NULL)    /* No buffers changed */
+  	    return FALSE;
+  
+! 	if (check_changed(buf, p_awa, TRUE, FALSE, TRUE) && buf_valid(buf))
+! 	    break;	    /* didn't save - still changes */
+      }
+  
+      exiting = FALSE;
+  #if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+*** ../vim-6.2.200/src/version.c	Sun Jan 25 19:45:13 2004
+--- src/version.c	Sun Jan 25 19:54:00 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     201,
+  /**/
+
+-- 
+   Another bucket of what can only be described as human ordure hits ARTHUR.
+ARTHUR: ... Right!  (to the KNIGHTS) That settles it!
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

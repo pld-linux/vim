@@ -1,0 +1,104 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.168
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.168
+Problem:    Python interface: There is no way to get the indices from a range
+	    object.
+Solution:   Add the "start" and "end" attributes. (Maurice S. Barnum)
+Files:	    src/if_python.c, runtime/doc/if_pyth.txt
+
+
+*** ../vim-6.2.167/src/if_python.c	Mon Dec 29 21:07:26 2003
+--- src/if_python.c	Tue Dec 23 10:26:13 2003
+***************
+*** 1476,1482 ****
+      static PyObject *
+  RangeGetattr(PyObject *self, char *name)
+  {
+!     return Py_FindMethod(RangeMethods, self, name);
+  }
+  
+      static PyObject *
+--- 1476,1487 ----
+      static PyObject *
+  RangeGetattr(PyObject *self, char *name)
+  {
+!     if (strcmp(name, "start") == 0)
+! 	return Py_BuildValue("i",((RangeObject *)(self))->start - 1);
+!     else if (strcmp(name, "end") == 0)
+! 	return Py_BuildValue("i",((RangeObject *)(self))->end - 1);
+!     else
+! 	return Py_FindMethod(RangeMethods, self, name);
+  }
+  
+      static PyObject *
+*** ../vim-6.2.167/runtime/doc/if_pyth.txt	Sun Jun  1 12:20:33 2003
+--- runtime/doc/if_pyth.txt	Mon Dec 29 10:03:38 2003
+***************
+*** 1,4 ****
+! *if_pyth.txt*   For Vim version 6.2.  Last change: 2002 Mar 11
+  
+  
+  		  VIM REFERENCE MANUAL    by Paul Moore
+--- 1,4 ----
+! *if_pyth.txt*   For Vim version 6.2.  Last change: 2003 Dec 29
+  
+  
+  		  VIM REFERENCE MANUAL    by Paul Moore
+***************
+*** 242,250 ****
+  can, of course, change as a result of slice assignments, line deletions, or
+  the range.append() method).
+  
+! Unlike buffers, ranges do not have a "name" attribute, nor do they have mark()
+! or range() methods. They do have an append() method, however, which adds
+! line(s) to the end of the range.
+  
+  ==============================================================================
+  5. Window objects					*python-window*
+--- 252,271 ----
+  can, of course, change as a result of slice assignments, line deletions, or
+  the range.append() method).
+  
+! The range object attributes are:
+! 	r.start		Index of first line into the buffer
+! 	r.end		Index of last line into the buffer
+! 
+! The range object methods are:
+! 	r.append(str)	Append a line to the range
+! 	r.append(list)	Append a list of lines to the range
+! 			Note that the option of supplying a list of strings to
+! 			the append method differs from the equivalent method
+! 			for Python's built-in list objects.
+! 
+! Example (assume r is the current range):
+! 	# Send all lines in a range to the default printer
+! 	vim.command("%d,%dhardcopy!" % (r.start+1,r.end+1))
+  
+  ==============================================================================
+  5. Window objects					*python-window*
+*** ../vim-6.2.167/src/version.c	Mon Dec 29 21:07:26 2003
+--- src/version.c	Mon Dec 29 21:10:20 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     168,
+  /**/
+
+-- 
+From "know your smileys":
+ <|-) Chinese
+ <|-( Chinese and doesn't like these kind of jokes
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

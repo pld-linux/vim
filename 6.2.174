@@ -1,0 +1,92 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.174
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.174
+Problem:    After the ":intro" message only a mouse click in the last line
+	    gets past the hit-return prompt.
+Solution:   Accept a click at or below the hit-return prompt.
+Files:	    src/gui.c, src/message.c
+
+
+*** ../vim-6.2.173/src/gui.c	Sun Oct 26 20:19:23 2003
+--- src/gui.c	Tue Jan  6 18:00:47 2004
+***************
+*** 2751,2758 ****
+  	case INSERT+LANGMAP:	checkfor = MOUSE_INSERT;	break;
+  	case ASKMORE:
+  	case HITRETURN:		/* At the more- and hit-enter prompt pass the
+! 				   mouse event for a click on the last line. */
+! 				if (Y_2_ROW(y) == Rows - 1)
+  				    checkfor = MOUSE_NORMAL;
+  				else
+  				    checkfor = MOUSE_RETURN;
+--- 2751,2759 ----
+  	case INSERT+LANGMAP:	checkfor = MOUSE_INSERT;	break;
+  	case ASKMORE:
+  	case HITRETURN:		/* At the more- and hit-enter prompt pass the
+! 				   mouse event for a click on or below the
+! 				   message line. */
+! 				if (Y_2_ROW(y) >= msg_row)
+  				    checkfor = MOUSE_NORMAL;
+  				else
+  				    checkfor = MOUSE_RETURN;
+***************
+*** 4117,4123 ****
+  # ifdef FEAT_MOUSESHAPE
+      if (State == HITRETURN || State == ASKMORE)
+      {
+! 	if (Y_2_ROW(y) == Rows - 1)
+  	    update_mouseshape(SHAPE_IDX_MOREL);
+  	else
+  	    update_mouseshape(SHAPE_IDX_MORE);
+--- 4118,4124 ----
+  # ifdef FEAT_MOUSESHAPE
+      if (State == HITRETURN || State == ASKMORE)
+      {
+! 	if (Y_2_ROW(y) >= msg_row)
+  	    update_mouseshape(SHAPE_IDX_MOREL);
+  	else
+  	    update_mouseshape(SHAPE_IDX_MORE);
+*** ../vim-6.2.173/src/message.c	Sat Sep 27 19:36:47 2003
+--- src/message.c	Tue Jan  6 18:02:31 2004
+***************
+*** 848,854 ****
+  				|| c == K_RIGHTDRAG  || c == K_RIGHTRELEASE
+  				|| c == K_MOUSEDOWN  || c == K_MOUSEUP
+  				|| (!mouse_has(MOUSE_RETURN)
+! 				    && mouse_row != Rows - 1
+  				    && (c == K_LEFTMOUSE
+  					|| c == K_MIDDLEMOUSE
+  					|| c == K_RIGHTMOUSE
+--- 848,854 ----
+  				|| c == K_RIGHTDRAG  || c == K_RIGHTRELEASE
+  				|| c == K_MOUSEDOWN  || c == K_MOUSEUP
+  				|| (!mouse_has(MOUSE_RETURN)
+! 				    && mouse_row < msg_row
+  				    && (c == K_LEFTMOUSE
+  					|| c == K_MIDDLEMOUSE
+  					|| c == K_RIGHTMOUSE
+*** ../vim-6.2.173/src/version.c	Tue Jan  6 16:33:35 2004
+--- src/version.c	Thu Jan  8 20:51:27 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     174,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+197. Your desk collapses under the weight of your computer peripherals.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

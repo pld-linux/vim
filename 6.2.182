@@ -1,0 +1,62 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.182
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.182 (after 6.2.094)
+Problem:    Compilation with tiny features fails because of missing
+	    get_past_head() function.
+Solution:   Adjust the #ifdef for get_past_head().
+Files:	    src/misc1.c
+
+
+*** ../vim-6.2.181/src/misc1.c	Fri Oct 17 12:18:17 2003
+--- src/misc1.c	Sun Jan 18 16:07:34 2004
+***************
+*** 3874,3881 ****
+  
+  #if defined(FEAT_MODIFY_FNAME) || defined(FEAT_EVAL) \
+  	|| defined(FEAT_SESSION) || defined(MSWIN) \
+! 	|| (defined(FEAT_GUI_GTK) && defined(FEAT_WINDOWS)) \
+! 	|| defined(FEAT_SUN_WORKSHOP) || defined(PROTO)
+  /*
+   * Get a pointer to one character past the head of a path name.
+   * Unix: after "/"; DOS: after "c:\"; Amiga: after "disk:/"; Mac: no head.
+--- 3875,3884 ----
+  
+  #if defined(FEAT_MODIFY_FNAME) || defined(FEAT_EVAL) \
+  	|| defined(FEAT_SESSION) || defined(MSWIN) \
+! 	|| (defined(FEAT_GUI_GTK) \
+! 			    && (defined(FEAT_WINDOWS) || defined(FEAT_DND))) \
+! 	|| defined(FEAT_SUN_WORKSHOP) || defined(FEAT_NETBEANS_INTG) \
+! 	|| defined(PROTO)
+  /*
+   * Get a pointer to one character past the head of a path name.
+   * Unix: after "/"; DOS: after "c:\"; Amiga: after "disk:/"; Mac: no head.
+*** ../vim-6.2.181/src/version.c	Mon Jan 12 19:56:01 2004
+--- src/version.c	Sun Jan 18 20:14:02 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     182,
+  /**/
+
+-- 
+CUSTOMER:     Well, can you hang around a couple of minutes?  He won't be
+              long.
+MORTICIAN:    Naaah, I got to go on to Robinson's -- they've lost nine today.
+CUSTOMER:     Well, when is your next round?
+MORTICIAN:    Thursday.
+DEAD PERSON:  I think I'll go for a walk.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

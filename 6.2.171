@@ -1,0 +1,69 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.171
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.171 (after 6.2.163)
+Problem:    The "-or" argument of "find" doesn't work for SysV systems.
+Solution:   Use "-o" instead. (Gordon Prieur)
+Files:	    src/Makefile
+
+
+*** ../vim-6.2.170/src/Makefile	Mon Dec 29 20:42:51 2003
+--- src/Makefile	Tue Jan  6 16:18:26 2004
+***************
+*** 1724,1730 ****
+  	chmod $(FILEMOD) `find $(DEST_MACRO) -type f -print`
+  	chmod $(SCRIPTMOD) $(DEST_MACRO)/less.sh
+  # When using CVS some CVS directories might have been copied.
+! 	cvs=`find $(DEST_MACRO) -name CVS -or -name AAPDIR -print`; \
+  	      if test -n "$$cvs"; then \
+  		 rm -rf $$cvs; \
+  	      fi
+--- 1727,1733 ----
+  	chmod $(FILEMOD) `find $(DEST_MACRO) -type f -print`
+  	chmod $(SCRIPTMOD) $(DEST_MACRO)/less.sh
+  # When using CVS some CVS directories might have been copied.
+! 	cvs=`find $(DEST_MACRO) -name CVS -o -name AAPDIR -print`; \
+  	      if test -n "$$cvs"; then \
+  		 rm -rf $$cvs; \
+  	      fi
+***************
+*** 1751,1757 ****
+  # install the runtime tools
+  	$(INSTALL_DATA_R) $(TOOLSSOURCE)/* $(DEST_TOOLS)
+  # When using CVS some CVS directories might have been copied.
+! 	cvs=`find $(DEST_TOOLS) -name CVS -or -name AAPDIR -print`; \
+  	      if test -n "$$cvs"; then \
+  		 rm -rf $$cvs; \
+  	      fi
+--- 1754,1760 ----
+  # install the runtime tools
+  	$(INSTALL_DATA_R) $(TOOLSSOURCE)/* $(DEST_TOOLS)
+  # When using CVS some CVS directories might have been copied.
+! 	cvs=`find $(DEST_TOOLS) -name CVS -o -name AAPDIR -print`; \
+  	      if test -n "$$cvs"; then \
+  		 rm -rf $$cvs; \
+  	      fi
+*** ../vim-6.2.170/src/version.c	Mon Dec 29 21:21:52 2003
+--- src/version.c	Tue Jan  6 16:19:37 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     171,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+1 49. You find your computer sexier than your girlfriend
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

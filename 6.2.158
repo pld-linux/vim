@@ -1,0 +1,71 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.158
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.158
+Problem:    The sed command on Solaris and HPUX doesn't work for a line that
+	    doesn't end in a newline.
+Solution:   Add a newline when feeding text to sed. (Mark Waggoner)
+Files:	    src/configure.in, src/auto/configure
+
+
+*** ../vim-6.2.157/src/auto/configure	Sun Nov  2 15:37:11 2003
+--- src/auto/configure	Wed Dec 24 14:10:23 2003
+***************
+*** 1572,1578 ****
+        vi_cv_perllib=`$vi_cv_path_perl -MConfig -e 'print $Config{privlibexp}'`
+        
+              perlcppflags=`$vi_cv_path_perl -Mlib=$srcdir -MExtUtils::Embed \
+! 	      -e 'ccflags;perl_inc' | sed -e 's/-fno[^ ]*//'`
+        if test "X$perlcppflags" != "X"; then
+  	PERL_CFLAGS="$perlcppflags"
+        fi
+--- 1582,1588 ----
+        vi_cv_perllib=`$vi_cv_path_perl -MConfig -e 'print $Config{privlibexp}'`
+        
+              perlcppflags=`$vi_cv_path_perl -Mlib=$srcdir -MExtUtils::Embed \
+! 	      -e 'ccflags;perl_inc;print"\n"' | sed -e 's/-fno[^ ]*//'`
+        if test "X$perlcppflags" != "X"; then
+  	PERL_CFLAGS="$perlcppflags"
+        fi
+*** ../vim-6.2.157/src/configure.in	Sun Nov  2 15:37:11 2003
+--- src/configure.in	Wed Dec 24 14:09:32 2003
+***************
+*** 313,319 ****
+        AC_SUBST(vi_cv_perllib)
+        dnl Remove "-fno-something", it breaks using cproto.
+        perlcppflags=`$vi_cv_path_perl -Mlib=$srcdir -MExtUtils::Embed \
+! 	      -e 'ccflags;perl_inc' | sed -e 's/-fno[[^ ]]*//'`
+        if test "X$perlcppflags" != "X"; then
+  	PERL_CFLAGS="$perlcppflags"
+        fi
+--- 314,320 ----
+        AC_SUBST(vi_cv_perllib)
+        dnl Remove "-fno-something", it breaks using cproto.
+        perlcppflags=`$vi_cv_path_perl -Mlib=$srcdir -MExtUtils::Embed \
+! 	      -e 'ccflags;perl_inc;print"\n"' | sed -e 's/-fno[[^ ]]*//'`
+        if test "X$perlcppflags" != "X"; then
+  	PERL_CFLAGS="$perlcppflags"
+        fi
+*** ../vim-6.2.157/src/version.c	Mon Dec 29 20:21:49 2003
+--- src/version.c	Mon Dec 29 20:25:14 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     158,
+  /**/
+
+-- 
+A fool learns from his mistakes, a wise man from someone elses.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

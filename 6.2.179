@@ -1,0 +1,229 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.179 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.179 (extra)
+Problem:    The en_gb messages file isn't found on case sensitive systems.
+Solution:   Rename en_gb to en_GB. (Mike Williams)
+Files:	    src/po/en_gb.po, src/po/en_GB.po, src/po/Make_ming.mak,
+	    src/po/Make_mvc.mak, src/po/Makefile, src/po/README_mvc.txt
+
+
+*** ../vim-6.2.178/src/po/en_gb.po	Tue Feb 25 21:06:40 2003
+--- src/po/en_gb.po	Sun Jan 11 12:14:46 2004
+***************
+*** 1,48 ****
+- # UK English Translation for Vim		vim:set foldmethod=marker:
+- #
+- # Do ":help uganda"  in Vim to read copying and usage conditions.
+- # Do ":help credits" in Vim to see a list of people who contributed.
+- #
+- # FIRST AUTHOR Mike Williams <mrw@eandem.co.uk>, 2003.
+- #
+- msgid ""
+- msgstr ""
+- "Project-Id-Version: Vim(UK English)\n"
+- "POT-Creation-Date: 2003-02-23 10:27+0000\n"
+- "PO-Revision-Date: 2003-02-25 11:05+0000\n"
+- "Last-Translator: Mike Williams <mrw@eandem.co.uk>\n"
+- "Language-Team: Mike Williams <mrw@eandem.co.uk>\n"
+- "MIME-Version: 1.0\n"
+- "Content-Type: text/plain; charset=ISO_8859-1\n"
+- "Content-Transfer-Encoding: 7bit\n"
+- 
+- #, c-format
+- msgid "E185: Cannot find color scheme %s"
+- msgstr "E185: Cannot find colour scheme %s"
+- 
+- #, c-format
+- msgid "E254: Cannot allocate color %s"
+- msgstr "E254: Cannot allocate colour %s"
+- 
+- msgid "Vim E458: Cannot allocate colormap entry, some colors may be incorrect"
+- msgstr ""
+- "Vim E458: Cannot allocate colourmap entry, some colours may be incorrect"
+- 
+- msgid "-background <color>\tUse <color> for the background (also: -bg)"
+- msgstr "-background <colour>\tUse <colour> for the background (also: -bg)"
+- 
+- msgid "-foreground <color>\tUse <color> for normal text (also: -fg)"
+- msgstr "-foreground <colour>\tUse <colour> for normal text (also: -fg)"
+- 
+- msgid "Messages maintainer: Bram Moolenaar <Bram@vim.org>"
+- msgstr "Messages maintainer: Mike Williams <mrw@eandem.co.uk>"
+- 
+- msgid "E419: FG color unknown"
+- msgstr "E419: FG colour unknown"
+- 
+- msgid "E420: BG color unknown"
+- msgstr "E420: BG colour unknown"
+- 
+- #, c-format
+- msgid "E421: Color name or number not recognized: %s"
+- msgstr "E421: Colour name or number not recognised: %s"
+--- 0 ----
+*** ../vim-6.2.178/src/po/en_GB.po	Sun Jan 11 12:14:37 2004
+--- src/po/en_GB.po	Tue Feb 25 21:06:40 2003
+***************
+*** 0 ****
+--- 1,48 ----
++ # UK English Translation for Vim		vim:set foldmethod=marker:
++ #
++ # Do ":help uganda"  in Vim to read copying and usage conditions.
++ # Do ":help credits" in Vim to see a list of people who contributed.
++ #
++ # FIRST AUTHOR Mike Williams <mrw@eandem.co.uk>, 2003.
++ #
++ msgid ""
++ msgstr ""
++ "Project-Id-Version: Vim(UK English)\n"
++ "POT-Creation-Date: 2003-02-23 10:27+0000\n"
++ "PO-Revision-Date: 2003-02-25 11:05+0000\n"
++ "Last-Translator: Mike Williams <mrw@eandem.co.uk>\n"
++ "Language-Team: Mike Williams <mrw@eandem.co.uk>\n"
++ "MIME-Version: 1.0\n"
++ "Content-Type: text/plain; charset=ISO_8859-1\n"
++ "Content-Transfer-Encoding: 7bit\n"
++ 
++ #, c-format
++ msgid "E185: Cannot find color scheme %s"
++ msgstr "E185: Cannot find colour scheme %s"
++ 
++ #, c-format
++ msgid "E254: Cannot allocate color %s"
++ msgstr "E254: Cannot allocate colour %s"
++ 
++ msgid "Vim E458: Cannot allocate colormap entry, some colors may be incorrect"
++ msgstr ""
++ "Vim E458: Cannot allocate colourmap entry, some colours may be incorrect"
++ 
++ msgid "-background <color>\tUse <color> for the background (also: -bg)"
++ msgstr "-background <colour>\tUse <colour> for the background (also: -bg)"
++ 
++ msgid "-foreground <color>\tUse <color> for normal text (also: -fg)"
++ msgstr "-foreground <colour>\tUse <colour> for normal text (also: -fg)"
++ 
++ msgid "Messages maintainer: Bram Moolenaar <Bram@vim.org>"
++ msgstr "Messages maintainer: Mike Williams <mrw@eandem.co.uk>"
++ 
++ msgid "E419: FG color unknown"
++ msgstr "E419: FG colour unknown"
++ 
++ msgid "E420: BG color unknown"
++ msgstr "E420: BG colour unknown"
++ 
++ #, c-format
++ msgid "E421: Color name or number not recognized: %s"
++ msgstr "E421: Colour name or number not recognised: %s"
+*** ../vim-6.2.178/src/po/Make_ming.mak	Sat May 31 22:29:00 2003
+--- src/po/Make_ming.mak	Sun Jan 11 12:30:55 2004
+***************
+*** 10,18 ****
+  # language (xx) and add it to the next three lines.
+  #
+  
+! LANGUAGES =	af cs de en_gb es fr it ja ko no pl sk uk zh_TW \
+  		zh_TW.UTF-8 zh_CN zh_CN.UTF-8
+! MOFILES =	af.mo cs.mo de.mo en_gb.mo es.mo fr.mo it.mo ja.mo \
+  		ko.mo no.mo pl.mo sk.mo uk.mo zh_TW.mo zh_TW.UTF-8.mo \
+  		zh_CN.mo zh_CN.UTF-8.mo
+  
+--- 10,18 ----
+  # language (xx) and add it to the next three lines.
+  #
+  
+! LANGUAGES =	af cs de en_GB es fr it ja ko no pl sk uk zh_TW \
+  		zh_TW.UTF-8 zh_CN zh_CN.UTF-8
+! MOFILES =	af.mo cs.mo de.mo en_GB.mo es.mo fr.mo it.mo ja.mo \
+  		ko.mo no.mo pl.mo sk.mo uk.mo zh_TW.mo zh_TW.UTF-8.mo \
+  		zh_CN.mo zh_CN.UTF-8.mo
+  
+*** ../vim-6.2.178/src/po/Make_mvc.mak	Sat May 31 22:29:05 2003
+--- src/po/Make_mvc.mak	Sun Jan 11 12:31:26 2004
+***************
+*** 6,14 ****
+  # Please read README_mvc.txt before using this file.
+  #
+  
+! LANGUAGES =	af cs de en_gb es fr it ja ko no pl sk uk zh_TW \
+  		zh_TW.UTF-8 zh_CN zh_CN.UTF-8
+! MOFILES =	af.mo cs.mo de.mo en_gb.mo es.mo fr.mo it.mo ja.mo \
+  		ko.mo no.mo pl.mo sk.mo uk.mo zh_TW.mo zh_TW.UTF-8.mo \
+  		zh_CN.mo zh_CN.UTF-8.mo
+  
+--- 6,14 ----
+  # Please read README_mvc.txt before using this file.
+  #
+  
+! LANGUAGES =	af cs de en_GB es fr it ja ko no pl sk uk zh_TW \
+  		zh_TW.UTF-8 zh_CN zh_CN.UTF-8
+! MOFILES =	af.mo cs.mo de.mo en_GB.mo es.mo fr.mo it.mo ja.mo \
+  		ko.mo no.mo pl.mo sk.mo uk.mo zh_TW.mo zh_TW.UTF-8.mo \
+  		zh_CN.mo zh_CN.UTF-8.mo
+  
+*** ../vim-6.2.178/src/po/Makefile	Sat May 31 22:28:56 2003
+--- src/po/Makefile	Sun Jan 11 12:30:21 2004
+***************
+*** 4,12 ****
+  # Note: ja.sjis, *.cp1250 and zh_CN.cp936 are only for MS-Windows, they are
+  # not installed on Unix
+  
+! LANGUAGES =	af cs de en_gb es fr it ja ko no pl sk uk zh_TW \
+  		zh_TW.UTF-8 zh_CN zh_CN.UTF-8
+! MOFILES =	af.mo cs.mo de.mo en_gb.mo es.mo fr.mo it.mo ja.mo \
+  		ko.mo no.mo pl.mo sk.mo uk.mo zh_TW.mo zh_TW.UTF-8.mo \
+  		zh_CN.mo zh_CN.UTF-8.mo
+  
+--- 4,12 ----
+  # Note: ja.sjis, *.cp1250 and zh_CN.cp936 are only for MS-Windows, they are
+  # not installed on Unix
+  
+! LANGUAGES =	af cs de en_GB es fr it ja ko no pl sk uk zh_TW \
+  		zh_TW.UTF-8 zh_CN zh_CN.UTF-8
+! MOFILES =	af.mo cs.mo de.mo en_GB.mo es.mo fr.mo it.mo ja.mo \
+  		ko.mo no.mo pl.mo sk.mo uk.mo zh_TW.mo zh_TW.UTF-8.mo \
+  		zh_CN.mo zh_CN.UTF-8.mo
+  
+*** ../vim-6.2.178/src/po/README_mvc.txt	Fri Apr 25 22:30:02 2003
+--- src/po/README_mvc.txt	Sun Jan 11 12:32:18 2004
+***************
+*** 55,61 ****
+  first thing to do is merge them into the existing translations.  This is done
+  with the following command:
+  
+! 	make xx.po
+  
+  where xx is the langauge code for the language needing translations.  The
+  original .po file is copied to xx.po.orig.
+--- 55,61 ----
+  first thing to do is merge them into the existing translations.  This is done
+  with the following command:
+  
+! 	nmake -f Make_mvc.mak xx.po
+  
+  where xx is the langauge code for the language needing translations.  The
+  original .po file is copied to xx.po.orig.
+*** ../vim-6.2.178/src/version.c	Fri Jan  9 19:18:01 2004
+--- src/version.c	Sun Jan 11 12:13:53 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     179,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+226. You sit down at the computer right after dinner and your spouse
+     says "See you in the morning."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

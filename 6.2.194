@@ -1,0 +1,840 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.194
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.194 (after 6.2.068)
+Problem:    For NetBeans, instead of writing the file and sending an event
+	    about it, tell NetBeans to write the file.
+Solution:   Add the "save" command, "netbeansBuffer" command and
+	    "buttonRelease" event to the netbeans protocol.  Updated the
+	    interface to version 2.2.  (Gordon Prieur)
+	    Also: open a fold when the cursor has been positioned.
+	    Also: fix memory leak, free result of nb_quote().
+Files:	    runtime/doc/netbeans.txt, src/fileio.c, src/netbeans.c,
+	    src/normal.c, src/proto/netbeans.pro, src/structs.h
+
+
+*** ../vim-6.2.193/runtime/doc/netbeans.txt	Sun Oct 12 16:42:14 2003
+--- runtime/doc/netbeans.txt	Sat Jan 17 16:38:31 2004
+***************
+*** 1,4 ****
+! *netbeans.txt*  For Vim version 6.2.  Last change: 2003 Sep 12
+  
+  
+  		  VIM REFERENCE MANUAL    by Gordon Prieur
+--- 1,4 ----
+! *netbeans.txt*  For Vim version 6.2.  Last change: 2004 Jan 17
+  
+  
+  		  VIM REFERENCE MANUAL    by Gordon Prieur
+***************
+*** 14,21 ****
+  6.  Obtaining the External Editor Module	|obtaining-exted|
+  7.  Setting up NetBeans to run with Vim		|netbeans-setup|
+  8.  Messages					|netbeans-messages|
+! 9.  Running Vim from Netbeans			|netbeans-run|
+! 10. Netbeans protocol				|netbeans-protocol|
+  11. Known problems				|netbeans-problems|
+  
+  {Vi does not have any of these features}
+--- 14,21 ----
+  6.  Obtaining the External Editor Module	|obtaining-exted|
+  7.  Setting up NetBeans to run with Vim		|netbeans-setup|
+  8.  Messages					|netbeans-messages|
+! 9.  Running Vim from NetBeans			|netbeans-run|
+! 10. NetBeans protocol				|netbeans-protocol|
+  11. Known problems				|netbeans-problems|
+  
+  {Vi does not have any of these features}
+***************
+*** 26,32 ****
+  
+  NetBeans is an open source Integrated Development Environment developed
+  jointly by Sun Microsystems, Inc. and the netbeans.org developer community.
+! Initialy just a Java IDE, NetBeans has had C, C++, and Fortran support added
+  in recent releases.
+  
+  For more information visit the main NetBeans web site http://www.netbeans.org
+--- 26,32 ----
+  
+  NetBeans is an open source Integrated Development Environment developed
+  jointly by Sun Microsystems, Inc. and the netbeans.org developer community.
+! Initially just a Java IDE, NetBeans has had C, C++, and Fortran support added
+  in recent releases.
+  
+  For more information visit the main NetBeans web site http://www.netbeans.org
+***************
+*** 91,97 ****
+  
+  The Win32 support is now in beta stage.
+  
+! To use XPM signs on Win32 (e.g. when using with Netbeans) you can compile
+  XPM by yourself or use precompiled libraries from http://iamphet.nm.ru/xpm
+  (for MS Visual C++) or http://gnuwin32.sourceforge.net (for MinGW).
+  
+--- 91,97 ----
+  
+  The Win32 support is now in beta stage.
+  
+! To use XPM signs on Win32 (e.g. when using with NetBeans) you can compile
+  XPM by yourself or use precompiled libraries from http://iamphet.nm.ru/xpm
+  (for MS Visual C++) or http://gnuwin32.sourceforge.net (for MinGW).
+  
+***************
+*** 137,143 ****
+  Unfortunately, some versions do not have this module in their update
+  center. If you cannot download via the update center you will need to
+  download sources and build the module. I will try and get the module
+! available from the NetBeans Update Center so building will be unnecesary.
+  Also check http://externaleditor.netbeans.org for other availability options.
+  
+  To download the External Editor sources via CVS and build your own module,
+--- 137,143 ----
+  Unfortunately, some versions do not have this module in their update
+  center. If you cannot download via the update center you will need to
+  download sources and build the module. I will try and get the module
+! available from the NetBeans Update Center so building will be unnecessary.
+  Also check http://externaleditor.netbeans.org for other availability options.
+  
+  To download the External Editor sources via CVS and build your own module,
+***************
+*** 156,162 ****
+  an Expert tab. In the Properties tab make sure the "Editor Type" is set
+  to "Vim". In the Expert tab make sure the "Vim Command" is correct.
+  
+! You should be carefull if you change the "Vim Command". There are command
+  line options there which must be there for the connection to be properly
+  set up. You can change the command name but thats about it. If your gvim
+  can be found by your $PATH then the VIM Command can start with "gvim". If
+--- 156,162 ----
+  an Expert tab. In the Properties tab make sure the "Editor Type" is set
+  to "Vim". In the Expert tab make sure the "Vim Command" is correct.
+  
+! You should be careful if you change the "Vim Command". There are command
+  line options there which must be there for the connection to be properly
+  set up. You can change the command name but thats about it. If your gvim
+  can be found by your $PATH then the VIM Command can start with "gvim". If
+***************
+*** 172,208 ****
+  ==============================================================================
+  8. Messages						*netbeans-messages*
+  
+! These messages are specific for Netbeans:
+  
+  							*E463*
+  Region is guarded, cannot modify
+! 		Netbeans defines guarded areas in the text, which you cannot
+  		change.
+  
+  ==============================================================================
+! 9. Running Vim from Netbeans				*netbeans-run*
+  
+! Netbeans starts Vim with the |-nb| argument.  The full form is: >
+  	-nb:{hostname}:{addr}:{password}
+  
+! {hostname} is the name of the machine where Netbeans is running.  When omitted
+  the environment variable "__NETBEANS_HOST" is used or the default "localhost".
+  
+! {addr} is the port number for Netbeans.  When omitted the environment variable
+  "__NETBEANS_SOCKET" is used or the default 3219.
+  
+! {password} is the password for connecting to Netbeans.  When omitted the
+  environment variable "__NETBEANS_VIM_PASSWORD" is used or "changeme".
+  
+  ==============================================================================
+! 10. Netbeans protocol					*netbeans-protocol*
+  
+! The communication between Netbeans and Vim uses plain text messages.  This
+  protocol was first designed to work with the external editor module of
+! Netbeans (see http://externaleditor.netbeans.org).  Later it was extended to
+  work with Agide (A-A-P GUI IDE, see http://www.a-a-p.org).  The extensions are
+  marked with "version 2.1".
+  
+  The messages are currently sent over a socket.  Since the messages are in
+  plain UTF-8 text this protocol could also be used with any other communication
+  mechanism.
+--- 172,228 ----
+  ==============================================================================
+  8. Messages						*netbeans-messages*
+  
+! These messages are specific for NetBeans:
+  
+  							*E463*
+  Region is guarded, cannot modify
+! 		NetBeans defines guarded areas in the text, which you cannot
+  		change.
+  
++ 							*E656*
++ NetBeans dissallows writes of unmodified buffers
++ 		NetBeans does not support writes of unmodified buffers that
++ 		were opened from NetBeans.
++ 
++ 							*E657*
++ Partial writes disallowed for NetBeans buffers
++ 		NetBeans does not support partial writes for buffers that were
++ 		opened from NetBeans.
++ 
+  ==============================================================================
+! 9. Running Vim from NetBeans				*netbeans-run*
+  
+! NetBeans starts Vim with the |-nb| argument.  The full form is: >
+  	-nb:{hostname}:{addr}:{password}
+  
+! {hostname} is the name of the machine where NetBeans is running.  When omitted
+  the environment variable "__NETBEANS_HOST" is used or the default "localhost".
+  
+! {addr} is the port number for NetBeans.  When omitted the environment variable
+  "__NETBEANS_SOCKET" is used or the default 3219.
+  
+! {password} is the password for connecting to NetBeans.  When omitted the
+  environment variable "__NETBEANS_VIM_PASSWORD" is used or "changeme".
+  
+  ==============================================================================
+! 10. NetBeans protocol					*netbeans-protocol*
+  
+! The communication between NetBeans and Vim uses plain text messages.  This
+  protocol was first designed to work with the external editor module of
+! NetBeans (see http://externaleditor.netbeans.org).  Later it was extended to
+  work with Agide (A-A-P GUI IDE, see http://www.a-a-p.org).  The extensions are
+  marked with "version 2.1".
+  
++ Version 2.2 of the protocol has several minor changes which should only
++ affect NetBeans users (ie, not Agide users). However, a bug was fixed which
++ could cause confusion. The netbeans_saved() function sent a "save" protocol
++ command. In protocol version 2.1 and earlier this was incorrectly interpreted
++ as a notification that a write had taken place. In reality, it told NetBeans
++ to save the file so multiple writes were being done. This caused various
++ problems and has been fixed in 2.2. To decrease the likelyhood of this
++ confusion happening again, netbeans_saved() has been renamed to
++ netbeans_save_buffer().
++ 
+  The messages are currently sent over a socket.  Since the messages are in
+  plain UTF-8 text this protocol could also be used with any other communication
+  mechanism.
+***************
+*** 304,310 ****
+  		   typeNum	number	sequence number of the annotation
+  					defined with defineAnnoType for this
+  					buffer
+! 		   off		number	offset where annotion is to be placed
+  		   len		number	not used
+  		In version 2.1 "lnum/col" can be used instead of "off".
+  
+--- 324,330 ----
+  		   typeNum	number	sequence number of the annotation
+  					defined with defineAnnoType for this
+  					buffer
+! 		   off		number	offset where annotation is to be placed
+  		   len		number	not used
+  		In version 2.1 "lnum/col" can be used instead of "off".
+  
+***************
+*** 316,322 ****
+  
+  create		Creates a buffer without a name.  Replaces the current buffer
+  		(it's hidden when it was changed).
+! 		Netbeans uses this as the first command for a file that is
+  		being opened.  The sequence of commands could be:
+  			create
+  			setCaretListener	(ignored)
+--- 336,342 ----
+  
+  create		Creates a buffer without a name.  Replaces the current buffer
+  		(it's hidden when it was changed).
+! 		NetBeans uses this as the first command for a file that is
+  		being opened.  The sequence of commands could be:
+  			create
+  			setCaretListener	(ignored)
+***************
+*** 374,383 ****
+  moveAnnoToFront serNum
+  		Not implemented.
+  
+  putBufferNumber pathname
+  		Associate a buffer number with the Vim buffer by the name
+  		"pathname", a string argument.  To be used when the editor
+! 		repored editing another file to the IDE and the IDE needs to
+  		tell the editor what buffer number it will use for this file.
+  		Also marks the buffer as initialized.
+  		New in version 2.1.
+--- 394,408 ----
+  moveAnnoToFront serNum
+  		Not implemented.
+  
++ netbeansBuffer isNetbeansBuffer
++ 		If "isNetbeansBuffer" is "T" then this buffer is ``owned'' by
++ 		NetBeans.
++ 		New in version 2.2.
++ 
+  putBufferNumber pathname
+  		Associate a buffer number with the Vim buffer by the name
+  		"pathname", a string argument.  To be used when the editor
+! 		reported editing another file to the IDE and the IDE needs to
+  		tell the editor what buffer number it will use for this file.
+  		Also marks the buffer as initialized.
+  		New in version 2.1.
+***************
+*** 389,394 ****
+--- 414,429 ----
+  		Remove a previously place annotation for this buffer.
+  		"serNum" is the same number used in addAnno.
+  
++ save		Save the buffer when it was modified.  The other side of the
++ 		interface is expected to write the buffer and invoke
++ 		"setModified" to reset the "changed" flag of the buffer.
++ 		The writing is skipped when one of these conditions is true:
++ 		- 'write' is not set
++ 		- the buffer is read-only
++ 		- the buffer does not have a file name
++ 		- 'buftype' disallows writing
++ 		New in version 2.2.
++ 
+  setAsUser	Not implemented.
+  
+  setBufferNumber pathname
+***************
+*** 435,441 ****
+  
+  setTitle name
+  		Set the title for the buffer to "name", a string argument.
+! 		The title is only used for Netbeans functions, not by Vim.
+  
+  setVisible visible
+  		When the boolean argument "visible" is "T", goto the buffer.
+--- 470,476 ----
+  
+  setTitle name
+  		Set the title for the buffer to "name", a string argument.
+! 		The title is only used for NetBeans functions, not by Vim.
+  
+  setVisible visible
+  		When the boolean argument "visible" is "T", goto the buffer.
+***************
+*** 550,555 ****
+--- 585,599 ----
+  		the mouse pointer.
+  		New in version 2.1.
+  
++ buttonRelease button lnum col
++ 		Report which button was pressed and the location of the cursor
++ 		at the time of the release.  Only for buffers that are owned
++ 		by NetBeans.  This event is not sent if the button was
++ 		released while the mouse was in the status line or in a
++ 		separator line. If col is less than 1 the button release was
++ 		in the sign area.
++ 		New in version 2.2.
++ 
+  fileClosed	Not implemented.
+  
+  fileModified	Not implemented.
+***************
+*** 558,564 ****
+  		A file was opened by the user.
+  		Arguments:
+  		   pathname	string	  name of the file
+! 		   open		boolean   always "F"
+  		   modified	boolean   always "F"
+  
+  geometry cols rows x y
+--- 602,608 ----
+  		A file was opened by the user.
+  		Arguments:
+  		   pathname	string	  name of the file
+! 		   open		boolean   always "T"
+  		   modified	boolean   always "F"
+  
+  geometry cols rows x y
+***************
+*** 630,636 ****
+  		Only fired when enabled, see "startDocumentListen".
+  
+  version vers	Report the version of the interface implementation.  Vim
+! 		reports "2.1" (including the quotes).
+  
+  
+  10.6 Special messages					*nb-special*
+--- 674,680 ----
+  		Only fired when enabled, see "startDocumentListen".
+  
+  version vers	Report the version of the interface implementation.  Vim
+! 		reports "2.2" (including the quotes).
+  
+  
+  10.6 Special messages					*nb-special*
+*** ../vim-6.2.193/src/fileio.c	Sun Jan 18 21:04:53 2004
+--- src/fileio.c	Thu Jan 15 22:07:40 2004
+***************
+*** 2658,2663 ****
+--- 2658,2691 ----
+      }
+  #endif
+  
++ #ifdef FEAT_NETBEANS_INTG
++     if (usingNetbeans && isNetbeansBuffer(buf))
++     {
++ 	if (whole)
++ 	{
++ 	    if (buf->b_changed)
++ 	    {
++ 		netbeans_save_buffer(buf);
++ 		return retval;
++ 	    }
++ 	    else
++ 	    {
++ 		errnum = (char_u *)"E656: ";
++ 		errmsg = (char_u *)_("NetBeans dissallows writes of unmodified buffers");
++ 		buffer = NULL;
++ 		goto fail;
++ 	    }
++ 	}
++ 	else
++ 	{
++ 	    errnum = (char_u *)"E657: ";
++ 	    errmsg = (char_u *)_("Partial writes disallowed for NetBeans buffers");
++ 	    buffer = NULL;
++ 	    goto fail;
++ 	}
++     }
++ #endif
++ 
+      if (shortmess(SHM_OVER) && !exiting)
+  	msg_scroll = FALSE;	    /* overwrite previous file message */
+      else
+***************
+*** 3900,3908 ****
+      {
+  	unchanged(buf, TRUE);
+  	u_unchanged(buf);
+- #ifdef FEAT_NETBEANS_INTG
+- 	netbeans_saved(buf);
+- #endif
+      }
+  
+      /*
+--- 3928,3933 ----
+*** ../vim-6.2.193/src/netbeans.c	Mon Dec 29 20:14:44 2003
+--- src/netbeans.c	Tue Jan 13 13:55:27 2004
+***************
+*** 62,68 ****
+  
+  /* The first implementation (working only with Netbeans) returned "1.1".  The
+   * protocol implemented here also supports A-A-P. */
+! static char *ExtEdProtocolVersion = "2.1";
+  
+  static long pos2off __ARGS((buf_T *, pos_T *));
+  static pos_T *off2pos __ARGS((buf_T *, long));
+--- 62,68 ----
+  
+  /* The first implementation (working only with Netbeans) returned "1.1".  The
+   * protocol implemented here also supports A-A-P. */
+! static char *ExtEdProtocolVersion = "2.2";
+  
+  static long pos2off __ARGS((buf_T *, pos_T *));
+  static pos_T *off2pos __ARGS((buf_T *, long));
+***************
+*** 719,724 ****
+--- 719,726 ----
+  
+      cmdno = strtol((char *)q, (char **)&q, 10);
+  
++     q = skipwhite(q);
++ 
+      if (nb_do_cmd(bufno, verb, isfunc, cmdno, q) == FAIL)
+      {
+  	nbdebug(("nb_parse_cmd: Command error for \"%s\"\n", cmd));
+***************
+*** 774,779 ****
+--- 776,790 ----
+  }
+  
+  /*
++  * Is this a NetBeans-owned buffer?
++  */
++     int
++ isNetbeansBuffer(buf_T *bufp)
++ {
++     return bufp->b_netbeans_file;
++ }
++ 
++ /*
+   * Given a Netbeans buffer number, return the netbeans buffer.
+   * Returns NULL for 0 or a negative number. A 0 bufno means a
+   * non-buffer related command has been sent.
+***************
+*** 1010,1016 ****
+  
+      if (*p++ != '"')
+      {
+! 	nbdebug(("nb_unquote called with string that doesn't start with a quote!: %s", p));
+  	result[0] = NUL;
+  	return result;
+      }
+--- 1021,1028 ----
+  
+      if (*p++ != '"')
+      {
+! 	nbdebug(("nb_unquote called with string that doesn't start with a quote!: %s\n",
+! 			p));
+  	result[0] = NUL;
+  	return result;
+      }
+***************
+*** 1311,1317 ****
+  	    off = strtol((char *)args, (char **)&args, 10);
+  
+  	    /* get text to be inserted */
+! 	    ++args; /* skip space */
+  	    args = to_free = (char_u *)nb_unquote(args, NULL);
+  
+  	    if (buf == NULL || buf->bufp == NULL)
+--- 1323,1329 ----
+  	    off = strtol((char *)args, (char **)&args, 10);
+  
+  	    /* get text to be inserted */
+! 	    args = skipwhite(args);
+  	    args = to_free = (char_u *)nb_unquote(args, NULL);
+  
+  	    if (buf == NULL || buf->bufp == NULL)
+***************
+*** 1494,1500 ****
+  		return FAIL;
+  	    }
+  	    vim_free(buf->displayname);
+! 	    buf->displayname = nb_unquote(++args, NULL);
+  	    nbdebug(("    SETTITLE %d %s\n", bufno, buf->displayname));
+  /* =====================================================================*/
+  	}
+--- 1506,1512 ----
+  		return FAIL;
+  	    }
+  	    vim_free(buf->displayname);
+! 	    buf->displayname = nb_unquote(args, NULL);
+  	    nbdebug(("    SETTITLE %d %s\n", bufno, buf->displayname));
+  /* =====================================================================*/
+  	}
+***************
+*** 1528,1534 ****
+  		EMSG("E641: null buf in setBufferNumber");
+  		return FAIL;
+  	    }
+! 	    to_free = (char_u *)nb_unquote(++args, NULL);
+  	    if (to_free == NULL)
+  		return FAIL;
+  	    bufp = buflist_findname(to_free);
+--- 1540,1546 ----
+  		EMSG("E641: null buf in setBufferNumber");
+  		return FAIL;
+  	    }
+! 	    to_free = (char_u *)nb_unquote(args, NULL);
+  	    if (to_free == NULL)
+  		return FAIL;
+  	    bufp = buflist_findname(to_free);
+***************
+*** 1567,1573 ****
+  		return FAIL;
+  	    }
+  	    vim_free(buf->displayname);
+! 	    buf->displayname = nb_unquote(++args, NULL);
+  	    nbdebug(("    SETFULLNAME %d %s\n", bufno, buf->displayname));
+  
+  	    netbeansReadFile = 0; /* don't try to open disk file */
+--- 1579,1585 ----
+  		return FAIL;
+  	    }
+  	    vim_free(buf->displayname);
+! 	    buf->displayname = nb_unquote(args, NULL);
+  	    nbdebug(("    SETFULLNAME %d %s\n", bufno, buf->displayname));
+  
+  	    netbeansReadFile = 0; /* don't try to open disk file */
+***************
+*** 1588,1594 ****
+  	    }
+  	    /* Edit a file: like create + setFullName + read the file. */
+  	    vim_free(buf->displayname);
+! 	    buf->displayname = nb_unquote(++args, NULL);
+  	    nbdebug(("    EDITFILE %d %s\n", bufno, buf->displayname));
+  	    do_ecmd(0, (char_u *)buf->displayname, NULL, NULL, ECMD_ONE,
+  						     ECMD_HIDE + ECMD_OLDBUF);
+--- 1600,1606 ----
+  	    }
+  	    /* Edit a file: like create + setFullName + read the file. */
+  	    vim_free(buf->displayname);
+! 	    buf->displayname = nb_unquote(args, NULL);
+  	    nbdebug(("    EDITFILE %d %s\n", bufno, buf->displayname));
+  	    do_ecmd(0, (char_u *)buf->displayname, NULL, NULL, ECMD_ONE,
+  						     ECMD_HIDE + ECMD_OLDBUF);
+***************
+*** 1603,1609 ****
+  	}
+  	else if (streq((char *)cmd, "setVisible"))
+  	{
+- 	    ++args;
+  	    if (buf == NULL || buf->bufp == NULL)
+  	    {
+  /*		EMSG("E645: null bufp in setVisible"); */
+--- 1615,1620 ----
+***************
+*** 1636,1642 ****
+  	}
+  	else if (streq((char *)cmd, "setModified"))
+  	{
+- 	    ++args;
+  	    if (buf == NULL || buf->bufp == NULL)
+  	    {
+  /*		EMSG("E646: null bufp in setModified"); */
+--- 1647,1652 ----
+***************
+*** 1667,1673 ****
+  	    if (balloonEval != NULL)
+  	    {
+  		vim_free(text);
+! 		text = nb_unquote(++args, NULL);
+  		if (text != NULL)
+  		    gui_mch_post_balloon(balloonEval, (char_u *)text);
+  	    }
+--- 1677,1683 ----
+  	    if (balloonEval != NULL)
+  	    {
+  		vim_free(text);
+! 		text = nb_unquote(args, NULL);
+  		if (text != NULL)
+  		    gui_mch_post_balloon(balloonEval, (char_u *)text);
+  	    }
+***************
+*** 1681,1687 ****
+  	    char_u *s;
+  #endif
+  
+- 	    ++args;
+  	    if (buf == NULL || buf->bufp == NULL)
+  	    {
+  		EMSG("E647: null bufp in setDot");
+--- 1691,1696 ----
+***************
+*** 1997,2002 ****
+--- 2006,2051 ----
+  	    }
+  /* =====================================================================*/
+  	}
++ 	else if (streq((char *)cmd, "save"))
++ 	{
++ 	    if (buf == NULL || buf->bufp == NULL)
++ 	    {
++ 		nbdebug(("    null bufp in %s command", cmd));
++ 		return FAIL;
++ 	    }
++ 
++ 	    /* the following is taken from ex_cmds.c (do_wqall function) */
++ 	    if (bufIsChanged(buf->bufp))
++ 	    {
++ 		/* Only write if the buffer can be written. */
++ 		if (p_write
++ 			&& !buf->bufp->b_p_ro
++ 			&& buf->bufp->b_ffname != NULL
++ #ifdef FEAT_QUICKFIX
++ 			&& !bt_dontwrite(buf->bufp)
++ #endif
++ 			)
++ 		{
++ 		    buf_write_all(buf->bufp, FALSE);
++ #ifdef FEAT_AUTOCMD
++ 		    /* an autocommand may have deleted the buffer */
++ 		    if (!buf_valid(buf->bufp))
++ 			buf->bufp = NULL;
++ #endif
++ 		}
++ 	    }
++ /* =====================================================================*/
++ 	}
++ 	else if (streq((char *)cmd, "netbeansBuffer"))
++ 	{
++ 	    if (buf == NULL || buf->bufp == NULL)
++ 	    {
++ 		nbdebug(("    null bufp in %s command", cmd));
++ 		return FAIL;
++ 	    }
++ 	    buf->bufp->b_netbeans_file = *args == 'T' ? TRUE : FALSE;
++ /* =====================================================================*/
++ 	}
+  	else if (streq((char *)cmd, "version"))
+  	{
+  	    nbdebug(("    Version = %s\n", (char *) args));
+***************
+*** 2266,2272 ****
+      sprintf(buffer, "0:fileOpened=%d \"%s\" %s %s\n",
+  	    0,
+  	    (char *)q,
+! 	    "F",  /* open in NetBeans */
+  	    "F"); /* modified */
+  
+      vim_free(q);
+--- 2315,2321 ----
+      sprintf(buffer, "0:fileOpened=%d \"%s\" %s %s\n",
+  	    0,
+  	    (char *)q,
+! 	    "T",  /* open in NetBeans */
+  	    "F"); /* modified */
+  
+      vim_free(q);
+***************
+*** 2464,2469 ****
+--- 2513,2542 ----
+  }
+  
+  /*
++  * Send a button release event back to netbeans. Its up to netbeans
++  * to decide what to do (if anything) with this event.
++  */
++     void
++ netbeans_button_release(int button)
++ {
++     char	buf[128];
++     int		bufno;
++ 
++     bufno = nb_getbufno(curbuf);
++ 
++     if (bufno >= 0 && curwin != NULL && curwin->w_buffer == curbuf)
++     {
++ 	int lnum = curwin->w_cursor.lnum;
++ 	int col = mouse_col - curwin->w_wincol - (curwin->w_p_nu ? 9 : 1);
++ 
++ 	sprintf(buf, "%d:buttonRelease=%d %d %d %d\n", bufno, cmdno, button, lnum, col);
++ 	nbdebug(("EVT: %s", buf));
++ 	nb_send(buf, "netbeans_button_release");
++     }
++ }
++ 
++ 
++ /*
+   * Send a keypress event back to netbeans. This usualy simulates some
+   * kind of function key press.
+   */
+***************
+*** 2532,2538 ****
+   * Send a save event to netbeans.
+   */
+      void
+! netbeans_saved(buf_T *bufp)
+  {
+      char_u	buf[64];
+      int		bufno;
+--- 2605,2611 ----
+   * Send a save event to netbeans.
+   */
+      void
+! netbeans_save_buffer(buf_T *bufp)
+  {
+      char_u	buf[64];
+      int		bufno;
+***************
+*** 2546,2552 ****
+  
+      sprintf((char *)buf, "%d:save=%d\n", bufno, cmdno);
+      nbdebug(("EVT: %s", buf));
+!     nb_send((char *)buf, "netbeans_saved");
+  }
+  
+  
+--- 2619,2625 ----
+  
+      sprintf((char *)buf, "%d:save=%d\n", bufno, cmdno);
+      nbdebug(("EVT: %s", buf));
+!     nb_send((char *)buf, "netbeans_save_buffer");
+  }
+  
+  
+*** ../vim-6.2.193/src/normal.c	Sun Jan 18 21:27:18 2004
+--- src/normal.c	Sun Jan 18 18:49:04 2004
+***************
+*** 2473,2478 ****
+--- 2473,2490 ----
+      in_sep_line = (jump_flags & IN_SEP_LINE);
+  #endif
+  
++ #ifdef FEAT_NETBEANS_INTG
++     if (usingNetbeans && isNetbeansBuffer(curbuf)
++ 			    && !(jump_flags & (IN_STATUS_LINE | IN_SEP_LINE)))
++     {
++ 	int key = KEY2TERMCAP1(c);
++ 
++ 	if (key == (int)KE_LEFTRELEASE || key == (int)KE_MIDDLERELEASE
++ 					       || key == (int)KE_RIGHTRELEASE)
++ 	    netbeans_button_release(which_button);
++     }
++ #endif
++ 
+      /* When jumping to another window, clear a pending operator.  That's a bit
+       * friendlier than beeping and not jumping to that window. */
+      if (curwin != old_curwin && oap != NULL && oap->op_type != OP_NOP)
+*** ../vim-6.2.193/src/proto/netbeans.pro	Sun Oct 12 16:42:14 2003
+--- src/proto/netbeans.pro	Tue Jan 13 13:48:34 2004
+***************
+*** 3,8 ****
+--- 3,9 ----
+  void netbeans_gtk_connect __ARGS((void));
+  void netbeans_w32_connect __ARGS((void));
+  void messageFromNetbeansW32 __ARGS((void));
++ int isNetbeansBuffer __ARGS((buf_T *bufp));
+  void netbeans_end __ARGS((void));
+  void netbeans_startup_done __ARGS((void));
+  void netbeans_frame_moved __ARGS((int new_x, int new_y));
+***************
+*** 11,18 ****
+  void netbeans_inserted __ARGS((buf_T *bufp, linenr_T linenr, colnr_T col, int oldlen, char_u *txt, int newlen));
+  void netbeans_removed __ARGS((buf_T *bufp, linenr_T linenr, colnr_T col, long len));
+  void netbeans_unmodified __ARGS((buf_T *bufp));
+  void netbeans_keycommand __ARGS((int key));
+! void netbeans_saved __ARGS((buf_T *bufp));
+  void netbeans_deleted_all_lines __ARGS((buf_T *bufp));
+  int netbeans_is_guarded __ARGS((linenr_T top, linenr_T bot));
+  void netbeans_draw_multisign_indicator __ARGS((int row));
+--- 12,20 ----
+  void netbeans_inserted __ARGS((buf_T *bufp, linenr_T linenr, colnr_T col, int oldlen, char_u *txt, int newlen));
+  void netbeans_removed __ARGS((buf_T *bufp, linenr_T linenr, colnr_T col, long len));
+  void netbeans_unmodified __ARGS((buf_T *bufp));
++ void netbeans_button_release __ARGS((int button));
+  void netbeans_keycommand __ARGS((int key));
+! void netbeans_save_buffer __ARGS((buf_T *bufp));
+  void netbeans_deleted_all_lines __ARGS((buf_T *bufp));
+  int netbeans_is_guarded __ARGS((linenr_T top, linenr_T bot));
+  void netbeans_draw_multisign_indicator __ARGS((int row));
+*** ../vim-6.2.193/src/structs.h	Sun Jan 18 21:12:26 2004
+--- src/structs.h	Tue Jan 13 12:57:23 2004
+***************
+*** 1233,1238 ****
+--- 1233,1242 ----
+      signlist_T	*b_signlist;	/* list of signs to draw */
+  #endif
+  
++ #ifdef FEAT_NETBEANS_INTG
++     int		b_netbeans_file;    /* TRUE when buffer is owned by NetBeans */
++ #endif
++ 
+  };
+  
+  /*
+*** ../vim-6.2.193/src/version.c	Sun Jan 18 21:27:18 2004
+--- src/version.c	Sun Jan 18 21:29:39 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     194,
+  /**/
+
+-- 
+`When any government, or any church for that matter, undertakes to say to
+ its subjects, "This you may not read, this you must not see, this you are
+ forbidden to know," the end result is tyranny and oppression no matter how
+ holy the motives' -- Robert A Heinlein, "If this goes on --"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

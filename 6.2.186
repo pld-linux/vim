@@ -1,0 +1,729 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.186
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.186 (after 6.2.185)
+Problem:    Documentation file eval.txt contains examples without indent.
+Solution:   Insert the indent.  Also fix other mistakes.
+Files:	    runtime/doc/eval.txt
+
+
+*** ../vim-6.2.185/runtime/doc/eval.txt	Sun Jan 18 20:46:13 2004
+--- runtime/doc/eval.txt	Sun Jan 18 20:38:41 2004
+***************
+*** 50,55 ****
+--- 50,57 ----
+  	String "foo"	-->	Number 0
+  	String "0xf1"	-->	Number 241
+  	String "0100"	-->	Number 64
++ 	String "-8"	-->	Number -8
++ 	String "+8"	-->	Number 0
+  
+  To force conversion from String to Number, add zero to it: >
+  	:echo "0100" + 0
+***************
+*** 135,141 ****
+  
+  ".." indicates that the operations in this level can be concatenated.
+  Example: >
+! &nu || &list && &shell == "csh"
+  
+  All expressions within one level are parsed from left to right.
+  
+--- 137,143 ----
+  
+  ".." indicates that the operations in this level can be concatenated.
+  Example: >
+! 	&nu || &list && &shell == "csh"
+  
+  All expressions within one level are parsed from left to right.
+  
+***************
+*** 149,167 ****
+  non-zero, the result is the value of the expression between the '?' and ':',
+  otherwise the result is the value of the expression after the ':'.
+  Example: >
+! :echo lnum == 1 ? "top" : lnum
+  
+  Since the first expression is an "expr2", it cannot contain another ?:.  The
+  other two expressions can, thus allow for recursive use of ?:.
+  Example: >
+! :echo lnum == 1 ? "top" : lnum == 1000 ? "last" : lnum
+  
+  To keep this readable, using |line-continuation| is suggested: >
+! :echo lnum == 1
+! :\	? "top"
+! :\	: lnum == 1000
+! :\		? "last"
+! :\		: lnum
+  
+  
+  expr2 and expr3						*expr2* *expr3*
+--- 151,169 ----
+  non-zero, the result is the value of the expression between the '?' and ':',
+  otherwise the result is the value of the expression after the ':'.
+  Example: >
+! 	:echo lnum == 1 ? "top" : lnum
+  
+  Since the first expression is an "expr2", it cannot contain another ?:.  The
+  other two expressions can, thus allow for recursive use of ?:.
+  Example: >
+! 	:echo lnum == 1 ? "top" : lnum == 1000 ? "last" : lnum
+  
+  To keep this readable, using |line-continuation| is suggested: >
+! 	:echo lnum == 1
+! 	:\	? "top"
+! 	:\	: lnum == 1000
+! 	:\		? "last"
+! 	:\		: lnum
+  
+  
+  expr2 and expr3						*expr2* *expr3*
+***************
+*** 180,201 ****
+  
+  The operators can be concatenated, for example: >
+  
+! &nu || &list && &shell == "csh"
+  
+  Note that "&&" takes precedence over "||", so this has the meaning of: >
+  
+! &nu || (&list && &shell == "csh")
+  
+  Once the result is known, the expression "short-circuits", that is, further
+  arguments are not evaluated.  This is like what happens in C.  For example: >
+  
+! let a = 1
+! echo a || b
+  
+  This is valid even if there is no variable called "b" because "a" is non-zero,
+  so the result must be non-zero.  Similarly below: >
+  
+! echo exists("b") && b == "yes"
+  
+  This is valid whether "b" has been defined or not.  The second clause will
+  only be evaluated if "b" has been defined.
+--- 182,203 ----
+  
+  The operators can be concatenated, for example: >
+  
+! 	&nu || &list && &shell == "csh"
+  
+  Note that "&&" takes precedence over "||", so this has the meaning of: >
+  
+! 	&nu || (&list && &shell == "csh")
+  
+  Once the result is known, the expression "short-circuits", that is, further
+  arguments are not evaluated.  This is like what happens in C.  For example: >
+  
+! 	let a = 1
+! 	echo a || b
+  
+  This is valid even if there is no variable called "b" because "a" is non-zero,
+  so the result must be non-zero.  Similarly below: >
+  
+! 	echo exists("b") && b == "yes"
+  
+  This is valid whether "b" has been defined or not.  The second clause will
+  only be evaluated if "b" has been defined.
+***************
+*** 299,311 ****
+  -----
+  expr9[expr1]		index in String		*expr-[]* *E111*
+  
+! This results in a String that contains the expr1'th single character from
+! expr9.  expr9 is used as a String, expr1 as a Number.
+  
+  Note that index zero gives the first character.  This is like it works in C.
+  Careful: text column numbers start with one!  Example, to get the character
+  under the cursor: >
+! :let c = getline(line("."))[col(".") - 1]
+  
+  If the length of the String is less than the index, the result is an empty
+  String.
+--- 301,314 ----
+  -----
+  expr9[expr1]		index in String		*expr-[]* *E111*
+  
+! This results in a String that contains the expr1'th single byte from expr9.
+! expr9 is used as a String, expr1 as a Number.  Note that this doesn't work for
+! multi-byte encodings.
+  
+  Note that index zero gives the first character.  This is like it works in C.
+  Careful: text column numbers start with one!  Example, to get the character
+  under the cursor: >
+! 	:let c = getline(line("."))[col(".") - 1]
+  
+  If the length of the String is less than the index, the result is an empty
+  String.
+***************
+*** 380,387 ****
+  
+  The result is the contents of the named register, as a single string.
+  Newlines are inserted where required.  To get the contents of the unnamed
+! register use @@.  The '=' register can not be used here.  See |registers| for
+! an explanation of the available registers.
+  
+  
+  nesting							*expr-nesting* *E110*
+--- 383,390 ----
+  
+  The result is the contents of the named register, as a single string.
+  Newlines are inserted where required.  To get the contents of the unnamed
+! register use @" or @@.  The '=' register can not be used here.  See
+! |registers| for an explanation of the available registers.
+  
+  
+  nesting							*expr-nesting* *E110*
+***************
+*** 402,409 ****
+  the environment variables known inside the current Vim session.  If that
+  fails, a shell will be used to expand the variable.  This can be slow, but it
+  does expand all variables that the shell knows about.  Example: >
+! :echo $version
+! :echo expand("$version")
+  The first one probably doesn't echo anything, the second echoes the $version
+  variable (if your shell supports it).
+  
+--- 405,412 ----
+  the environment variables known inside the current Vim session.  If that
+  fails, a shell will be used to expand the variable.  This can be slow, but it
+  does expand all variables that the shell knows about.  Example: >
+! 	:echo $version
+! 	:echo expand("$version")
+  The first one probably doesn't echo anything, the second echoes the $version
+  variable (if your shell supports it).
+  
+***************
+*** 492,498 ****
+  - etc.
+  
+  script variables can be used to avoid conflicts with global variable names.
+! An example that works: >
+  
+  	let s:counter = 0
+  	function MyCounter()
+--- 495,501 ----
+  - etc.
+  
+  script variables can be used to avoid conflicts with global variable names.
+! Take this example:
+  
+  	let s:counter = 0
+  	function MyCounter()
+***************
+*** 501,515 ****
+  	endfunction
+  	command Tick call MyCounter()
+  
+! And an example that does NOT work: >
+  
+  	let s:counter = 0
+  	command Tick let s:counter = s:counter + 1 | echo s:counter
+  
+! When the ":Tick" command is executed outside the script, the s:counter
+! variable will not be available.  In the previous example, calling the
+! MyCounter() function sets the context for script variables to where the
+! function was defined, then s:counter can be used.
+  The script variables are also available when a function is defined inside a
+  function that is defined in a script.  Example: >
+  
+--- 504,522 ----
+  	endfunction
+  	command Tick call MyCounter()
+  
+! You can now invoke "Tick" from any script, and the "s:counter" variable in
+! that script will not be changed, only the "s:counter" in the script where
+! "Tick" was defined is used.
+! 
+! Another example that does the same: >
+  
+  	let s:counter = 0
+  	command Tick let s:counter = s:counter + 1 | echo s:counter
+  
+! When calling a function and invoking a user-defined command, the context for
+! script varialbes is set to the script where the function or command was
+! defined.
+! 
+  The script variables are also available when a function is defined inside a
+  function that is defined in a script.  Example: >
+  
+***************
+*** 619,625 ****
+  	:catch /.*/
+  	:  echo "caught" v:exception
+  	:endtry
+! <		Output: "caught oops"
+  
+  					*v:fname_in* *fname_in-variable*
+  v:fname_in	The name of the input file.  Only valid while evaluating:
+--- 626,632 ----
+  	:catch /.*/
+  	:  echo "caught" v:exception
+  	:endtry
+! <		Output: "caught oops".
+  
+  					*v:fname_in* *fname_in-variable*
+  v:fname_in	The name of the input file.  Only valid while evaluating:
+***************
+*** 806,812 ****
+  escape( {string}, {chars})	String	escape {chars} in {string} with '\'
+  eventhandler( )			Number  TRUE if inside an event handler
+  executable( {expr})		Number	1 if executable {expr} exists
+! exists( {var})			Number	TRUE if {var} exists
+  expand( {expr})			String	expand special keywords in {expr}
+  filereadable( {file})		Number	TRUE if {file} is a readable file
+  filewritable( {file})		Number	TRUE if {file} is a writable file
+--- 813,819 ----
+  escape( {string}, {chars})	String	escape {chars} in {string} with '\'
+  eventhandler( )			Number  TRUE if inside an event handler
+  executable( {expr})		Number	1 if executable {expr} exists
+! exists( {expr})			Number	TRUE if {expr} exists
+  expand( {expr})			String	expand special keywords in {expr}
+  filereadable( {file})		Number	TRUE if {file} is a readable file
+  filewritable( {file})		Number	TRUE if {file} is a writable file
+***************
+*** 982,988 ****
+  		":ls" command.
+  		If {expr} is a Number, that buffer number's name is given.
+  		Number zero is the alternate buffer for the current window.
+! 		If {expr} is a String, it is used as a regexp pattern to match
+  		with the buffer names.  This is always done like 'magic' is
+  		set and 'cpoptions' is empty.  When there is more than one
+  		match an empty string is returned.
+--- 989,995 ----
+  		":ls" command.
+  		If {expr} is a Number, that buffer number's name is given.
+  		Number zero is the alternate buffer for the current window.
+! 		If {expr} is a String, it is used as a |file-pattern| to match
+  		with the buffer names.  This is always done like 'magic' is
+  		set and 'cpoptions' is empty.  When there is more than one
+  		match an empty string is returned.
+***************
+*** 1025,1032 ****
+  		window associated with buffer {expr}.  For the use of {expr},
+  		see |bufname()| above.  If buffer {expr} doesn't exist or
+  		there is no such window, -1 is returned.  Example: >
+  	echo "A window containing buffer 1 is " . (bufwinnr(1))
+! <
+  byte2line({byte})					*byte2line()*
+  		Return the line number that contains the character at byte
+  		count {byte} in the current buffer.  This includes the
+--- 1032,1044 ----
+  		window associated with buffer {expr}.  For the use of {expr},
+  		see |bufname()| above.  If buffer {expr} doesn't exist or
+  		there is no such window, -1 is returned.  Example: >
++ 
+  	echo "A window containing buffer 1 is " . (bufwinnr(1))
+! 
+! <		The number can be used with |CTRL-W_w| and ":wincmd w"
+! 		|:wincmd|.
+! 
+! 
+  byte2line({byte})					*byte2line()*
+  		Return the line number that contains the character at byte
+  		count {byte} in the current buffer.  This includes the
+***************
+*** 1061,1066 ****
+--- 1073,1079 ----
+  			    number of characters in the cursor line plus one)
+  		    'x	    position of mark x (if the mark is not set, 0 is
+  			    returned)
++ 		For the screen column position use |virtcol()|.
+  		Note that only marks in the current file can be used.
+  		Examples: >
+  			col(".")		column of cursor
+***************
+*** 1092,1098 ****
+  		by '\n', e.g. >
+  			confirm("Save changes?", "&Yes\n&No\n&Cancel")
+  <		The letter after the '&' is the shortcut key for that choice.
+! 		Thus you can type 'c' to select "Cancel".  The shorcut does
+  		not need to be the first letter: >
+  			confirm("file has been modified", "&Save\nSave &All")
+  <		For the console, the first letter of each choice is used as
+--- 1105,1111 ----
+  		by '\n', e.g. >
+  			confirm("Save changes?", "&Yes\n&No\n&Cancel")
+  <		The letter after the '&' is the shortcut key for that choice.
+! 		Thus you can type 'c' to select "Cancel".  The shortcut does
+  		not need to be the first letter: >
+  			confirm("file has been modified", "&Save\nSave &All")
+  <		For the console, the first letter of each choice is used as
+***************
+*** 1155,1161 ****
+    # pid    database name			prepend path
+    0 27664  cscope.out				/usr/local
+  <
+! 		Invokation					Return Val ~
+  		----------					---------- >
+  		cscope_connection()					1
+  		cscope_connection(1, "out")				1
+--- 1168,1174 ----
+    # pid    database name			prepend path
+    0 27664  cscope.out				/usr/local
+  <
+! 		Invocation					Return Val ~
+  		----------					---------- >
+  		cscope_connection()					1
+  		cscope_connection(1, "out")				1
+***************
+*** 1190,1196 ****
+  		When editing another file, the counter is reset, thus this
+  		really checks if the FileType event has been triggered for the
+  		current buffer.  This allows an autocommand that starts
+! 		editing another buffer to set 'filetype' and load a sytnax
+  		file.
+  
+  escape({string}, {chars})				*escape()*
+--- 1203,1209 ----
+  		When editing another file, the counter is reset, thus this
+  		really checks if the FileType event has been triggered for the
+  		current buffer.  This allows an autocommand that starts
+! 		editing another buffer to set 'filetype' and load a syntax
+  		file.
+  
+  escape({string}, {chars})				*escape()*
+***************
+*** 1215,1223 ****
+  			-1	not implemented on this system
+  
+  							*exists()*
+! exists({expr})	The result is a Number, which is non-zero if {var} is defined,
+! 		zero otherwise.  The {expr} argument is a string, which
+! 		contains one of these:
+  			&option-name	Vim option (only checks if it exists,
+  					not if it really works)
+  			+option-name	Vim option that works.
+--- 1228,1236 ----
+  			-1	not implemented on this system
+  
+  							*exists()*
+! exists({expr})	The result is a Number, which is non-zero if {expr} is
+! 		defined, zero otherwise.  The {expr} argument is a string,
+! 		which contains one of these:
+  			&option-name	Vim option (only checks if it exists,
+  					not if it really works)
+  			+option-name	Vim option that works.
+***************
+*** 1230,1238 ****
+  			varname		internal variable (see
+  					|internal-variables|).  Does not work
+  					for |curly-braces-names|.
+! 			:cmdname	Ex command, both built-in and user
+! 					commands |:command|
+! 					returns:
+  					1  for match with start of a command
+  					2  full match with a command
+  					3  matches several user commands
+--- 1243,1251 ----
+  			varname		internal variable (see
+  					|internal-variables|).  Does not work
+  					for |curly-braces-names|.
+! 			:cmdname	Ex command: built-in command, user
+! 					command or command modifier |:command|.
+! 					Returns:
+  					1  for match with start of a command
+  					2  full match with a command
+  					3  matches several user commands
+***************
+*** 1242,1247 ****
+--- 1255,1261 ----
+  					literally and compared to the
+  					autocommand patterns character by
+  					character)
++ 		For checking for a supported feature use |has()|.
+  
+  		Examples: >
+  			exists("&shortname")
+***************
+*** 1327,1333 ****
+  		variables that are only known in a shell.  But this can be
+  		slow, because a shell must be started.  See |expr-env-expand|.
+  		The expanded variable is still handled like a list of file
+! 		names.
+  
+  		See |glob()| for finding existing files.  See |system()| for
+  		getting the raw output of an external command.
+--- 1341,1349 ----
+  		variables that are only known in a shell.  But this can be
+  		slow, because a shell must be started.  See |expr-env-expand|.
+  		The expanded variable is still handled like a list of file
+! 		names.  When an environment variable cannot be expanded, it is
+! 		left unchanged.  Thus ":echo expand('$FOOBAR')" results in
+! 		"$FOOBAR".
+  
+  		See |glob()| for finding existing files.  See |system()| for
+  		getting the raw output of an external command.
+***************
+*** 1374,1380 ****
+  		returned.  It doesn't matter if the folds are open or closed.
+  		When used while updating folds (from 'foldexpr') -1 is
+  		returned for lines where folds are still to be updated and the
+! 		foldlevel is unknown.
+  
+  							*foldtext()*
+  foldtext()	Returns a String, to be displayed for a closed fold.  This is
+--- 1390,1397 ----
+  		returned.  It doesn't matter if the folds are open or closed.
+  		When used while updating folds (from 'foldexpr') -1 is
+  		returned for lines where folds are still to be updated and the
+! 		foldlevel is unknown.  As a special case the level of the
+! 		previous line is usually available.
+  
+  							*foldtext()*
+  foldtext()	Returns a String, to be displayed for a closed fold.  This is
+***************
+*** 1567,1572 ****
+--- 1584,1590 ----
+  has({feature})	The result is a Number, which is 1 if the feature {feature} is
+  		supported, zero otherwise.  The {feature} argument is a
+  		string.  See |feature-list| below.
++ 		Also see |exists()|.
+  
+  hasmapto({what} [, {mode}])				*hasmapto()*
+  		The result is a Number, which is 1 if there is a mapping that
+***************
+*** 1833,1839 ****
+  		without the ".DLL" suffix.  A full path is only required if
+  		the DLL is not in the usual places.
+  		For Unix: When compiling your own plugins, remember that the
+! 		object code must be compiled as position-independant ('PIC').
+  		{only in Win32 on some Unix versions, when the |+libcall|
+  		feature is present}
+  		Examples: >
+--- 1851,1857 ----
+  		without the ".DLL" suffix.  A full path is only required if
+  		the DLL is not in the usual places.
+  		For Unix: When compiling your own plugins, remember that the
+! 		object code must be compiled as position-independent ('PIC').
+  		{only in Win32 on some Unix versions, when the |+libcall|
+  		feature is present}
+  		Examples: >
+***************
+*** 2016,2021 ****
+--- 2034,2043 ----
+  			nr2char(32)		returns " "
+  <		The current 'encoding' is used.  Example for "utf-8": >
+  			nr2char(300)		returns I with bow character
++ <		Note that a NUL character in the file is specified with
++ 		nr2char(10), because NULs are represented with newline
++ 		characters.  nr2char(0) is a real NUL and terminates the
++ 		string, thus isn't very useful.
+  
+  prevnonblank({lnum})					*prevnonblank()*
+  		Return the line number of the first line at or above {lnum}
+***************
+*** 2400,2406 ****
+  		Example: >
+  			:s/\d\+/\=submatch(0) + 1/
+  <		This finds the first number in the line and adds one to it.
+! 		Line breaks are included as a newline character.
+  
+  substitute({expr}, {pat}, {sub}, {flags})		*substitute()*
+  		The result is a String, which is a copy of {expr}, in which
+--- 2422,2428 ----
+  		Example: >
+  			:s/\d\+/\=submatch(0) + 1/
+  <		This finds the first number in the line and adds one to it.
+! 		A line break is included as a newline character.
+  
+  substitute({expr}, {pat}, {sub}, {flags})		*substitute()*
+  		The result is a String, which is a copy of {expr}, in which
+***************
+*** 2534,2539 ****
+--- 2556,2562 ----
+  		position, the returned Number will be the column at the end of
+  		the <Tab>.  For example, for a <Tab> in column 1, with 'ts'
+  		set to 8, it returns 8.
++ 		For the byte position use |col()|.
+  		When Virtual editing is active in the current mode, a position
+  		beyond the end of the line can be returned. |'virtualedit'|
+  		The accepted positions are:
+***************
+*** 2906,2912 ****
+    :  echohl None
+    :  let idx = 1
+    :  while idx <= a:0
+!   :    exe "echo a:" . idx
+    :    let idx = idx + 1
+    :  endwhile
+    :  return idx
+--- 2929,2935 ----
+    :  echohl None
+    :  let idx = 1
+    :  while idx <= a:0
+!   :    echo a:{idx} . ' '
+    :    let idx = idx + 1
+    :  endwhile
+    :  return idx
+***************
+*** 2921,2927 ****
+    :  if a:n2 == 0
+    :    return "fail"
+    :  endif
+!   :  exe "let g:" . a:divname . " = ". a:n1 / a:n2
+    :  return "ok"
+    :endfunction
+  
+--- 2944,2950 ----
+    :  if a:n2 == 0
+    :    return "fail"
+    :  endif
+!   :  let g:{a:divname} = a:n1 / a:n2
+    :  return "ok"
+    :endfunction
+  
+***************
+*** 2986,2992 ****
+  
+  							*autoload-functions*
+  When using many or large functions, it's possible to automatically define them
+! only when they are used.  Example: >
+  
+  	:au FuncUndefined BufNet* source ~/vim/bufnetfuncs.vim
+  
+--- 3009,3016 ----
+  
+  							*autoload-functions*
+  When using many or large functions, it's possible to automatically define them
+! only when they are used.  Use the FuncUndefined autocommand event with a
+! pattern that matches the function(s) to be defined.  Example: >
+  
+  	:au FuncUndefined BufNet* source ~/vim/bufnetfuncs.vim
+  
+***************
+*** 3248,3255 ****
+  <
+  
+  							*:ec* *:echo*
+! :ec[ho] {expr1} ..	Echoes each {expr1}, with a space in between and a
+! 			terminating <EOL>.  Also see |:comment|.
+  			Use "\n" to start a new line.  Use "\r" to move the
+  			cursor to the first column.
+  			Uses the highlighting set by the |:echohl| command.
+--- 3272,3280 ----
+  <
+  
+  							*:ec* *:echo*
+! :ec[ho] {expr1} ..	Echoes each {expr1}, with a space in between.  The
+! 			first {expr1} starts on a new line.
+! 			Also see |:comment|.
+  			Use "\n" to start a new line.  Use "\r" to move the
+  			cursor to the first column.
+  			Uses the highlighting set by the |:echohl| command.
+***************
+*** 3372,3378 ****
+  Exceptions can be caught or can cause cleanup code to be executed.  You can
+  use a try conditional to specify catch clauses (that catch exceptions) and/or
+  a finally clause (to be executed for cleanup).
+!     A try conditional begins with a |:try| command and ends at the matching
+  |:endtry| command.  In between, you can use a |:catch| command to start
+  a catch clause, or a |:finally| command to start a finally clause.  There may
+  be none or multiple catch clauses, but there is at most one finally clause,
+--- 3397,3403 ----
+  Exceptions can be caught or can cause cleanup code to be executed.  You can
+  use a try conditional to specify catch clauses (that catch exceptions) and/or
+  a finally clause (to be executed for cleanup).
+!    A try conditional begins with a |:try| command and ends at the matching
+  |:endtry| command.  In between, you can use a |:catch| command to start
+  a catch clause, or a |:finally| command to start a finally clause.  There may
+  be none or multiple catch clauses, but there is at most one finally clause,
+***************
+*** 3475,3481 ****
+  For examples see |throw-catch|.
+  
+  
+! EXAMINIG EXCEPTION HANDLING CODE			*except-examine*
+  
+  Exception handling code can get tricky.  If you are in doubt what happens, set
+  'verbose' to 13 or use the ":13verbose" command modifier when sourcing your
+--- 3500,3506 ----
+  For examples see |throw-catch|.
+  
+  
+! EXAMINING EXCEPTION HANDLING CODE			*except-examine*
+  
+  Exception handling code can get tricky.  If you are in doubt what happens, set
+  'verbose' to 13 or use the ":13verbose" command modifier when sourcing your
+***************
+*** 3698,3706 ****
+  	:  echo v:exception
+  	:endtry
+  
+! This code displays >
+  
+! 	Vim(echoerr):Vim:E492: Not an editor command:   asdf
+  
+  
+  CLEANUP CODE						*try-finally*
+--- 3723,3731 ----
+  	:  echo v:exception
+  	:endtry
+  
+! This code displays
+  
+! 	Vim(echoerr):Vim:E492: Not an editor command:   asdf ~
+  
+  
+  CLEANUP CODE						*try-finally*
+***************
+*** 4244,4250 ****
+  failed, if known.  See |catch-errors|.
+  
+  
+! PECULARITIES
+  							*except-compat*
+  The exception handling concept requires that the command sequence causing the
+  exception is aborted immediately and control is transferred to finally clauses
+--- 4269,4275 ----
+  failed, if known.  See |catch-errors|.
+  
+  
+! PECULIARITIES
+  							*except-compat*
+  The exception handling concept requires that the command sequence causing the
+  exception is aborted immediately and control is transferred to finally clauses
+***************
+*** 4489,4495 ****
+  	:else
+  	:  echo "You will _never_ see this message"
+  	:endif
+! <
+  ==============================================================================
+  11. The sandbox					*eval-sandbox* *sandbox* *E48*
+  
+--- 4514,4520 ----
+  	:else
+  	:  echo "You will _never_ see this message"
+  	:endif
+! 
+  ==============================================================================
+  11. The sandbox					*eval-sandbox* *sandbox* *E48*
+  
+*** ../vim-6.2.185/src/version.c	Sun Jan 18 20:46:13 2004
+--- src/version.c	Sun Jan 18 20:47:55 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     186,
+  /**/
+
+-- 
+ARTHUR:  Well, I can't just call you `Man'.
+DENNIS:  Well, you could say `Dennis'.
+ARTHUR:  Well, I didn't know you were called `Dennis.'
+DENNIS:  Well, you didn't bother to find out, did you?
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

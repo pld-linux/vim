@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.198
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.198
+Problem:    A few messages are not translated. (Ernest Adrogue)
+Solution:   Mark the messages to be translated.
+Files:      src/ex_cmds.c
+    
+
+*** ../vim-6.2.197/src/ex_cmds.c	Sun Jan 18 21:12:26 2004
+--- src/ex_cmds.c	Mon Jan 19 14:31:14 2004
+***************
+*** 5712,5720 ****
+  	msg_outtrans(sp->sn_icon);
+  #ifdef FEAT_SIGN_ICONS
+  	if (sp->sn_image == NULL)
+! 	    MSG_PUTS(" (NOT FOUND)");
+  #else
+! 	MSG_PUTS(" (not supported)");
+  #endif
+      }
+      if (sp->sn_text != NULL)
+--- 5711,5719 ----
+  	msg_outtrans(sp->sn_icon);
+  #ifdef FEAT_SIGN_ICONS
+  	if (sp->sn_image == NULL)
+! 	    MSG_PUTS(_(" (NOT FOUND)"));
+  #else
+! 	MSG_PUTS(_(" (not supported)"));
+  #endif
+      }
+      if (sp->sn_text != NULL)
+*** ../vim-6.2.197/src/version.c	Sun Jan 25 19:32:46 2004
+--- src/version.c	Sun Jan 25 19:33:59 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     198,
+  /**/
+
+-- 
+Living on Earth includes an annual free trip around the Sun.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

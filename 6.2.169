@@ -1,0 +1,60 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.169
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.169
+Problem:    The prototype for _Xmblen() appears in a recent XFree86 header
+	    file, causing a warning for our prototype. (Hisashi T Fujinaka)
+Solution:   Move the prototype to an osdef file, so that it's filtered out.
+Files:	    src/mbyte.c, src/osdef2.h.in
+
+
+*** ../vim-6.2.168/src/mbyte.c	Sun Nov  9 20:20:26 2003
+--- src/mbyte.c	Tue Dec 23 16:03:30 2003
+***************
+*** 543,549 ****
+  # else
+  	    char buf[MB_MAXBYTES];
+  # ifdef X_LOCALE
+- 	    extern int _Xmblen __ARGS((char *, size_t));
+  #  ifndef mblen
+  #   define mblen _Xmblen
+  #  endif
+--- 547,552 ----
+*** ../vim-6.2.168/src/osdef2.h.in	Sat Dec 15 22:24:12 2001
+--- src/osdef2.h.in	Wed Dec 24 10:26:00 2003
+***************
+*** 79,81 ****
+--- 79,87 ----
+  #else
+  extern char	*mktemp __ARGS((char *));
+  #endif
++ 
++ #ifdef ISC
++ extern int	_Xmblen __ARGS((char const *, size_t));
++ #else
++ extern int	_Xmblen __ARGS((char *, size_t));
++ #endif
+*** ../vim-6.2.168/src/version.c	Mon Dec 29 21:14:00 2003
+--- src/version.c	Mon Dec 29 21:16:30 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     169,
+  /**/
+
+-- 
+From "know your smileys":
+ :-*	A big kiss!
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

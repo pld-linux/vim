@@ -1,0 +1,56 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.160
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.160
+Problem:    When 'virtualedit' is "all" and 'selection is "exclusive",
+	    selecting a double-width character below a single-width character
+	    may cause a crash.
+Solution:   Avoid overflow on unsigned integer decrement. (Taro Muraoka)
+Files:	    src/normal.c
+
+
+*** ../vim-6.2.159/src/normal.c	Sun Nov  9 20:35:08 2003
+--- src/normal.c	Tue Dec 16 10:06:16 2003
+***************
+*** 1510,1516 ****
+  			oap->start_vcol = start;
+  		    if (end > oap->end_vcol)
+  		    {
+! 			if (*p_sel == 'e' && start - 1 >= oap->end_vcol)
+  			    oap->end_vcol = start - 1;
+  			else
+  			    oap->end_vcol = end;
+--- 1510,1517 ----
+  			oap->start_vcol = start;
+  		    if (end > oap->end_vcol)
+  		    {
+! 			if (*p_sel == 'e' && start >= 1
+! 						&& start - 1 >= oap->end_vcol)
+  			    oap->end_vcol = start - 1;
+  			else
+  			    oap->end_vcol = end;
+*** ../vim-6.2.159/src/version.c	Mon Dec 29 20:30:12 2003
+--- src/version.c	Mon Dec 29 20:32:24 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     160,
+  /**/
+
+-- 
+I AM THANKFUL...
+...for the piles of laundry and ironing because it means I
+have plenty of clothes to wear.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

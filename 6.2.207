@@ -1,0 +1,68 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.207
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.207
+Problem:    When 'encoding' is a multi-byte encoding, expanding an
+	    abbreviation that starts where insertion started results in
+	    characters before the insertion to be deleted.  (Xiangjiang Ma)
+Solution:   Stop searching leftwards for the start of the word at the position
+	    where insertion started.
+Files:	    src/getchar.c
+
+
+*** ../vim-6.2.206/src/getchar.c	Sat Sep 27 19:36:46 2003
+--- src/getchar.c	Thu Jan 22 18:11:38 2004
+***************
+*** 1234,1239 ****
+--- 1234,1240 ----
+  
+  /*
+   * Restore the typeahead to what it was before calling save_typeahead().
++  * The allocated memory is freed, can only be called once!
+   */
+      void
+  restore_typeahead(tp)
+***************
+*** 3879,3885 ****
+  		is_id = vim_iswordp(mb_prevptr(ptr, p));
+  	}
+  	clen = 1;
+! 	while (p > ptr)
+  	{
+  	    p = mb_prevptr(ptr, p);
+  	    if (vim_isspace(*p) || (!vim_abbr && is_id != vim_iswordp(p)))
+--- 3880,3886 ----
+  		is_id = vim_iswordp(mb_prevptr(ptr, p));
+  	}
+  	clen = 1;
+! 	while (p > ptr + mincol)
+  	{
+  	    p = mb_prevptr(ptr, p);
+  	    if (vim_isspace(*p) || (!vim_abbr && is_id != vim_iswordp(p)))
+*** ../vim-6.2.206/src/version.c	Sun Jan 25 20:28:03 2004
+--- src/version.c	Sun Jan 25 20:29:20 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     207,
+  /**/
+
+-- 
+INSPECTOR END OF FILM: Move along.  There's nothing to see!  Keep moving!
+   [Suddenly he notices the cameras.]
+INSPECTOR END OF FILM: (to Camera) All right, put that away sonny.
+   [He walks over to it and puts his hand over the lens.]
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

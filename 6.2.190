@@ -1,0 +1,477 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.190
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.190
+Problem:    When editing a compressed files, marks are lost.
+Solution:   Add the ":lockmarks" modifier and use it in the gzip plugin.
+	    Make exists() also check for command modifiers, so that the
+	    existence of ":lockmarks" can be checked for.
+	    Also add ":keepmarks" to avoid that marks are deleted when
+	    filtering text.
+	    When deleting lines put marks 'A - 'Z and '0 - '9 at the first
+	    deleted line instead of clearing the mark.  They were kept in the
+	    viminfo file anyway.
+	    Avoid that the gzip plugin puts deleted text in registers.
+Files:	    runtime/doc/motion.txt, runtime/plugin/gzip.vim, src/ex_cmds.c,
+	    src/ex_docmd.c, src/mark.c, src/structs.h
+
+
+*** ../vim-6.2.189/runtime/doc/motion.txt	Sun Jun  1 12:20:33 2003
+--- runtime/doc/motion.txt	Sat Jan 17 16:37:22 2004
+***************
+*** 1,4 ****
+! *motion.txt*    For Vim version 6.2.  Last change: 2003 May 27
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *motion.txt*    For Vim version 6.2.  Last change: 2004 Jan 17
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 700,705 ****
+--- 706,716 ----
+  Lowercase marks 'a to 'z are remembered as long as the file remains in the
+  buffer list.  If you remove the file from the buffer list, all its marks are
+  lost.  If you delete a line that contains a mark, that mark is erased.
++ 
++ To delete a mark: Create a new line, position the mark there, delete the line.
++ E.g.: "o<Esc>mxdd".  This does change the file though.  Using "u" won't work,
++ it also restores marks.
++ 
+  Lowercase marks can be used in combination with operators.  For example: "d't"
+  deletes the lines from the cursor position to mark 't'.  Hint: Use mark 't' for
+  Top, 'b' for Bottom, etc..  Lowercase marks are restored when using undo and
+***************
+*** 811,816 ****
+--- 822,868 ----
+  [`			[count] times to lowercase mark before the cursor.
+  			{not in Vi}
+  
++ 
++ :loc[kmarks] {command}					*:loc* *:lockmarks*
++ 			Execute {command} without adjusting marks.  This is
++ 			useful when changing text in a way that the line count
++ 			will be the same when the change has completed.
++ 			WARNING: When the line count does change, marks below
++ 			the change will keep their line number, thus move to
++ 			another text line.
++ 			These items will not be adjusted for deleted/inserted
++ 			lines:
++ 			- lower case letter marks 'a - 'z
++ 			- upper case letter marks 'A - 'Z
++ 			- numbered marks '0 - '9
++ 			- last insert position '^
++ 			- last change position '.
++ 			- the Visual area '< and '>
++ 			- line numbers in placed signs
++ 			- line numbers in quickfix positions
++ 			- positions in the |jumplist|
++ 			- positions in the |tagstack|
++ 			These items will still be adjusted:
++ 			- previous context mark ''
++ 			- the cursor position
++ 			- the view of a window on a buffer
++ 			- folds
++ 			- diffs
++ 
++ :kee[pmarks] {command}					*:kee* *:keepmarks*
++ 			Currently only has effect for the filter command
++ 			|:range!|:
++ 			- When the number of lines after filtering is equal to
++ 			  or larger than before, all marks are kept at the
++ 			  same line number.
++ 			- When the number of lines decreases, the marks in the
++ 			  ilnes that disappeared are deleted.
++ 			In any case the marks below the filtered text have
++ 			their line numbers adjusted, thus stick to the text,
++ 			as usual.
++ 			When the 'R' flag is missing from 'cpoptions' this has
++ 			the same effect as using ":keepmarks".
++ 
+  ==============================================================================
+  8. Jumps					*jump-motions*
+  
+*** ../vim-6.2.189/runtime/plugin/gzip.vim	Mon Dec 29 21:04:38 2003
+--- runtime/plugin/gzip.vim	Mon Jan 12 17:39:39 2004
+***************
+*** 1,6 ****
+  " Vim plugin for editing compressed files.
+  " Maintainer: Bram Moolenaar <Bram@vim.org>
+! " Last Change: 2003 Dec 22
+  
+  " Exit quickly when:
+  " - this plugin was already loaded
+--- 1,6 ----
+  " Vim plugin for editing compressed files.
+  " Maintainer: Bram Moolenaar <Bram@vim.org>
+! " Last Change: 2004 Jan 12
+  
+  " Exit quickly when:
+  " - this plugin was already loaded
+***************
+*** 73,85 ****
+    call system(a:cmd . " " . tmpe)
+    " delete the compressed lines; remember the line number
+    let l = line("'[") - 1
+!   '[,']d
+    " read in the uncompressed lines "'[-1r tmp"
+    setlocal nobin
+!   execute "silent " . l . "r " . tmp
+    " if buffer became empty, delete trailing blank line
+    if empty
+!     silent $delete
+      1
+    endif
+    " delete the temp file and the used buffers
+--- 73,94 ----
+    call system(a:cmd . " " . tmpe)
+    " delete the compressed lines; remember the line number
+    let l = line("'[") - 1
+!   if exists(":lockmarks")
+!     lockmarks '[,']d _
+!   else
+!     '[,']d _
+!   endif
+    " read in the uncompressed lines "'[-1r tmp"
+    setlocal nobin
+!   if exists(":lockmarks")
+!     execute "silent lockmarks " . l . "r " . tmp
+!   else
+!     execute "silent " . l . "r " . tmp
+!   endif
+! 
+    " if buffer became empty, delete trailing blank line
+    if empty
+!     silent $delete _
+      1
+    endif
+    " delete the temp file and the used buffers
+*** ../vim-6.2.189/src/ex_cmds.c	Fri Jan  9 15:02:40 2004
+--- src/ex_cmds.c	Sun Jan 18 16:18:17 2004
+***************
+*** 746,751 ****
+--- 746,752 ----
+      char_u	*itmp = NULL;
+      char_u	*otmp = NULL;
+      linenr_T	linecount;
++     linenr_T	read_linecount;
+      pos_T	cursor_save;
+      char_u	*cmd_buf;
+  #ifdef FEAT_AUTOCMD
+***************
+*** 858,863 ****
+--- 859,865 ----
+  	if (u_save((linenr_T)(line2), (linenr_T)(line2 + 1)) == FAIL)
+  	    goto error;
+  	redraw_curbuf_later(VALID);
++ 	read_linecount = curbuf->b_ml.ml_line_count;
+  	if (readfile(otmp, NULL, line2, (linenr_T)0, (linenr_T)MAXLNUM, eap,
+  							 READ_FILTER) == FAIL)
+  	{
+***************
+*** 877,882 ****
+--- 879,900 ----
+  
+  	if (do_in)
+  	{
++ 	    if (cmdmod.keepmarks || vim_strchr(p_cpo, CPO_REMMARK) == NULL)
++ 	    {
++ 		read_linecount = curbuf->b_ml.ml_line_count - read_linecount;
++ 		if (read_linecount >= linecount)
++ 		    /* move all marks from old lines to new lines */
++ 		    mark_adjust(line1, line2, linecount, 0L);
++ 		else
++ 		{
++ 		    /* move marks from old lines to new lines, delete marks
++ 		     * that are in deleted lines */
++ 		    mark_adjust(line1, line1 + read_linecount - 1,
++ 								linecount, 0L);
++ 		    mark_adjust(line1 + read_linecount, line2, MAXLNUM, 0L);
++ 		}
++ 	    }
++ 
+  	    /*
+  	     * Put cursor on first filtered line for ":range!cmd".
+  	     * Adjust '[ and '] (set by buf_write()).
+*** ../vim-6.2.189/src/ex_docmd.c	Sun Jan 18 20:46:13 2004
+--- src/ex_docmd.c	Fri Jan 16 17:20:17 2004
+***************
+*** 1432,1437 ****
+--- 1432,1438 ----
+  	    p = skipwhite(skipdigits(ea.cmd));
+  	switch (*p)
+  	{
++ 	    /* When adding an entry, also modify cmd_exists(). */
+  	    case 'a':	if (!checkforcmd(&ea.cmd, "aboveleft", 3))
+  			    break;
+  #ifdef FEAT_WINDOWS
+***************
+*** 1467,1472 ****
+--- 1468,1478 ----
+  #endif
+  			continue;
+  
++ 	    case 'k':	if (!checkforcmd(&ea.cmd, "keepmarks", 3))
++ 			    break;
++ 			cmdmod.keepmarks = TRUE;
++ 			continue;
++ 
+  			/* ":hide" and ":hide | cmd" are not modifiers */
+  	    case 'h':	if (p != ea.cmd || !checkforcmd(&p, "hide", 3)
+  					       || *p == NUL || ends_excmd(*p))
+***************
+*** 1475,1481 ****
+  			cmdmod.hide = TRUE;
+  			continue;
+  
+! 	    case 'l':	if (!checkforcmd(&ea.cmd, "leftabove", 5))
+  			    break;
+  #ifdef FEAT_WINDOWS
+  			cmdmod.split |= WSP_ABOVE;
+--- 1481,1493 ----
+  			cmdmod.hide = TRUE;
+  			continue;
+  
+! 	    case 'l':	if (checkforcmd(&ea.cmd, "lockmarks", 3))
+! 			{
+! 			    cmdmod.lockmarks = TRUE;
+! 			    continue;
+! 			}
+! 
+! 			if (!checkforcmd(&ea.cmd, "leftabove", 5))
+  			    break;
+  #ifdef FEAT_WINDOWS
+  			cmdmod.split |= WSP_ABOVE;
+***************
+*** 2530,2536 ****
+--- 2542,2581 ----
+  {
+      exarg_T	ea;
+      int		full = FALSE;
++     int		i;
++     int		j;
++     static struct cmdmod
++     {
++ 	char	*name;
++ 	int	minlen;
++     } cmdmods[] = {
++ 	{"aboveleft", 3},
++ 	{"belowright", 3},
++ 	{"botright", 2},
++ 	{"browse", 3},
++ 	{"confirm", 4},
++ 	{"hide", 3},
++ 	{"keepmarks", 3},
++ 	{"leftabove", 5},
++ 	{"lockmarks", 3},
++ 	{"rightbelow", 6},
++ 	{"silent", 3},
++ 	{"topleft", 2},
++ 	{"verbose", 4},
++ 	{"vertical", 4},
++     };
++ 
++     /* Check command modifiers. */
++     for (i = 0; i < sizeof(cmdmods) / sizeof(struct cmdmod); ++i)
++     {
++ 	for (j = 0; name[j] != NUL; ++j)
++ 	    if (name[j] != cmdmods[i].name[j])
++ 		break;
++ 	if (name[j] == NUL && j >= cmdmods[i].minlen)
++ 	    return (cmdmods[i].name[j] == NUL ? 2 : 1);
++     }
+  
++     /* Check built-in commands and user defined commands. */
+      ea.cmd = name;
+      ea.cmdidx = (cmdidx_T)0;
+      if (find_command(&ea, &full) == NULL)
+*** ../vim-6.2.189/src/mark.c	Sun Jan 18 20:58:01 2004
+--- src/mark.c	Fri Jan 16 11:56:14 2004
+***************
+*** 800,859 ****
+  	return;
+  
+      /* named marks, lower case and upper case */
+!     for (i = 0; i < NMARKS; i++)
+      {
+! 	one_adjust(&(curbuf->b_namedm[i].lnum));
+! 	if (namedfm[i].fmark.fnum == fnum)
+! 	    one_adjust(&(namedfm[i].fmark.mark.lnum));
+!     }
+!     for (i = NMARKS; i < NMARKS + EXTRA_MARKS; i++)
+!     {
+! 	if (namedfm[i].fmark.fnum == fnum)
+! 	    one_adjust(&(namedfm[i].fmark.mark.lnum));
+!     }
+! 
+!     /* previous context mark */
+!     one_adjust(&(curwin->w_pcmark.lnum));
+! 
+!     /* previous pcmark */
+!     one_adjust(&(curwin->w_prev_pcmark.lnum));
+  
+!     /* last Insert position */
+!     one_adjust(&(curbuf->b_last_insert.lnum));
+  
+!     /* last change position */
+!     one_adjust(&(curbuf->b_last_change.lnum));
+  
+  #ifdef FEAT_VISUAL
+!     /* Visual area */
+!     one_adjust_nodel(&(curbuf->b_visual_start.lnum));
+!     one_adjust_nodel(&(curbuf->b_visual_end.lnum));
+  #endif
+  
+  #ifdef FEAT_QUICKFIX
+!     /* quickfix marks */
+!     qf_mark_adjust(line1, line2, amount, amount_after);
+  #endif
+  
+      /*
+       * Adjust items in all windows related to the current buffer.
+       */
+      FOR_ALL_WINDOWS(win)
+      {
+  #ifdef FEAT_JUMPLIST
+! 	/* Marks in the jumplist.  When deleting lines, this may create
+! 	 * duplicate marks in the jumplist, they will be removed later. */
+! 	for (i = 0; i < win->w_jumplistlen; ++i)
+! 	    if (win->w_jumplist[i].fmark.fnum == fnum)
+! 		one_adjust_nodel(&(win->w_jumplist[i].fmark.mark.lnum));
+  #endif
+  
+  	if (win->w_buffer == curbuf)
+  	{
+! 	    /* marks in the tag stack */
+! 	    for (i = 0; i < win->w_tagstacklen; i++)
+! 		if (win->w_tagstack[i].fmark.fnum == fnum)
+! 		    one_adjust_nodel(&(win->w_tagstack[i].fmark.mark.lnum));
+  
+  #ifdef FEAT_VISUAL
+  	    /* the displayed Visual area */
+--- 800,868 ----
+  	return;
+  
+      /* named marks, lower case and upper case */
+!     if (!cmdmod.lockmarks)
+      {
+! 	for (i = 0; i < NMARKS; i++)
+! 	{
+! 	    one_adjust(&(curbuf->b_namedm[i].lnum));
+! 	    if (namedfm[i].fmark.fnum == fnum)
+! 		one_adjust_nodel(&(namedfm[i].fmark.mark.lnum));
+! 	}
+! 	for (i = NMARKS; i < NMARKS + EXTRA_MARKS; i++)
+! 	{
+! 	    if (namedfm[i].fmark.fnum == fnum)
+! 		one_adjust_nodel(&(namedfm[i].fmark.mark.lnum));
+! 	}
+  
+! 	/* last Insert position */
+! 	one_adjust(&(curbuf->b_last_insert.lnum));
+  
+! 	/* last change position */
+! 	one_adjust(&(curbuf->b_last_change.lnum));
+  
+  #ifdef FEAT_VISUAL
+! 	/* Visual area */
+! 	one_adjust_nodel(&(curbuf->b_visual_start.lnum));
+! 	one_adjust_nodel(&(curbuf->b_visual_end.lnum));
+  #endif
+  
+  #ifdef FEAT_QUICKFIX
+! 	/* quickfix marks */
+! 	qf_mark_adjust(line1, line2, amount, amount_after);
+  #endif
+  
++ #ifdef FEAT_SIGNS
++ 	sign_mark_adjust(line1, line2, amount, amount_after);
++ #endif
++     }
++ 
++     /* previous context mark */
++     one_adjust(&(curwin->w_pcmark.lnum));
++ 
++     /* previous pcmark */
++     one_adjust(&(curwin->w_prev_pcmark.lnum));
++ 
+      /*
+       * Adjust items in all windows related to the current buffer.
+       */
+      FOR_ALL_WINDOWS(win)
+      {
+  #ifdef FEAT_JUMPLIST
+! 	if (!cmdmod.lockmarks)
+! 	    /* Marks in the jumplist.  When deleting lines, this may create
+! 	     * duplicate marks in the jumplist, they will be removed later. */
+! 	    for (i = 0; i < win->w_jumplistlen; ++i)
+! 		if (win->w_jumplist[i].fmark.fnum == fnum)
+! 		    one_adjust_nodel(&(win->w_jumplist[i].fmark.mark.lnum));
+  #endif
+  
+  	if (win->w_buffer == curbuf)
+  	{
+! 	    if (!cmdmod.lockmarks)
+! 		/* marks in the tag stack */
+! 		for (i = 0; i < win->w_tagstacklen; i++)
+! 		    if (win->w_tagstack[i].fmark.fnum == fnum)
+! 			one_adjust_nodel(&(win->w_tagstack[i].fmark.mark.lnum));
+  
+  #ifdef FEAT_VISUAL
+  	    /* the displayed Visual area */
+***************
+*** 917,926 ****
+  #ifdef FEAT_DIFF
+      /* adjust diffs */
+      diff_mark_adjust(line1, line2, amount, amount_after);
+- #endif
+- 
+- #ifdef FEAT_SIGNS
+-     sign_mark_adjust(line1, line2, amount, amount_after);
+  #endif
+  }
+  
+--- 926,931 ----
+*** ../vim-6.2.189/src/structs.h	Sun Nov  2 15:27:38 2003
+--- src/structs.h	Tue Jan 13 12:57:23 2004
+***************
+*** 403,408 ****
+--- 403,410 ----
+  # if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+      int		confirm;		/* TRUE to invoke yes/no dialog */
+  # endif
++     int		keepmarks;		/* TRUE when ":keepmarks" was used */
++     int		lockmarks;		/* TRUE when ":lockmarks" was used */
+  } cmdmod_T;
+  
+  /*
+*** ../vim-6.2.189/src/version.c	Sun Jan 18 21:04:53 2004
+--- src/version.c	Sun Jan 18 21:07:07 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     190,
+  /**/
+
+-- 
+ARTHUR:  Well, I AM king...
+DENNIS:  Oh king, eh, very nice.  An' how'd you get that, eh?  By exploitin'
+         the workers -- by 'angin' on to outdated imperialist dogma which
+         perpetuates the economic an' social differences in our society!  If
+         there's ever going to be any progress--
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

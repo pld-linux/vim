@@ -1,0 +1,563 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.185
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.185
+Problem:    Restoring a session with zero-height windows does not work
+	    properly. (Charles Campbell)
+Solution:   Accept a zero argument to ":resize" as intended.  Add a window
+	    number argument to ":resize" to be able to set the size of other
+	    windows, because the current window cannot be zero-height.
+	    Fix the explorer plugin to avoid changing the window sizes.  Add
+	    the winrestcmd() function for this.
+Files:	    runtime/doc/eval.txt, runtime/plugin/explorer.vim, src/eval.c,
+	    src/ex_cmds.h, src/ex_docmd.c, src/proto/window.pro, src/window.c
+
+
+*** ../vim-6.2.184/runtime/doc/eval.txt	Sun Aug 10 22:31:29 2003
+--- runtime/doc/eval.txt	Sun Jan 18 20:38:41 2004
+***************
+*** 1,4 ****
+! *eval.txt*      For Vim version 6.2.  Last change: 2003 Aug 07
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *eval.txt*      For Vim version 6.2.  Last change: 2004 Jan 18
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 912,917 ****
+--- 919,925 ----
+  winheight( {nr})		Number	height of window {nr}
+  winline()			Number	window line of the cursor
+  winnr()				Number	number of current window
++ winrestcmd()			String  returns command to restore window sizes
+  winwidth( {nr})			Number	width of window {nr}
+  
+  append({lnum}, {string})				*append()*
+***************
+*** 2594,2600 ****
+  
+  							*winnr()*
+  winnr()		The result is a Number, which is the number of the current
+! 		window.  The top window has number 1.
+  
+  winwidth({nr})						*winwidth()*
+  		The result is a Number, which is the width of window {nr}.
+--- 2618,2634 ----
+  
+  							*winnr()*
+  winnr()		The result is a Number, which is the number of the current
+! 		window.  The top window has number 1.  The number can be used
+! 		with |CTRL-W_w| and ":wincmd w" |:wincmd|.
+! 
+! 							*winrestcmd()*
+! winrestcmd()	Returns a sequence of |resize| commands that should restore
+! 		the current window sizes.  Only works properly when no windows
+! 		are opened or closed and the current window is unchanged.
+! 		Example: >
+! 			cmd = winrestcmd()
+! 			call MessWithWindowSizes()
+! 			exe cmd
+  
+  winwidth({nr})						*winwidth()*
+  		The result is a Number, which is the width of window {nr}.
+*** ../vim-6.2.184/runtime/plugin/explorer.vim	Fri May 16 19:25:21 2003
+--- runtime/plugin/explorer.vim	Fri Jan 16 20:23:31 2004
+***************
+*** 1,14 ****
+  "=============================================================================
+  " File: explorer.vim
+! " Author: M A Aziz Ahmed (aziz@acorn-networks.com)
+! " Last Change:	2003 May 16
+  " Version: 2.5 + changes
+  " Additions by Mark Waggoner (waggoner@aracnet.com) et al.
+  "-----------------------------------------------------------------------------
+! " This file implements a file explorer. Latest version available at:
+! " http://www.freespeech.org/aziz/vim/
+! " Updated version available at:
+! " http://www.aracnet.com/~waggoner
+  "-----------------------------------------------------------------------------
+  " Normally, this file will reside in the plugins directory and be
+  " automatically sourced.  If not, you must manually source this file
+--- 1,11 ----
+  "=============================================================================
+  " File: explorer.vim
+! " Author: M A Aziz Ahmed (aziz@acorn-networks.com - doesn't work)
+! " Last Change:	2004 Jan 16
+  " Version: 2.5 + changes
+  " Additions by Mark Waggoner (waggoner@aracnet.com) et al.
+  "-----------------------------------------------------------------------------
+! " This file implements a file explorer.
+  "-----------------------------------------------------------------------------
+  " Normally, this file will reside in the plugins directory and be
+  " automatically sourced.  If not, you must manually source this file
+***************
+*** 1302,1315 ****
+    if winbufnr(2) == -1
+      return
+    endif
+!   let t = winnr()
+    while 1
+      wincmd w
+!     if winnr() == t
+        break
+      endif
+      call s:EditDir()
+    endwhile
+  endfunction
+  
+  "---
+--- 1299,1314 ----
+    if winbufnr(2) == -1
+      return
+    endif
+!   let cmd = winrestcmd()
+!   let curwin = winnr()
+    while 1
+      wincmd w
+!     if winnr() == curwin
+        break
+      endif
+      call s:EditDir()
+    endwhile
++   exe cmd
+  endfunction
+  
+  "---
+*** ../vim-6.2.184/src/eval.c	Wed Nov 12 20:47:29 2003
+--- src/eval.c	Sun Jan 18 16:51:58 2004
+***************
+*** 373,378 ****
+--- 373,379 ----
+  static void f_winheight __ARGS((VAR argvars, VAR retvar));
+  static void f_winline __ARGS((VAR argvars, VAR retvar));
+  static void f_winnr __ARGS((VAR argvars, VAR retvar));
++ static void f_winrestcmd __ARGS((VAR argvars, VAR retvar));
+  static void f_winwidth __ARGS((VAR argvars, VAR retvar));
+  static win_T *find_win_by_nr __ARGS((VAR vp));
+  static pos_T *var2fpos __ARGS((VAR varp, int lnum));
+***************
+*** 2869,2874 ****
+--- 2870,2876 ----
+      {"winheight",	1, 1, f_winheight},
+      {"winline",		0, 0, f_winline},
+      {"winnr",		0, 0, f_winnr},
++     {"winrestcmd",	0, 0, f_winrestcmd},
+      {"winwidth",	1, 1, f_winwidth},
+  };
+  
+***************
+*** 7418,7423 ****
+--- 7420,7459 ----
+  	++nr;
+  #endif
+      retvar->var_val.var_number = nr;
++ }
++ 
++ /*
++  * "winrestcmd()" function
++  */
++ /* ARGSUSED */
++     static void
++ f_winrestcmd(argvars, retvar)
++     VAR		argvars;
++     VAR		retvar;
++ {
++ #ifdef FEAT_WINDOWS
++     win_T	*wp;
++     int		winnr = 1;
++     garray_T	ga;
++     char_u	buf[50];
++ 
++     ga_init2(&ga, (int)sizeof(char), 70);
++     for (wp = firstwin; wp != NULL; wp = wp->w_next)
++     {
++ 	sprintf((char *)buf, "%dresize %d|", winnr, wp->w_height);
++ 	ga_concat(&ga, buf);
++ # ifdef FEAT_VERTSPLIT
++ 	sprintf((char *)buf, "vert %dresize %d|", winnr, wp->w_width);
++ 	ga_concat(&ga, buf);
++ # endif
++ 	++winnr;
++     }
++ 
++     retvar->var_val.var_string = ga.ga_data;
++ #else
++     retvar->var_val.var_string = NULL;
++ #endif
++     retvar->var_type = VAR_STRING;
+  }
+  
+  /*
+*** ../vim-6.2.184/src/ex_cmds.h	Fri May 23 19:13:14 2003
+--- src/ex_cmds.h	Fri Jan 16 16:52:25 2004
+***************
+*** 621,627 ****
+  EX(CMD_registers,	"registers",	ex_display,
+  			EXTRA|NOTRLCOM|TRLBAR|CMDWIN),
+  EX(CMD_resize,		"resize",	ex_resize,
+! 			TRLBAR|WORD1),
+  EX(CMD_retab,		"retab",	ex_retab,
+  			TRLBAR|RANGE|WHOLEFOLD|DFLALL|BANG|WORD1|CMDWIN|MODIFY),
+  EX(CMD_return,		"return",	ex_return,
+--- 621,627 ----
+  EX(CMD_registers,	"registers",	ex_display,
+  			EXTRA|NOTRLCOM|TRLBAR|CMDWIN),
+  EX(CMD_resize,		"resize",	ex_resize,
+! 			RANGE|NOTADR|TRLBAR|WORD1),
+  EX(CMD_retab,		"retab",	ex_retab,
+  			TRLBAR|RANGE|WHOLEFOLD|DFLALL|BANG|WORD1|CMDWIN|MODIFY),
+  EX(CMD_return,		"return",	ex_return,
+*** ../vim-6.2.184/src/ex_docmd.c	Mon Dec 29 20:39:18 2003
+--- src/ex_docmd.c	Fri Jan 16 17:20:17 2004
+***************
+*** 6143,6148 ****
+--- 6188,6201 ----
+      exarg_T	*eap;
+  {
+      int		n;
++     win_T	*wp = curwin;
++ 
++     if (eap->addr_count > 0)
++     {
++ 	n = eap->line2;
++ 	for (wp = firstwin; wp->w_next != NULL && --n > 0; wp = wp->w_next)
++ 	    ;
++     }
+  
+  #ifdef FEAT_GUI
+      need_mouse_correct = TRUE;
+***************
+*** 6153,6170 ****
+      {
+  	if (*eap->arg == '-' || *eap->arg == '+')
+  	    n += W_WIDTH(curwin);
+! 	else if (n == 0)	    /* default is very wide */
+  	    n = 9999;
+! 	win_setwidth((int)n);
+      }
+      else
+  #endif
+      {
+  	if (*eap->arg == '-' || *eap->arg == '+')
+  	    n += curwin->w_height;
+! 	else if (n == 0)	    /* default is very high */
+  	    n = 9999;
+! 	win_setheight((int)n);
+      }
+  }
+  #endif
+--- 6206,6223 ----
+      {
+  	if (*eap->arg == '-' || *eap->arg == '+')
+  	    n += W_WIDTH(curwin);
+! 	else if (n == 0 && eap->arg[0] == NUL)	/* default is very wide */
+  	    n = 9999;
+! 	win_setwidth_win((int)n, wp);
+      }
+      else
+  #endif
+      {
+  	if (*eap->arg == '-' || *eap->arg == '+')
+  	    n += curwin->w_height;
+! 	else if (n == 0 && eap->arg[0] == NUL)	/* default is very wide */
+  	    n = 9999;
+! 	win_setheight_win((int)n, wp);
+      }
+  }
+  #endif
+***************
+*** 8340,8371 ****
+       */
+      if (put_line(fd, "set winheight=1 winwidth=1") == FAIL)
+  	return FAIL;
+      if (nr > 1)
+      {
+  	if (restore_size && (ssop_flags & SSOP_WINSIZE))
+  	{
+  	    for (wp = firstwin; wp != NULL; wp = wp->w_next)
+  	    {
+  		if (!ses_do_win(wp))
+  		    continue;
+  
+  		/* restore height when not full height */
+  		if (wp->w_height + wp->w_status_height < topframe->fr_height
+  			&& (fprintf(fd,
+! 				"exe 'resize ' . ((&lines * %ld + %ld) / %ld)",
+! 				(long)wp->w_height, Rows / 2, Rows) < 0
+  						      || put_eol(fd) == FAIL))
+  		    return FAIL;
+  
+  		/* restore width when not full width */
+  		if (wp->w_width < Columns && (fprintf(fd,
+! 			"exe 'vert resize ' . ((&columns * %ld + %ld) / %ld)",
+! 				(long)wp->w_width, Columns / 2, Columns) < 0
+  						      || put_eol(fd) == FAIL))
+  		    return FAIL;
+- 		if (put_line(fd, "wincmd w") == FAIL)
+- 		    return FAIL;
+- 
+  	    }
+  	}
+  	else
+--- 8393,8448 ----
+       */
+      if (put_line(fd, "set winheight=1 winwidth=1") == FAIL)
+  	return FAIL;
++ 
++     /*
++      * Restore the view of the window (options, file, cursor, etc.).
++      */
++     for (wp = firstwin; wp != NULL; wp = wp->w_next)
++     {
++ 	if (!ses_do_win(wp))
++ 	    continue;
++ 	if (put_view(fd, wp, TRUE, &ssop_flags) == FAIL)
++ 	    return FAIL;
++ 	if (nr > 1 && put_line(fd, "wincmd w") == FAIL)
++ 	    return FAIL;
++     }
++ 
++     /*
++      * Restore cursor to the current window if it's not the first one.
++      */
++     if (cnr > 1 && (fprintf(fd, "%dwincmd w", cnr) < 0 || put_eol(fd) == FAIL))
++ 	return FAIL;
++ 
++     /*
++      * Restore window sizes.  Do this after jumping around in windows, because
++      * the current window has a minimum size while others may not.
++      */
+      if (nr > 1)
+      {
+  	if (restore_size && (ssop_flags & SSOP_WINSIZE))
+  	{
++ 	    int	    n = 0;
++ 
+  	    for (wp = firstwin; wp != NULL; wp = wp->w_next)
+  	    {
+  		if (!ses_do_win(wp))
+  		    continue;
++ 		++n;
+  
+  		/* restore height when not full height */
+  		if (wp->w_height + wp->w_status_height < topframe->fr_height
+  			&& (fprintf(fd,
+! 			      "exe '%dresize ' . ((&lines * %ld + %ld) / %ld)",
+! 				n, (long)wp->w_height, Rows / 2, Rows) < 0
+  						      || put_eol(fd) == FAIL))
+  		    return FAIL;
+  
+  		/* restore width when not full width */
+  		if (wp->w_width < Columns && (fprintf(fd,
+! 		       "exe 'vert %dresize ' . ((&columns * %ld + %ld) / %ld)",
+! 				n, (long)wp->w_width, Columns / 2, Columns) < 0
+  						      || put_eol(fd) == FAIL))
+  		    return FAIL;
+  	    }
+  	}
+  	else
+***************
+*** 8375,8400 ****
+  		return FAIL;
+  	}
+      }
+- 
+-     /*
+-      * Restore the view of the window (options, file, cursor, etc.).
+-      */
+-     for (wp = firstwin; wp != NULL; wp = wp->w_next)
+-     {
+- 	if (!ses_do_win(wp))
+- 	    continue;
+- 	if (put_view(fd, wp, TRUE, &ssop_flags) == FAIL)
+- 	    return FAIL;
+- 	if (nr > 1 && put_line(fd, "wincmd w") == FAIL)
+- 	    return FAIL;
+-     }
+- 
+-     /*
+-      * Restore cursor to the current window if it's not the first one.
+-      */
+-     if (cnr > 1 && (fprintf(fd, "%dwincmd w", cnr) < 0
+- 						      || put_eol(fd) == FAIL))
+- 	return FAIL;
+  
+      /* Re-apply 'winheight', 'winwidth' and 'shortmess'. */
+      if (fprintf(fd, "set winheight=%ld winwidth=%ld shortmess=%s",
+--- 8452,8457 ----
+*** ../vim-6.2.184/src/proto/window.pro	Sun Jun  1 12:26:22 2003
+--- src/proto/window.pro	Fri Jan 16 17:06:35 2004
+***************
+*** 22,28 ****
+--- 22,30 ----
+  void win_size_save __ARGS((garray_T *gap));
+  void win_size_restore __ARGS((garray_T *gap));
+  void win_setheight __ARGS((int height));
++ void win_setheight_win __ARGS((int height, win_T *win));
+  void win_setwidth __ARGS((int width));
++ void win_setwidth_win __ARGS((int width, win_T *wp));
+  void win_setminheight __ARGS((void));
+  void win_drag_status_line __ARGS((win_T *dragwin, int offset));
+  void win_drag_vsep_line __ARGS((win_T *dragwin, int offset));
+*** ../vim-6.2.184/src/window.c	Sat May 31 21:08:43 2003
+--- src/window.c	Fri Jan 16 17:06:31 2004
+***************
+*** 66,72 ****
+  static win_T *restore_snapshot_rec __ARGS((frame_T *sn, frame_T *fr));
+  
+  #endif /* FEAT_WINDOWS */
+- static void win_setheight_win __ARGS((int height, win_T *win));
+  static win_T *win_alloc __ARGS((win_T *after));
+  static void win_new_height __ARGS((win_T *, int));
+  
+--- 66,71 ----
+***************
+*** 2875,2881 ****
+      /* Change directories when the acd option is set on and after
+       * switching windows. */
+      if (p_acd && curbuf->b_ffname != NULL
+! 	    && vim_chdirfile(curbuf->b_ffname) == OK)
+  	shorten_fnames(TRUE);
+  #endif
+  }
+--- 2874,2880 ----
+      /* Change directories when the acd option is set on and after
+       * switching windows. */
+      if (p_acd && curbuf->b_ffname != NULL
+! 				     && vim_chdirfile(curbuf->b_ffname) == OK)
+  	shorten_fnames(TRUE);
+  #endif
+  }
+***************
+*** 3454,3467 ****
+  win_setheight(height)
+      int		height;
+  {
+-     /* Always keep current window at least one line high, even when
+-      * 'winminheight' is zero. */
+- #ifdef FEAT_WINDOWS
+-     if (height < p_wmh)
+- 	height = p_wmh;
+- #endif
+-     if (height == 0)
+- 	height = 1;
+      win_setheight_win(height, curwin);
+  }
+  
+--- 3453,3458 ----
+***************
+*** 3469,3481 ****
+   * Set the window height of window "win" and take care of repositioning other
+   * windows to fit around it.
+   */
+!     static void
+  win_setheight_win(height, win)
+      int		height;
+      win_T	*win;
+  {
+      int		row;
+  
+  #ifdef FEAT_WINDOWS
+      frame_setheight(win->w_frame, height + win->w_status_height);
+  
+--- 3460,3484 ----
+   * Set the window height of window "win" and take care of repositioning other
+   * windows to fit around it.
+   */
+!     void
+  win_setheight_win(height, win)
+      int		height;
+      win_T	*win;
+  {
+      int		row;
+  
++     if (win == curwin)
++     {
++ 	/* Always keep current window at least one line high, even when
++ 	 * 'winminheight' is zero. */
++ #ifdef FEAT_WINDOWS
++ 	if (height < p_wmh)
++ 	    height = p_wmh;
++ #endif
++ 	if (height == 0)
++ 	    height = 1;
++     }
++ 
+  #ifdef FEAT_WINDOWS
+      frame_setheight(win->w_frame, height + win->w_status_height);
+  
+***************
+*** 3700,3713 ****
+  win_setwidth(width)
+      int		width;
+  {
+      /* Always keep current window at least one column wide, even when
+       * 'winminwidth' is zero. */
+!     if (width < p_wmw)
+! 	width = p_wmw;
+!     if (width == 0)
+! 	width = 1;
+  
+!     frame_setwidth(curwin->w_frame, width + curwin->w_vsep_width);
+  
+      /* recompute the window positions */
+      (void)win_comp_pos();
+--- 3703,3727 ----
+  win_setwidth(width)
+      int		width;
+  {
++     win_setwidth_win(width, curwin);
++ }
++ 
++     void
++ win_setwidth_win(width, wp)
++     int		width;
++     win_T	*wp;
++ {
+      /* Always keep current window at least one column wide, even when
+       * 'winminwidth' is zero. */
+!     if (wp == curwin)
+!     {
+! 	if (width < p_wmw)
+! 	    width = p_wmw;
+! 	if (width == 0)
+! 	    width = 1;
+!     }
+  
+!     frame_setwidth(wp->w_frame, width + wp->w_vsep_width);
+  
+      /* recompute the window positions */
+      (void)win_comp_pos();
+*** ../vim-6.2.184/src/version.c	Sun Jan 18 20:28:27 2004
+--- src/version.c	Sun Jan 18 20:33:05 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     185,
+  /**/
+
+-- 
+    [clop clop]
+ARTHUR:  Old woman!
+DENNIS:  Man!
+ARTHUR:  Man, sorry.  What knight lives in that castle over there?
+DENNIS:  I'm thirty seven.
+ARTHUR:  What?
+DENNIS:  I'm thirty seven -- I'm not old!
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

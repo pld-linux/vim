@@ -1,0 +1,75 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.205
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.205 (extra)
+Problem:    MS-Windows: When the taskbar is at the left or top of the screen,
+	    the Vim window placement is wrong.
+Solution:   Compute the size and position of the window correctly. (Taro
+	    Muraoka)
+Files:	    src/gui_w32.c, src/gui_w48.c
+
+
+*** ../vim-6.2.204/src/gui_w32.c	Sun Oct 12 16:42:14 2003
+--- src/gui_w32.c	Tue Jan 13 12:05:08 2004
+***************
+*** 1197,1202 ****
+--- 1197,1211 ----
+      if (win_ypos < workarea_rect.top)
+  	win_ypos = workarea_rect.top;
+  
++     /* When the taskbar is placed on the left or top of the screen,
++      * SetWindowPlacement() adds its width or height automatically, compensate
++      * for that.  When the offset is over 400 it's probably something else,
++      * skip it then (just in case). */
++     if (workarea_rect.left > 0 && workarea_rect.left < 400)
++ 	win_xpos -= workarea_rect.left;
++     if (workarea_rect.top > 0 && workarea_rect.top < 400)
++ 	win_ypos -= workarea_rect.top;
++ 
+      wndpl.rcNormalPosition.left = win_xpos;
+      wndpl.rcNormalPosition.right = win_xpos + win_width;
+      wndpl.rcNormalPosition.top = win_ypos;
+*** ../vim-6.2.204/src/gui_w48.c	Sun Jan 18 21:01:53 2004
+--- src/gui_w48.c	Wed Jan 21 16:11:49 2004
+***************
+*** 2348,2354 ****
+  gui_mch_get_screen_dimensions(int *screen_w, int *screen_h)
+  {
+  
+!     *screen_w = GetSystemMetrics(SM_CXSCREEN)
+  	      - GetSystemMetrics(SM_CXFRAME) * 2;
+      /* FIXME: dirty trick: Because the gui_get_base_height() doesn't include
+       * the menubar for MSwin, we subtract it from the screen height, so that
+--- 2348,2354 ----
+  gui_mch_get_screen_dimensions(int *screen_w, int *screen_h)
+  {
+  
+!     *screen_w = GetSystemMetrics(SM_CXFULLSCREEN)
+  	      - GetSystemMetrics(SM_CXFRAME) * 2;
+      /* FIXME: dirty trick: Because the gui_get_base_height() doesn't include
+       * the menubar for MSwin, we subtract it from the screen height, so that
+*** ../vim-6.2.204/src/version.c	Sun Jan 25 20:21:35 2004
+--- src/version.c	Sun Jan 25 20:22:48 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     205,
+  /**/
+
+-- 
+   [The rest of the ARMY stand around looking at a loss.]
+INSPECTOR END OF FILM: (picks up megaphone) All right!  Clear off!  Go on!
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
