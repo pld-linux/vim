@@ -24,7 +24,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	2
+Release:	3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -625,7 +625,8 @@ mv -f vim gvim.gnome
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
-	$RPM_BUILD_ROOT%{_applnkdir}/Editors
+	$RPM_BUILD_ROOT%{_applnkdir}/Editors \
+	$RPM_BUILD_ROOT%{_datadir}/applications \
 
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
@@ -673,7 +674,7 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 %{!?_without_athena:install %{SOURCE10}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
 %{!?_without_motif: install %{SOURCE11}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
 %{!?_without_gtk:   install %{SOURCE12}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
-%{!?_without_gnome: install %{SOURCE13}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
+%{!?_without_gnome: install %{SOURCE13}		$RPM_BUILD_ROOT%{_datadir}/applications}
 
 bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
@@ -824,5 +825,5 @@ rm -rf $RPM_BUILD_ROOT
 %files -n gvim-gnome
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.gnome
-%{_applnkdir}/Editors/gvim-gnome.desktop
+%{_datadir}/applications/gvim-gnome.desktop
 %endif
