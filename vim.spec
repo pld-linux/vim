@@ -14,7 +14,7 @@
 %bcond_without  selinux # without selinux
 #
 %define		_ver		6.2
-%define		_patchlevel	479
+%define		_patchlevel	498
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -146,7 +146,26 @@ Patch576:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.476
 Patch577:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.477
 Patch578:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.478
 Patch579:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.479
-Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.479.diff.bz2
+Patch580:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.480
+Patch581:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.481
+Patch582:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.482
+Patch583:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.483
+Patch584:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.484
+Patch585:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.485
+Patch586:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.486
+Patch587:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.487
+Patch588:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.488
+Patch589:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.489
+Patch590:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.490
+Patch591:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.491
+Patch592:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.492
+Patch593:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.493
+Patch594:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.494
+Patch595:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.495
+Patch596:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.496
+Patch597:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.497
+Patch598:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.498
+Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.490.diff.bz2
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -663,6 +682,25 @@ element bonobo.
 %patch577 -p0
 %patch578 -p0
 %patch579 -p0
+%patch580 -p0
+%patch581 -p0
+%patch582 -p0
+%patch583 -p0
+%patch584 -p0
+%patch585 -p0
+%patch586 -p0
+%patch587 -p0
+%patch588 -p0
+%patch589 -p0
+%patch590 -p0
+%patch591 -p0
+%patch592 -p0
+%patch593 -p0
+%patch594 -p0
+%patch595 -p0
+#%patch596 -p0
+%patch597 -p0
+%patch598 -p0
 
 # kvim
 %patch999 -p1
