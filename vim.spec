@@ -24,7 +24,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -736,7 +736,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fr) %{_datadir}/vim/v*/lang/menu_fr_fr*
 %lang(hu) %{_datadir}/vim/v*/lang/menu_hu_hu*
 %lang(it) %{_datadir}/vim/v*/lang/menu_it_it*
-%lang(jp) %{_datadir}/vim/v*/lang/menu_ja_jp*
+%lang(ja) %{_datadir}/vim/v*/lang/menu_ja_jp*
 %lang(ko) %{_datadir}/vim/v*/lang/menu_ko_kr*
 %lang(nl) %{_datadir}/vim/v*/lang/menu_nl_nl*
 %lang(pl) %{_datadir}/vim/v*/lang/menu_pl_pl*
