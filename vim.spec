@@ -1,18 +1,18 @@
 #
 # Conditional build:
-# _without_static	- without static version
-# _without_athena	- without Athena Widgets-based gvim
-# _without_motif	- without Motif-based gvim
-# _without_gtk		- without gtk+-based gvim support
-# _without_gnome	- without gnome-based gvim support
-# _with_perl		- with perl interp
-# _with_python		- with python interp
-# _with_ruby		- with ruby interp
-# _with_tcl		- with tcl interp
-# _with_bonobo		- with bonobo patch (doesn't work at the moment)
+%bcond_without static # without static version
+%bcond_without athena # without Athena Widgets-based gvim
+%bcond_without motif  # without Motif-based gvim
+%bcond_without gtk    # without gtk+-based gvim support
+%bcond_without gnome  # without gnome-based gvim support
+%bcond_with    perl   # with perl interp
+%bcond_with    python # with python interp
+%bcond_with    ruby   # with ruby interp
+%bcond_with    tcl    # with tcl interp
+%bcond_with    bonobo # with bonobo patch (doesn't work at the moment)
 
 %define		_ver		6.2
-%define		_patchlevel	071
+%define		_patchlevel	106
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -54,7 +54,7 @@ Patch8:		%{name}-spec-fix.patch
 Patch9:		%{name}-specsyntax.patch
 Patch10:	%{name}-specsyntax-pld.patch
 Patch11:	%{name}-bonobo.patch
-Patch12:	%{name}-python_ts.patch
+#Patch12:	%{name}-dynamic_python.patch
 Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030726.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.002
@@ -127,27 +127,62 @@ Patch168:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.068
 Patch169:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.069
 Patch170:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.070
 Patch171:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.071
+Patch172:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.072
+Patch173:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.073
+Patch174:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.074
+Patch175:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.075
+Patch176:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.076
+Patch177:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.077
+Patch178:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.078
+Patch179:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.079
+Patch180:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.080
+Patch181:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.081
+Patch182:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.082
+Patch183:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.083
+Patch184:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.084
+Patch185:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.085
+Patch186:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.086
+Patch187:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.087
+Patch188:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.088
+Patch189:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.089
+Patch190:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.090
+Patch191:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.091
+Patch192:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.092
+Patch193:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.093
+Patch194:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.094
+Patch195:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.095
+Patch196:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.096
+Patch197:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.097
+Patch198:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.098
+Patch199:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.099
+Patch200:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.100
+Patch201:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.101
+Patch202:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.102
+Patch203:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.103
+Patch204:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.104
+Patch205:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.105
+Patch206:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.106
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
-%{?_with_bonobo:BuildRequires:	libbonoboui-devel >= 2.2.0}
-%{?_with_bonobo:BuildRequires:	ORBit2-devel}
-%{?_with_bonobo:BuildRequires:	nautilus-devel >= 2.2.0}
-%{!?_without_gtk:BuildRequires:		gtk+2-devel >= 2.2.1}
-%{!?_without_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
-%{!?_without_motif:BuildRequires:	motif-devel}
-%{!?_without_static:BuildRequires:	glibc-static}
-%{!?_without_static:BuildRequires:	ncurses-static}
-%{?_with_perl:BuildRequires:	perl-devel}
-%{?_with_python:BuildRequires:	python-devel}
-%{?_with_ruby:BuildRequires:	ruby}
-%{?_with_tcl:BuildRequires:	tcl-devel}
-%{?_without_static:Provides:	%{name}-static = %{epoch}:%{version}-%{release}}
+%{?with_bonobo:BuildRequires:	libbonoboui-devel >= 2.2.0}
+%{?with_bonobo:BuildRequires:	ORBit2-devel}
+%{?with_bonobo:BuildRequires:	nautilus-devel >= 2.2.0}
+%{?with_gtk:BuildRequires:		gtk+2-devel >= 2.2.1}
+%{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
+%{?with_motif:BuildRequires:	motif-devel}
+%{?with_static:BuildRequires:	glibc-static}
+%{?with_static:BuildRequires:	ncurses-static}
+%{?with_perl:BuildRequires:	perl-devel}
+%{?with_python:BuildRequires:	python-devel}
+%{?with_ruby:BuildRequires:	ruby}
+%{?with_tcl:BuildRequires:	tcl-devel}
+%{!?with_static:Provides:	%{name}-static = %{epoch}:%{version}-%{release}}
 Requires:	%{name}-rt = %{epoch}:%{version}
-%{?_without_static:Obsoletes:	%{name}-static}
+%{!?witho_static:Obsoletes:	%{name}-static}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -582,9 +617,44 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch169 -p0
 %patch170 -p0
 %patch171 -p0
+%patch172 -p0
+%patch173 -p0
+%patch174 -p0
+%patch175 -p0
+%patch176 -p0
+%patch177 -p0
+%patch178 -p0
+%patch179 -p0
+%patch180 -p0
+%patch181 -p0
+%patch182 -p0
+%patch183 -p0
+%patch184 -p0
+%patch185 -p0
+%patch186 -p0
+%patch187 -p0
+%patch188 -p0
+%patch189 -p0
+%patch190 -p0
+%patch191 -p0
+%patch192 -p0
+%patch193 -p0
+%patch194 -p0
+%patch195 -p0
+%patch196 -p0
+%patch197 -p0
+%patch198 -p0
+%patch199 -p0
+%patch200 -p0
+%patch201 -p0
+%patch202 -p0
+%patch203 -p0
+%patch204 -p0
+%patch205 -p0
+%patch206 -p0
 
 %patch0 -p1
-%{?_with_bonobo:%patch99 -p1}
+%{?with_bonobo:%patch99 -p1}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -597,8 +667,8 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%{?_with_bonobo:%patch11 -p1}
-%patch12 -p1
+%{?with_bonobo:%patch11 -p1}
+#%%patch12 -p1
 
 %build
 cd src
@@ -606,7 +676,7 @@ cd src
 # needed to prevent deconfiguring
 cp -f configure auto
 
-%if 0%{!?_without_static:1}
+%if %{with static}
 %{__make} distclean
 LDFLAGS="%{rpmldflags} -static"
 %configure \
@@ -619,7 +689,7 @@ LDFLAGS="%{rpmldflags} -static"
 	--disable-cscope \
 	--disable-gpm \
 	--disable-multibyte \
-	%{?_with_bonobo:--disable-bonobo} \
+	%{?with_bonobo:--disable-bonobo} \
 	--with-features=small \
 	--with-tlib=tinfo \
 	--disable-nls \
@@ -635,15 +705,15 @@ LDFLAGS="%{rpmldflags}"
 %configure \
 	--disable-gui \
 	--without-x \
-	%{!?_with_perl:--disable-perlinterp} \
-	%{?_with_perl:--enable-perlinterp} \
-	%{!?_with_python:--disable-pythoninterp} \
-	%{?_with_python:--enable-pythoninterp} \
-	%{!?_with_ruby:--disable-rubyinterp} \
-	%{?_with_ruby:--enable-rubyinterp} \
-	%{!?_with_tcl:--disable-tclinterp} \
-	%{?_with_tcl:--enable-tclinterp} \
-	%{?_with_bonobo:--disable-bonobo} \
+	%{!?with_perl:--disable-perlinterp} \
+	%{?with_perl:--enable-perlinterp} \
+	%{!?with_python:--disable-pythoninterp} \
+	%{?with_python:--enable-pythoninterp} \
+	%{!?with_ruby:--disable-rubyinterp} \
+	%{?with_ruby:--enable-rubyinterp} \
+	%{!?with_tcl:--disable-tclinterp} \
+	%{?with_tcl:--enable-tclinterp} \
+	%{?with_bonobo:--disable-bonobo} \
 	--enable-cscope \
 	--enable-gpm \
 	--with-features=huge \
@@ -663,15 +733,15 @@ mv -f vim vim.ncurses
 	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--disable-gui \
 	--without-x \
-	%{!?_with_perl:--disable-perlinterp} \
-	%{?_with_perl:--enable-perlinterp} \
-	%{!?_with_python:--disable-pythoninterp} \
-	%{?_with_python:--enable-pythoninterp} \
-	%{!?_with_ruby:--disable-rubyinterp} \
-	%{?_with_ruby:--enable-rubyinterp} \
-	%{!?_with_tcl:--disable-tclinterp} \
-	%{?_with_tcl:--enable-tclinterp} \
-	%{?_with_bonobo:--disable-bonobo} \
+	%{!?with_perl:--disable-perlinterp} \
+	%{?with_perl:--enable-perlinterp} \
+	%{!?with_python:--disable-pythoninterp} \
+	%{?with_python:--enable-pythoninterp} \
+	%{!?with_ruby:--disable-rubyinterp} \
+	%{?with_ruby:--enable-rubyinterp} \
+	%{!?with_tcl:--disable-tclinterp} \
+	%{?with_tcl:--enable-tclinterp} \
+	%{?with_bonobo:--disable-bonobo} \
 	--enable-cscope \
 	--enable-gpm \
 	--with-features=huge \
@@ -684,22 +754,22 @@ mv -f vim vim.ncurses
 %{__make} vim
 mv -f vim vim.ispell
 
-%if 0%{!?_without_athena:1}
+%if %{with athena}
 %{__make} distclean
 %configure \
 	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
-	%{!?_with_perl:--disable-perlinterp} \
-	%{?_with_perl:--enable-perlinterp} \
-	%{!?_with_python:--disable-pythoninterp} \
-	%{?_with_python:--enable-pythoninterp} \
-	%{!?_with_ruby:--disable-rubyinterp} \
-	%{?_with_ruby:--enable-rubyinterp} \
-	%{!?_with_tcl:--disable-tclinterp} \
-	%{?_with_tcl:--enable-tclinterp} \
-	%{?_with_bonobo:--disable-bonobo} \
+	%{!?with_perl:--disable-perlinterp} \
+	%{?with_perl:--enable-perlinterp} \
+	%{!?with_python:--disable-pythoninterp} \
+	%{?with_python:--enable-pythoninterp} \
+	%{!?with_ruby:--disable-rubyinterp} \
+	%{?with_ruby:--enable-rubyinterp} \
+	%{!?with_tcl:--disable-tclinterp} \
+	%{?with_tcl:--enable-tclinterp} \
+	%{?with_bonobo:--disable-bonobo} \
 	--enable-cscope \
 	--enable-fontset \
 	--disable-gpm \
@@ -712,22 +782,22 @@ mv -f vim vim.ispell
 mv -f vim gvim.athena
 %endif
 
-%if 0%{!?_without_motif:1}
+%if %{with motif}
 %{__make} distclean
 %configure \
 	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
-	%{!?_with_perl:--disable-perlinterp} \
-	%{?_with_perl:--enable-perlinterp} \
-	%{!?_with_python:--disable-pythoninterp} \
-	%{?_with_python:--enable-pythoninterp} \
-	%{!?_with_ruby:--disable-rubyinterp} \
-	%{?_with_ruby:--enable-rubyinterp} \
-	%{!?_with_tcl:--disable-tclinterp} \
-	%{?_with_tcl:--enable-tclinterp} \
-	%{?_with_bonobo:--disable-bonobo} \
+	%{!?with_perl:--disable-perlinterp} \
+	%{?with_perl:--enable-perlinterp} \
+	%{!?with_python:--disable-pythoninterp} \
+	%{?with_python:--enable-pythoninterp} \
+	%{!?with_ruby:--disable-rubyinterp} \
+	%{?with_ruby:--enable-rubyinterp} \
+	%{!?with_tcl:--disable-tclinterp} \
+	%{?with_tcl:--enable-tclinterp} \
+	%{?with_bonobo:--disable-bonobo} \
 	--enable-multibyte \
 	--enable-cscope \
 	--enable-fontset \
@@ -741,7 +811,7 @@ mv -f vim gvim.athena
 mv -f vim gvim.motif
 %endif
 
-%if 0%{!?_without_gtk:1}
+%if %{with gtk}
 %{__make} distclean
 %configure \
 	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
@@ -749,15 +819,15 @@ mv -f vim gvim.motif
 	--enable-gui=gtk2 \
 	--enable-gtk2-check \
 	--with-x \
-	%{!?_with_perl:--disable-perlinterp} \
-	%{?_with_perl:--enable-perlinterp} \
-	%{!?_with_python:--disable-pythoninterp} \
-	%{?_with_python:--enable-pythoninterp} \
-	%{!?_with_ruby:--disable-rubyinterp} \
-	%{?_with_ruby:--enable-rubyinterp} \
-	%{!?_with_tcl:--disable-tclinterp} \
-	%{?_with_tcl:--enable-tclinterp} \
-	%{?_with_bonobo:--disable-bonobo} \
+	%{!?with_perl:--disable-perlinterp} \
+	%{?with_perl:--enable-perlinterp} \
+	%{!?with_python:--disable-pythoninterp} \
+	%{?with_python:--enable-pythoninterp} \
+	%{!?with_ruby:--disable-rubyinterp} \
+	%{?with_ruby:--enable-rubyinterp} \
+	%{!?with_tcl:--disable-tclinterp} \
+	%{?with_tcl:--enable-tclinterp} \
+	%{?with_bonobo:--disable-bonobo} \
 	--disable-gpm \
 	--enable-cscope \
 	--enable-nls \
@@ -768,24 +838,24 @@ mv -f vim gvim.motif
 mv -f vim gvim.gtk
 %endif
 
-%if 0%{!?_without_gnome:1}
+%if %{with gnome}
 %{__make} distclean
 %configure \
 	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome2 \
-	%{?_with_bonobo:--enable-bonobo} \
+	%{?with_bonobo:--enable-bonobo} \
 	--enable-gtk2-check \
 	--enable-gnome-check \
 	--with-x \
-	%{!?_with_perl:--disable-perlinterp} \
-	%{?_with_perl:--enable-perlinterp} \
-	%{!?_with_python:--disable-pythoninterp} \
-	%{?_with_python:--enable-pythoninterp} \
-	%{!?_with_ruby:--disable-rubyinterp} \
-	%{?_with_ruby:--enable-rubyinterp} \
-	%{!?_with_tcl:--disable-tclinterp} \
-	%{?_with_tcl:--enable-tclinterp} \
+	%{!?with_perl:--disable-perlinterp} \
+	%{?with_perl:--enable-perlinterp} \
+	%{!?with_python:--disable-pythoninterp} \
+	%{?with_python:--enable-pythoninterp} \
+	%{!?with_ruby:--disable-rubyinterp} \
+	%{?with_ruby:--enable-rubyinterp} \
+	%{!?with_tcl:--disable-tclinterp} \
+	%{?with_tcl:--enable-tclinterp} \
 	--disable-gpm \
 	--enable-cscope \
 	--enable-nls \
@@ -807,10 +877,10 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	DESTDIR=$RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
 
-%{!?_without_static:install src/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim}
-%{?_without_static:install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi}
-%{!?_without_static:install src/vim.static	$RPM_BUILD_ROOT/bin/vi}
-%{?_without_static:ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim}
+%{?with_static:install src/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim}
+%{!?with_static:install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi}
+%{?with_static:install src/vim.static	$RPM_BUILD_ROOT/bin/vi}
+%{!?with_static:ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim}
 install src/vim.ispell				$RPM_BUILD_ROOT%{_bindir}/vim.ispell
 install src/xxd/xxd				$RPM_BUILD_ROOT%{_bindir}/xxd
 install src/vimtutor				$RPM_BUILD_ROOT%{_bindir}/vimtutor
@@ -836,23 +906,23 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
-%{!?_without_athena:install src/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena}
-%{!?_without_motif: install src/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif}
-%{!?_without_gtk:   install src/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk}
-%{!?_without_gnome: install src/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome}
+%{?with_athena:install src/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena}
+%{?with_motif: install src/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif}
+%{?with_gtk:   install src/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk}
+%{?with_gnome: install src/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome}
 
-%{!?_without_gtk:ln -sf gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim}
-%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/rgvim}
-%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/gview}
-%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/rgview}
+%{?with_gtk:ln -sf gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim}
+%{?with_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/rgvim}
+%{?with_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/gview}
+%{?with_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/rgview}
 
-%{!?_without_athena:install %{SOURCE10}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
-%{!?_without_motif: install %{SOURCE11}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
-%{!?_without_gtk:   install %{SOURCE12}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
-%{!?_without_gnome: install %{SOURCE13}		$RPM_BUILD_ROOT%{_desktopdir}}
+%{?with_athena:install %{SOURCE10}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
+%{?with_motif: install %{SOURCE11}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
+%{?with_gtk:   install %{SOURCE12}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
+%{?with_gnome: install %{SOURCE13}		$RPM_BUILD_ROOT%{_desktopdir}}
 
 # Bonobo
-%if 0%{?_with_bonobo:1}
+%if %{with bonobo}
 install -d $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
 install src/Vim_Control.server $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
 %endif
@@ -867,7 +937,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/rvim
 
-%if 0%{!?_without_static:1}
+%if %{with static}
 %files static
 %endif
 %defattr(644,root,root,755)
@@ -988,21 +1058,21 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_mandir}/pl/man1/gvi*
 %lang(pl) %{_mandir}/pl/man1/rgv*
 
-%if %{!?_without_athena:1}%{?_without_athena:0}
+%if %{with athena}
 %files -n gvim-athena
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.athena
 %{_applnkdir}/Editors/gvim-athena.desktop
 %endif
 
-%if %{!?_without_motif:1}%{?_without_motif:0}
+%if %{with motif}
 %files -n gvim-motif
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.motif
 %{_applnkdir}/Editors/gvim-motif.desktop
 %endif
 
-%if %{!?_without_gtk:1}%{?_without_gtk:0}
+%if %{with gtk}
 %files -n gvim-gtk
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.gtk
@@ -1012,10 +1082,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_applnkdir}/Editors/gvim-gtk.desktop
 %endif
 
-%if %{!?_without_gnome:1}%{?_without_gnome:0}
+%if %{with gnome}
 %files -n gvim-gnome
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.gnome
 %{_desktopdir}/gvim-gnome.desktop
-%{?_with_bonobo:%{_libdir}/bonobo/servers/*}
+%{?with_bonobo:%{_libdir}/bonobo/servers/*}
 %endif
