@@ -34,8 +34,6 @@ Patch13:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.009
 Patch14:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.010
 Patch15:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.011
 Patch16:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.012
-Patch15:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.011
-Patch16:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.012
 Patch17:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.013
 Patch18:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.014
 Patch19:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.015
