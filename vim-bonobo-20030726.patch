@@ -1,0 +1,5214 @@
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/Makefile vim/src/Makefile
+--- vimcopy/src/Makefile	Mon Jun  2 09:32:18 2003
++++ vim/src/Makefile	Sat Jul 26 13:16:46 2003
+@@ -1291,6 +1291,10 @@
+ 	objects/fileio.o \
+ 	objects/fold.o \
+ 	objects/getchar.o \
++        objects/gtkhtml_editor.o \
++        objects/gtkhtml_editor_common.o \
++        objects/gtkhtml_editor_skels.o \
++        objects/gtkhtml_editor_stubs.o \
+ 	$(HANGULIN_OBJ) \
+ 	objects/if_cscope.o \
+ 	objects/if_xcmdsrv.o \
+@@ -1319,6 +1323,9 @@
+ 	objects/term.o \
+ 	objects/ui.o \
+ 	objects/undo.o \
++ 	objects/vim_bonobo_main.o \
++ 	objects/vim_bonobo_factory.o \
++ 	objects/vim_bonobo_control.o \
+ 	objects/window.o \
+ 	$(GUI_OBJ) \
+ 	$(PERL_OBJ) \
+@@ -1328,7 +1335,7 @@
+ 	$(OS_EXTRA_OBJ) \
+ 	$(WORKSHOP_OBJ) \
+ 	$(NETBEANS_OBJ) \
+-	$(WSDEBUG_OBJ)
++ 	$(WSDEBUG_OBJ)
+ 
+ PRO_AUTO = \
+ 	buffer.pro \
+@@ -2132,6 +2139,18 @@
+ objects/gui_photon.o: gui_photon.c
+ 	$(CCC) -o $@ gui_photon.c
+ 
++objects/gtkhtml_editor.o: gtkhtml_editor.c
++	$(CCC) -o $@ gtkhtml_editor.c
++
++objects/gtkhtml_editor_common.o: gtkhtml_editor_common.c
++	$(CCC) -o $@ gtkhtml_editor_common.c
++
++objects/gtkhtml_editor_skels.o: gtkhtml_editor_skels.c
++	$(CCC) -o $@ gtkhtml_editor_skels.c
++
++objects/gtkhtml_editor_stubs.o: gtkhtml_editor_stubs.c
++	$(CCC) -o $@ gtkhtml_editor_stubs.c
++
+ objects/hangulin.o: hangulin.c
+ 	$(CCC) -o $@ hangulin.c
+ 
+@@ -2251,6 +2270,15 @@
+ 
+ objects/undo.o: undo.c
+ 	$(CCC) -o $@ undo.c
++
++objects/vim_bonobo_control.o: vim_bonobo_control.c
++	$(CCC) -o $@ vim_bonobo_control.c
++
++objects/vim_bonobo_factory.o: vim_bonobo_factory.c
++	$(CCC) -o $@ vim_bonobo_factory.c
++
++objects/vim_bonobo_main.o: vim_bonobo_main.c
++	$(CCC) -o $@ vim_bonobo_main.c
+ 
+ objects/window.o: window.c
+ 	$(CCC) -o $@ window.c
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/Vim_Control.server vim/src/Vim_Control.server
+--- vimcopy/src/Vim_Control.server	Wed Dec 31 18:00:00 1969
++++ vim/src/Vim_Control.server	Sat Jul 26 13:16:46 2003
+@@ -0,0 +1,34 @@
++<oaf_info>
++
++<oaf_server iid="OAFIID:Vim_Control_Factory" type="exe" location="/home/jdhildeb/projects/gnome-vim/vim/src/vim">
++  <oaf_attribute name="repo_ids" type="stringv">
++    <item value="IDL:Bonobo/GenericFactory:1.0"/>
++  </oaf_attribute>
++  <oaf_attribute name="name" type="string" value="Vim Control factory"/>
++  <oaf_attribute name="description" type="string" value="Vim Control factory"/>
++</oaf_server>
++
++<oaf_server iid="OAFIID:Vim_Control" type="factory"
++ location="OAFIID:Vim_Control_Factory">
++  <oaf_attribute name="repo_ids" type="stringv">
++    <item value="IDL:Bonobo/Unknown:1.0"/>
++    <item value="IDL:Bonobo/Control:1.0"/>
++    <item value="IDL:Bonobo/ItemContainer:1.0"/>
++    <item value="IDL:Bonobo/PersistStream:1.0"/>
++    <item value="IDL:Bonobo/PersistFile:1.0"/>
++    <item value="IDL:Bonobo/Persist:1.0"/>
++    <item value="IDL:Nautilus/View:1.0"/>
++  </oaf_attribute>
++  <oaf_attribute name="name" type="string" value="Vim Control"/>
++  <oaf_attribute name="description" type="string" value="Vim Control"/>
++  <oaf_attribute name="bonobo:editable" type="boolean" value="false"/>
++  <oaf_attribute name="bonobo:supported_mime_types" type="stringv">
++    <item value="text/plain"/>
++    <item value="text/*"/>
++  </oaf_attribute>
++  <oaf_attribute name="nautilus:view_as_name" type="string" value="Text"/>
++  <oaf_attribute name="nautilus:view_as_label" type="string" value="View/Edit in Vim"/>
++  <oaf_attribute name="nautilus:viewer_label" type="string" value="Vim"/>
++</oaf_server>
++
++</oaf_info>
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/buffer.c vim/src/buffer.c
+--- vimcopy/src/buffer.c	Mon May 26 23:04:33 2003
++++ vim/src/buffer.c	Sat Jul 26 16:36:29 2003
+@@ -28,6 +28,10 @@
+ 
+ #include "vim.h"
+ 
++#if defined(FEAT_GUI_COMPONENT) && defined(FEAT_GUI_GNOME)
++#include "vim_bonobo_control.h"
++#endif
++
+ #if defined(FEAT_CMDL_COMPL) || defined(FEAT_LISTCMDS) || defined(FEAT_EVAL) || defined(FEAT_PERL)
+ static char_u	*buflist_match __ARGS((regprog_T *prog, buf_T *buf));
+ # define HAVE_BUFLIST_MATCH
+@@ -132,10 +136,20 @@
+ 	if (curbuf->b_help)
+ 	    fix_help_buffer();
+     }
+-    else if (read_stdin)
++    else if (read_stdin
++#if defined(FEAT_GUI_COMPONENT) && defined(FEAT_GUI_GNOME)
++                || read_from_container
++#endif
++            )
+     {
+ 	int		save_bin = curbuf->b_p_bin;
+ 	linenr_T	line_count;
++#if defined(FEAT_GUI_COMPONENT) && defined(FEAT_GUI_GNOME)
++        int flags = READ_NEW + READ_EMB_STREAM;
++	curbuf->emb_buffer = TRUE;
++#else
++        int flags = READ_NEW + READ_STDIN;
++#endif
+ 
+ 	/*
+ 	 * First read the text in binary mode into the buffer.
+@@ -145,7 +159,7 @@
+ 	 */
+ 	curbuf->b_p_bin = TRUE;
+ 	retval = readfile(NULL, NULL, (linenr_T)0,
+-		  (linenr_T)0, (linenr_T)MAXLNUM, eap, READ_NEW + READ_STDIN);
++		  (linenr_T)0, (linenr_T)MAXLNUM, eap, flags);
+ 	curbuf->b_p_bin = save_bin;
+ 	if (retval == OK)
+ 	{
+@@ -167,14 +181,21 @@
+ 	    /* Put the cursor on the first line. */
+ 	    curwin->w_cursor.lnum = 1;
+ 	    curwin->w_cursor.col = 0;
++#if defined(FEAT_GUI_COMPONENT) && defined(FEAT_GUI_GNOME)
++            if (read_stdin) 
++            {
++#endif
+ #ifdef FEAT_AUTOCMD
+ # ifdef FEAT_EVAL
+-	    apply_autocmds_retval(EVENT_STDINREADPOST, NULL, NULL, FALSE,
++                apply_autocmds_retval(EVENT_STDINREADPOST, NULL, NULL, FALSE,
+ 							curbuf, &retval);
+ # else
+-	    apply_autocmds(EVENT_STDINREADPOST, NULL, NULL, FALSE, curbuf);
++                apply_autocmds(EVENT_STDINREADPOST, NULL, NULL, FALSE, curbuf);
+ # endif
+ #endif
++#if defined(FEAT_GUI_COMPONENT) && defined(FEAT_GUI_GNOME)
++            }
++#endif
+ 	}
+     }
+ 
+@@ -4510,6 +4531,11 @@
+ 	if (buf->b_sfname != NULL)
+ 	    return (char *)buf->b_sfname;
+ 	return "[Scratch]";
++    }
++#endif
++#if defined(FEAT_QUICKFIX) && defined(FEAT_GUI_COMPONENT)
++    if ( buf->emb_buffer ) {
++	return "[Embedded File]";
+     }
+ #endif
+     if (buf->b_fname == NULL)
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/config.h.in vim/src/config.h.in
+--- vimcopy/src/config.h.in	Mon May 26 10:45:01 2003
++++ vim/src/config.h.in	Sat Jul 26 13:16:46 2003
+@@ -316,6 +316,9 @@
+ /* Define if GTK+ multihead support is available (requires GTK+ >= 2.1.1). */
+ #undef HAVE_GTK_MULTIHEAD
+ 
++/* Define if you want component (i.e. Bonobo) support. */
++#undef FEAT_GUI_COMPONENT
++ 
+ /* Define if your X has own locale library */
+ #undef X_LOCALE
+ 
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/configure.in vim/src/configure.in
+--- vimcopy/src/configure.in	Mon Jun  2 09:32:19 2003
++++ vim/src/configure.in	Sat Jul 26 13:16:46 2003
+@@ -1131,9 +1131,9 @@
+     AC_MSG_CHECKING(for libgnomeui-2.0)
+     if $PKG_CONFIG --exists libgnomeui-2.0; then
+       AC_MSG_RESULT(yes)
+-      GNOME_LIBS=`$PKG_CONFIG --libs-only-l libgnomeui-2.0`
+-      GNOME_LIBDIR=`$PKG_CONFIG --libs-only-L libgnomeui-2.0`
+-      GNOME_INCLUDEDIR=`$PKG_CONFIG --cflags libgnomeui-2.0`
++      GNOME_LIBS=`$PKG_CONFIG --libs-only-l libgnomeui-2.0 libnautilus`
++      GNOME_LIBDIR=`$PKG_CONFIG --libs-only-L libgnomeui-2.0 libnautilus`
++      GNOME_INCLUDEDIR=`$PKG_CONFIG --cflags libgnomeui-2.0 libnautilus`
+       $1
+     else
+       AC_MSG_RESULT(not found)
+@@ -1301,6 +1301,20 @@
+ 	  AC_DEFINE(FEAT_GUI_GNOME)
+ 	  GUI_INC_LOC="$GUI_INC_LOC $GNOME_INCLUDEDIR"
+ 	  GTK_LIBNAME="$GTK_LIBNAME $GNOME_LIBDIR $GNOME_LIBS"
++          AC_MSG_CHECKING(whether or not to include bonobo support)
++          AC_ARG_ENABLE(bonobo,
++            [  --enable-bonobo         If using GNOME, enable bonobo support [default=no]],
++            , enable_bonobo="no")
++          if test "x$enable_bonobo" = "xno"; then
++            AC_MSG_RESULT($enable_bonobo);
++          else
++            if test "x$SKIP_BONOBO" != "xYES" -a $gtk_major_version -ge 2; then
++              AC_MSG_RESULT(yes);
++              AC_DEFINE(FEAT_GUI_COMPONENT) 
++            else
++              AC_MSG_RESULT(no (bonobo requires Gnome 2));
++            fi
++          fi
+ 	fi
+       }
+       fi
+Binary files vimcopy/src/container and vim/src/container differ
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/container.c vim/src/container.c
+--- vimcopy/src/container.c	Wed Dec 31 18:00:00 1969
++++ vim/src/container.c	Sat Jul 26 13:16:46 2003
+@@ -0,0 +1,266 @@
++
++#include <bonobo.h>
++#include <glib.h>
++
++BonoboControlFrame  *ctrl_frame;
++BonoboUIComponent   *ui_comp;
++
++/* vbox */
++GtkWidget           *box;
++GtkWidget           *ctrl_widget;
++
++char * filename;
++
++static Bonobo_Control
++instantiate_control()
++{
++	Bonobo_Control control;
++	Bonobo_PersistFile pfile;
++	Bonobo_PersistStream pstream;
++	CORBA_Environment ev;
++    Bonobo_Stream stream;
++
++	CORBA_exception_init (&ev);
++
++	/* get control component */
++	control = bonobo_get_object ("OAFIID:Vim_Control",
++				     "Bonobo/Control", &ev);
++	if (BONOBO_EX (&ev) || (control == CORBA_OBJECT_NIL))
++    {
++		CORBA_exception_free (&ev);
++        return NULL;
++    }
++	
++#if 0
++	/* get PersistFile interface */
++    pfile = Bonobo_Unknown_queryInterface (control, "IDL:Bonobo/PersistFile:1.0", &ev);
++    if (BONOBO_EX (&ev) || (pfile == CORBA_OBJECT_NIL))
++    exit(1);
++	
++	/* load the file */
++    Bonobo_PersistFile_load (pfile, filename, &ev);
++	bonobo_object_release_unref (pfile, NULL);
++#endif
++
++	/* get PersistStream interface */
++    pstream = Bonobo_Unknown_queryInterface (control, "IDL:Bonobo/PersistStream:1.0", &ev);
++    if (BONOBO_EX (&ev) || (pstream == CORBA_OBJECT_NIL))
++    {
++		CORBA_exception_free (&ev);
++        return NULL;
++    }
++	
++	/* load the file */
++    stream = bonobo_get_object(filename, "IDL:Bonobo/Stream:1.0", &ev);
++	if (ev._major != CORBA_NO_EXCEPTION) {
++        g_warning("Error getting stream interface");
++		bonobo_object_unref (BONOBO_OBJECT (stream));
++		CORBA_exception_free (&ev);
++		return NULL;
++	}
++    Bonobo_PersistStream_load (pstream, stream, "text/plain", &ev);
++	if (ev._major != CORBA_NO_EXCEPTION) {
++        g_warning("Error loading stream!");
++		bonobo_object_unref (BONOBO_OBJECT (stream));
++		CORBA_exception_free (&ev);
++		return NULL;
++	}
++	bonobo_object_release_unref (pstream, NULL);
++    return control;
++}
++
++static void
++verb_FileNewWindow (BonoboUIComponent *uic, gpointer user_data, const char *cname)
++{
++    printf("Got New Window!\n");
++}
++
++static void
++verb_DoNothing (BonoboUIComponent *uic, gpointer user_data, const char *cname)
++{
++}
++
++static BonoboUIVerb app_verbs[] = {
++	BONOBO_UI_VERB ("FileNewWindow", verb_FileNewWindow),
++	BONOBO_UI_VERB ("FileOpen",      verb_DoNothing),
++	BONOBO_UI_VERB ("FileCloseWindow", verb_DoNothing),
++	BONOBO_UI_VERB ("FileExit",      verb_DoNothing),
++	BONOBO_UI_VERB ("Preferences",   verb_DoNothing),
++	BONOBO_UI_VERB ("HelpAbout",     verb_DoNothing),
++	BONOBO_UI_VERB ("Help",          verb_DoNothing),
++	BONOBO_UI_VERB ("DnDNewWindow",  verb_DoNothing),
++	BONOBO_UI_VERB ("DnDSameWindow", verb_DoNothing),
++	BONOBO_UI_VERB ("DnDCancel",     verb_DoNothing),
++	BONOBO_UI_VERB_END
++};
++
++static void 
++add_control_to_ui (BonoboWindow *window, Bonobo_Control control)
++{
++	CORBA_Environment ev;
++	Bonobo_PropertyControl prop_control;
++	BonoboUIContainer *ui_container;
++    char *curdir;
++
++	g_return_if_fail (window != NULL);
++	g_return_if_fail (BONOBO_IS_WINDOW (window));
++	
++	CORBA_exception_init (&ev);
++
++	ui_container = bonobo_window_get_ui_container (BONOBO_WINDOW (window));
++	ctrl_frame = bonobo_control_frame_new (BONOBO_OBJREF (ui_container));
++
++	/* bind and view new control widget */
++	bonobo_control_frame_bind_to_control (ctrl_frame, control, &ev);
++	bonobo_control_frame_control_activate (ctrl_frame);
++	if (control != CORBA_OBJECT_NIL && ctrl_widget == NULL) {
++		ctrl_widget = bonobo_control_frame_get_widget (ctrl_frame);
++		if (!ctrl_widget)
++			g_assert_not_reached ();
++
++        bonobo_window_set_contents (BONOBO_WINDOW(window), GTK_WIDGET(ctrl_widget));
++		gtk_widget_show (ctrl_widget);
++	}
++
++	ui_comp = bonobo_ui_component_new ("vim-container");
++	bonobo_ui_component_set_container (ui_comp, BONOBO_OBJREF (ui_container), NULL);
++
++    curdir = (char *)getcwd(NULL, 0);
++	bonobo_ui_util_set_ui (ui_comp, curdir, "vim-container.xml", "Vim", NULL);
++    free( curdir );
++    bonobo_ui_component_add_verb_list_with_data (ui_comp, app_verbs, window);
++
++	/* update sensitivity of the properties menu item */
++	prop_control = Bonobo_Unknown_queryInterface (control, 
++						      "IDL:Bonobo/PropertyControl:1.0", &ev);
++	bonobo_ui_component_set_prop (ui_comp,
++				      "/commands/Preferences",
++				      "sensitive",
++				      prop_control == CORBA_OBJECT_NIL ? "0" : "1",
++				      &ev);
++	
++	bonobo_object_release_unref (prop_control, &ev);
++
++	/* enable view menu */
++	/* FIXME: We should check if the component adds anything to 
++	 *        the menu, so that we don't view an empty menu.
++	 */
++	/*bonobo_ui_component_set_prop (ui_comp, "/menu/View", "hidden", "0", &ev);*/
++
++	CORBA_exception_free (&ev);
++
++	/* retrieve control properties and install listeners */
++	//check_for_control_properties (window);
++}
++
++static void write_stream_to_file(Bonobo_Control control)
++{
++    Bonobo_Storage storage;
++    gchar * dirname;
++    gchar * basename;
++	CORBA_Environment ev;
++	Bonobo_PersistStream pstream;
++    Bonobo_Stream stream;
++
++    g_warning("write stream to file!");
++	CORBA_exception_init (&ev);
++
++    dirname = g_path_get_dirname(filename);
++    storage = bonobo_get_object(dirname, "IDL:Bonobo/Storage:1.0", &ev);
++    g_free(dirname);
++    if (BONOBO_EX (&ev) || (storage == CORBA_OBJECT_NIL))
++    {
++		CORBA_exception_free (&ev);
++        return;
++    }
++
++    pstream = Bonobo_Unknown_queryInterface (control, "IDL:Bonobo/PersistStream:1.0", &ev);
++    if (BONOBO_EX (&ev) || (pstream == CORBA_OBJECT_NIL))
++    {
++        bonobo_object_release_unref(storage, NULL);
++		CORBA_exception_free (&ev);
++        return;
++    }
++
++    basename = g_path_get_basename(filename);
++    stream = Bonobo_Storage_openStream(storage, basename, Bonobo_Storage_WRITE, &ev );
++    g_free(basename);
++    if (BONOBO_EX (&ev) || (stream == CORBA_OBJECT_NIL))
++    {
++        bonobo_object_release_unref(pstream, NULL);
++        bonobo_object_release_unref(storage, NULL);
++		CORBA_exception_free (&ev);
++        return;
++    }
++
++    Bonobo_PersistStream_save (pstream, stream, "text/plain", &ev);
++	if (ev._major != CORBA_NO_EXCEPTION) {
++        g_warning("Error saving stream!");
++		bonobo_object_unref (BONOBO_OBJECT (stream));
++        bonobo_object_release_unref(pstream, NULL);
++        bonobo_object_release_unref(storage, NULL);
++		CORBA_exception_free (&ev);
++		return;
++	}
++    bonobo_object_release_unref(stream, NULL);
++    bonobo_object_release_unref(pstream, NULL);
++    bonobo_object_release_unref(storage, NULL);
++    return;
++}
++
++static void
++window_destroyed (GtkWindow *window, char * data)
++{
++    Bonobo_Control control;
++
++    control = bonobo_control_frame_get_control(ctrl_frame);
++    write_stream_to_file(control);
++    bonobo_control_frame_control_deactivate(ctrl_frame);
++    bonobo_object_release_unref( control, NULL );
++    bonobo_main_quit();
++}
++
++int main(int argc, char * argv[] ) 
++{
++    BonoboWidget * bw;
++    BonoboWindow      *window;
++	BonoboUIEngine    *engine;
++	BonoboUIContainer *container;
++    Bonobo_Control    control;
++    gchar             *cwd;
++
++    if( argc <= 1 ) { 
++        fprintf(stderr, "%s: not enough args\n", argv[0] );
++        fprintf(stderr, "Usage: %s <text file>\n", argv[0]);
++        exit(1);
++    }
++    cwd = g_get_current_dir();
++    filename = g_build_filename( "file:", cwd, argv[1], NULL );
++    g_free(cwd);
++
++    bonobo_ui_init ("container", "1.0", &argc, argv);
++
++	if(gnome_vfs_init () == FALSE)
++		g_error (_("Could not initialize GnomeVFS!\n"));
++
++	window = BONOBO_WINDOW ( bonobo_window_new ("Window", "Vim Test Container"));
++
++    // instantiate a control
++    control = instantiate_control();
++    if( control == NULL )
++        return 1;
++    
++    // put it into our window
++    add_control_to_ui (window, control);
++
++    g_signal_connect (window, "destroy",
++          G_CALLBACK (window_destroyed),
++          &window);
++
++
++    gtk_widget_show_all( GTK_WIDGET( window ));
++
++    bonobo_main();
++
++    return 0;
++}
+Binary files vimcopy/src/container.o and vim/src/container.o differ
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/ex_cmds2.c vim/src/ex_cmds2.c
+--- vimcopy/src/ex_cmds2.c	Wed Jul  9 09:23:22 2003
++++ vim/src/ex_cmds2.c	Sat Jul 26 13:16:47 2003
+@@ -704,6 +704,12 @@
+     int		forceit;
+     int		allbuf;		/* may write all buffers */
+ {
++#ifdef FEAT_GUI_COMPONENT
++    if ( buf->emb_buffer ) {
++	EMSG(_("E467: Cannot close embedded file"));
++        return TRUE;
++    }
++#endif
+     if (       !forceit
+ 	    && bufIsChanged(buf)
+ 	    && (mult_win || buf->b_nwindows <= 1)
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/ex_docmd.c vim/src/ex_docmd.c
+--- vimcopy/src/ex_docmd.c	Mon May 26 10:45:01 2003
++++ vim/src/ex_docmd.c	Sat Jul 26 13:16:47 2003
+@@ -5348,8 +5348,13 @@
+     }
+     else
+     {
++#ifdef FEAT_GUI_COMPONENT
++        EMSG(_(e_compnoquit));
++        not_exiting();
++        return;
++#endif
+ #ifdef FEAT_WINDOWS
+-	if (only_one_window())	    /* quit last window */
++        if (only_one_window()) 	    /* quit last window */
+ #endif
+ 	    getout(0);
+ #ifdef FEAT_WINDOWS
+@@ -5370,8 +5375,12 @@
+ ex_cquit(eap)
+     exarg_T	*eap;
+ {
++#ifdef FEAT_GUI_COMPONENT
++    EMSG(_(e_compnoquit));
++    return;
++#endif
+     getout(1);	/* this does not always pass on the exit code to the Manx
+-		   compiler. why? */
++                   compiler. why? */
+ }
+ 
+ /*
+@@ -5391,6 +5400,10 @@
+ 	return;
+     }
+ # endif
++#ifdef FEAT_GUI_COMPONENT
++    EMSG(_(e_compnoquit));
++    return;
++#endif
+     exiting = TRUE;
+     if (eap->forceit || !check_changed_any(FALSE))
+ 	getout(0);
+@@ -5585,8 +5598,13 @@
+     }
+     else
+     {
++#ifdef FEAT_GUI_COMPONENT
++        EMSG(_(e_compnoquit));
++        not_exiting();
++        return;
++#endif
+ #ifdef FEAT_WINDOWS
+-	if (only_one_window())	    /* quit last window, exit Vim */
++        if ( only_one_window())	    /* quit last window, exit Vim */
+ #endif
+ 	    getout(0);
+ #ifdef FEAT_WINDOWS
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/fileio.c vim/src/fileio.c
+--- vimcopy/src/fileio.c	Fri Jul 25 11:04:42 2003
++++ vim/src/fileio.c	Sat Jul 26 13:16:47 2003
+@@ -45,6 +45,10 @@
+ # define CRYPT_MAGIC_LEN	12		/* must be multiple of 4! */
+ #endif
+ 
++#if defined(FEAT_GUI_COMPONENT) && defined(FEAT_GUI_GNOME) 
++#include "vim_bonobo_control.h"
++#endif
++
+ /* Is there any system that doesn't have access()? */
+ #ifndef MACOS_CLASSIC /* Not available on MacOS 9 */
+ # define USE_MCH_ACCESS
+@@ -200,6 +204,7 @@
+  * READ_BUFFER	read from curbuf instead of a file (converting after reading
+  *		stdin)
+  * READ_DUMMY	read into a dummy buffer (to check if file contents changed)
++ * READ_EMB_STREAM read from a bonobo persist stream
+  *
+  * return FAIL for failure, OK otherwise
+  */
+@@ -219,6 +224,11 @@
+     int		filtering = (flags & READ_FILTER);
+     int		read_stdin = (flags & READ_STDIN);
+     int		read_buffer = (flags & READ_BUFFER);
++#if defined(FEAT_GUI_COMPONENT) && defined(FEAT_GUI_GNOME)
++    int		read_pstream = (flags & READ_EMB_STREAM);
++#else
++#define read_pstream 0
++#endif
+     linenr_T	read_buf_lnum = 1;	/* next line to read from curbuf */
+     colnr_T	read_buf_col = 0;	/* next char to read from this line */
+     char_u	c;
+@@ -322,7 +332,7 @@
+      * The BufReadCmd and FileReadCmd events intercept the reading process by
+      * executing the associated commands instead.
+      */
+-    if (!filtering && !read_stdin && !read_buffer)
++    if (!filtering && !read_stdin && !read_buffer && !read_pstream)
+     {
+ 	pos_T	    pos;
+ 
+@@ -381,7 +391,7 @@
+      * On Unix it is possible to read a directory, so we have to
+      * check for it before the mch_open().
+      */
+-    if (!read_stdin && !read_buffer)
++    if (!read_stdin && !read_buffer && !read_pstream)
+     {
+ 	perm = mch_getperm(fname);
+ 	if (perm >= 0 && !S_ISREG(perm)		    /* not a regular file ... */
+@@ -423,7 +433,7 @@
+     if (check_readonly && !readonlymode)    /* default: set file not readonly */
+ 	curbuf->b_p_ro = FALSE;
+ 
+-    if (newfile && !read_stdin && !read_buffer)
++    if (newfile && !read_stdin && !read_buffer && !read_pstream)
+     {
+ 	/* Remember time of file.
+ 	 * For RISCOS, also remember the filetype.
+@@ -483,6 +493,11 @@
+ 	setmode(0, O_BINARY);
+ #endif
+     }
++#ifdef FEAT_GUI_COMPONENT
++    else if (read_pstream)
++    {
++    }
++#endif
+     else if (!read_buffer)
+     {
+ #ifdef USE_MCH_ACCESS
+@@ -599,7 +614,7 @@
+     /* If "Quit" selected at ATTENTION dialog, don't load the file */
+     if (swap_exists_action == SEA_QUIT)
+     {
+-	if (!read_buffer && !read_stdin)
++	if (!read_buffer && !read_stdin && !read_pstream)
+ 	    close(fd);
+ 	return FAIL;
+     }
+@@ -624,7 +639,7 @@
+ 	 * The file must be closed again, the autocommands may want to change
+ 	 * the file before reading it.
+ 	 */
+-	if (!read_stdin)
++	if (!read_stdin && !read_pstream)
+ 	    close(fd);		/* ignore errors */
+ 
+ 	/*
+@@ -661,7 +676,7 @@
+ 	 * Don't allow the autocommands to change the current buffer.
+ 	 * Try to re-open the file.
+ 	 */
+-	if (!read_stdin && (curbuf != old_curbuf
++	if (!read_stdin && !read_pstream && (curbuf != old_curbuf
+ 		|| (fd = mch_open((char *)fname, O_RDONLY | O_EXTRA, 0)) < 0))
+ 	{
+ 	    --no_wait_return;
+@@ -701,7 +716,7 @@
+ 	    }
+ #endif
+ 	}
+-	else if (!read_buffer)
++	else if (!read_buffer && !read_pstream)
+ 	    filemess(curbuf, sfname, (char_u *)"", 0);
+     }
+ 
+@@ -781,7 +796,7 @@
+ 	    read_buf_lnum = 1;
+ 	    read_buf_col = 0;
+ 	}
+-	else if (read_stdin || lseek(fd, (off_t)0L, SEEK_SET) != 0)
++	else if (read_stdin || read_pstream || lseek(fd, (off_t)0L, SEEK_SET) != 0)
+ 	{
+ 	    /* Can't rewind the file, give up. */
+ 	    error = TRUE;
+@@ -920,7 +935,7 @@
+ 	 * Use the 'charconvert' expression when conversion is required
+ 	 * and we can't do it internally or with iconv().
+ 	 */
+-	if (fio_flags == 0 && !read_stdin && !read_buffer && *p_ccv != NUL
++	if (fio_flags == 0 && !read_stdin && !read_buffer && !read_pstream && *p_ccv != NUL
+ #  ifdef USE_ICONV
+ 						    && iconv_fd == (iconv_t)-1
+ #  endif
+@@ -969,7 +984,7 @@
+     /* Set can_retry when it's possible to rewind the file and try with
+      * another "fenc" value.  It's FALSE when no other "fenc" to try, reading
+      * stdin or "fenc" was specified with "++enc=". */
+-    can_retry = (*fenc != NUL && !read_stdin
++    can_retry = (*fenc != NUL && !read_stdin && !read_pstream
+ 				     && (eap == NULL || eap->force_enc == 0));
+ #endif
+ 
+@@ -1120,6 +1135,11 @@
+ 			}
+ 		    }
+ 		}
++#if defined(FEAT_GUI_COMPONENT) && defined(FEAT_GUI_GNOME) 
++                else if( read_pstream ) {
++                    size = vim_control_persist_stream_read(ptr, size);   
++                }
++#endif
+ 		else
+ 		{
+ 		    /*
+@@ -1713,7 +1733,7 @@
+ 			    else if (ff_error != EOL_DOS)
+ 			    {
+ 				if (   try_unix
+-				    && !read_stdin
++				    && !read_stdin && !read_pstream
+ 				    && (read_buffer
+ 					|| lseek(fd, (off_t)0L, SEEK_SET) == 0))
+ 				{
+@@ -1802,7 +1822,7 @@
+ # endif
+ #endif
+ 
+-    if (!read_buffer && !read_stdin)
++    if (!read_buffer && !read_stdin && !read_pstream)
+ 	close(fd);				/* errors are ignored */
+     vim_free(buffer);
+ 
+@@ -1991,7 +2011,7 @@
+ #ifdef ALWAYS_USE_GUI
+ 	    /* Don't show the message when reading stdin, it would end up in a
+ 	     * message box (which might be shown when exiting!) */
+-	    if (read_stdin || read_buffer)
++	    if (read_stdin || read_buffer )
+ 		p = msg_may_trunc(FALSE, IObuff);
+ 	    else
+ #endif
+@@ -2057,7 +2077,7 @@
+      */
+     write_no_eol_lnum = read_no_eol_lnum;
+ 
+-    if (!read_stdin && !read_buffer)
++    if (!read_stdin && !read_buffer && !read_pstream)
+     {
+ 	int m = msg_scroll;
+ 	int n = msg_scrolled;
+@@ -2383,6 +2403,11 @@
+     int		    prev_got_int = got_int;
+     int		    file_readonly = FALSE;  /* overwritten file is read-only */
+     static char	    *err_readonly = "is read-only (cannot override: \"W\" in 'cpoptions')";
++#if defined(FEAT_GUI_COMPONENT) && defined(FEAT_GUI_GNOME)
++    int		    write_pstream = write_to_container;
++#else
++#define write_pstream 0
++#endif
+ #if defined(UNIX) || defined(__EMX__XX)	    /*XXX fix me sometime? */
+     int		    made_writable = FALSE;  /* 'w' bit has been set */
+ #endif
+@@ -2795,6 +2820,10 @@
+     if (dobackup && *p_bsk != NUL && match_file_list(p_bsk, sfname, ffname))
+ 	dobackup = FALSE;
+ #endif
++#ifdef FEAT_GUI_COMPONENT
++    if( write_pstream )
++        dobackup = FALSE;
++#endif
+ 
+     /*
+      * Save the value of got_int and reset it.  We don't want a previous
+@@ -3398,7 +3427,7 @@
+      * (this may happen when the user reached his quotum for number of files).
+      * Appending will fail if the file does not exist and forceit is FALSE.
+      */
+-    while ((fd = mch_open((char *)wfname, O_WRONLY | O_EXTRA | (append
++    while (write_pstream && (fd = mch_open((char *)wfname, O_WRONLY | O_EXTRA | (append
+ 			? (forceit ? (O_APPEND | O_CREAT) : O_APPEND)
+ 			: (O_CREAT | O_TRUNC))
+ 			, 0666)) < 0)
+@@ -3670,7 +3699,7 @@
+ 	nchars += len;
+     }
+ 
+-    if (close(fd) != 0)
++    if (!write_pstream && close(fd) != 0)
+     {
+ 	errmsg = (char_u *)_("E512: Close failed");
+ 	end = 0;
+@@ -4088,6 +4117,10 @@
+     buf_T	*buf;
+     char_u	*fname;
+ {
++#ifdef FEAT_GUI_COMPONENT
++    if (buf->emb_buffer)
++        fname = (char_u *)"[Embedded File]";
++#endif
+     if (fname == NULL)
+ 	fname = (char_u *)"-stdin-";
+     home_replace(buf, fname, IObuff + 1, IOSIZE - 4, TRUE);
+@@ -4476,7 +4509,12 @@
+     /* Repeat the write(), it may be interrupted by a signal. */
+     while (len)
+     {
+-	wlen = vim_write(ip->bw_fd, buf, len);
++#if defined(FEAT_GUI_COMPONENT) && defined(FEAT_GUI_GNOME)
++        if( write_to_container )
++            wlen = vim_control_persist_stream_write(buf, len);
++        else
++#endif
++            wlen = vim_write(ip->bw_fd, buf, len);
+ 	if (wlen <= 0)		    /* error! */
+ 	    return FAIL;
+ 	len -= wlen;
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/globals.h vim/src/globals.h
+--- vimcopy/src/globals.h	Mon Jun  2 09:32:19 2003
++++ vim/src/globals.h	Sat Jul 26 13:16:47 2003
+@@ -802,6 +802,11 @@
+ EXTERN int	readonlymode INIT(= FALSE); /* Set to TRUE for "view" */
+ EXTERN int	recoverymode INIT(= FALSE); /* Set to TRUE for "-r" option */
+ 
++#ifdef FEAT_GUI_COMPONENT
++EXTERN int      read_from_container INIT(= 0); /* read the buffer from the container app */
++EXTERN int      write_to_container INIT(= 0); /* write the buffer to the container app */
++#endif
++
+ EXTERN struct buffheader stuffbuff	/* stuff buffer */
+ #ifdef DO_INIT
+ 		    = {{NULL, {NUL}}, NULL, 0, 0}
+@@ -1321,6 +1326,9 @@
+ #endif
+ #ifdef FEAT_NETBEANS_INTG
+ EXTERN char_u e_guarded[]	INIT(=N_("E463: Region is guarded, cannot modify"));
++#endif
++#ifdef FEAT_GUI_COMPONENT
++EXTERN char_u e_compnoquit[]	INIT(=N_("E464: Quit not allowed from embedded component"));
+ #endif
+ #ifdef MACOS_X_UNIX
+ EXTERN short disallow_gui	INIT(= FALSE);
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/gtkhtml.h vim/src/gtkhtml.h
+--- vimcopy/src/gtkhtml.h	Wed Dec 31 18:00:00 1969
++++ vim/src/gtkhtml.h	Sat Jul 26 13:16:47 2003
+@@ -0,0 +1,480 @@
++/*
++ * This file was generated by orbit-idl-2 - DO NOT EDIT!
++ */
++
++#ifndef Editor_H
++#define Editor_H 1
++#include <glib.h>
++#define ORBIT_IDL_SERIAL 19
++#include <orbit/orbit-types.h>
++
++#ifdef __cplusplus
++extern "C"
++{
++#endif				/* __cplusplus */
++
++/** typedefs **/
++#include <bonobo/Bonobo.h>
++#if !defined(ORBIT_DECL_GNOME_GtkHTML_Editor_Listener) && !defined(_GNOME_GtkHTML_Editor_Listener_defined)
++#define ORBIT_DECL_GNOME_GtkHTML_Editor_Listener 1
++#define _GNOME_GtkHTML_Editor_Listener_defined 1
++#define GNOME_GtkHTML_Editor_Listener__freekids CORBA_Object__freekids
++   typedef CORBA_Object GNOME_GtkHTML_Editor_Listener;
++   extern CORBA_unsigned_long GNOME_GtkHTML_Editor_Listener__classid;
++#if !defined(TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_0)
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_0 'E'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_1 'd'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_2 'i'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_3 't'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_4 'o'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_5 'r'
++#ifdef ORBIT_IDL_C_IMODULE
++   static
++#else
++   extern
++#endif
++   const struct CORBA_TypeCode_struct TC_GNOME_GtkHTML_Editor_Listener_struct;
++#define TC_GNOME_GtkHTML_Editor_Listener ((CORBA_TypeCode)&TC_GNOME_GtkHTML_Editor_Listener_struct)
++#endif
++#endif
++#if !defined(ORBIT_DECL_GNOME_GtkHTML_Editor_Engine) && !defined(_GNOME_GtkHTML_Editor_Engine_defined)
++#define ORBIT_DECL_GNOME_GtkHTML_Editor_Engine 1
++#define _GNOME_GtkHTML_Editor_Engine_defined 1
++#define GNOME_GtkHTML_Editor_Engine__freekids CORBA_Object__freekids
++   typedef CORBA_Object GNOME_GtkHTML_Editor_Engine;
++   extern CORBA_unsigned_long GNOME_GtkHTML_Editor_Engine__classid;
++#if !defined(TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_0)
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_0 'E'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_1 'd'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_2 'i'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_3 't'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_4 'o'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_5 'r'
++#ifdef ORBIT_IDL_C_IMODULE
++   static
++#else
++   extern
++#endif
++   const struct CORBA_TypeCode_struct TC_GNOME_GtkHTML_Editor_Engine_struct;
++#define TC_GNOME_GtkHTML_Editor_Engine ((CORBA_TypeCode)&TC_GNOME_GtkHTML_Editor_Engine_struct)
++#endif
++#endif
++#if !defined(_GNOME_GtkHTML_Editor_URLRequestEvent_defined)
++#define _GNOME_GtkHTML_Editor_URLRequestEvent_defined 1
++   typedef struct GNOME_GtkHTML_Editor_URLRequestEvent_type
++      GNOME_GtkHTML_Editor_URLRequestEvent;
++   struct GNOME_GtkHTML_Editor_URLRequestEvent_type
++   {
++      CORBA_string url;
++      Bonobo_Stream stream;
++   };
++
++#if !defined(TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_0)
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_0 'E'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_1 'd'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_2 'i'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_3 't'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_4 'o'
++#define TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_5 'r'
++#ifdef ORBIT_IDL_C_IMODULE
++   static
++#else
++   extern
++#endif
++   const struct CORBA_TypeCode_struct
++      TC_GNOME_GtkHTML_Editor_URLRequestEvent_struct;
++#define TC_GNOME_GtkHTML_Editor_URLRequestEvent ((CORBA_TypeCode)&TC_GNOME_GtkHTML_Editor_URLRequestEvent_struct)
++#endif
++#define GNOME_GtkHTML_Editor_URLRequestEvent__alloc() ((GNOME_GtkHTML_Editor_URLRequestEvent *)ORBit_small_alloc (TC_GNOME_GtkHTML_Editor_URLRequestEvent))
++#define GNOME_GtkHTML_Editor_URLRequestEvent__freekids(m,d) ORBit_small_freekids (TC_GNOME_GtkHTML_Editor_URLRequestEvent,(m),(d))
++#endif
++
++/** POA structures **/
++#ifndef _defined_POA_GNOME_GtkHTML_Editor_Listener
++#define _defined_POA_GNOME_GtkHTML_Editor_Listener 1
++   typedef struct
++   {
++      void *_private;
++      CORBA_any *(*event) (PortableServer_Servant _servant,
++			   const CORBA_char * name, const CORBA_any * arg,
++			   CORBA_Environment * ev);
++   }
++   POA_GNOME_GtkHTML_Editor_Listener__epv;
++   typedef struct
++   {
++      PortableServer_ServantBase__epv *_base_epv;
++      POA_Bonobo_Unknown__epv *Bonobo_Unknown_epv;
++      POA_GNOME_GtkHTML_Editor_Listener__epv
++	 *GNOME_GtkHTML_Editor_Listener_epv;
++   }
++   POA_GNOME_GtkHTML_Editor_Listener__vepv;
++   typedef struct
++   {
++      void *_private;
++      POA_GNOME_GtkHTML_Editor_Listener__vepv *vepv;
++   }
++   POA_GNOME_GtkHTML_Editor_Listener;
++   extern void POA_GNOME_GtkHTML_Editor_Listener__init(PortableServer_Servant
++						       servant,
++						       CORBA_Environment *
++						       ev);
++   extern void POA_GNOME_GtkHTML_Editor_Listener__fini(PortableServer_Servant
++						       servant,
++						       CORBA_Environment *
++						       ev);
++#endif				/* _defined_POA_GNOME_GtkHTML_Editor_Listener */
++#ifndef _defined_POA_GNOME_GtkHTML_Editor_Engine
++#define _defined_POA_GNOME_GtkHTML_Editor_Engine 1
++   typedef struct
++   {
++      void *_private;
++       GNOME_GtkHTML_Editor_Listener(*_get_listener) (PortableServer_Servant
++						      _servant,
++						      CORBA_Environment * ev);
++      void (*_set_listener) (PortableServer_Servant _servant,
++			     const GNOME_GtkHTML_Editor_Listener value,
++			     CORBA_Environment * ev);
++       CORBA_boolean(*runCommand) (PortableServer_Servant _servant,
++				   const CORBA_char * command,
++				   CORBA_Environment * ev);
++       CORBA_string(*getParagraphData) (PortableServer_Servant _servant,
++					const CORBA_char * key,
++					CORBA_Environment * ev);
++      void (*setParagraphData) (PortableServer_Servant _servant,
++				const CORBA_char * key,
++				const CORBA_char * value,
++				CORBA_Environment * ev);
++      void (*setObjectDataByType) (PortableServer_Servant _servant,
++				   const CORBA_char * type_name,
++				   const CORBA_char * key,
++				   const CORBA_char * data,
++				   CORBA_Environment * ev);
++       CORBA_boolean(*searchByData) (PortableServer_Servant _servant,
++				     const CORBA_long level,
++				     const CORBA_char * klass,
++				     const CORBA_char * key,
++				     const CORBA_char * value,
++				     CORBA_Environment * ev);
++       CORBA_boolean(*isParagraphEmpty) (PortableServer_Servant _servant,
++					 CORBA_Environment * ev);
++       CORBA_boolean(*isPreviousParagraphEmpty) (PortableServer_Servant
++						 _servant,
++						 CORBA_Environment * ev);
++      void (*insertHTML) (PortableServer_Servant _servant,
++			  const CORBA_char * html, CORBA_Environment * ev);
++      void (*freeze) (PortableServer_Servant _servant,
++		      CORBA_Environment * ev);
++      void (*thaw) (PortableServer_Servant _servant, CORBA_Environment * ev);
++      void (*undoBegin) (PortableServer_Servant _servant,
++			 const CORBA_char * undo_name,
++			 const CORBA_char * redo_name,
++			 CORBA_Environment * ev);
++      void (*undoEnd) (PortableServer_Servant _servant,
++		       CORBA_Environment * ev);
++      void (*ignoreWord) (PortableServer_Servant _servant,
++			  const CORBA_char * word, CORBA_Environment * ev);
++      void (*dropUndo) (PortableServer_Servant _servant,
++			CORBA_Environment * ev);
++       CORBA_boolean(*hasUndo) (PortableServer_Servant _servant,
++				CORBA_Environment * ev);
++   }
++   POA_GNOME_GtkHTML_Editor_Engine__epv;
++   typedef struct
++   {
++      PortableServer_ServantBase__epv *_base_epv;
++      POA_Bonobo_Unknown__epv *Bonobo_Unknown_epv;
++      POA_GNOME_GtkHTML_Editor_Engine__epv *GNOME_GtkHTML_Editor_Engine_epv;
++   }
++   POA_GNOME_GtkHTML_Editor_Engine__vepv;
++   typedef struct
++   {
++      void *_private;
++      POA_GNOME_GtkHTML_Editor_Engine__vepv *vepv;
++   }
++   POA_GNOME_GtkHTML_Editor_Engine;
++   extern void POA_GNOME_GtkHTML_Editor_Engine__init(PortableServer_Servant
++						     servant,
++						     CORBA_Environment * ev);
++   extern void POA_GNOME_GtkHTML_Editor_Engine__fini(PortableServer_Servant
++						     servant,
++						     CORBA_Environment * ev);
++#endif				/* _defined_POA_GNOME_GtkHTML_Editor_Engine */
++
++/** skel prototypes **/
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Listener_event
++      (POA_GNOME_GtkHTML_Editor_Listener * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       CORBA_any * (*_impl_event) (PortableServer_Servant _servant,
++				   const CORBA_char * name,
++				   const CORBA_any * arg,
++				   CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine__get_listener
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       GNOME_GtkHTML_Editor_Listener(*_impl__get_listener)
++       (PortableServer_Servant _servant, CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine__set_listener
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       void (*_impl__set_listener) (PortableServer_Servant _servant,
++				    const GNOME_GtkHTML_Editor_Listener value,
++				    CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_runCommand
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       CORBA_boolean(*_impl_runCommand) (PortableServer_Servant _servant,
++					 const CORBA_char * command,
++					 CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_getParagraphData
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       CORBA_string(*_impl_getParagraphData) (PortableServer_Servant _servant,
++					      const CORBA_char * key,
++					      CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_setParagraphData
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       void (*_impl_setParagraphData) (PortableServer_Servant _servant,
++				       const CORBA_char * key,
++				       const CORBA_char * value,
++				       CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_setObjectDataByType
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       void (*_impl_setObjectDataByType) (PortableServer_Servant _servant,
++					  const CORBA_char * type_name,
++					  const CORBA_char * key,
++					  const CORBA_char * data,
++					  CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_searchByData
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       CORBA_boolean(*_impl_searchByData) (PortableServer_Servant _servant,
++					   const CORBA_long level,
++					   const CORBA_char * klass,
++					   const CORBA_char * key,
++					   const CORBA_char * value,
++					   CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_isParagraphEmpty
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       CORBA_boolean(*_impl_isParagraphEmpty) (PortableServer_Servant
++					       _servant,
++					       CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_isPreviousParagraphEmpty
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       CORBA_boolean(*_impl_isPreviousParagraphEmpty) (PortableServer_Servant
++						       _servant,
++						       CORBA_Environment *
++						       ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_insertHTML
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       void (*_impl_insertHTML) (PortableServer_Servant _servant,
++				 const CORBA_char * html,
++				 CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_freeze
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       void (*_impl_freeze) (PortableServer_Servant _servant,
++			     CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_thaw
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       void (*_impl_thaw) (PortableServer_Servant _servant,
++			   CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_undoBegin
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       void (*_impl_undoBegin) (PortableServer_Servant _servant,
++				const CORBA_char * undo_name,
++				const CORBA_char * redo_name,
++				CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_undoEnd
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       void (*_impl_undoEnd) (PortableServer_Servant _servant,
++			      CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_ignoreWord
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       void (*_impl_ignoreWord) (PortableServer_Servant _servant,
++				 const CORBA_char * word,
++				 CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_dropUndo
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       void (*_impl_dropUndo) (PortableServer_Servant _servant,
++			       CORBA_Environment * ev));
++   void
++      _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_hasUndo
++      (POA_GNOME_GtkHTML_Editor_Engine * _ORBIT_servant,
++       gpointer _ORBIT_retval, gpointer * _ORBIT_args, CORBA_Context ctx,
++       CORBA_Environment * ev,
++       CORBA_boolean(*_impl_hasUndo) (PortableServer_Servant _servant,
++				      CORBA_Environment * ev));
++
++/** stub prototypes **/
++#define GNOME_GtkHTML_Editor_Listener_ref Bonobo_Unknown_ref
++#define GNOME_GtkHTML_Editor_Listener_unref Bonobo_Unknown_unref
++#define GNOME_GtkHTML_Editor_Listener_queryInterface Bonobo_Unknown_queryInterface
++   CORBA_any
++      *GNOME_GtkHTML_Editor_Listener_event(GNOME_GtkHTML_Editor_Listener _obj,
++					   const CORBA_char * name,
++					   const CORBA_any * arg,
++					   CORBA_Environment * ev);
++#define GNOME_GtkHTML_Editor_Engine_ref Bonobo_Unknown_ref
++#define GNOME_GtkHTML_Editor_Engine_unref Bonobo_Unknown_unref
++#define GNOME_GtkHTML_Editor_Engine_queryInterface Bonobo_Unknown_queryInterface
++   GNOME_GtkHTML_Editor_Listener
++      GNOME_GtkHTML_Editor_Engine__get_listener(GNOME_GtkHTML_Editor_Engine
++						_obj, CORBA_Environment * ev);
++   void GNOME_GtkHTML_Editor_Engine__set_listener(GNOME_GtkHTML_Editor_Engine
++						  _obj,
++						  const
++						  GNOME_GtkHTML_Editor_Listener
++						  value,
++						  CORBA_Environment * ev);
++   CORBA_boolean
++      GNOME_GtkHTML_Editor_Engine_runCommand(GNOME_GtkHTML_Editor_Engine _obj,
++					     const CORBA_char * command,
++					     CORBA_Environment * ev);
++   CORBA_string
++      GNOME_GtkHTML_Editor_Engine_getParagraphData(GNOME_GtkHTML_Editor_Engine
++						   _obj,
++						   const CORBA_char * key,
++						   CORBA_Environment * ev);
++   void
++      GNOME_GtkHTML_Editor_Engine_setParagraphData(GNOME_GtkHTML_Editor_Engine
++						   _obj,
++						   const CORBA_char * key,
++						   const CORBA_char * value,
++						   CORBA_Environment * ev);
++   void
++      GNOME_GtkHTML_Editor_Engine_setObjectDataByType
++      (GNOME_GtkHTML_Editor_Engine _obj, const CORBA_char * type_name,
++       const CORBA_char * key, const CORBA_char * data,
++       CORBA_Environment * ev);
++   CORBA_boolean
++      GNOME_GtkHTML_Editor_Engine_searchByData(GNOME_GtkHTML_Editor_Engine
++					       _obj, const CORBA_long level,
++					       const CORBA_char * klass,
++					       const CORBA_char * key,
++					       const CORBA_char * value,
++					       CORBA_Environment * ev);
++   CORBA_boolean
++      GNOME_GtkHTML_Editor_Engine_isParagraphEmpty(GNOME_GtkHTML_Editor_Engine
++						   _obj,
++						   CORBA_Environment * ev);
++   CORBA_boolean
++      GNOME_GtkHTML_Editor_Engine_isPreviousParagraphEmpty
++      (GNOME_GtkHTML_Editor_Engine _obj, CORBA_Environment * ev);
++   void GNOME_GtkHTML_Editor_Engine_insertHTML(GNOME_GtkHTML_Editor_Engine
++					       _obj, const CORBA_char * html,
++					       CORBA_Environment * ev);
++   void GNOME_GtkHTML_Editor_Engine_freeze(GNOME_GtkHTML_Editor_Engine _obj,
++					   CORBA_Environment * ev);
++   void GNOME_GtkHTML_Editor_Engine_thaw(GNOME_GtkHTML_Editor_Engine _obj,
++					 CORBA_Environment * ev);
++   void GNOME_GtkHTML_Editor_Engine_undoBegin(GNOME_GtkHTML_Editor_Engine
++					      _obj,
++					      const CORBA_char * undo_name,
++					      const CORBA_char * redo_name,
++					      CORBA_Environment * ev);
++   void GNOME_GtkHTML_Editor_Engine_undoEnd(GNOME_GtkHTML_Editor_Engine _obj,
++					    CORBA_Environment * ev);
++   void GNOME_GtkHTML_Editor_Engine_ignoreWord(GNOME_GtkHTML_Editor_Engine
++					       _obj, const CORBA_char * word,
++					       CORBA_Environment * ev);
++   void GNOME_GtkHTML_Editor_Engine_dropUndo(GNOME_GtkHTML_Editor_Engine _obj,
++					     CORBA_Environment * ev);
++   CORBA_boolean
++      GNOME_GtkHTML_Editor_Engine_hasUndo(GNOME_GtkHTML_Editor_Engine _obj,
++					  CORBA_Environment * ev);
++
++/** more internals **/
++#if !defined(MARSHAL_IMPL_GNOME_GtkHTML_Editor_URLRequestEvent_0)
++#define MARSHAL_IMPL_GNOME_GtkHTML_Editor_URLRequestEvent_0 'E'
++#define MARSHAL_IMPL_GNOME_GtkHTML_Editor_URLRequestEvent_1 'd'
++#define MARSHAL_IMPL_GNOME_GtkHTML_Editor_URLRequestEvent_2 'i'
++#define MARSHAL_IMPL_GNOME_GtkHTML_Editor_URLRequestEvent_3 't'
++#define MARSHAL_IMPL_GNOME_GtkHTML_Editor_URLRequestEvent_4 'o'
++#define MARSHAL_IMPL_GNOME_GtkHTML_Editor_URLRequestEvent_5 'r'
++#endif
++#include <orbit/orb-core/orbit-interface.h>
++
++#ifdef ORBIT_IDL_C_IMODULE
++   static
++#else
++   extern
++#endif
++   ORBit_IInterface GNOME_GtkHTML_Editor_Listener__iinterface;
++#define GNOME_GtkHTML_Editor_Listener_IMETHODS_LEN 1
++#ifdef ORBIT_IDL_C_IMODULE
++   static
++#else
++   extern
++#endif
++   ORBit_IMethod
++      GNOME_GtkHTML_Editor_Listener__imethods
++      [GNOME_GtkHTML_Editor_Listener_IMETHODS_LEN];
++#ifdef ORBIT_IDL_C_IMODULE
++   static
++#else
++   extern
++#endif
++   ORBit_IInterface GNOME_GtkHTML_Editor_Engine__iinterface;
++#define GNOME_GtkHTML_Editor_Engine_IMETHODS_LEN 17
++#ifdef ORBIT_IDL_C_IMODULE
++   static
++#else
++   extern
++#endif
++   ORBit_IMethod
++      GNOME_GtkHTML_Editor_Engine__imethods
++      [GNOME_GtkHTML_Editor_Engine_IMETHODS_LEN];
++#ifdef __cplusplus
++}
++#endif				/* __cplusplus */
++
++#ifndef EXCLUDE_ORBIT_H
++#include <orbit/orbit.h>
++
++#endif				/* EXCLUDE_ORBIT_H */
++#endif
++#undef ORBIT_IDL_SERIAL
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/gtkhtml_editor.c vim/src/gtkhtml_editor.c
+--- vimcopy/src/gtkhtml_editor.c	Wed Dec 31 18:00:00 1969
++++ vim/src/gtkhtml_editor.c	Sat Jul 26 13:16:47 2003
+@@ -0,0 +1,189 @@
++#include <bonobo.h>
++
++#include "gtkhtml_editor.h"
++
++static BonoboObjectClass *engine_parent_class;
++
++inline static EditorEngine *
++gtkhtml_editor_engine_from_servant (PortableServer_Servant servant)
++{
++	return EDITOR_ENGINE (bonobo_object_from_servant (servant));
++}
++
++static CORBA_char *
++impl_get_paragraph_data (PortableServer_Servant servant, const CORBA_char * key, CORBA_Environment * ev)
++{
++	EditorEngine *e = gtkhtml_editor_engine_from_servant (servant);
++}
++
++static void
++impl_set_paragraph_data (PortableServer_Servant servant,
++			 const CORBA_char * key, const CORBA_char * value,
++			 CORBA_Environment * ev)
++{
++	EditorEngine *e = gtkhtml_editor_engine_from_servant (servant);
++}
++
++static void
++impl_set_object_data_by_type (PortableServer_Servant servant,
++			 const CORBA_char * type_name, const CORBA_char * key, const CORBA_char * value,
++			 CORBA_Environment * ev)
++{
++	EditorEngine *e = gtkhtml_editor_engine_from_servant (servant);
++}
++
++static void
++impl_set_listener (PortableServer_Servant servant, const GNOME_GtkHTML_Editor_Listener value, CORBA_Environment * ev)
++{
++	EditorEngine *e = gtkhtml_editor_engine_from_servant (servant);
++
++	bonobo_object_release_unref (e->listener, NULL);
++	e->listener        = bonobo_object_dup_ref (value, NULL);
++}
++
++static GNOME_GtkHTML_Editor_Listener
++impl_get_listener (PortableServer_Servant servant, CORBA_Environment * ev)
++{
++	return gtkhtml_editor_engine_from_servant (servant)->listener;
++}
++
++static CORBA_boolean
++impl_run_command (PortableServer_Servant servant, const CORBA_char * command, CORBA_Environment * ev)
++{
++	EditorEngine *e = gtkhtml_editor_engine_from_servant (servant);
++	printf ("command: %s\n", command);
++	return CORBA_TRUE;
++}
++
++static CORBA_boolean
++impl_is_paragraph_empty (PortableServer_Servant servant, CORBA_Environment * ev)
++{
++	EditorEngine *e = gtkhtml_editor_engine_from_servant (servant);
++	return CORBA_FALSE;
++}
++
++static CORBA_boolean
++impl_is_previous_paragraph_empty (PortableServer_Servant servant, CORBA_Environment * ev)
++{
++	EditorEngine *e = gtkhtml_editor_engine_from_servant (servant);
++	return CORBA_FALSE;
++}
++
++static void
++impl_insert_html (PortableServer_Servant servant, const CORBA_char * html, CORBA_Environment * ev)
++{
++	printf ("impl_insert_html\n");
++}
++
++static CORBA_boolean
++impl_search_by_data (PortableServer_Servant servant, const CORBA_long level, const CORBA_char * klass,
++		     const CORBA_char * key, const CORBA_char * value, CORBA_Environment * ev)
++{
++	return FALSE;
++}
++
++static void
++impl_freeze (PortableServer_Servant servant, CORBA_Environment * ev)
++{
++}
++
++static void
++impl_thaw (PortableServer_Servant servant, CORBA_Environment * ev)
++{
++}
++
++static void
++impl_undo_begin (PortableServer_Servant servant, const CORBA_char * undo_name, const CORBA_char * redo_name,
++		 CORBA_Environment * ev)
++{
++}
++
++static void
++impl_undo_end (PortableServer_Servant servant, CORBA_Environment * ev)
++{
++}
++
++static void
++impl_ignore_word (PortableServer_Servant servant, const CORBA_char * word, CORBA_Environment * ev)
++{
++	EditorEngine *e = gtkhtml_editor_engine_from_servant (servant);
++}
++
++static CORBA_boolean
++impl_has_undo (PortableServer_Servant servant, CORBA_Environment * ev)
++{
++	EditorEngine *e = gtkhtml_editor_engine_from_servant (servant);
++
++	printf ("hasUndo\n");
++	return CORBA_FALSE;
++}
++
++static void
++impl_drop_undo (PortableServer_Servant servant, CORBA_Environment * ev)
++{
++	EditorEngine *e = gtkhtml_editor_engine_from_servant (servant);
++
++	printf ("dropUndo\n");
++}
++
++static void
++engine_object_finalize (GObject *object)
++{
++	EditorEngine *e = EDITOR_ENGINE (object);
++
++	bonobo_object_release_unref (e->listener, NULL);
++
++	G_OBJECT_CLASS (engine_parent_class)->finalize (object);
++}
++
++static void
++editor_engine_init (GObject *object)
++{
++	EditorEngine *e = EDITOR_ENGINE (object);
++
++	e->listener = CORBA_OBJECT_NIL;
++}
++
++static void
++editor_engine_class_init (EditorEngineClass *klass)
++{
++	GObjectClass *object_class = G_OBJECT_CLASS (klass);
++	POA_GNOME_GtkHTML_Editor_Engine__epv *epv = &klass->epv;
++
++	engine_parent_class = g_type_class_peek_parent (klass);
++	object_class->finalize = engine_object_finalize;
++
++	epv->_set_listener            = impl_set_listener;
++	epv->_get_listener            = impl_get_listener;
++	epv->setParagraphData         = impl_set_paragraph_data;
++	epv->getParagraphData         = impl_get_paragraph_data;
++	epv->setObjectDataByType      = impl_set_object_data_by_type;
++	epv->runCommand               = impl_run_command;
++	epv->isParagraphEmpty         = impl_is_paragraph_empty;
++	epv->isPreviousParagraphEmpty = impl_is_previous_paragraph_empty;
++	epv->searchByData             = impl_search_by_data;
++	epv->insertHTML               = impl_insert_html;
++	epv->freeze                   = impl_freeze;
++	epv->thaw                     = impl_thaw;
++	epv->undoBegin                = impl_undo_begin;
++	epv->undoEnd                  = impl_undo_end;
++	epv->ignoreWord               = impl_ignore_word;
++	epv->hasUndo                  = impl_has_undo;
++	epv->dropUndo                 = impl_drop_undo;
++}
++
++BONOBO_TYPE_FUNC_FULL (
++	EditorEngine,                  /* Glib class name */
++	GNOME_GtkHTML_Editor_Engine,   /* CORBA interface name */
++	BONOBO_TYPE_OBJECT,            /* parent type */
++	editor_engine);                /* local prefix ie. 'echo'_class_init */
++
++EditorEngine *
++editor_engine_new (void)
++{
++	EditorEngine *ee;
++
++	ee = g_object_new (EDITOR_ENGINE_TYPE, NULL);
++
++	return ee;
++}
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/gtkhtml_editor.h vim/src/gtkhtml_editor.h
+--- vimcopy/src/gtkhtml_editor.h	Wed Dec 31 18:00:00 1969
++++ vim/src/gtkhtml_editor.h	Sat Jul 26 13:16:47 2003
+@@ -0,0 +1,34 @@
++#ifndef GTKHTML_ENGINE_H_
++#define GTKHTML_ENGINE_H_
++
++G_BEGIN_DECLS
++
++typedef struct _EditorEngine EditorEngine;
++
++#include <gtk/gtktypeutils.h>
++#include <bonobo/bonobo-object.h>
++#include "gtkhtml.h"
++
++#define EDITOR_ENGINE_TYPE        (editor_engine_get_type ())
++#define EDITOR_ENGINE(o)          (GTK_CHECK_CAST ((o), EDITOR_ENGINE_TYPE, EditorEngine))
++#define EDITOR_ENGINE_CLASS(k)    (GTK_CHECK_CLASS_CAST((k), EDITOR_ENGINE_TYPE, EditorEngineClass))
++#define IS_EDITOR_ENGINE(o)       (GTK_CHECK_TYPE ((o), EDITOR_ENGINE_TYPE))
++#define IS_EDITOR_ENGINE_CLASS(k) (GTK_CHECK_CLASS_TYPE ((k), EDITOR_ENGINE_TYPE))
++
++struct _EditorEngine {
++	BonoboObject parent;
++	GNOME_GtkHTML_Editor_Listener listener;
++};
++
++typedef struct {
++	BonoboObjectClass parent_class;
++	POA_GNOME_GtkHTML_Editor_Engine__epv epv;
++} EditorEngineClass;
++
++GtkType                               editor_engine_get_type   (void);
++EditorEngine                         *editor_engine_new        (void);
++POA_GNOME_GtkHTML_Editor_Engine__epv *editor_engine_get_epv    (void);
++
++G_END_DECLS
++
++#endif /* GTKHTML_ENGINE_H_ */
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/gtkhtml_editor_common.c vim/src/gtkhtml_editor_common.c
+--- vimcopy/src/gtkhtml_editor_common.c	Wed Dec 31 18:00:00 1969
++++ vim/src/gtkhtml_editor_common.c	Sat Jul 26 13:16:47 2003
+@@ -0,0 +1,306 @@
++/*
++ * This file was generated by orbit-idl-2 - DO NOT EDIT!
++ */
++
++#include <string.h>
++#define ORBIT2_STUBS_API
++#define ORBIT_IDL_C_COMMON
++#define Editor_COMMON
++#include "gtkhtml.h"
++
++static const CORBA_unsigned_long ORBit_zero_int = 0;
++
++#if ( (TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_0 == 'E') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_1 == 'd') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_2 == 'i') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_3 == 't') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_4 == 'o') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_Listener_5 == 'r') \
++) && !defined(TC_DEF_TC_GNOME_GtkHTML_Editor_Listener)
++#define TC_DEF_TC_GNOME_GtkHTML_Editor_Listener 1
++#ifdef ORBIT_IDL_C_IMODULE_Editor
++static
++#endif
++const struct CORBA_TypeCode_struct TC_GNOME_GtkHTML_Editor_Listener_struct = {
++   {&ORBit_TypeCode_epv, ORBIT_REFCOUNT_STATIC},
++   CORBA_tk_objref,
++   0,
++   0,
++   ORBIT_ALIGNOF_CORBA_POINTER,
++   0,
++   0,
++   NULL,
++   CORBA_OBJECT_NIL,
++   "Listener",
++   "IDL:GNOME/GtkHTML/Editor/Listener:1.0",
++   NULL,
++   NULL,
++   -1,
++   0,
++   0, 0
++};
++#endif
++#if ( (TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_0 == 'E') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_1 == 'd') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_2 == 'i') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_3 == 't') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_4 == 'o') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_Engine_5 == 'r') \
++) && !defined(TC_DEF_TC_GNOME_GtkHTML_Editor_Engine)
++#define TC_DEF_TC_GNOME_GtkHTML_Editor_Engine 1
++#ifdef ORBIT_IDL_C_IMODULE_Editor
++static
++#endif
++const struct CORBA_TypeCode_struct TC_GNOME_GtkHTML_Editor_Engine_struct = {
++   {&ORBit_TypeCode_epv, ORBIT_REFCOUNT_STATIC},
++   CORBA_tk_objref,
++   0,
++   0,
++   ORBIT_ALIGNOF_CORBA_POINTER,
++   0,
++   0,
++   NULL,
++   CORBA_OBJECT_NIL,
++   "Engine",
++   "IDL:GNOME/GtkHTML/Editor/Engine:1.0",
++   NULL,
++   NULL,
++   -1,
++   0,
++   0, 0
++};
++#endif
++#if ( (TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_0 == 'E') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_1 == 'd') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_2 == 'i') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_3 == 't') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_4 == 'o') \
++&& (TC_IMPL_TC_GNOME_GtkHTML_Editor_URLRequestEvent_5 == 'r') \
++) && !defined(TC_DEF_TC_GNOME_GtkHTML_Editor_URLRequestEvent)
++#define TC_DEF_TC_GNOME_GtkHTML_Editor_URLRequestEvent 1
++static const char *anon_subnames_array6[] = { "url", "stream" };
++static const CORBA_TypeCode anon_subtypes_array7[] =
++   { (CORBA_TypeCode) & TC_CORBA_string_struct,
++      (CORBA_TypeCode) & TC_Bonobo_Stream_struct };
++
++#ifdef ORBIT_IDL_C_IMODULE_Editor
++static
++#endif
++const struct CORBA_TypeCode_struct
++   TC_GNOME_GtkHTML_Editor_URLRequestEvent_struct = {
++   {&ORBit_TypeCode_epv, ORBIT_REFCOUNT_STATIC},
++   CORBA_tk_struct,
++   0,
++   0,
++   ORBIT_ALIGNOF_CORBA_POINTER,
++   0,
++   2,
++   (CORBA_TypeCode *) anon_subtypes_array7,
++   CORBA_OBJECT_NIL,
++   "URLRequestEvent",
++   "IDL:GNOME/GtkHTML/Editor/URLRequestEvent:1.0",
++   (char **) anon_subnames_array6,
++   NULL,
++   -1,
++   0,
++   0, 0
++};
++#endif
++
++#ifndef ORBIT_IDL_C_IMODULE_Editor
++CORBA_unsigned_long GNOME_GtkHTML_Editor_Listener__classid = 0;
++#endif
++
++#ifndef ORBIT_IDL_C_IMODULE_Editor
++CORBA_unsigned_long GNOME_GtkHTML_Editor_Engine__classid = 0;
++#endif
++
++/* Interface type data */
++
++static ORBit_IArg GNOME_GtkHTML_Editor_Listener_event__arginfo[] = {
++   {TC_CORBA_string, ORBit_I_ARG_IN, "name"},
++   {TC_CORBA_any, ORBit_I_ARG_IN, "arg"}
++};
++
++#ifdef ORBIT_IDL_C_IMODULE_Editor
++static
++#endif
++ORBit_IMethod GNOME_GtkHTML_Editor_Listener__imethods[] = {
++   {
++    {2, 2, GNOME_GtkHTML_Editor_Listener_event__arginfo, FALSE},
++    {0, 0, NULL, FALSE},
++    {0, 0, NULL, FALSE},
++    TC_CORBA_any, "event", 5,
++    0}
++};
++static CORBA_string GNOME_GtkHTML_Editor_Listener__base_itypes[] = {
++   "IDL:Bonobo/Unknown:1.0",
++   "IDL:omg.org/CORBA/Object:1.0"
++};
++
++#ifdef ORBIT_IDL_C_IMODULE_Editor
++static
++#endif
++ORBit_IInterface GNOME_GtkHTML_Editor_Listener__iinterface = {
++   TC_GNOME_GtkHTML_Editor_Listener, {1, 1,
++				      GNOME_GtkHTML_Editor_Listener__imethods,
++				      FALSE},
++   {2, 2, GNOME_GtkHTML_Editor_Listener__base_itypes, FALSE}
++};
++
++static ORBit_IArg GNOME_GtkHTML_Editor_Engine__set_listener__arginfo[] = {
++   {TC_GNOME_GtkHTML_Editor_Listener, ORBit_I_ARG_IN, "value"}
++};
++static ORBit_IArg GNOME_GtkHTML_Editor_Engine_runCommand__arginfo[] = {
++   {TC_CORBA_string, ORBit_I_ARG_IN, "command"}
++};
++static ORBit_IArg GNOME_GtkHTML_Editor_Engine_getParagraphData__arginfo[] = {
++   {TC_CORBA_string, ORBit_I_ARG_IN, "key"}
++};
++static ORBit_IArg GNOME_GtkHTML_Editor_Engine_setParagraphData__arginfo[] = {
++   {TC_CORBA_string, ORBit_I_ARG_IN, "key"},
++   {TC_CORBA_string, ORBit_I_ARG_IN, "value"}
++};
++static ORBit_IArg GNOME_GtkHTML_Editor_Engine_setObjectDataByType__arginfo[] = {
++   {TC_CORBA_string, ORBit_I_ARG_IN, "type_name"},
++   {TC_CORBA_string, ORBit_I_ARG_IN, "key"},
++   {TC_CORBA_string, ORBit_I_ARG_IN, "data"}
++};
++static ORBit_IArg GNOME_GtkHTML_Editor_Engine_searchByData__arginfo[] = {
++   {TC_CORBA_long, ORBit_I_ARG_IN | ORBit_I_COMMON_FIXED_SIZE, "level"},
++   {TC_CORBA_string, ORBit_I_ARG_IN, "klass"},
++   {TC_CORBA_string, ORBit_I_ARG_IN, "key"},
++   {TC_CORBA_string, ORBit_I_ARG_IN, "value"}
++};
++static ORBit_IArg GNOME_GtkHTML_Editor_Engine_insertHTML__arginfo[] = {
++   {TC_CORBA_string, ORBit_I_ARG_IN, "html"}
++};
++static ORBit_IArg GNOME_GtkHTML_Editor_Engine_undoBegin__arginfo[] = {
++   {TC_CORBA_string, ORBit_I_ARG_IN, "undo_name"},
++   {TC_CORBA_string, ORBit_I_ARG_IN, "redo_name"}
++};
++static ORBit_IArg GNOME_GtkHTML_Editor_Engine_ignoreWord__arginfo[] = {
++   {TC_CORBA_string, ORBit_I_ARG_IN, "word"}
++};
++
++#ifdef ORBIT_IDL_C_IMODULE_Editor
++static
++#endif
++ORBit_IMethod GNOME_GtkHTML_Editor_Engine__imethods[] = {
++   {
++    {0, 0, NULL, FALSE},
++    {0, 0, NULL, FALSE},
++    {0, 0, NULL, FALSE},
++    TC_GNOME_GtkHTML_Editor_Listener, "_get_listener", 13,
++    0}
++   , {
++      {1, 1, GNOME_GtkHTML_Editor_Engine__set_listener__arginfo, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_void, "_set_listener", 13,
++      0}
++   , {
++      {1, 1, GNOME_GtkHTML_Editor_Engine_runCommand__arginfo, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_CORBA_boolean, "runCommand", 10,
++      0 | ORBit_I_COMMON_FIXED_SIZE}
++   , {
++      {1, 1, GNOME_GtkHTML_Editor_Engine_getParagraphData__arginfo, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_CORBA_string, "getParagraphData", 16,
++      0}
++   , {
++      {2, 2, GNOME_GtkHTML_Editor_Engine_setParagraphData__arginfo, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_void, "setParagraphData", 16,
++      0}
++   , {
++      {3, 3, GNOME_GtkHTML_Editor_Engine_setObjectDataByType__arginfo, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_void, "setObjectDataByType", 19,
++      0}
++   , {
++      {4, 4, GNOME_GtkHTML_Editor_Engine_searchByData__arginfo, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_CORBA_boolean, "searchByData", 12,
++      0 | ORBit_I_COMMON_FIXED_SIZE}
++   , {
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_CORBA_boolean, "isParagraphEmpty", 16,
++      0 | ORBit_I_COMMON_FIXED_SIZE}
++   , {
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_CORBA_boolean, "isPreviousParagraphEmpty", 24,
++      0 | ORBit_I_COMMON_FIXED_SIZE}
++   , {
++      {1, 1, GNOME_GtkHTML_Editor_Engine_insertHTML__arginfo, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_void, "insertHTML", 10,
++      0}
++   , {
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_void, "freeze", 6,
++      0}
++   , {
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_void, "thaw", 4,
++      0}
++   , {
++      {2, 2, GNOME_GtkHTML_Editor_Engine_undoBegin__arginfo, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_void, "undoBegin", 9,
++      0}
++   , {
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_void, "undoEnd", 7,
++      0}
++   , {
++      {1, 1, GNOME_GtkHTML_Editor_Engine_ignoreWord__arginfo, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_void, "ignoreWord", 10,
++      0}
++   , {
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_void, "dropUndo", 8,
++      0}
++   , {
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      {0, 0, NULL, FALSE},
++      TC_CORBA_boolean, "hasUndo", 7,
++      0 | ORBit_I_COMMON_FIXED_SIZE}
++};
++static CORBA_string GNOME_GtkHTML_Editor_Engine__base_itypes[] = {
++   "IDL:Bonobo/Unknown:1.0",
++   "IDL:omg.org/CORBA/Object:1.0"
++};
++
++#ifdef ORBIT_IDL_C_IMODULE_Editor
++static
++#endif
++ORBit_IInterface GNOME_GtkHTML_Editor_Engine__iinterface = {
++   TC_GNOME_GtkHTML_Editor_Engine, {17, 17,
++				    GNOME_GtkHTML_Editor_Engine__imethods,
++				    FALSE},
++   {2, 2, GNOME_GtkHTML_Editor_Engine__base_itypes, FALSE}
++};
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/gtkhtml_editor_skels.c vim/src/gtkhtml_editor_skels.c
+--- vimcopy/src/gtkhtml_editor_skels.c	Wed Dec 31 18:00:00 1969
++++ vim/src/gtkhtml_editor_skels.c	Sat Jul 26 13:16:47 2003
+@@ -0,0 +1,658 @@
++/*
++ * This file was generated by orbit-idl-2 - DO NOT EDIT!
++ */
++
++#include <string.h>
++#define ORBIT2_STUBS_API
++#include "gtkhtml.h"
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Listener_event
++   (POA_GNOME_GtkHTML_Editor_Listener * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    CORBA_any * (*_impl_event) (PortableServer_Servant _servant,
++				const CORBA_char * name,
++				const CORBA_any * arg,
++				CORBA_Environment * ev))
++{
++   *(CORBA_any * *)_o_retval =
++      _impl_event(_o_servant, *(const CORBA_char * *) _o_args[0],
++		  (const CORBA_any *) _o_args[1], _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine__get_listener
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    GNOME_GtkHTML_Editor_Listener(*_impl__get_listener)
++    (PortableServer_Servant _servant, CORBA_Environment * ev))
++{
++   *(GNOME_GtkHTML_Editor_Listener *) _o_retval =
++      _impl__get_listener(_o_servant, _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine__set_listener
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    void (*_impl__set_listener) (PortableServer_Servant _servant,
++				 const GNOME_GtkHTML_Editor_Listener value,
++				 CORBA_Environment * ev))
++{
++   _impl__set_listener(_o_servant,
++		       *(const GNOME_GtkHTML_Editor_Listener *) _o_args[0],
++		       _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_runCommand
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    CORBA_boolean(*_impl_runCommand) (PortableServer_Servant _servant,
++				      const CORBA_char * command,
++				      CORBA_Environment * ev))
++{
++   *(CORBA_boolean *) _o_retval =
++      _impl_runCommand(_o_servant, *(const CORBA_char * *) _o_args[0], _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_getParagraphData
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    CORBA_string(*_impl_getParagraphData) (PortableServer_Servant _servant,
++					   const CORBA_char * key,
++					   CORBA_Environment * ev))
++{
++   *(CORBA_string *) _o_retval =
++      _impl_getParagraphData(_o_servant, *(const CORBA_char * *) _o_args[0],
++			     _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_setParagraphData
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    void (*_impl_setParagraphData) (PortableServer_Servant _servant,
++				    const CORBA_char * key,
++				    const CORBA_char * value,
++				    CORBA_Environment * ev))
++{
++   _impl_setParagraphData(_o_servant, *(const CORBA_char * *) _o_args[0],
++			  *(const CORBA_char * *) _o_args[1], _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_setObjectDataByType
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    void (*_impl_setObjectDataByType) (PortableServer_Servant _servant,
++				       const CORBA_char * type_name,
++				       const CORBA_char * key,
++				       const CORBA_char * data,
++				       CORBA_Environment * ev))
++{
++   _impl_setObjectDataByType(_o_servant, *(const CORBA_char * *) _o_args[0],
++			     *(const CORBA_char * *) _o_args[1],
++			     *(const CORBA_char * *) _o_args[2], _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_searchByData
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    CORBA_boolean(*_impl_searchByData) (PortableServer_Servant _servant,
++					const CORBA_long level,
++					const CORBA_char * klass,
++					const CORBA_char * key,
++					const CORBA_char * value,
++					CORBA_Environment * ev))
++{
++   *(CORBA_boolean *) _o_retval =
++      _impl_searchByData(_o_servant, *(const CORBA_long *) _o_args[0],
++			 *(const CORBA_char * *) _o_args[1],
++			 *(const CORBA_char * *) _o_args[2],
++			 *(const CORBA_char * *) _o_args[3], _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_isParagraphEmpty
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    CORBA_boolean(*_impl_isParagraphEmpty) (PortableServer_Servant _servant,
++					    CORBA_Environment * ev))
++{
++   *(CORBA_boolean *) _o_retval = _impl_isParagraphEmpty(_o_servant, _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_isPreviousParagraphEmpty
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    CORBA_boolean(*_impl_isPreviousParagraphEmpty) (PortableServer_Servant
++						    _servant,
++						    CORBA_Environment * ev))
++{
++   *(CORBA_boolean *) _o_retval =
++      _impl_isPreviousParagraphEmpty(_o_servant, _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_insertHTML
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    void (*_impl_insertHTML) (PortableServer_Servant _servant,
++			      const CORBA_char * html,
++			      CORBA_Environment * ev))
++{
++   _impl_insertHTML(_o_servant, *(const CORBA_char * *) _o_args[0], _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_freeze
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    void (*_impl_freeze) (PortableServer_Servant _servant,
++			  CORBA_Environment * ev))
++{
++   _impl_freeze(_o_servant, _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_thaw
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    void (*_impl_thaw) (PortableServer_Servant _servant,
++			CORBA_Environment * ev))
++{
++   _impl_thaw(_o_servant, _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_undoBegin
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    void (*_impl_undoBegin) (PortableServer_Servant _servant,
++			     const CORBA_char * undo_name,
++			     const CORBA_char * redo_name,
++			     CORBA_Environment * ev))
++{
++   _impl_undoBegin(_o_servant, *(const CORBA_char * *) _o_args[0],
++		   *(const CORBA_char * *) _o_args[1], _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_undoEnd
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    void (*_impl_undoEnd) (PortableServer_Servant _servant,
++			   CORBA_Environment * ev))
++{
++   _impl_undoEnd(_o_servant, _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_ignoreWord
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    void (*_impl_ignoreWord) (PortableServer_Servant _servant,
++			      const CORBA_char * word,
++			      CORBA_Environment * ev))
++{
++   _impl_ignoreWord(_o_servant, *(const CORBA_char * *) _o_args[0], _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_dropUndo
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    void (*_impl_dropUndo) (PortableServer_Servant _servant,
++			    CORBA_Environment * ev))
++{
++   _impl_dropUndo(_o_servant, _o_ev);
++}
++
++void
++_ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_hasUndo
++   (POA_GNOME_GtkHTML_Editor_Engine * _o_servant, gpointer _o_retval,
++    gpointer * _o_args, CORBA_Context _o_ctx, CORBA_Environment * _o_ev,
++    CORBA_boolean(*_impl_hasUndo) (PortableServer_Servant _servant,
++				   CORBA_Environment * ev))
++{
++   *(CORBA_boolean *) _o_retval = _impl_hasUndo(_o_servant, _o_ev);
++}
++static ORBitSmallSkeleton
++get_skel_small_GNOME_GtkHTML_Editor_Listener(POA_GNOME_GtkHTML_Editor_Listener
++					     * servant, const char *opname,
++					     gpointer * m_data,
++					     gpointer * impl)
++{
++   switch (opname[0]) {
++     case 'e':
++      if (strcmp((opname + 1), "vent"))
++	 break;
++      *impl =
++	 (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Listener_epv->event;
++      *m_data =
++	 (gpointer) & GNOME_GtkHTML_Editor_Listener__iinterface.methods.
++	 _buffer[0];
++      return (ORBitSmallSkeleton)
++	 _ORBIT_skel_small_GNOME_GtkHTML_Editor_Listener_event;
++      break;
++     case 'q':
++      if (strcmp((opname + 1), "ueryInterface"))
++	 break;
++      *impl = (gpointer) servant->vepv->Bonobo_Unknown_epv->queryInterface;
++      *m_data = (gpointer) & Bonobo_Unknown__iinterface.methods._buffer[2];
++      return (ORBitSmallSkeleton)
++	 _ORBIT_skel_small_Bonobo_Unknown_queryInterface;
++      break;
++     case 'r':
++      if (strcmp((opname + 1), "ef"))
++	 break;
++      *impl = (gpointer) servant->vepv->Bonobo_Unknown_epv->ref;
++      *m_data = (gpointer) & Bonobo_Unknown__iinterface.methods._buffer[0];
++      return (ORBitSmallSkeleton) _ORBIT_skel_small_Bonobo_Unknown_ref;
++      break;
++     case 'u':
++      if (strcmp((opname + 1), "nref"))
++	 break;
++      *impl = (gpointer) servant->vepv->Bonobo_Unknown_epv->unref;
++      *m_data = (gpointer) & Bonobo_Unknown__iinterface.methods._buffer[1];
++      return (ORBitSmallSkeleton) _ORBIT_skel_small_Bonobo_Unknown_unref;
++      break;
++     default:
++      break;
++   }
++   return NULL;
++}
++
++void
++POA_GNOME_GtkHTML_Editor_Listener__init(PortableServer_Servant servant,
++					CORBA_Environment * env)
++{
++   static PortableServer_ClassInfo class_info =
++      { NULL,
++(ORBit_small_impl_finder) & get_skel_small_GNOME_GtkHTML_Editor_Listener,
++	 "IDL:GNOME/GtkHTML/Editor/Listener:1.0",
++	 &GNOME_GtkHTML_Editor_Listener__classid, NULL,
++	 &GNOME_GtkHTML_Editor_Listener__iinterface };
++   POA_GNOME_GtkHTML_Editor_Listener__vepv *fakevepv = NULL;
++
++   if (((PortableServer_ServantBase *) servant)->vepv[0]->finalize == 0) {
++      ((PortableServer_ServantBase *) servant)->vepv[0]->finalize =
++	 POA_GNOME_GtkHTML_Editor_Listener__fini;
++   }
++   PortableServer_ServantBase__init(((PortableServer_ServantBase *) servant),
++				    env);
++   POA_Bonobo_Unknown__init(servant, env);
++   ORBit_classinfo_register(&class_info);
++   ORBIT_SERVANT_SET_CLASSINFO(servant, &class_info);
++
++   if (!class_info.vepvmap) {
++      class_info.vepvmap =
++	 g_new0(ORBit_VepvIdx, GNOME_GtkHTML_Editor_Listener__classid + 1);
++      class_info.vepvmap[Bonobo_Unknown__classid] =
++	 (((char *) &(fakevepv->Bonobo_Unknown_epv)) -
++	  ((char *) (fakevepv))) / sizeof(GFunc);
++      class_info.vepvmap[GNOME_GtkHTML_Editor_Listener__classid] =
++	 (((char *) &(fakevepv->GNOME_GtkHTML_Editor_Listener_epv)) -
++	  ((char *) (fakevepv))) / sizeof(GFunc);
++   }
++}
++
++void
++POA_GNOME_GtkHTML_Editor_Listener__fini(PortableServer_Servant servant,
++					CORBA_Environment * env)
++{
++   POA_Bonobo_Unknown__fini(servant, env);
++   PortableServer_ServantBase__fini(servant, env);
++}
++
++static ORBitSmallSkeleton
++get_skel_small_GNOME_GtkHTML_Editor_Engine(POA_GNOME_GtkHTML_Editor_Engine *
++					   servant, const char *opname,
++					   gpointer * m_data, gpointer * impl)
++{
++   switch (opname[0]) {
++     case '_':
++      switch (opname[1]) {
++	case 'g':
++	 if (strcmp((opname + 2), "et_listener"))
++	    break;
++	 *impl =
++	    (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++	    _get_listener;
++	 *m_data =
++	    (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	    _buffer[0];
++	 return (ORBitSmallSkeleton)
++	    _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine__get_listener;
++	 break;
++	case 's':
++	 if (strcmp((opname + 2), "et_listener"))
++	    break;
++	 *impl =
++	    (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++	    _set_listener;
++	 *m_data =
++	    (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	    _buffer[1];
++	 return (ORBitSmallSkeleton)
++	    _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine__set_listener;
++	 break;
++	default:
++	 break;
++      }
++      break;
++     case 'd':
++      if (strcmp((opname + 1), "ropUndo"))
++	 break;
++      *impl =
++	 (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->dropUndo;
++      *m_data =
++	 (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	 _buffer[15];
++      return (ORBitSmallSkeleton)
++	 _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_dropUndo;
++      break;
++     case 'f':
++      if (strcmp((opname + 1), "reeze"))
++	 break;
++      *impl =
++	 (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->freeze;
++      *m_data =
++	 (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	 _buffer[10];
++      return (ORBitSmallSkeleton)
++	 _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_freeze;
++      break;
++     case 'g':
++      if (strcmp((opname + 1), "etParagraphData"))
++	 break;
++      *impl =
++	 (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++	 getParagraphData;
++      *m_data =
++	 (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	 _buffer[3];
++      return (ORBitSmallSkeleton)
++	 _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_getParagraphData;
++      break;
++     case 'h':
++      if (strcmp((opname + 1), "asUndo"))
++	 break;
++      *impl =
++	 (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->hasUndo;
++      *m_data =
++	 (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	 _buffer[16];
++      return (ORBitSmallSkeleton)
++	 _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_hasUndo;
++      break;
++     case 'i':
++      switch (opname[1]) {
++	case 'g':
++	 if (strcmp((opname + 2), "noreWord"))
++	    break;
++	 *impl =
++	    (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++	    ignoreWord;
++	 *m_data =
++	    (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	    _buffer[14];
++	 return (ORBitSmallSkeleton)
++	    _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_ignoreWord;
++	 break;
++	case 'n':
++	 if (strcmp((opname + 2), "sertHTML"))
++	    break;
++	 *impl =
++	    (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++	    insertHTML;
++	 *m_data =
++	    (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	    _buffer[9];
++	 return (ORBitSmallSkeleton)
++	    _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_insertHTML;
++	 break;
++	case 's':
++	 switch (opname[2]) {
++	   case 'P':
++	    switch (opname[3]) {
++	      case 'a':
++	       if (strcmp((opname + 4), "ragraphEmpty"))
++		  break;
++	       *impl =
++		  (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++		  isParagraphEmpty;
++	       *m_data =
++		  (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.
++		  methods._buffer[7];
++	       return (ORBitSmallSkeleton)
++		  _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_isParagraphEmpty;
++	       break;
++	      case 'r':
++	       if (strcmp((opname + 4), "eviousParagraphEmpty"))
++		  break;
++	       *impl =
++		  (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++		  isPreviousParagraphEmpty;
++	       *m_data =
++		  (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.
++		  methods._buffer[8];
++	       return (ORBitSmallSkeleton)
++		  _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_isPreviousParagraphEmpty;
++	       break;
++	      default:
++	       break;
++	    }
++	    break;
++	   default:
++	    break;
++	 }
++	 break;
++	default:
++	 break;
++      }
++      break;
++     case 'q':
++      if (strcmp((opname + 1), "ueryInterface"))
++	 break;
++      *impl = (gpointer) servant->vepv->Bonobo_Unknown_epv->queryInterface;
++      *m_data = (gpointer) & Bonobo_Unknown__iinterface.methods._buffer[2];
++      return (ORBitSmallSkeleton)
++	 _ORBIT_skel_small_Bonobo_Unknown_queryInterface;
++      break;
++     case 'r':
++      switch (opname[1]) {
++	case 'e':
++	 if (strcmp((opname + 2), "f"))
++	    break;
++	 *impl = (gpointer) servant->vepv->Bonobo_Unknown_epv->ref;
++	 *m_data = (gpointer) & Bonobo_Unknown__iinterface.methods._buffer[0];
++	 return (ORBitSmallSkeleton) _ORBIT_skel_small_Bonobo_Unknown_ref;
++	 break;
++	case 'u':
++	 if (strcmp((opname + 2), "nCommand"))
++	    break;
++	 *impl =
++	    (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++	    runCommand;
++	 *m_data =
++	    (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	    _buffer[2];
++	 return (ORBitSmallSkeleton)
++	    _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_runCommand;
++	 break;
++	default:
++	 break;
++      }
++      break;
++     case 's':
++      switch (opname[1]) {
++	case 'e':
++	 switch (opname[2]) {
++	   case 'a':
++	    if (strcmp((opname + 3), "rchByData"))
++	       break;
++	    *impl =
++	       (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++	       searchByData;
++	    *m_data =
++	       (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	       _buffer[6];
++	    return (ORBitSmallSkeleton)
++	       _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_searchByData;
++	    break;
++	   case 't':
++	    switch (opname[3]) {
++	      case 'O':
++	       if (strcmp((opname + 4), "bjectDataByType"))
++		  break;
++	       *impl =
++		  (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++		  setObjectDataByType;
++	       *m_data =
++		  (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.
++		  methods._buffer[5];
++	       return (ORBitSmallSkeleton)
++		  _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_setObjectDataByType;
++	       break;
++	      case 'P':
++	       if (strcmp((opname + 4), "aragraphData"))
++		  break;
++	       *impl =
++		  (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->
++		  setParagraphData;
++	       *m_data =
++		  (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.
++		  methods._buffer[4];
++	       return (ORBitSmallSkeleton)
++		  _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_setParagraphData;
++	       break;
++	      default:
++	       break;
++	    }
++	    break;
++	   default:
++	    break;
++	 }
++	 break;
++	default:
++	 break;
++      }
++      break;
++     case 't':
++      if (strcmp((opname + 1), "haw"))
++	 break;
++      *impl = (gpointer) servant->vepv->GNOME_GtkHTML_Editor_Engine_epv->thaw;
++      *m_data =
++	 (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.methods.
++	 _buffer[11];
++      return (ORBitSmallSkeleton)
++	 _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_thaw;
++      break;
++     case 'u':
++      switch (opname[1]) {
++	case 'n':
++	 switch (opname[2]) {
++	   case 'd':
++	    switch (opname[3]) {
++	      case 'o':
++	       switch (opname[4]) {
++		 case 'B':
++		  if (strcmp((opname + 5), "egin"))
++		     break;
++		  *impl =
++		     (gpointer) servant->vepv->
++		     GNOME_GtkHTML_Editor_Engine_epv->undoBegin;
++		  *m_data =
++		     (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.
++		     methods._buffer[12];
++		  return (ORBitSmallSkeleton)
++		     _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_undoBegin;
++		  break;
++		 case 'E':
++		  if (strcmp((opname + 5), "nd"))
++		     break;
++		  *impl =
++		     (gpointer) servant->vepv->
++		     GNOME_GtkHTML_Editor_Engine_epv->undoEnd;
++		  *m_data =
++		     (gpointer) & GNOME_GtkHTML_Editor_Engine__iinterface.
++		     methods._buffer[13];
++		  return (ORBitSmallSkeleton)
++		     _ORBIT_skel_small_GNOME_GtkHTML_Editor_Engine_undoEnd;
++		  break;
++		 default:
++		  break;
++	       }
++	       break;
++	      default:
++	       break;
++	    }
++	    break;
++	   case 'r':
++	    if (strcmp((opname + 3), "ef"))
++	       break;
++	    *impl = (gpointer) servant->vepv->Bonobo_Unknown_epv->unref;
++	    *m_data =
++	       (gpointer) & Bonobo_Unknown__iinterface.methods._buffer[1];
++	    return (ORBitSmallSkeleton)
++	       _ORBIT_skel_small_Bonobo_Unknown_unref;
++	    break;
++	   default:
++	    break;
++	 }
++	 break;
++	default:
++	 break;
++      }
++      break;
++     default:
++      break;
++   }
++   return NULL;
++}
++
++void
++POA_GNOME_GtkHTML_Editor_Engine__init(PortableServer_Servant servant,
++				      CORBA_Environment * env)
++{
++   static PortableServer_ClassInfo class_info =
++      { NULL,
++(ORBit_small_impl_finder) & get_skel_small_GNOME_GtkHTML_Editor_Engine, "IDL:GNOME/GtkHTML/Editor/Engine:1.0",
++	 &GNOME_GtkHTML_Editor_Engine__classid, NULL,
++	 &GNOME_GtkHTML_Editor_Engine__iinterface };
++   POA_GNOME_GtkHTML_Editor_Engine__vepv *fakevepv = NULL;
++
++   if (((PortableServer_ServantBase *) servant)->vepv[0]->finalize == 0) {
++      ((PortableServer_ServantBase *) servant)->vepv[0]->finalize =
++	 POA_GNOME_GtkHTML_Editor_Engine__fini;
++   }
++   PortableServer_ServantBase__init(((PortableServer_ServantBase *) servant),
++				    env);
++   POA_Bonobo_Unknown__init(servant, env);
++   ORBit_classinfo_register(&class_info);
++   ORBIT_SERVANT_SET_CLASSINFO(servant, &class_info);
++
++   if (!class_info.vepvmap) {
++      class_info.vepvmap =
++	 g_new0(ORBit_VepvIdx, GNOME_GtkHTML_Editor_Engine__classid + 1);
++      class_info.vepvmap[Bonobo_Unknown__classid] =
++	 (((char *) &(fakevepv->Bonobo_Unknown_epv)) -
++	  ((char *) (fakevepv))) / sizeof(GFunc);
++      class_info.vepvmap[GNOME_GtkHTML_Editor_Engine__classid] =
++	 (((char *) &(fakevepv->GNOME_GtkHTML_Editor_Engine_epv)) -
++	  ((char *) (fakevepv))) / sizeof(GFunc);
++   }
++}
++
++void
++POA_GNOME_GtkHTML_Editor_Engine__fini(PortableServer_Servant servant,
++				      CORBA_Environment * env)
++{
++   POA_Bonobo_Unknown__fini(servant, env);
++   PortableServer_ServantBase__fini(servant, env);
++}
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/gtkhtml_editor_stubs.c vim/src/gtkhtml_editor_stubs.c
+--- vimcopy/src/gtkhtml_editor_stubs.c	Wed Dec 31 18:00:00 1969
++++ vim/src/gtkhtml_editor_stubs.c	Sat Jul 26 13:16:47 2003
+@@ -0,0 +1,496 @@
++/*
++ * This file was generated by orbit-idl-2 - DO NOT EDIT!
++ */
++
++#include <string.h>
++#define ORBIT2_STUBS_API
++#include "gtkhtml.h"
++
++CORBA_any *
++GNOME_GtkHTML_Editor_Listener_event(GNOME_GtkHTML_Editor_Listener _obj,
++				    const CORBA_char * name,
++				    const CORBA_any * arg,
++				    CORBA_Environment * ev)
++{
++   CORBA_any *_ORBIT_retval;
++   POA_GNOME_GtkHTML_Editor_Listener__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Listener__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Listener__epv *) ORBIT_STUB_GetEpv(_obj,
++								     GNOME_GtkHTML_Editor_Listener__classid))->
++       event) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_retval =
++	 _ORBIT_epv->event(ORBIT_STUB_GetServant(_obj), name, arg, ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      gpointer _args[2];
++
++      _args[0] = (gpointer) & name;
++      _args[1] = (gpointer) arg;
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Listener__iinterface.
++				methods, 0, &_ORBIT_retval, _args, NULL, ev);
++
++   }
++   return _ORBIT_retval;
++}
++
++GNOME_GtkHTML_Editor_Listener
++GNOME_GtkHTML_Editor_Engine__get_listener(GNOME_GtkHTML_Editor_Engine _obj,
++					  CORBA_Environment * ev)
++{
++   GNOME_GtkHTML_Editor_Listener _ORBIT_retval;
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       _get_listener) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_retval =
++	 _ORBIT_epv->_get_listener(ORBIT_STUB_GetServant(_obj), ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 0, &_ORBIT_retval, NULL, NULL, ev);
++
++   }
++   return _ORBIT_retval;
++}
++
++void
++GNOME_GtkHTML_Editor_Engine__set_listener(GNOME_GtkHTML_Editor_Engine _obj,
++					  const GNOME_GtkHTML_Editor_Listener
++					  value, CORBA_Environment * ev)
++{
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       _set_listener) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_epv->_set_listener(ORBIT_STUB_GetServant(_obj), value, ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      gpointer _args[1];
++
++      _args[0] = (gpointer) & value;
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 1, NULL, _args, NULL, ev);
++
++   }
++}
++CORBA_boolean
++GNOME_GtkHTML_Editor_Engine_runCommand(GNOME_GtkHTML_Editor_Engine _obj,
++				       const CORBA_char * command,
++				       CORBA_Environment * ev)
++{
++   CORBA_boolean _ORBIT_retval;
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       runCommand) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_retval =
++	 _ORBIT_epv->runCommand(ORBIT_STUB_GetServant(_obj), command, ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      gpointer _args[1];
++
++      _args[0] = (gpointer) & command;
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 2, &_ORBIT_retval, _args, NULL, ev);
++
++   }
++   return _ORBIT_retval;
++}
++
++CORBA_string
++GNOME_GtkHTML_Editor_Engine_getParagraphData(GNOME_GtkHTML_Editor_Engine _obj,
++					     const CORBA_char * key,
++					     CORBA_Environment * ev)
++{
++   CORBA_string _ORBIT_retval;
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       getParagraphData) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_retval =
++	 _ORBIT_epv->getParagraphData(ORBIT_STUB_GetServant(_obj), key, ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      gpointer _args[1];
++
++      _args[0] = (gpointer) & key;
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 3, &_ORBIT_retval, _args, NULL, ev);
++
++   }
++   return _ORBIT_retval;
++}
++
++void
++GNOME_GtkHTML_Editor_Engine_setParagraphData(GNOME_GtkHTML_Editor_Engine _obj,
++					     const CORBA_char * key,
++					     const CORBA_char * value,
++					     CORBA_Environment * ev)
++{
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       setParagraphData) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_epv->setParagraphData(ORBIT_STUB_GetServant(_obj), key, value,
++				   ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      gpointer _args[2];
++
++      _args[0] = (gpointer) & key;
++      _args[1] = (gpointer) & value;
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 4, NULL, _args, NULL, ev);
++
++   }
++}
++void
++GNOME_GtkHTML_Editor_Engine_setObjectDataByType(GNOME_GtkHTML_Editor_Engine
++						_obj,
++						const CORBA_char * type_name,
++						const CORBA_char * key,
++						const CORBA_char * data,
++						CORBA_Environment * ev)
++{
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       setObjectDataByType) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_epv->setObjectDataByType(ORBIT_STUB_GetServant(_obj), type_name,
++				      key, data, ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      gpointer _args[3];
++
++      _args[0] = (gpointer) & type_name;
++      _args[1] = (gpointer) & key;
++      _args[2] = (gpointer) & data;
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 5, NULL, _args, NULL, ev);
++
++   }
++}
++CORBA_boolean
++GNOME_GtkHTML_Editor_Engine_searchByData(GNOME_GtkHTML_Editor_Engine _obj,
++					 const CORBA_long level,
++					 const CORBA_char * klass,
++					 const CORBA_char * key,
++					 const CORBA_char * value,
++					 CORBA_Environment * ev)
++{
++   CORBA_boolean _ORBIT_retval;
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       searchByData) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_retval =
++	 _ORBIT_epv->searchByData(ORBIT_STUB_GetServant(_obj), level, klass,
++				  key, value, ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      gpointer _args[4];
++
++      _args[0] = (gpointer) & level;
++      _args[1] = (gpointer) & klass;
++      _args[2] = (gpointer) & key;
++      _args[3] = (gpointer) & value;
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 6, &_ORBIT_retval, _args, NULL, ev);
++
++   }
++   return _ORBIT_retval;
++}
++
++CORBA_boolean
++GNOME_GtkHTML_Editor_Engine_isParagraphEmpty(GNOME_GtkHTML_Editor_Engine _obj,
++					     CORBA_Environment * ev)
++{
++   CORBA_boolean _ORBIT_retval;
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       isParagraphEmpty) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_retval =
++	 _ORBIT_epv->isParagraphEmpty(ORBIT_STUB_GetServant(_obj), ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 7, &_ORBIT_retval, NULL, NULL, ev);
++
++   }
++   return _ORBIT_retval;
++}
++
++CORBA_boolean
++GNOME_GtkHTML_Editor_Engine_isPreviousParagraphEmpty
++   (GNOME_GtkHTML_Editor_Engine _obj, CORBA_Environment * ev)
++{
++   CORBA_boolean _ORBIT_retval;
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       isPreviousParagraphEmpty) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_retval =
++	 _ORBIT_epv->isPreviousParagraphEmpty(ORBIT_STUB_GetServant(_obj),
++					      ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 8, &_ORBIT_retval, NULL, NULL, ev);
++
++   }
++   return _ORBIT_retval;
++}
++
++void
++GNOME_GtkHTML_Editor_Engine_insertHTML(GNOME_GtkHTML_Editor_Engine _obj,
++				       const CORBA_char * html,
++				       CORBA_Environment * ev)
++{
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       insertHTML) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_epv->insertHTML(ORBIT_STUB_GetServant(_obj), html, ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      gpointer _args[1];
++
++      _args[0] = (gpointer) & html;
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 9, NULL, _args, NULL, ev);
++
++   }
++}
++void
++GNOME_GtkHTML_Editor_Engine_freeze(GNOME_GtkHTML_Editor_Engine _obj,
++				   CORBA_Environment * ev)
++{
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       freeze) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_epv->freeze(ORBIT_STUB_GetServant(_obj), ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 10, NULL, NULL, NULL, ev);
++
++   }
++}
++void
++GNOME_GtkHTML_Editor_Engine_thaw(GNOME_GtkHTML_Editor_Engine _obj,
++				 CORBA_Environment * ev)
++{
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       thaw) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_epv->thaw(ORBIT_STUB_GetServant(_obj), ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 11, NULL, NULL, NULL, ev);
++
++   }
++}
++void
++GNOME_GtkHTML_Editor_Engine_undoBegin(GNOME_GtkHTML_Editor_Engine _obj,
++				      const CORBA_char * undo_name,
++				      const CORBA_char * redo_name,
++				      CORBA_Environment * ev)
++{
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       undoBegin) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_epv->undoBegin(ORBIT_STUB_GetServant(_obj), undo_name, redo_name,
++			    ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      gpointer _args[2];
++
++      _args[0] = (gpointer) & undo_name;
++      _args[1] = (gpointer) & redo_name;
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 12, NULL, _args, NULL, ev);
++
++   }
++}
++void
++GNOME_GtkHTML_Editor_Engine_undoEnd(GNOME_GtkHTML_Editor_Engine _obj,
++				    CORBA_Environment * ev)
++{
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       undoEnd) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_epv->undoEnd(ORBIT_STUB_GetServant(_obj), ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 13, NULL, NULL, NULL, ev);
++
++   }
++}
++void
++GNOME_GtkHTML_Editor_Engine_ignoreWord(GNOME_GtkHTML_Editor_Engine _obj,
++				       const CORBA_char * word,
++				       CORBA_Environment * ev)
++{
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       ignoreWord) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_epv->ignoreWord(ORBIT_STUB_GetServant(_obj), word, ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      gpointer _args[1];
++
++      _args[0] = (gpointer) & word;
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 14, NULL, _args, NULL, ev);
++
++   }
++}
++void
++GNOME_GtkHTML_Editor_Engine_dropUndo(GNOME_GtkHTML_Editor_Engine _obj,
++				     CORBA_Environment * ev)
++{
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       dropUndo) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_epv->dropUndo(ORBIT_STUB_GetServant(_obj), ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 15, NULL, NULL, NULL, ev);
++
++   }
++}
++CORBA_boolean
++GNOME_GtkHTML_Editor_Engine_hasUndo(GNOME_GtkHTML_Editor_Engine _obj,
++				    CORBA_Environment * ev)
++{
++   CORBA_boolean _ORBIT_retval;
++   POA_GNOME_GtkHTML_Editor_Engine__epv *_ORBIT_epv;
++
++   if (ORBit_small_flags & ORBIT_SMALL_FAST_LOCALS &&
++       ORBIT_STUB_IsBypass(_obj, GNOME_GtkHTML_Editor_Engine__classid) &&
++       (_ORBIT_epv =
++	(POA_GNOME_GtkHTML_Editor_Engine__epv *) ORBIT_STUB_GetEpv(_obj,
++								   GNOME_GtkHTML_Editor_Engine__classid))->
++       hasUndo) {
++      ORBIT_STUB_PreCall(_obj);
++      _ORBIT_retval = _ORBIT_epv->hasUndo(ORBIT_STUB_GetServant(_obj), ev);
++      ORBIT_STUB_PostCall(_obj);
++   } else {			/* remote marshal */
++      ORBit_small_invoke_stub_n(_obj,
++				&GNOME_GtkHTML_Editor_Engine__iinterface.
++				methods, 16, &_ORBIT_retval, NULL, NULL, ev);
++
++   }
++   return _ORBIT_retval;
++}
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/gui.c vim/src/gui.c
+--- vimcopy/src/gui.c	Mon May 19 09:43:43 2003
++++ vim/src/gui.c	Sat Jul 26 13:16:47 2003
+@@ -439,8 +439,12 @@
+      * Create the GUI shell.
+      */
+     gui.in_use = TRUE;		/* Must be set after menus have been set up */
++#ifdef FEAT_GUI_COMPONENT
++    vim_bonobo_wait_for_instantiation();
++#else
+     if (gui_mch_init() == FAIL)
+ 	goto error;
++#endif
+ 
+     /* Avoid a delay for an error message that was printed in the terminal
+      * where Vim was started. */
+@@ -4055,8 +4059,8 @@
+ 
+ #ifdef FEAT_GUI_GTK
+ 	/* Need to wake up the main loop */
+-	if (gtk_main_level() > 0)
+-	    gtk_main_quit();
++	if (MAIN_LEVEL() > 0)
++	    MAIN_QUIT();
+ #endif
+     }
+ }
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/gui.h vim/src/gui.h
+--- vimcopy/src/gui.h	Tue May  6 12:02:22 2003
++++ vim/src/gui.h	Sat Jul 26 13:16:47 2003
+@@ -35,6 +35,21 @@
+ # include <gtk/gtk.h>
+ #endif
+ 
++# if defined(FEAT_GUI_GNOME) && defined(FEAT_GUI_COMPONENT)
++    #include "libbonoboui.h"
++    #include "vim_bonobo_main.h"
++    #include "vim_bonobo_factory.h"
++    #define MAIN vim_bonobo_main
++    #define MAIN_LEVEL vim_bonobo_main_level
++    #define MAIN_QUIT vim_bonobo_main_quit
++    #define MAIN_ITERATION_DO vim_bonobo_main_iteration_do
++# else
++    #define MAIN gtk_main
++    #define MAIN_LEVEL gtk_main_level
++    #define MAIN_QUIT gtk_main_quit
++    #define MAIN_ITERATION_DO gtk_main_iteration_do
++#endif
++
+ #ifdef FEAT_GUI_BEOS
+ # include "gui_beos.h"
+ #endif
+@@ -392,6 +407,11 @@
+     GtkWidget	*toolbar;	    /* toolbar */
+ # endif
+ # ifdef FEAT_GUI_GNOME
++#  ifdef FEAT_GUI_COMPONENT
++    GtkWidget     *vbox;
++    BonoboPlug    *plug;
++    BonoboControl *control;
++#  endif
+     GtkWidget	*menubar_h;	    /* menubar handle */
+     GtkWidget	*toolbar_h;	    /* toolbar handle */
+ # endif
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/gui_gtk.c vim/src/gui_gtk.c
+--- vimcopy/src/gui_gtk.c	Tue Jun  3 13:26:44 2003
++++ vim/src/gui_gtk.c	Sat Jul 26 14:19:38 2003
+@@ -39,7 +39,7 @@
+ 
+ #include "vim.h"
+ 
+-#ifdef FEAT_GUI_GNOME
++#if 0
+ /* Gnome redefines _() and N_().  Grrr... */
+ # ifdef _
+ #  undef _
+@@ -545,9 +545,302 @@
+ 
+ # endif /* !HAVE_GTK2 */
+ 
++#ifdef FEAT_GUI_COMPONENT
++
++
++static void
++verb_activate( BonoboUIComponent *uic, gpointer data, const char *cname )
++{
++    gui_menu_cb((vimmenu_T *) data);
++
++    /* make sure the menu action is taken immediately */
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
++}
++
++static void g_string_append_normalized_name( GString * dest, char_u * name )
++{
++    gchar * cur;
++
++    if( name == NULL ) 
++    {
++        return;
++    }
++    cur = name;
++    while( *cur != '\0' ) {
++        gunichar wc;
++        wc = g_utf8_get_char(cur);
++        if( g_unichar_isalnum( wc ) ) {
++            g_string_append_unichar( dest, wc );
++        }
++        cur = g_utf8_next_char(cur);
++    }
++}
++
++static
++char * menu_xml_path( vimmenu_T * menu, int only_parent )
++{
++    GString * normname;
++    GString * path;
++    char * retpath;
++    
++    normname = g_string_sized_new( 64 );
++    path = g_string_sized_new( 128 );
++    while( 1 ) {
++        if( menu_is_toolbar(menu->name) ) {
++            /* "Toolbar" is a standard Bonobo UI element, but Vim uses "ToolBar", so we
++             * have to check for this. */
++            g_string_prepend( path, "/Toolbar");
++        } else {
++            g_string_assign( normname, "" );
++            g_string_append_normalized_name( normname, menu->dname );
++            g_string_prepend( path, normname->str );
++            g_string_prepend( path, "/" );
++        }
++        if( menu->parent == NULL ) {
++            if( menu && menu_is_menubar( menu->name ) ) {
++                g_string_prepend( path, "/menu" );
++            }
++            break;
++        }
++        menu = menu->parent;
++    }
++    g_string_free( normname, TRUE );
++    retpath = path->str;
++    g_string_free( path, FALSE );
++
++    if( only_parent ) {
++        gchar * slash;
++        slash = g_strrstr(retpath, "/");
++        if( slash == retpath )
++            slash[1] = '\0';
++        else if( slash ) 
++            *slash = '\0';
++    }
++    return( retpath );
++}
++
++static char *
++gtk_image_to_xml_attrs( GtkImage * image)
++{
++    GString * xml = g_string_sized_new(32);
++    GtkImageType type = gtk_image_get_storage_type(image);
++    char * attrs;
++    char * imagexml;
++
++    if( type == GTK_IMAGE_STOCK ) {
++        GtkIconSize size;
++        GtkIconSet * iconset;
++        gchar * stockname;
++        GdkPixbuf * pixbuf;
++
++        gtk_image_get_stock(image, &stockname, &size);
++        pixbuf = gtk_widget_render_icon(gui.drawarea, stockname, size, NULL);
++        imagexml = bonobo_ui_util_pixbuf_to_xml(pixbuf);
++        g_string_append_printf(xml, " pixtype=\"pixbuf\" pixname=\"%s\"", imagexml);
++        g_object_unref(pixbuf);
++        g_free(imagexml);
++    } else if( type == GTK_IMAGE_PIXBUF ) {
++        imagexml = bonobo_ui_util_pixbuf_to_xml(gtk_image_get_pixbuf(image));
++        g_string_append_printf(xml, " pixtype=\"pixbuf\" pixname=\"%s\"", imagexml);
++        g_free(imagexml);
++    }
++    attrs = xml->str;
++    g_string_free(xml, FALSE);
++    return( attrs );
++}
++
++static
++void generate_gui_xml_recurse( vimmenu_T * menu, GString * xml, GSList ** commands, int do_siblings)
++{
++    GString * normname = g_string_sized_new(16);
++    GString * verbname = g_string_sized_new(32);
++    char_u * label;
++    int use_mnemonic;
++    BonoboUIComponent *uic;
++    gchar * command;
++
++    uic = bonobo_control_get_ui_component (BONOBO_CONTROL (gui.control));
++
++    while( menu ) 
++    {
++        use_mnemonic = (p_wak[0] != 'n' );
++        label = translate_mnemonic_tag( menu->name, use_mnemonic );
++        g_string_assign( normname, "" );
++        g_string_append_normalized_name( normname, menu->dname );
++        if( menu->children ) {
++            if( menu_is_toolbar( menu->name )) {
++                g_string_append( xml, "<dockitem name=\"Toolbar\" look=\"icon\" tips=\"1\">");
++                generate_gui_xml_recurse( menu->children, xml, commands, TRUE );
++                g_string_append( xml, "</dockitem>");
++            } else {
++                g_string_append_printf( xml, "<submenu name=\"%s\" label=\"%s\">\n", normname->str, label);
++
++                generate_gui_xml_recurse( menu->children, xml, commands, TRUE );
++                g_string_append( xml, "</submenu>\n");
++            }
++        } else if( menu_is_separator(menu->name)) {
++            g_string_append( xml, "<separator />\n" );
++        } else if( menu->parent && menu_is_toolbar(menu->parent->name)) {
++            char * menupath = menu_xml_path(menu, FALSE);
++            GtkImage *image = NULL;
++            char * imagexml;
++            char_u *tooltip;
++
++            g_string_assign(verbname, "");
++            g_string_append_normalized_name(verbname, menupath);
++            vim_free(menupath);
++            image = GTK_IMAGE(create_menu_icon(menu, GTK_ICON_SIZE_SMALL_TOOLBAR));
++            imagexml = gtk_image_to_xml_attrs(image);
++            tooltip = CONVERT_TO_UTF8(menu->strings[MENU_INDEX_TIP]);
++            g_string_append_printf( xml, "<toolitem name=\"%s\" label=\"%s\" verb=\"%s\" tip=\"%s\" %s />\n", normname->str, label, verbname->str, tooltip, imagexml);
++            gtk_object_sink(GTK_OBJECT(image));
++            g_free(imagexml);
++            CONVERT_TO_UTF8_FREE(tooltip);
++            
++            command = g_strdup_printf( "<cmd name=\"%s\" sensitive=\"%c\" />\n", verbname->str, menu->sensitive ? '1' : '0');
++            *commands = g_slist_prepend( *commands, command );
++            bonobo_ui_component_add_verb(uic, verbname->str, verb_activate, menu);
++        } else if( menu_is_menubar(menu->name)) {
++            char * menupath = menu_xml_path(menu, FALSE);
++
++            g_string_assign(verbname, "");
++            g_string_append_normalized_name(verbname, menupath);
++            vim_free(menupath);
++            
++            g_string_append_printf( xml, "<menuitem name=\"%s\" label=\"%s\" verb=\"%s\" />\n", normname->str, label, verbname->str);
++
++            command = g_strdup_printf( "<cmd name=\"%s\" sensitive=\"%c\" />\n", verbname->str, menu->sensitive ? '1' : '0');
++            *commands = g_slist_prepend( *commands, command );
++            bonobo_ui_component_add_verb(uic, verbname->str, verb_activate, menu);
++        }
++        if( label ) {
++            vim_free( label );
++        }
++        if( do_siblings ) {
++            menu = menu->next;
++        } else {
++            menu = NULL;
++        }
++    }
++    g_string_free( normname, TRUE );
++}
++
++static
++void set_gui_xml(vimmenu_T * menu)
++{
++    GSList * commands = NULL;
++    GSList * command;
++    BonoboUIComponent *uic;
++    GString * xml = g_string_sized_new(1024);
++    int path_exists;
++    uic = bonobo_control_get_ui_component (BONOBO_CONTROL (gui.control));
++
++    if( bonobo_ui_component_get_container(uic) == CORBA_OBJECT_NIL ) {
++        return;
++    }
++
++    while( menu ) {
++        if( menu->dirty ) {
++            if (menu_is_popup(menu->name)) {
++                /* do nothing */            
++            } else if( menu_is_menubar(menu->name)) {
++                char * menupath = menu_xml_path(menu, TRUE);
++                path_exists = bonobo_ui_component_path_exists(uic, menupath, NULL);
++                g_string_assign(xml, "");
++                generate_gui_xml_recurse (menu, xml, &commands, FALSE);
++                /*fprintf(stdout, "set %s\n", menupath);*/
++                /*fprintf(stdout, "set %s\n%s", menupath, xml->str);*/
++                /*fflush(stdout);*/
++                bonobo_ui_component_set(uic, menupath, xml->str, NULL);
++                g_free(menupath);
++            } else if( menu_is_toolbar(menu->name)) {
++                char * menupath = menu_xml_path(menu, TRUE);
++                path_exists = bonobo_ui_component_path_exists(uic, menupath, NULL);
++                g_string_assign(xml, "");
++                generate_gui_xml_recurse (menu, xml, &commands, FALSE);
++                /*fprintf(stdout, "set %s\n", menupath);*/
++                /*fprintf(stdout, "set %s\n%s", menupath, xml->str);*/
++                /*fflush(stdout);*/
++                bonobo_ui_component_set(uic, menupath, xml->str, NULL);
++                g_free(menupath);
++            }
++            menu->dirty = FALSE;
++        }
++        menu = menu->next;
++    }
++    /* the commands are inserted separately into a list, and set one by one,
++     * otherwise it's not possible to update a subtree of the UI 
++     */
++    command = commands;
++    while( command ) {
++        /*fprintf(stdout, "set %s\n%s", "/commands", command->data);
++        fflush(stdout);*/
++        bonobo_ui_component_set(uic, "/commands", command->data, NULL);
++        g_free(command->data);
++        command = command->next;
++    }
++    g_slist_free( commands );
++}
++
++static gboolean update_gui_idle_installed = FALSE;
++
++static gboolean
++update_gui_idle(gpointer data)
++{
++    BonoboUIComponent *uic;
++
++    uic = bonobo_control_get_ui_component (BONOBO_CONTROL (gui.control));
++    if( bonobo_ui_component_get_container(uic) == CORBA_OBJECT_NIL ) {
++        /* we aren't in a container yet; try again later... */
++        g_timeout_add(100, &update_gui_idle, NULL);
++        return FALSE;
++    }
++    bonobo_ui_component_freeze(uic, NULL);
++    set_gui_xml( (vimmenu_T *)root_menu );
++    update_gui_idle_installed = FALSE;
++    bonobo_ui_component_thaw(uic, NULL);
++    return FALSE; /* don't call me again */
++}
++
++void
++update_menu_later(vimmenu_T *menu)
++{
++    if (!update_gui_idle_installed)
++    {
++        update_gui_idle_installed = TRUE;
++        g_idle_add_full(GDK_PRIORITY_EVENTS + 10,
++                        &update_gui_idle, NULL, NULL);
++    }
++    while( menu->parent ) 
++        menu = menu->parent;
++    menu->dirty = TRUE;
++}
++
++void update_ui_later()
++{
++    vimmenu_T *menu = root_menu;
++
++    if (!update_gui_idle_installed)
++    {
++        update_gui_idle_installed = TRUE;
++        g_idle_add_full(GDK_PRIORITY_EVENTS + 10,
++                        &update_gui_idle, NULL, NULL);
++    }
++    while( menu ) {
++        menu->dirty = TRUE;
++        menu = menu->next;
++    }
++}
++#endif
++
+     void
+ gui_mch_add_menu(vimmenu_T *menu, int idx)
+ {
++#ifdef FEAT_GUI_COMPONENT
++    update_menu_later(menu);
++    return;
++#else
+     vimmenu_T	*parent;
+     GtkWidget	*parent_widget;
+ 
+@@ -593,6 +886,7 @@
+     if (vim_strchr(p_go, GO_TEAROFF) != NULL)
+ 	gtk_widget_show(menu->tearoff_handle);
+     gtk_menu_prepend(GTK_MENU(menu->submenu_id), menu->tearoff_handle);
++#endif
+ }
+ 
+ /*ARGSUSED*/
+@@ -609,8 +903,8 @@
+ # endif
+ 
+     /* make sure the menu action is taken immediately */
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
+ }
+ 
+ # if defined(FEAT_TOOLBAR) && !defined(HAVE_GTK2)
+@@ -715,6 +1009,10 @@
+     void
+ gui_mch_add_menu_item(vimmenu_T *menu, int idx)
+ {
++#ifdef FEAT_GUI_COMPONENT
++    update_menu_later(menu);
++    return;
++#else
+     vimmenu_T *parent;
+ 
+     parent = menu->parent;
+@@ -817,6 +1115,7 @@
+ 	    gtk_signal_connect(GTK_OBJECT(menu->id), "activate",
+ 			       GTK_SIGNAL_FUNC(menu_item_activate), menu);
+     }
++#endif
+ }
+ #endif /* FEAT_MENU */
+ 
+@@ -841,6 +1140,10 @@
+     guint	accel_key;
+ # endif
+ 
++#ifdef FEAT_GUI_COMPONENT
++    return;
++#endif
++
+     for (menu = root_menu; menu != NULL; menu = menu->next)
+     {
+ 	if (menu->id == NULL)
+@@ -897,6 +1200,9 @@
+     void
+ gui_mch_toggle_tearoffs(int enable)
+ {
++#ifdef FEAT_GUI_COMPONENT
++    return;
++#endif
+     recurse_tearoffs(root_menu, enable);
+ }
+ #endif /* FEAT_MENU */
+@@ -1001,6 +1307,9 @@
+     void
+ gui_mch_destroy_menu(vimmenu_T *menu)
+ {
++#ifdef FEAT_GUI_COMPONENT
++    return;
++#endif
+ # ifdef FEAT_TOOLBAR
+     if (menu->parent != NULL && menu_is_toolbar(menu->parent->name))
+     {
+@@ -1115,8 +1424,8 @@
+ 
+     gui_drag_scrollbar(sb, value, dragging);
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
+ }
+ 
+ /* SBAR_VERT or SBAR_HORIZ */
+@@ -1175,8 +1484,8 @@
+     vw->browse_fname = (char_u *)g_strdup(gtk_file_selection_get_filename(
+ 					GTK_FILE_SELECTION(vw->filedlg)));
+     gtk_widget_hide(vw->filedlg);
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
+ }
+ 
+ /*ARGSUSED*/
+@@ -1191,8 +1500,8 @@
+ 	vw->browse_fname = NULL;
+     }
+     gtk_widget_hide(vw->filedlg);
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
+ }
+ 
+ /*ARGSUSED*/
+@@ -1206,8 +1515,8 @@
+     }
+     gui.filedlg = NULL;
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
+ 
+     return FALSE;
+ }
+@@ -1290,7 +1599,7 @@
+ 
+     gtk_widget_show(gui.filedlg);
+     while (gui.filedlg && GTK_WIDGET_DRAWABLE(gui.filedlg))
+-	gtk_main_iteration_do(TRUE);
++	MAIN_ITERATION_DO(TRUE);
+ 
+     if (gui.browse_fname == NULL)
+ 	return NULL;
+@@ -1510,8 +1819,8 @@
+ dlg_destroy_cb(int *p)
+ {
+     *p = TRUE;		/* set dialog_destroyed to break out of the loop */
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
+ }
+ 
+ /* ARGSUSED */
+@@ -1811,7 +2120,7 @@
+     /* loop here until the dialog goes away */
+     while (dialog_status == -1 && !dialog_destroyed
+ 					       && GTK_WIDGET_DRAWABLE(dialog))
+-	gtk_main_iteration_do(TRUE);
++	MAIN_ITERATION_DO(TRUE);
+ 
+     if (dialog_status < 0)
+ 	dialog_status = 0;
+@@ -2795,8 +3104,8 @@
+     CONVERT_FROM_UTF8_FREE(find_text);
+ #endif
+ 
+-    if (rc && gtk_main_level() > 0)
+-	gtk_main_quit(); /* make sure cmd will be handled immediately */
++    if (rc && MAIN_LEVEL() > 0)
++        MAIN_QUIT(); /* make sure cmd will be handled immediately */
+ }
+ 
+ /* our usual callback function */
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/gui_gtk_x11.c vim/src/gui_gtk_x11.c
+--- vimcopy/src/gui_gtk_x11.c	Tue Jun  3 13:19:03 2003
++++ vim/src/gui_gtk_x11.c	Sat Jul 26 16:53:24 2003
+@@ -654,8 +654,8 @@
+ 	xev.xproperty.state = PropertyNewValue;
+ 	serverEventProc(GDK_WINDOW_XDISPLAY(widget->window), &xev);
+ 
+-	if (gtk_main_level() > 0)
+-	    gtk_main_quit();
++ 	if (MAIN_LEVEL() > 0)
++ 	    MAIN_QUIT();
+     }
+     return FALSE;
+ }
+@@ -756,6 +756,10 @@
+     if (blink_state == BLINK_NONE)
+ 	gui_mch_start_blink();
+ 
++#ifdef FEAT_GUI_COMPONENT
++    /*gtk_plug_grab_focus(GTK_PLUG(gui.plug));*/
++    /*gtk_window_set_focus(GTK_WINDOW(gui.plug), gui.drawarea);*/
++#endif
+     /* make sure keyboard input goes there */
+     if (gtk_socket_id == 0 || !GTK_WIDGET_HAS_FOCUS(gui.drawarea))
+ 	gtk_widget_grab_focus(gui.drawarea);
+@@ -767,6 +771,11 @@
+     static gint
+ leave_notify_event(GtkWidget *widget, GdkEventCrossing *event, gpointer data)
+ {
++#ifdef FEAT_GUI_COMPONENT
++    /*gtk_plug_ungrab_focus(GTK_PLUG(gui.plug));*/
++    /*gdk_display_keyboard_ungrab (gtk_widget_get_display (gui.drawarea),
++                                 gtk_get_current_event_time ());*/
++#endif
+     if (blink_state != BLINK_NONE)
+ 	gui_mch_stop_blink();
+ 
+@@ -777,8 +786,16 @@
+     static gint
+ focus_in_event(GtkWidget *widget, GdkEventFocus *event, gpointer data)
+ {
++    GdkEventMask mask;
+     gui_focus_change(TRUE);
+ 
++#ifdef FEAT_GUI_COMPONENT
++    gtk_widget_grab_focus(gui.drawarea);
++    mask = gdk_window_get_events(gui.drawarea->window);
++    mask |= GDK_KEY_PRESS | GDK_KEY_RELEASE;
++    gdk_window_set_events(gui.drawarea->window, mask);
++#endif
++
+     if (blink_state == BLINK_NONE)
+ 	gui_mch_start_blink();
+ 
+@@ -793,6 +810,9 @@
+     static gint
+ focus_out_event(GtkWidget *widget, GdkEventFocus *event, gpointer data)
+ {
++#ifdef FEAT_GUI_COMPONENT
++/*    gtk_plug_ungrab_focus(GTK_PLUG(gui.plug));*/
++#endif
+     gui_focus_change(FALSE);
+ 
+     if (blink_state != BLINK_NONE)
+@@ -1134,8 +1154,8 @@
+     if (p_mh)
+ 	gui_mch_mousehide(TRUE);
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++        MAIN_QUIT();
+ 
+     return TRUE;
+ }
+@@ -1170,8 +1190,8 @@
+     else
+ 	clip_lose_selection(&clip_star);
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++ 	MAIN_QUIT();
+ 
+     return TRUE;
+ }
+@@ -1211,9 +1231,8 @@
+ 	received_selection = RS_FAIL;
+ 	/* clip_free_selection(cbd); ??? */
+ 
+-	if (gtk_main_level() > 0)
+-	    gtk_main_quit();
+-
++        if (MAIN_LEVEL() > 0)
++            MAIN_QUIT();      /* make sure the above will be handled immediately */
+ 	return;
+     }
+ 
+@@ -1294,8 +1313,8 @@
+     g_free(tmpbuf_utf8);
+ #endif
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++        MAIN_QUIT();      /* make sure the above will be handled immediately */
+ }
+ 
+ /*
+@@ -1455,6 +1474,15 @@
+ 	using_gnome = 1;
+ #endif
+ 
++
++#ifdef FEAT_GUI_COMPONENT
++    if( !vim_bonobo_init(&gui_argc, gui_argv))
++    {
++        /* in component mode, we don't care about trying to continue without 
++         * a gui; if we can't create the factory, we might as well quit. */
++        mch_exit(2);
++    }
++#else
+     /* Don't use gtk_init() or gnome_init(), it exits on failure. */
+     if (!gtk_init_check(&gui_argc, &gui_argv))
+     {
+@@ -1462,10 +1490,29 @@
+ 	EMSG(_(e_opendisp));
+ 	return FAIL;
+     }
++#endif
+ 
+     return OK;
+ }
+ 
++#if FEAT_GUI_COMPONENT
++static gint
++control_activate_event(BonoboControl *control, gboolean activated)
++{
++    if (activated) 
++    {
++        gui_focus_change (TRUE);
++        if (blink_state == BLINK_NONE)
++            gui_mch_start_blink();
++    } else {
++        gui_focus_change (FALSE);
++        if (blink_state != BLINK_NONE)
++            gui_mch_stop_blink();
++    }
++    return TRUE;
++}
++#endif
++
+ 
+ /****************************************************************************
+  * Mouse handling callbacks
+@@ -1526,8 +1573,8 @@
+     /* inform the editor engine about the occurence of this event */
+     gui_send_mouse_event(button, x, y, FALSE, vim_modifiers);
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
+ 
+     /*
+      * Auto repeat timer handling.
+@@ -1722,8 +1769,8 @@
+ 	vim_modifiers |= MOUSE_ALT;
+ 
+     gui_send_mouse_event(button, x, y, repeated_click, vim_modifiers);
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit(); /* make sure the above will be handled immediately */
++    if (MAIN_LEVEL() > 0)
++        MAIN_QUIT();      /* make sure the above will be handled immediately */
+ 
+     return TRUE;
+ }
+@@ -1771,8 +1818,8 @@
+     gui_send_mouse_event(button, (int)event->x, (int)event->y,
+ 							FALSE, vim_modifiers);
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit(); /* make sure the above will be handled immediately */
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();	/* make sure the above will be handled immediately */
+ 
+     return TRUE;
+ }
+@@ -1807,8 +1854,8 @@
+ 	vim_modifiers |= MOUSE_ALT;
+ 
+     gui_send_mouse_event(MOUSE_RELEASE, x, y, FALSE, vim_modifiers);
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();	/* make sure it will be handled immediately */
++    if (MAIN_LEVEL() > 0)
++        MAIN_QUIT();      /* make sure the above will be handled immediately */
+ 
+     return TRUE;
+ }
+@@ -2031,8 +2078,8 @@
+     else
+ 	add_to_input_buf(dropkey + 3, (int)(sizeof(dropkey) - 3));
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++        MAIN_QUIT();      /* make sure the above will be handled immediately */
+ }
+ 
+ /*
+@@ -2498,6 +2545,7 @@
+     static void
+ mainwin_realize(GtkWidget *widget, gpointer data)
+ {
++#ifndef FEAT_GUI_COMPONENT
+ /* If you get an error message here, you still need to unpack the runtime
+  * archive! */
+ #ifdef magick
+@@ -2581,6 +2629,7 @@
+ 
+ #endif /* !HAVE_GTK2 */
+     }
++#endif /* FEAT_GUI_COMPONENT */
+ 
+ #if !(defined(FEAT_GUI_GNOME) && defined(FEAT_SESSION))
+     /* Register a handler for WM_SAVE_YOURSELF with GDK's low-level X I/F */
+@@ -2599,7 +2648,7 @@
+ #endif
+ 	setup_save_yourself();
+ 
+-#ifdef FEAT_CLIENTSERVER
++#if defined(FEAT_CLIENTSERVER) &&!defined(FEAT_GUI_COMPONENT)
+     if (serverName == NULL && serverDelayedStartName != NULL)
+     {
+ 	/* This is a :gui command in a plain vim with no previous server */
+@@ -2647,7 +2696,7 @@
+     return cursor;
+ }
+ 
+-#ifdef HAVE_GTK_MULTIHEAD
++#if defined(GTK2_MULTIHEAD) && !defined(FEAT_GUI_COMPONENT)
+ /*ARGSUSED1*/
+     static void
+ mainwin_screen_changed_cb(GtkWidget  *widget,
+@@ -2972,7 +3021,11 @@
+ #ifdef FEAT_GUI_GNOME
+ 	if (using_gnome)
+ 	{
+-	    gui.mainwin = gnome_app_new("Vim", NULL);
++# if defined(FEAT_GUI_COMPONENT)
++            gui.mainwin = NULL;
++# else
++            gui.mainwin = gnome_app_new("vim", NULL);
++# endif
+ # ifdef USE_XSMP
+ 	    /* Use the GNOME save-yourself functionality now. */
+ 	    xsmp_close();
+@@ -2983,14 +3036,27 @@
+ 	    gui.mainwin = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+     }
+ 
++#ifndef FEAT_GUI_COMPONENT
+     gtk_widget_set_name(gui.mainwin, "vim-main-window");
++#endif
++    vbox = gtk_vbox_new(FALSE, 0);
++    gui.vbox = vbox;
+ 
+ #ifdef HAVE_GTK2
+     /* Create the PangoContext used for drawing all text. */
++#ifdef FEAT_GUI_COMPONENT
++    gui.text_context = gtk_widget_create_pango_context(GTK_WIDGET(gui.vbox));
++#else
+     gui.text_context = gtk_widget_create_pango_context(gui.mainwin);
++#endif
+     pango_context_set_base_dir(gui.text_context, PANGO_DIRECTION_LTR);
+ #endif
+ 
++#ifdef FEAT_GUI_COMPONENT
++    bonobo_control_construct (BONOBO_CONTROL (gui.control), GTK_WIDGET(gui.vbox));
++    gtk_widget_add_events(GTK_WIDGET(gui.drawarea), GDK_VISIBILITY_NOTIFY_MASK);
++    gtk_widget_show_all(GTK_WIDGET(gui.vbox));
++#else
+ #ifndef HAVE_GTK2
+     gtk_window_set_policy(GTK_WINDOW(gui.mainwin), TRUE, TRUE, TRUE);
+ #endif
+@@ -3013,8 +3079,6 @@
+     gui.accel_group = gtk_accel_group_get_default();
+ #endif
+ 
+-    vbox = gtk_vbox_new(FALSE, 0);
+-
+ #ifdef FEAT_GUI_GNOME
+     if (using_gnome)
+     {
+@@ -3030,6 +3094,9 @@
+ 	gtk_container_add(GTK_CONTAINER(gui.mainwin), vbox);
+ 	gtk_widget_show(vbox);
+     }
++#endif
++  
++#ifndef FEAT_GUI_COMPONENT
+ 
+ #ifdef FEAT_MENU
+     /*
+@@ -3135,6 +3202,7 @@
+ 	gtk_box_pack_start(GTK_BOX(vbox), gui.toolbar, FALSE, FALSE, 0);
+     }
+ #endif /* FEAT_TOOLBAR */
++#endif /* FEAT_GUI_COMPONENT */
+ 
+     gui.formwin = gtk_form_new();
+     gtk_container_border_width(GTK_CONTAINER(gui.formwin), 0);
+@@ -3162,6 +3230,11 @@
+     gtk_widget_show(gui.formwin);
+     gtk_box_pack_start(GTK_BOX(vbox), gui.formwin, TRUE, TRUE, 0);
+ 
++#ifdef FEAT_GUI_COMPONENT
++    GTK_WIDGET_SET_FLAGS (gui.drawarea, GTK_CAN_FOCUS);
++    g_signal_connect(G_OBJECT(gui.drawarea), "key_press_event",
++                        G_CALLBACK(key_press_event), NULL);
++#else
+     /* For GtkSockets, key-presses must go to the focus widget (drawarea)
+      * and not the window. */
+     gtk_signal_connect((gtk_socket_id == 0) ? GTK_OBJECT(gui.mainwin)
+@@ -3176,6 +3249,7 @@
+ 		     "key_release_event",
+ 		     G_CALLBACK(&key_release_event), NULL);
+ #endif
++#endif /* FEAT_GUI_COMPONENT */
+     gtk_signal_connect(GTK_OBJECT(gui.drawarea), "realize",
+ 		       GTK_SIGNAL_FUNC(drawarea_realize_cb), NULL);
+     gtk_signal_connect(GTK_OBJECT(gui.drawarea), "unrealize",
+@@ -3207,16 +3281,27 @@
+      */
+     gui.border_offset = gui.border_width;
+ 
++#ifdef FEAT_GUI_COMPONENT
++    gtk_signal_connect(GTK_OBJECT(gui.drawarea), "visibility_notify_event",
++		       GTK_SIGNAL_FUNC(visibility_event), NULL);
++#else
+     gtk_signal_connect(GTK_OBJECT(gui.mainwin), "visibility_notify_event",
+ 		       GTK_SIGNAL_FUNC(visibility_event), NULL);
++#endif
+     gtk_signal_connect(GTK_OBJECT(gui.drawarea), "expose_event",
+ 		       GTK_SIGNAL_FUNC(expose_event), NULL);
+ 
+     /*
+      * Only install these enter/leave callbacks when 'p' in 'guioptions'.
+      * Only needed for some window managers.
++     *
++     * Force this on for bonobo, otherwise the toolbar gets the focus 
++     * after you click a button, and you can't get the focus back to the 
++     * drawarea.
+      */
++#ifndef FEAT_GUI_COMPONENT
+     if (vim_strchr(p_go, GO_POINTER) != NULL)
++#endif
+     {
+ 	gtk_signal_connect(GTK_OBJECT(gui.drawarea), "leave_notify_event",
+ 			   GTK_SIGNAL_FUNC(leave_notify_event), NULL);
+@@ -3224,10 +3309,19 @@
+ 			   GTK_SIGNAL_FUNC(enter_notify_event), NULL);
+     }
+ 
++#ifdef FEAT_GUI_COMPONENT
++    g_signal_connect(G_OBJECT(gui.control), "activate",
++		     G_CALLBACK (control_activate_event), NULL);
++    gtk_signal_connect(GTK_OBJECT(gui.drawarea), "focus_out_event",
++			   GTK_SIGNAL_FUNC(focus_out_event), NULL);
++    gtk_signal_connect(GTK_OBJECT(gui.drawarea), "focus_in_event",
++			   GTK_SIGNAL_FUNC(focus_in_event), NULL);
++#else	
+     gtk_signal_connect(GTK_OBJECT(gui.mainwin), "focus_out_event",
+ 			   GTK_SIGNAL_FUNC(focus_out_event), NULL);
+     gtk_signal_connect(GTK_OBJECT(gui.mainwin), "focus_in_event",
+ 			   GTK_SIGNAL_FUNC(focus_in_event), NULL);
++#endif
+ 
+     gtk_signal_connect(GTK_OBJECT(gui.drawarea), "motion_notify_event",
+ 		       GTK_SIGNAL_FUNC(motion_notify_event), NULL);
+@@ -3400,7 +3494,7 @@
+      * otherwise the hints don't work. */
+     width  = gui_get_base_width();
+     height = gui_get_base_height();
+-# ifdef HAVE_GTK2
++# if defined( HAVE_GTK2 ) && !defined(FEAT_GUI_COMPONENT)
+     width  += get_menu_tool_width();
+     height += get_menu_tool_height();
+ # endif
+@@ -3447,8 +3541,18 @@
+ form_configure_event(GtkWidget *widget, GdkEventConfigure *event,
+ 		     gpointer data)
+ {
++    int height;
++
+     gtk_form_freeze(GTK_FORM(gui.formwin));
+-    gui_resize_shell(event->width, event->height);
++#ifdef FEAT_GUI_COMPONENT
++    /* width_inc and height_inc (see window manager hints, above) aren't
++     * respected for embedded controls, so we have to make a slight adjustment
++     * to make sure the bottom line doesn't get clipped. */
++    height = gui.char_height * ((event->height - 2 )/ gui.char_height);
++#else
++    height = event->height;
++#endif
++    gui_resize_shell(event->width, height);
+     gtk_form_thaw(GTK_FORM(gui.formwin));
+ 
+     return TRUE;
+@@ -3580,8 +3684,10 @@
+      * changed them). */
+     highlight_gui_started();	/* re-init colors and fonts */
+ 
++#ifndef FEAT_GUI_COMPONENT
+     gtk_signal_connect(GTK_OBJECT(gui.mainwin), "destroy",
+ 		       GTK_SIGNAL_FUNC(mainwin_destroy_cb), NULL);
++#endif
+ 
+ #ifdef FEAT_HANGULIN
+     hangul_keyboard_set();
+@@ -3649,7 +3755,9 @@
+ 						  NULL);
+ # endif
+ #endif
+-	gtk_widget_show(gui.mainwin);
++#ifndef FEAT_GUI_COMPONENT
++        gtk_widget_show(gui.mainwin);
++#endif
+ 
+ #if defined(FEAT_GUI_GNOME) && defined(HAVE_GTK2) && defined(FEAT_MENU)
+ 	if (menu_handler != 0)
+@@ -3679,8 +3787,8 @@
+     if (gui.mainwin != NULL)
+ 	gtk_widget_destroy(gui.mainwin);
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();	/* make sure the above will be handled immediately */
+ }
+ 
+ /*
+@@ -3727,6 +3835,7 @@
+     static gboolean
+ force_shell_resize_idle(gpointer data)
+ {
++    g_warning("force_shell_resize_idle called!");
+     if (gui.mainwin != NULL
+ 	    && GTK_WIDGET_REALIZED(gui.mainwin)
+ 	    && GTK_WIDGET_VISIBLE(gui.mainwin))
+@@ -3775,7 +3884,7 @@
+     /* this will cause the proper resizement to happen too */
+     update_window_manager_hints();
+ 
+-#ifdef HAVE_GTK2
++#if defined( HAVE_GTK2 ) && !defined(FEAT_GUI_COMPONENT)
+     /* With GTK+ 2, changing the size of the form widget doesn't resize
+      * the window.  So lets do it the other way around and resize the
+      * main window instead. */
+@@ -3866,6 +3975,7 @@
+ {
+     GtkWidget *widget;
+ 
++#ifndef FEAT_GUI_COMPONENT
+ # ifdef FEAT_GUI_GNOME
+     if (using_gnome)
+ 	widget = gui.menubar_h;
+@@ -3882,6 +3992,7 @@
+ 
+ 	update_window_manager_hints();
+     }
++#endif
+ }
+ #endif /* FEAT_MENU */
+ 
+@@ -3933,8 +4044,8 @@
+ 
+     vw->fontname = (char_u *)gtk_font_selection_dialog_get_font_name(fs);
+     gtk_widget_hide(vw->fontdlg);
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++        MAIN_QUIT();      /* make sure the above will be handled immediately */
+ }
+ 
+ /*ARGSUSED*/
+@@ -3944,8 +4055,8 @@
+     gui_T *vw = (gui_T *)cbdata;
+ 
+     gtk_widget_hide(vw->fontdlg);
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++        MAIN_QUIT();      /* make sure the above will be handled immediately */
+ }
+ 
+ /*ARGSUSED*/
+@@ -3955,8 +4066,8 @@
+     gui_T *vw = (gui_T *)cbdata;
+ 
+     vw->fontdlg = NULL;
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++        MAIN_QUIT();      /* make sure the above will be handled immediately */
+ }
+ #endif /* !HAVE_GTK2 */
+ 
+@@ -4123,7 +4234,7 @@
+ 
+     /* Wait for the font dialog to be closed. */
+     while (gui.fontdlg && GTK_WIDGET_DRAWABLE(gui.fontdlg))
+-	gtk_main_iteration_do(TRUE);
++	MAIN_ITERATION_DO(TRUE);
+ 
+     if (gui.fontname != NULL)
+     {
+@@ -5637,7 +5748,7 @@
+ gui_mch_update(void)
+ {
+     while (gtk_events_pending() && !vim_is_input_buf_full())
+-	gtk_main_iteration_do(FALSE);
++	MAIN_ITERATION_DO(TRUE);
+ }
+ 
+     static gint
+@@ -5648,8 +5759,8 @@
+     /* Just inform the caller about the occurence of it */
+     *timed_out = TRUE;
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++        MAIN_QUIT();      /* make sure the above will be handled immediately */
+ 
+     return FALSE;		/* don't happen again */
+ }
+@@ -5669,8 +5780,8 @@
+ 
+     add_to_input_buf(bytes, 3);
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
+ }
+ #endif
+ 
+@@ -5737,7 +5848,7 @@
+ 	/*
+ 	 * Loop in GTK+ processing  until a timeout or input occurs.
+ 	 */
+-	gtk_main();
++	MAIN();
+ 
+ 	/* Got char, return immediately */
+ 	if (input_available())
+@@ -5812,6 +5923,7 @@
+ 	gdk_window_clear(gui.drawarea->window);
+ }
+ 
++
+ /*
+  * Redraw any text revealed by scrolling up/down.
+  */
+@@ -5926,7 +6038,7 @@
+ 			      (guint32)GDK_CURRENT_TIME);
+ 
+ 	while (received_selection == RS_NONE)
+-	    gtk_main();	/* wait for selection_received_cb */
++	    MAIN();     /* wait for selection_received_cb */
+ 
+ 	if (received_selection != RS_FAIL)
+ 	    return;
+@@ -5994,6 +6106,13 @@
+     void
+ gui_mch_menu_grey(vimmenu_T *menu, int grey)
+ {
++#ifdef FEAT_GUI_COMPONENT
++    if( menu->sensitive != !grey ) {
++        menu->sensitive = !grey;
++        update_menu_later(menu);
++    }
++    return;
++#endif
+     if (menu->id == NULL)
+ 	return;
+ 
+@@ -6129,6 +6248,40 @@
+ /* The last set mouse pointer shape is remembered, to be used when it goes
+  * from hidden to not hidden. */
+ static int last_shape = 0;
++#endif
++
++#if 0
++static BonoboWindow *
++bonobo_create_window(void)
++{
++    BonoboWindow      *win;
++    BonoboUIContainer *ui_container;
++    BonoboUIComponent *ui_component;
++                                                                                
++    win = BONOBO_WINDOW (bonobo_window_new ("vim", "vim"));                                                                                
++    ui_container = bonobo_window_get_ui_container (win);
++    bonobo_ui_engine_config_set_path (bonobo_window_get_ui_engine (win),
++                      "/gnome-vim/UIConfig/kvps");
++                                                                                
++    /* Create a UI component with which to communicate with the window */
++    ui_component = bonobo_ui_component_new_default ();
++
++    gui.component = ui_component;
++                                                                                
++    /* Associate the BonoboUIComponent with the container */
++    bonobo_ui_component_set_container (
++        ui_component, BONOBO_OBJREF (ui_container), NULL);
++                                                                                
++    //bonobo_ui_util_set_ui (ui_component, "", 
++                   //HELLO_SRCDIR HELLO_UI_XML,
++                   //"bonobo-hello", NULL);
++                                                                                
++    /* Associate our verb -> callback mapping with the BonoboWindow */
++    /* All the callback's user_data pointers will be set to 'win' */
++    //bonobo_ui_component_add_verb_list_with_data (ui_component, hello_verbs, win);
++                                                                                
++    return win;
++}
+ #endif
+ 
+ /*
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/main.c vim/src/main.c
+--- vimcopy/src/main.c	Tue Jun  3 13:32:56 2003
++++ vim/src/main.c	Sat Jul 26 13:16:48 2003
+@@ -79,7 +79,7 @@
+ # ifdef VIMDLL
+ _export
+ # endif
+-# ifdef FEAT_GUI_MSWIN
++# if defined(FEAT_GUI_MSWIN)
+ #  ifdef __BORLANDC__
+ _cdecl
+ #  endif
+@@ -239,8 +239,12 @@
+     TIME_MSG("locale set");
+ #endif
+ 
+-#ifdef FEAT_GUI
++#if defined(FEAT_GUI_COMPONENT)
++    gui.dofork = FALSE;		    /* don't use fork when running as component */
++#else
++# if defined(FEAT_GUI) && !defined(FEAT_GUI_COMPONENT)
+     gui.dofork = TRUE;		    /* default is to use fork() */
++# endif
+ #endif
+ 
+ #if defined(FEAT_XCLIPBOARD) || defined(FEAT_CLIENTSERVER)
+@@ -439,6 +443,10 @@
+ 	++initstr;
+     }
+ 
++#ifdef FEAT_GUI_COMPONENT
++    main_start_gui();
++#endif
++
+     if (TOLOWER_ASC(initstr[0]) == 'g')
+     {
+ 	main_start_gui();
+@@ -1760,6 +1768,9 @@
+ #ifdef FEAT_WINDOWS
+ 	curwin = firstwin;
+ 	curbuf = curwin->w_buffer;
++#endif
++#ifdef FEAT_GUI_COMPONENT
++        set_curbuf_persistent();
+ #endif
+     }
+     TIME_MSG("opening buffers");
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/mbyte.c vim/src/mbyte.c
+--- vimcopy/src/mbyte.c	Wed Jun  4 10:26:32 2003
++++ vim/src/mbyte.c	Sat Jul 26 13:16:48 2003
+@@ -3120,8 +3120,8 @@
+ 
+     im_add_to_input((char_u *)str, (int)strlen(str));
+ 
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
+ }
+ 
+ /*
+@@ -4125,7 +4125,11 @@
+ 	    if (gui.fontset != NOFONTSET
+ 		    && gui.fontset->type == GDK_FONT_FONTSET)
+ 	    {
++#ifdef FEAT_GUI_COMPONENT
++		widget = gui.drawarea;
++#else
+ 		widget = gui.mainwin;
++#endif
+ 		gdk_window_get_size(widget->window, &width, &height);
+ 
+ 		attrmask |= (int)GDK_IC_STATUS_AREA;
+@@ -4706,9 +4710,15 @@
+ 	while (event_queue != NULL && processing_queued_event)
+ 	{
+ 	    GdkEvent *ev = event_queue->data;
+-
++            GtkWidget *output;
++            
+ 	    gboolean *ret;
+-	    gtk_signal_emit_by_name((GtkObject*)gui.mainwin, "key_press_event",
++#ifdef FEAT_GUI_COMPONENT
++            output = gui.drawarea;
++#else
++            output = gui.mainwin;
++#endif
++	    gtk_signal_emit_by_name((GtkObject*)output, "key_press_event",
+ 								    ev, &ret);
+ 	    gdk_event_free(ev);
+ 	    event_queue = event_queue->next;
+@@ -4720,8 +4730,8 @@
+ 	    key_press_event_queue = NULL;
+ 	}
+     }
+-    if (gtk_main_level() > 0)
+-	gtk_main_quit();
++    if (MAIN_LEVEL() > 0)
++	MAIN_QUIT();
+ }
+ 
+ /*
+@@ -4856,7 +4866,11 @@
+ 	GtkWidget	*widget = gui.drawarea;
+ 
+ 	attr->style = (GdkIMStyle)xim_input_style;
++#ifdef FEAT_GUI_COMPONENT
++	attr->client_window = gui.drawarea->window;
++#else
+ 	attr->client_window = gui.mainwin->window;
++#endif
+ 
+ 	if ((colormap = gtk_widget_get_colormap(widget)) !=
+ 	    gtk_widget_get_default_colormap())
+@@ -4903,7 +4917,11 @@
+ 	    }
+ 	    else
+ 	    {
++#ifdef FEAT_GUI_COMPONENT
++		gdk_window_get_size(gui.drawarea->window, &width, &height);
++#else
+ 		gdk_window_get_size(gui.mainwin->window, &width, &height);
++#endif
+ 		attrmask |= (int)GDK_IC_STATUS_AREA_REQ;
+ 		attr->status_area.x = 0;
+ 		attr->status_area.y = height - gui.char_height - 1;
+Binary files vimcopy/src/objects/buffer.o and vim/src/objects/buffer.o differ
+Binary files vimcopy/src/objects/charset.o and vim/src/objects/charset.o differ
+Binary files vimcopy/src/objects/diff.o and vim/src/objects/diff.o differ
+Binary files vimcopy/src/objects/digraph.o and vim/src/objects/digraph.o differ
+Binary files vimcopy/src/objects/edit.o and vim/src/objects/edit.o differ
+Binary files vimcopy/src/objects/eval.o and vim/src/objects/eval.o differ
+Binary files vimcopy/src/objects/ex_cmds.o and vim/src/objects/ex_cmds.o differ
+Binary files vimcopy/src/objects/ex_cmds2.o and vim/src/objects/ex_cmds2.o differ
+Binary files vimcopy/src/objects/ex_docmd.o and vim/src/objects/ex_docmd.o differ
+Binary files vimcopy/src/objects/ex_eval.o and vim/src/objects/ex_eval.o differ
+Binary files vimcopy/src/objects/ex_getln.o and vim/src/objects/ex_getln.o differ
+Binary files vimcopy/src/objects/fileio.o and vim/src/objects/fileio.o differ
+Binary files vimcopy/src/objects/fold.o and vim/src/objects/fold.o differ
+Binary files vimcopy/src/objects/getchar.o and vim/src/objects/getchar.o differ
+Binary files vimcopy/src/objects/gtkhtml_editor.o and vim/src/objects/gtkhtml_editor.o differ
+Binary files vimcopy/src/objects/gtkhtml_editor_common.o and vim/src/objects/gtkhtml_editor_common.o differ
+Binary files vimcopy/src/objects/gtkhtml_editor_skels.o and vim/src/objects/gtkhtml_editor_skels.o differ
+Binary files vimcopy/src/objects/gtkhtml_editor_stubs.o and vim/src/objects/gtkhtml_editor_stubs.o differ
+Binary files vimcopy/src/objects/gui.o and vim/src/objects/gui.o differ
+Binary files vimcopy/src/objects/gui_beval.o and vim/src/objects/gui_beval.o differ
+Binary files vimcopy/src/objects/gui_gtk.o and vim/src/objects/gui_gtk.o differ
+Binary files vimcopy/src/objects/gui_gtk_f.o and vim/src/objects/gui_gtk_f.o differ
+Binary files vimcopy/src/objects/gui_gtk_x11.o and vim/src/objects/gui_gtk_x11.o differ
+Binary files vimcopy/src/objects/if_cscope.o and vim/src/objects/if_cscope.o differ
+Binary files vimcopy/src/objects/if_xcmdsrv.o and vim/src/objects/if_xcmdsrv.o differ
+Binary files vimcopy/src/objects/main.o and vim/src/objects/main.o differ
+Binary files vimcopy/src/objects/mark.o and vim/src/objects/mark.o differ
+Binary files vimcopy/src/objects/mbyte.o and vim/src/objects/mbyte.o differ
+Binary files vimcopy/src/objects/memfile.o and vim/src/objects/memfile.o differ
+Binary files vimcopy/src/objects/memline.o and vim/src/objects/memline.o differ
+Binary files vimcopy/src/objects/menu.o and vim/src/objects/menu.o differ
+Binary files vimcopy/src/objects/message.o and vim/src/objects/message.o differ
+Binary files vimcopy/src/objects/misc1.o and vim/src/objects/misc1.o differ
+Binary files vimcopy/src/objects/misc2.o and vim/src/objects/misc2.o differ
+Binary files vimcopy/src/objects/move.o and vim/src/objects/move.o differ
+Binary files vimcopy/src/objects/netbeans.o and vim/src/objects/netbeans.o differ
+Binary files vimcopy/src/objects/normal.o and vim/src/objects/normal.o differ
+Binary files vimcopy/src/objects/ops.o and vim/src/objects/ops.o differ
+Binary files vimcopy/src/objects/option.o and vim/src/objects/option.o differ
+Binary files vimcopy/src/objects/os_unix.o and vim/src/objects/os_unix.o differ
+Binary files vimcopy/src/objects/pathdef.o and vim/src/objects/pathdef.o differ
+Binary files vimcopy/src/objects/pty.o and vim/src/objects/pty.o differ
+Binary files vimcopy/src/objects/quickfix.o and vim/src/objects/quickfix.o differ
+Binary files vimcopy/src/objects/regexp.o and vim/src/objects/regexp.o differ
+Binary files vimcopy/src/objects/screen.o and vim/src/objects/screen.o differ
+Binary files vimcopy/src/objects/search.o and vim/src/objects/search.o differ
+Binary files vimcopy/src/objects/syntax.o and vim/src/objects/syntax.o differ
+Binary files vimcopy/src/objects/tag.o and vim/src/objects/tag.o differ
+Binary files vimcopy/src/objects/term.o and vim/src/objects/term.o differ
+Binary files vimcopy/src/objects/ui.o and vim/src/objects/ui.o differ
+Binary files vimcopy/src/objects/undo.o and vim/src/objects/undo.o differ
+Binary files vimcopy/src/objects/version.o and vim/src/objects/version.o differ
+Binary files vimcopy/src/objects/vim_bonobo_control.o and vim/src/objects/vim_bonobo_control.o differ
+Binary files vimcopy/src/objects/vim_bonobo_factory.o and vim/src/objects/vim_bonobo_factory.o differ
+Binary files vimcopy/src/objects/vim_bonobo_main.o and vim/src/objects/vim_bonobo_main.o differ
+Binary files vimcopy/src/objects/window.o and vim/src/objects/window.o differ
+Binary files vimcopy/src/po/af.mo and vim/src/po/af.mo differ
+Binary files vimcopy/src/po/cs.cp1250.mo and vim/src/po/cs.cp1250.mo differ
+Binary files vimcopy/src/po/cs.mo and vim/src/po/cs.mo differ
+Binary files vimcopy/src/po/de.mo and vim/src/po/de.mo differ
+Binary files vimcopy/src/po/en_gb.mo and vim/src/po/en_gb.mo differ
+Binary files vimcopy/src/po/es.mo and vim/src/po/es.mo differ
+Binary files vimcopy/src/po/fr.mo and vim/src/po/fr.mo differ
+Binary files vimcopy/src/po/it.mo and vim/src/po/it.mo differ
+Binary files vimcopy/src/po/ja.mo and vim/src/po/ja.mo differ
+Binary files vimcopy/src/po/ja.sjis.mo and vim/src/po/ja.sjis.mo differ
+Binary files vimcopy/src/po/ko.mo and vim/src/po/ko.mo differ
+Binary files vimcopy/src/po/no.mo and vim/src/po/no.mo differ
+Binary files vimcopy/src/po/pl.cp1250.mo and vim/src/po/pl.cp1250.mo differ
+Binary files vimcopy/src/po/pl.mo and vim/src/po/pl.mo differ
+Binary files vimcopy/src/po/sk.cp1250.mo and vim/src/po/sk.cp1250.mo differ
+Binary files vimcopy/src/po/sk.mo and vim/src/po/sk.mo differ
+Binary files vimcopy/src/po/uk.mo and vim/src/po/uk.mo differ
+Binary files vimcopy/src/po/zh_CN.UTF-8.mo and vim/src/po/zh_CN.UTF-8.mo differ
+Binary files vimcopy/src/po/zh_CN.cp936.mo and vim/src/po/zh_CN.cp936.mo differ
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/po/zh_CN.cp936.po vim/src/po/zh_CN.cp936.po
+--- vimcopy/src/po/zh_CN.cp936.po	Mon Jun  2 09:32:25 2003
++++ vim/src/po/zh_CN.cp936.po	Sat Jul 26 15:06:40 2003
+@@ -3007,7 +3007,7 @@
+ 
+ #: main.c:2315
+ msgid "-foreground <color>\tUse <color> for normal text (also: -fg)"
+-msgstr "-foreground <color>\tÉè¶¨ <color> ÎªÒ»°ãÎÄ×ÖÑÕÉ« (Ò²¿ÉÓÃ -fg)"
++msgstr "-foreground <color>\tÉè¶¨ <color> ÎªÒ»°ãÎÄ×ÖÑÕÉ« (Ò²ÉÓÃ -fg)"
+ 
+ #: main.c:2316 main.c:2336
+ msgid "-font <font>\t\tUse <font> for normal text (also: -fn)"
+Binary files vimcopy/src/po/zh_CN.mo and vim/src/po/zh_CN.mo differ
+Binary files vimcopy/src/po/zh_TW.UTF-8.mo and vim/src/po/zh_TW.UTF-8.mo differ
+Binary files vimcopy/src/po/zh_TW.mo and vim/src/po/zh_TW.mo differ
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/structs.h vim/src/structs.h
+--- vimcopy/src/structs.h	Tue May 27 11:22:01 2003
++++ vim/src/structs.h	Sat Jul 26 13:16:48 2003
+@@ -1036,6 +1036,10 @@
+     char_u	*b_p_bh;	/* 'bufhidden' */
+     char_u	*b_p_bt;	/* 'buftype' */
+ #endif
++#if defined(FEAT_GUI_COMPONENT)
++    int         emb_buffer;     /* this buffer is associated with the container application,
++                                   and cannot be removed */
++#endif
+     int		b_p_bl;		/* 'buflisted' */
+ #ifdef FEAT_CINDENT
+     int		b_p_cin;	/* 'cindent' */
+@@ -1713,8 +1717,11 @@
+     GtkWidget	*tearoff_handle;
+     GtkWidget   *label;		    /* Used by "set wak=" code. */
+ #endif
+-#ifdef FEAT_GUI_MOTIF
++#if defined(FEAT_GUI_MOTIF) || defined(FEAT_GUI_COMPONENT)
+     int		sensitive;	    /* turn button on/off */
++#if defined(FEAT_GUI_COMPONENT)
++    int         dirty;              /* menu item has been updated; container needs to know */
++#endif
+ #endif
+ #if defined(FEAT_GUI_ATHENA) || defined(FEAT_GUI_MOTIF)
+     Pixmap	image;		    /* Toolbar image */
+Binary files vimcopy/src/vim and vim/src/vim differ
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/vim-container.xml vim/src/vim-container.xml
+--- vimcopy/src/vim-container.xml	Wed Dec 31 18:00:00 1969
++++ vim/src/vim-container.xml	Sat Jul 26 13:16:48 2003
+@@ -0,0 +1,83 @@
++<Root>
++
++<commands>
++	<cmd name="FileNewWindow" _label="_New Window" _tip="Open a new window"
++             pixtype="stock" pixname="gtk-new" accel="*Control*n"/>
++
++	<cmd name="FileOpen" _label="_Open..." _tip="Open a file"
++	     pixtype="stock" pixname="gtk-open" accel="*Control*o"/>
++
++	<cmd name="FileCloseWindow" _label="_Close" _tip="Close window"
++             pixtype="stock" pixname="gtk-close" accel="*Control*w"/>
++
++        <cmd name="FileExit" _label="_Quit" _tip="Quit the program"
++	     pixtype="stock" pixname="gtk-quit" accel="*Control*q"/>
++	
++	<cmd name="Preferences" _label="_Preferences..." _tip="Change preferences"  sensitive="0"
++	     pixtype="stock" pixname="gtk-preferences"/>
++
++	<cmd name="HelpAbout" _label="_About" _tip="About this application"
++	     pixtype="stock" pixname="About"/>
++	<cmd name="Help" _label="Contents" _tip="Help On this application"
++	     pixtype="stock" pixname="Help" accel="F1"/>
++
++
++	<cmd name="DnDNewWindow" _label="Open in new window"/>
++	<cmd name="DnDSameWindow" _label="Open in this window"/>
++	<cmd name="DnDCancel" _label="Cancel"
++	     pixtype="stock" pixname="Cancel"/>
++</commands>
++
++<menu>
++        <submenu name="File" _label="_File">
++
++		<menuitem name="FileNewWindow" verb=""/>
++
++		<placeholder name="Open Placeholder" delimit="top">
++			<menuitem name="FileOpen" verb=""/>
++		</placeholder>
++
++		<placeholder name="File Items Placeholder" delimit="top"/>
++
++		<separator/>
++
++		<menuitem name="FileCloseWindow" verb=""/>
++
++		<menuitem name="FileExit" verb=""/>
++
++	</submenu>
++
++	<submenu name="Edit" _label="_Edit">
++		<menuitem name="Preferences" verb=""/>
++        </submenu>
++
++	<submenu name="View" _label="_View" hidden="1">
++		<placeholder name="View Preferences Placeholder"/>
++		<placeholder name="View Items Placeholder" delimit="top"/>
++	</submenu>
++
++	<submenu name="Help" _label="_Help">
++		<menuitem name="Help" verb=""/>
++	        <menuitem name="HelpAbout" verb=""/>
++	</submenu>
++</menu>
++
++<dockitem name="Toolbar" relief="none" homogeneous="1" behavior="exclusive">
++
++        <toolitem name="TBOpen" _label="Open" pixtype="stock"
++                  pixname="Open" verb="FileOpen"/>
++
++        <toolitem name="TBCloseWindow" _label="Close" pixtype="stock"
++                  pixname="Close" verb="FileCloseWindow"/>
++</dockitem>
++
++<popups>
++        <popup name="dragndrop">
++	      <menuitem name="DnDNewWindow" verb=""/>
++	      <menuitem name="DnDSameWindow" verb=""/>
++	      <separator/>
++	      <menuitem name="DnDCancel" verb=""/>
++        </popup>
++</popups>
++
++</Root>
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/vim.h vim/src/vim.h
+--- vimcopy/src/vim.h	Thu May 29 10:18:40 2003
++++ vim/src/vim.h	Sat Jul 26 13:16:48 2003
+@@ -738,6 +738,10 @@
+ #define READ_STDIN	0x04	/* read from stdin */
+ #define READ_BUFFER	0x08	/* read from curbuf (converting stdin) */
+ #define READ_DUMMY	0x10	/* reading into a dummy buffer */
++#define READ_EMB_STREAM 0x20    /* read from container stream object 
++                                        (i.e. Bonobo Persist Stream) */
++#define READ_EMB_FILE   0x40    /* read from container file object 
++                                        (i.e. Bonobo Persist File) */
+ 
+ /* Values for change_indent() */
+ #define INDENT_SET	1	/* set indent */
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/vim_bonobo_control.c vim/src/vim_bonobo_control.c
+--- vimcopy/src/vim_bonobo_control.c	Wed Dec 31 18:00:00 1969
++++ vim/src/vim_bonobo_control.c	Sat Jul 26 13:16:48 2003
+@@ -0,0 +1,411 @@
++/**
++ * vim_bonobo_control.c
++ *
++ * Author:
++ *   Jason Hildebrand <jason@peaceworks.ca>
++ *
++ */
++#include <stdio.h>
++
++#include "vim.h"
++#include "vim_bonobo_control.h"
++#include "gtkhtml_editor.h"
++
++#include <gnome.h>
++#include <libbonoboui.h>
++#include <libbonobo.h>
++#include <libnautilus/nautilus-view.h>
++
++
++struct _VimControlPrivate {
++    BonoboUIComponent *component;
++};
++
++static GObjectClass *vim_control_parent_class;
++
++static gboolean
++quit_vim(gpointer data)
++{
++    MAIN_QUIT();
++    exit(0);
++}
++
++static void
++vim_control_destroy (BonoboObject *control)
++{
++	BonoboUIComponent *uic;
++
++	g_return_if_fail (control != NULL);
++	g_return_if_fail (VIM_IS_CONTROL (control));
++
++    g_message ("Destroying VimControl...");
++
++	uic = bonobo_control_get_ui_component (BONOBO_CONTROL (control));
++    if( uic != CORBA_OBJECT_NIL )
++        bonobo_ui_component_unset_container (uic, NULL);
++
++	BONOBO_OBJECT_CLASS (vim_control_parent_class)->destroy (control);
++
++    /* we only support creating one vim control per process, so when this one
++     * is finished, we're done. */ 
++    /* BONOBO_FIXME: shut down vim cleanly! */
++    g_timeout_add(100, &quit_vim, NULL);
++}
++
++static void
++vim_control_finalize (GObject *object)
++{
++	VimControl *control;
++
++	g_return_if_fail (object != NULL);
++	g_return_if_fail (VIM_IS_CONTROL (object));
++
++	control = VIM_CONTROL (object);
++
++	g_free (control->priv);
++
++	G_OBJECT_CLASS (vim_control_parent_class)->finalize (object);
++}
++
++static void
++vim_control_set_ui_container (VimControl *control,
++			      Bonobo_UIContainer ui_container)
++{
++	BonoboUIComponent *uic;
++	
++	g_return_if_fail (control != NULL);
++	g_return_if_fail (VIM_IS_CONTROL (control));
++	g_return_if_fail (ui_container != CORBA_OBJECT_NIL);
++
++	uic = bonobo_control_get_ui_component (BONOBO_CONTROL (control));
++	bonobo_ui_component_set_container (uic, ui_container, NULL);
++
++    /* update vim's UI now */
++    update_ui_later();
++}
++
++static void
++vim_control_unset_ui_container (VimControl *control)
++{
++	BonoboUIComponent *uic;
++
++	g_return_if_fail (control != NULL);
++	g_return_if_fail (VIM_IS_CONTROL (control));
++
++	uic = bonobo_control_get_ui_component (BONOBO_CONTROL (control));
++	bonobo_ui_component_unset_container (uic, NULL);
++}
++
++static grab_keys = 0;
++
++static GdkFilterReturn
++filter_key_events (GdkXEvent *gdk_xevent, GdkEvent *event, gpointer data)
++{
++ /* GdkScreen *screen = gdk_drawable_get_screen (event->any.window);
++  GdkDisplay *display = gdk_screen_get_display (screen);*/
++  XEvent *xevent = (XEvent *)gdk_xevent;
++                                                                                
++  GdkFilterReturn return_val;
++                                                                                
++  return_val = GDK_FILTER_CONTINUE;
++                                                                                
++  switch (xevent->type)
++  {
++      case KeyPress:
++        g_warning("Key press!");
++        break;
++
++      case KeyRelease:
++        g_warning("Key release!");
++        break;
++
++      default:
++        break;
++  }
++  return return_val;
++}
++
++
++static void
++set_frame_cb (BonoboControl *object, gpointer data)
++{
++    Bonobo_ControlFrame frame;
++    BonoboPlug * plug;
++	VimControl *control;
++    GdkEventMask mask;
++                                                                                
++	g_return_if_fail (object != NULL);
++	g_return_if_fail (VIM_IS_CONTROL (object));
++
++    frame = bonobo_control_get_control_frame (object, NULL);
++    if (frame == CORBA_OBJECT_NIL)
++        return;
++    CORBA_Object_release (frame, NULL);
++
++	control = VIM_CONTROL (object);
++
++    Bonobo_UIContainer ui_container;
++
++    ui_container = bonobo_control_get_remote_ui_container (BONOBO_CONTROL (control), NULL);
++    if (ui_container != CORBA_OBJECT_NIL) {
++        vim_control_set_ui_container (control, ui_container);
++        bonobo_object_release_unref (ui_container, NULL);
++    }
++
++    /*plug = (BonoboPlug *)bonobo_control_get_plug(control);*/
++    /*gdk_window_add_filter (NULL, filter_key_events, NULL);*/
++}
++
++static void
++vim_control_class_init (VimControl *klass)
++{
++	GObjectClass *gobject_class = (GObjectClass *)klass;
++	BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)klass;
++	BonoboControlClass *control_class = (BonoboControlClass *)klass;
++
++	vim_control_parent_class= g_type_class_peek_parent (klass);
++
++	bonobo_object_class->destroy = vim_control_destroy;
++	gobject_class->finalize = vim_control_finalize;
++}
++
++static int persistent_buffer;
++static char_u * stream_buffer = NULL;
++static int stream_offset = 0;
++static CORBA_long  stream_length = 0;
++static Bonobo_Stream current_stream;
++
++void
++set_curbuf_persistent(void)
++{
++	persistent_buffer = curbuf->b_fnum;
++}
++
++/* It seems like it's an error to attempt to read more data
++ * than is available from a bonobo stream.  So we slurp in
++ * the entire file in one chunk, and then pass it back in 
++ * pieces to the caller. 
++ */
++int
++vim_control_persist_stream_read(char_u * buffer, int reqsize)
++{
++    int read_size;
++
++    if( stream_offset >= stream_length ) {
++        return 0;
++    }
++    read_size = stream_length - stream_offset >= reqsize ? 
++                    reqsize : stream_length - stream_offset;
++    mch_memmove(buffer, &stream_buffer[stream_offset], read_size);
++    stream_offset += read_size;
++    return read_size;
++}
++
++int
++vim_control_persist_stream_write(char_u * buffer, int reqsize)
++{
++    CORBA_Environment ev;
++
++    CORBA_exception_init(&ev);
++    bonobo_stream_client_write(current_stream, buffer, reqsize, &ev);
++	if (ev._major != CORBA_NO_EXCEPTION || stream_buffer == NULL) {
++        g_warning("Error writing to stream");
++		CORBA_exception_free (&ev);
++        return 0;
++	}
++    CORBA_exception_free (&ev);
++    return reqsize;
++}
++
++static void load_buffer_from_stream(BonoboPersistStream         *ps,
++                      const Bonobo_Stream         stream,
++                      Bonobo_Persist_ContentType  type,
++                      void                       *closure,
++                      CORBA_Environment          *ev)
++{
++    exarg_T		ea;			/* Ex command arguments */
++
++    g_warning ("load_buffer_from_stream");
++
++    stream_buffer = bonobo_stream_client_read( stream, -1, &stream_length, ev);
++	if (ev->_major != CORBA_NO_EXCEPTION || stream_buffer == NULL) {
++        g_warning("Error reading from stream");
++        return;
++	}
++    stream_offset = 0;
++
++    vim_memset(&ea, 0, sizeof(ea));
++    ea.cmd = "e ++enc=utf-8";
++    ea.force_enc = 8; /* this is the offset of "utf-8" in the cmd */
++
++    read_from_container = PERSIST_STREAM_IO;
++    do_ecmd(0, NULL, NULL, &ea, 1, 0);
++    read_from_container = NORMAL_IO;
++
++    /* remember this buffer */
++	persistent_buffer = curbuf->b_fnum;
++    ga_clear(&error_ga);
++    g_free(stream_buffer);
++}
++
++
++static void 
++save_buffer_to_stream(BonoboPersistStream         *ps,
++                      const Bonobo_Stream         stream,
++                      Bonobo_Persist_ContentType  type,
++                      void                       *closure,
++                      CORBA_Environment          *ev)
++{
++    buf_T * buf;
++    exarg_T		ea;			/* Ex command arguments */
++
++    g_warning ("save_buffer_to_stream");
++
++    current_stream = stream;
++    write_to_container = PERSIST_STREAM_IO;
++
++    vim_memset(&ea, 0, sizeof(ea));
++    ea.cmd = "e ++enc=utf-8";
++    ea.force_enc = 8; /* this is the offset of "utf-8" in the cmd */
++
++    buf = buflist_findnr(persistent_buffer);
++    if( buf ) {
++        buf_write(buf, "dummy", "dummy", 1, buf->b_ml.ml_line_count, &ea, FALSE, FALSE,
++                                      TRUE, TRUE);
++    }
++    write_to_container = NORMAL_IO;
++    ga_clear(&error_ga);
++}
++
++
++Bonobo_Persist_ContentTypeList * 
++persist_stream_types( BonoboPersistStream * ps, void * closure, CORBA_Environment *ev )
++{
++    g_warning ("persist_stream_types");
++    return bonobo_persist_generate_content_types(1, "text/plain", "text/html");
++}
++
++
++static void
++nv_load_location_cb (NautilusView *view, const char *location, gpointer user_data)
++{
++	g_return_if_fail (NAUTILUS_IS_VIEW (view));
++	g_return_if_fail (location != NULL);
++
++	nautilus_view_report_load_underway (NAUTILUS_VIEW (view));
++
++    /* FIXME: load the file here (using gnome-vfs)! */
++	nautilus_view_report_load_complete (NAUTILUS_VIEW (view));
++}
++
++static void
++vim_control_init (VimControl *control)
++{
++	control->priv = g_new0 (VimControlPrivate, 1);
++}
++
++BONOBO_TYPE_FUNC (VimControl, BONOBO_TYPE_CONTROL, vim_control);
++
++BonoboObject *
++vim_control_add_interfaces (VimControl     *control,
++			  BonoboObject *to_aggregate)
++{
++	//BonoboPersistFile   *file;
++    NautilusView        *nv;
++	BonoboPersistStream *stream;
++    EditorEngine        *engine; /* GtkHTML editor engine interface */
++	//BonoboItemContainer *item_container;
++	
++	g_return_val_if_fail (VIM_IS_CONTROL (control), NULL);
++	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
++
++	/* Interface Bonobo::PersistFile */
++#if 0
++	file = bonobo_persist_file_new (load_vim_from_file, 
++					    NULL, VIM_OAFIID, control);
++	if (!file) {
++		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
++		return NULL;
++	}
++#endif
++
++    stream = bonobo_persist_stream_new (load_buffer_from_stream,
++                                        save_buffer_to_stream, 
++                                        persist_stream_types, 
++                                        VIM_OAFIID, 
++                                        control);
++    if (!stream) {
++        bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
++        return NULL;
++    }
++	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
++				     BONOBO_OBJECT (stream));
++
++    nv = nautilus_view_new_from_bonobo_control(BONOBO_CONTROL(control));
++    if( !nv ) {
++        bonobo_object_unref (BONOBO_OBJECT(to_aggregate));
++        return NULL;
++    }
++	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
++				     BONOBO_OBJECT (nv));
++
++	g_signal_connect (G_OBJECT (nv), "load_location",
++			  G_CALLBACK (nv_load_location_cb), NULL);
++
++    engine = editor_engine_new();
++    if( !engine ) {
++        bonobo_object_unref (BONOBO_OBJECT(to_aggregate));
++        return NULL;
++    }
++	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
++				     BONOBO_OBJECT (engine));
++
++	return to_aggregate;
++}
++
++VimControl *
++vim_control_construct (VimControl    *control)
++{
++	GtkWidget             *button;
++	GtkWidget             *label;
++    BonoboPlug            *plug;
++    GtkAccelGroup         *group;
++    GClosure              *closure;
++	//VimControlPrivate     *priv;
++	
++	g_return_val_if_fail (control != NULL, NULL);
++	g_return_val_if_fail (VIM_IS_CONTROL (control), NULL);
++
++
++	if (!vim_control_add_interfaces (control, BONOBO_OBJECT (control)))
++		return NULL;
++
++    gui.control = BONOBO_CONTROL(control);
++    gui.plug = (BonoboPlug *)bonobo_control_get_plug(control);
++    gui.mainwin = GTK_WIDGET(gui.plug);
++    gui_mch_init();
++
++    g_signal_connect (control, "set_frame", G_CALLBACK (set_frame_cb), NULL);
++
++	/* Create the vim-view */
++	//priv->image_view = vim_image_view_new (vim, FALSE);
++	//if (!priv->image_view) {
++		//bonobo_object_unref (BONOBO_OBJECT (control));
++		//return NULL;
++	//}
++    
++	return control;
++}
++
++VimControl *
++vim_control_new (void)
++{
++	VimControl *control;
++	
++    g_message ("Creating VimControl...");
++
++	control = g_object_new (VIM_CONTROL_TYPE, NULL);
++
++	return vim_control_construct (control);
++}
++
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/vim_bonobo_control.h vim/src/vim_bonobo_control.h
+--- vimcopy/src/vim_bonobo_control.h	Wed Dec 31 18:00:00 1969
++++ vim/src/vim_bonobo_control.h	Sat Jul 26 13:16:48 2003
+@@ -0,0 +1,50 @@
++/*
++ * vim_bonobo_control.h
++ *
++ * Author:
++ *   Jason Hildebrand (jason@peaceworks.ca)
++ *
++ */
++
++#ifndef _VIM_CONTROL_H_
++#define _VIM_CONTROL_H_
++
++#include <bonobo/bonobo-control.h>
++#define VIM_OAFIID "OAFIID:Vim_Control"
++#define NORMAL_IO 0
++#define PERSIST_STREAM_IO 1
++#define PERSIST_FILE_IO 2
++
++G_BEGIN_DECLS
++ 
++#define VIM_CONTROL_TYPE           (vim_control_get_type ())
++#define VIM_CONTROL(o)             (G_TYPE_CHECK_INSTANCE_CAST ((o), VIM_CONTROL_TYPE, VimControl))
++#define VIM_CONTROL_CLASS(k)       (G_TYPE_CHECK_CLASS_CAST((k), VIM_CONTROL_TYPE, VimControlClass))
++
++#define VIM_IS_CONTROL(o)          (G_TYPE_CHECK_INSTANCE_TYPE ((o), VIM_CONTROL_TYPE))
++#define VIM_IS_CONTROL_CLASS(k)    (G_TYPE_CHECK_CLASS_TYPE ((k), VIM_CONTROL_TYPE))
++#define VIM_CONTROL_GET_CLASS(o)   (G_TYPE_INSTANCE_GET_CLASS ((o), VIM_CONTROL_TYPE, VimControlClass))
++
++typedef struct _VimControl         VimControl;
++typedef struct _VimControlClass    VimControlClass;
++typedef struct _VimControlPrivate  VimControlPrivate;
++
++struct _VimControl {
++	BonoboControl control;
++
++	VimControlPrivate *priv;
++};
++
++struct _VimControlClass {
++	BonoboControlClass parent_class;
++};
++
++GType         vim_control_get_type                    (void);
++VimControl    *vim_control_new                         (void);
++VimControl    *vim_control_construct                   (VimControl    *control);
++
++void set_curbuf_persistent(void);
++
++G_END_DECLS
++
++#endif /* _VIM_CONTROL_H_*/
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/vim_bonobo_factory.c vim/src/vim_bonobo_factory.c
+--- vimcopy/src/vim_bonobo_factory.c	Wed Dec 31 18:00:00 1969
++++ vim/src/vim_bonobo_factory.c	Sat Jul 26 13:42:10 2003
+@@ -0,0 +1,73 @@
++/*
++ * vim_bonobo_factory.c
++ *
++ * Author:
++ *   Jason Hildebrand (jason@peaceworks.ca)
++ *
++ */
++
++#include "vim.h"
++#include "version.h"
++#include <bonobo/bonobo-generic-factory.h>
++#include "vim_bonobo_control.h"
++
++static BonoboGenericFactory *factory = NULL;
++static int vim_instantiated = 0;
++
++static BonoboObject *
++vim_bonobo_factory(BonoboGenericFactory *this,
++              const char           *oaf_iid,
++              void                 *data)
++{
++    VimControl     *vim;
++    BonoboObject *retval;
++
++    g_return_val_if_fail (this != NULL, NULL);
++    g_return_val_if_fail (oaf_iid != NULL, NULL);
++
++    if( vim_instantiated ) {
++        /* we cannot instantiate more than one control from this process,
++         * because of all of vim's global variables */
++        return NULL;
++    }
++                                                                                
++    g_message ("Trying to produce a '%s'...", oaf_iid);
++                                                                                
++    if (strcmp (oaf_iid, VIM_OAFIID) == 0) {
++        vim = vim_control_new ();
++        if (vim == NULL)
++            return NULL;
++        retval = BONOBO_OBJECT (vim);
++    } else {
++        g_warning ("Unknown IID `%s' requested", oaf_iid);
++        return NULL;
++    }
++    vim_instantiated = 1;
++                                                                                
++    return retval;
++}
++
++/* wait until this component is instantiated */
++int vim_bonobo_wait_for_instantiation()
++{
++    while( !vim_instantiated) {
++        MAIN_ITERATION_DO(TRUE);
++    }
++}
++
++
++int vim_bonobo_init(int *argc, char *argv[])
++{
++    if (!bonobo_ui_init ("gnome-vim", VIM_VERSION_SHORT, argc, argv))
++        g_error (_("Could not initialize Bonobo"));
++                                                                                
++    factory = bonobo_generic_factory_new (
++        "OAFIID:Vim_Control_Factory", vim_bonobo_factory, NULL);
++                                                                                
++    if (factory == NULL) {
++        g_error ("Couldn't create factory.\n");
++        return 0;
++    }
++    return 1;
++}
++
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/vim_bonobo_factory.h vim/src/vim_bonobo_factory.h
+--- vimcopy/src/vim_bonobo_factory.h	Wed Dec 31 18:00:00 1969
++++ vim/src/vim_bonobo_factory.h	Sat Jul 26 13:16:48 2003
+@@ -0,0 +1,15 @@
++/*
++ * vim_bonobo_factory.h
++ *
++ * Author:
++ *   Jason Hildebrand (jason@peaceworks.ca)
++ *
++ */
++
++#if !defined( _VIM_BONOBO_FACTORY_H)
++#define _VIM_BONOBO_FACTORY_H
++
++void gui_component_init(int *argc, char *argv []);
++int gui_component_wait_for_instantiation(void);
++
++#endif
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/vim_bonobo_main.c vim/src/vim_bonobo_main.c
+--- vimcopy/src/vim_bonobo_main.c	Wed Dec 31 18:00:00 1969
++++ vim/src/vim_bonobo_main.c	Sat Jul 26 13:16:48 2003
+@@ -0,0 +1,60 @@
++/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
++
++#include <glib/gmain.h>
++#include <glib-object.h>
++
++static guint              bonobo_main_loop_level = 0;
++static GSList *           bonobo_main_loops = NULL;
++
++
++/**
++ * bonobo_main:
++ * 
++ * Activates the Bonobo POA Manager and enters the main event loop.
++ */
++void
++vim_bonobo_main (void)
++{
++	GMainLoop *loop;
++
++	bonobo_activate ();
++
++	bonobo_main_loop_level++;
++  
++	loop = g_main_loop_new (NULL, TRUE);
++	bonobo_main_loops = g_slist_prepend (bonobo_main_loops, loop);
++
++	if (g_main_loop_is_running (bonobo_main_loops->data))
++		g_main_loop_run (loop);
++
++	bonobo_main_loops = g_slist_remove (bonobo_main_loops, loop);
++
++	g_main_loop_unref (loop);
++
++	bonobo_main_loop_level--;
++}
++
++/**
++ * bonobo_main_quit:
++ * 
++ * Quits the main event loop.
++ */
++void
++vim_bonobo_main_quit (void)
++{
++	g_return_if_fail (bonobo_main_loops != NULL);
++
++	g_main_loop_quit (bonobo_main_loops->data);
++}
++
++int
++vim_bonobo_main_level(void)
++{
++    return bonobo_main_loop_level;
++}
++
++gboolean
++vim_bonobo_main_iteration_do(may_block)
++{
++    g_main_context_iteration(NULL, may_block);
++}
+diff --new-file -u -r --exclude-from=excludelist vimcopy/src/vim_bonobo_main.h vim/src/vim_bonobo_main.h
+--- vimcopy/src/vim_bonobo_main.h	Wed Dec 31 18:00:00 1969
++++ vim/src/vim_bonobo_main.h	Sat Jul 26 13:16:48 2003
+@@ -0,0 +1,14 @@
++/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
++
++#ifndef __VIM_BONOBO_MAIN_H__
++#define __VIM_BONOBO_MAIN_H__
++
++#include <glib-object.h>
++#include <bonobo/Bonobo.h>
++
++void			    vim_bonobo_main			 (void);
++void                vim_bonobo_main_quit     (void);
++int                 vim_bonobo_level(void);
++gboolean            vim_bonobo_main_iteration_do(int may_block);
++
++#endif /* __VIM_BONOBO_MAIN_H__ */
+Binary files vimcopy/src/xxd/xxd and vim/src/xxd/xxd differ
+diff --new-file -u -r --exclude-from=excludelist vimcopy/vim/src/Make_container.mak vim/vim/src/Make_container.mak
+--- vimcopy/vim/src/Make_container.mak	Wed Dec 31 18:00:00 1969
++++ vim/vim/src/Make_container.mak	Sat Jul 26 13:16:48 2003
+@@ -0,0 +1,11 @@
++gnomeccFlags = `pkg-config --cflags libgnomeui-2.0 libgnome-2.0`
++ccFlags = -g -c ${gnomeccFlags}
++ldFlags = `pkg-config --libs libgnomeui-2.0 libgnome-2.0`
++
++all: container
++
++container: container.o
++	gcc -o container ${ldFlags} container.o
++
++%.o: %.c
++	gcc ${ccFlags} $< -o $@
