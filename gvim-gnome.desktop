@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=gvim
-Comment="The vi editor for X Window with GNOME L&F"
-Comment[pl]="Edytor vi dla X Window jako aplikacja GNOME"
+Name=Gvim
+Comment=The vi editor for X Window System with GNOME L&F
+Comment[pl]=Edytor vi dla Systemu X Window jako aplikacja GNOME
 Exec=gvim.gnome
 Terminal=0
 Icon=gnome-word.png

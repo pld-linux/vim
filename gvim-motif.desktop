@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=gvim
-Comment="The vi editor for X Window with Motif L&F"
-Comment[pl]="Edytor vi dla X Window jako aplikacja Motif"
+Name=Gvim
+Comment=The vi editor for X Window System with Motif L&F
+Comment[pl]=Edytor vi dla Systemu X Window jako aplikacja Motif
 Exec=gvim.motif
 Terminal=0
 Icon=gnome-word.png
