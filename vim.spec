@@ -41,6 +41,7 @@ Patch1:		%{name}-visual.patch
 Patch2:		%{name}-phphighlight.patch
 Patch3:		%{name}-paths.patch
 Patch4:		%{name}-ispell.patch
+Patch5:		%{name}-ispell-axp.patch
 URL:		http://www.vim.org/
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -244,6 +245,9 @@ bibliotek GNOME.
 %patch2 -p1
 %patch3 -p1
 %{?_with_ispell:%patch4 -p1}
+%ifarch alpha
+%{?_with_ispell:%patch5 -p1}
+%endif
 
 # these patches are to "extra" package which we don't need (nor use)
 rm -f patches/6.0.{027,048,053,064,070,073,093,106,107,115,116,117,119,123,121,122,125,135,161,162,164,165,179,186,188,205,207}
