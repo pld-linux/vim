@@ -247,18 +247,18 @@ echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rview.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rgvim.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rgview.1
 
-cp -a runtime/macros $RPM_BUILD_ROOT/usr/share/vim/macros
-cp -a runtime/syntax $RPM_BUILD_ROOT/usr/share/vim/syntax
-cp -a runtime/tutor/tutor  $RPM_BUILD_ROOT/usr/share/vim/tutor/tutor
+cp -a runtime/macros $RPM_BUILD_ROOT%{_datadir}/vim/macros
+cp -a runtime/syntax $RPM_BUILD_ROOT%{_datadir}/vim/syntax
+cp -a runtime/tutor/tutor  $RPM_BUILD_ROOT%{_datadir}/vim/tutor/tutor
 
-install runtime/*.vim $RPM_BUILD_ROOT/usr/share/vim
-install runtime/vimrc_example.vim $RPM_BUILD_ROOT/usr/share/vim/vimrc
+install runtime/*.vim $RPM_BUILD_ROOT%{_datadir}/vim
+install runtime/vimrc_example.vim $RPM_BUILD_ROOT%{_datadir}/vim/vimrc
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/X11/wmconfig/gvim
 
 touch $RPM_BUILD_ROOT/usr/bin/vim $RPM_BUILD_ROOT/usr/X11R6/bin/gvim
 
-install runtime/doc/*.txt $RPM_BUILD_ROOT/usr/share/vim/doc
-install runtime/doc/tags  $RPM_BUILD_ROOT/usr/share/vim/doc
+install runtime/doc/*.txt $RPM_BUILD_ROOT%{_datadir}/vim/doc
+install runtime/doc/tags  $RPM_BUILD_ROOT%{_datadir}/vim/doc
 
 ln -sf vi $RPM_BUILD_ROOT/bin/ex
 ln -sf vi $RPM_BUILD_ROOT/bin/view
@@ -335,22 +335,22 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 
 %{_mandir}/man1/*
 
-%dir /usr/share/vim
-/usr/share/vim/macros
+%dir %{_datadir}/vim
+%{_datadir}/vim/macros
 
-%dir /usr/share/vim/syntax
-/usr/share/vim/syntax/*.vim
+%dir %{_datadir}/vim/syntax
+%{_datadir}/vim/syntax/*.vim
 
-/usr/share/vim/tutor
-/usr/share/vim/bugreport.vim
-/usr/share/vim/filetype.vim
-/usr/share/vim/scripts.vim
-/usr/share/vim/mswin.vim
-/usr/share/vim/ftoff.vim
-/usr/share/vim/doc
+%{_datadir}/vim/tutor
+%{_datadir}/vim/bugreport.vim
+%{_datadir}/vim/filetype.vim
+%{_datadir}/vim/scripts.vim
+%{_datadir}/vim/mswin.vim
+%{_datadir}/vim/ftoff.vim
+%{_datadir}/vim/doc
 
-%config %verify(not size mtime md5) /usr/share/vim/menu.vim
-%config %verify(not size mtime md5) /usr/share/vim/vimrc
+%config %verify(not size mtime md5) %{_datadir}/vim/menu.vim
+%config %verify(not size mtime md5) %{_datadir}/vim/vimrc
 
 %changelog
 * Wed Apr 21 1999 Artur Frysiak <wiget@pld.org.pl>
@@ -372,12 +372,12 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 * Thu Feb 04 1999 Wojtek ¦lusarczyk <wojtek@shadow.eu.org>
   [5.4d-2d]
 - symlink /usr/bin/vi -> /bin/vi
-- doc package moved to /usr/share/vim/doc (crazy cpio .. ;)
+- doc package moved to %{_datadir}/vim/doc (crazy cpio .. ;)
 
 * Tue Feb  2 1999 Artur Frysiak <wiget@usa.net>
   [5.4d-1d]
 - upgraded to 5.4d
-- now /usr/share/vim/doc is symlink to /usr/doc/%{name}-rt-%{version}
+- now %{_datadir}/vim/doc is symlink to /usr/doc/%{name}-rt-%{version}
 - added missingok option to wmconfig files
 
 * Wed Jan 13 1999 Artur Frysiak <wiget@usa.net>
@@ -396,7 +396,7 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 
 * Thu Nov 12 1998 Arkadiusz Mi¶kiewicz <misiek@misiek.eu.org>
   [5.3-2d]
-- added /usr/share/vim/doc/{help.txt,tags} to rt subpackage (was missing)
+- added %{_datadir}/vim/doc/{help.txt,tags} to rt subpackage (was missing)
 
 * Sun Oct 04 1998 Marcin Korzonek <mkorz@shadow.eu.org>
   [5.3-1]
