@@ -5,6 +5,5 @@ Comment[pl]=Edytor vi dla Systemu X Window jako aplikacja GTK
 Exec=gvim.gtk
 Terminal=0
 Icon=gnome-word.png
-Type=Applications/Editors
-Type[pl]=Aplikacje/Edytory
+Type=Application
 # vi: encoding=utf-8

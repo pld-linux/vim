@@ -6,5 +6,4 @@ Exec=gvim.athena
 Terminal=0
 Icon=gnome-word.png
 Type=Application
-Type[pl]=Aplikacje/Edytory
 # vi: encoding=utf-8
