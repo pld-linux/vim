@@ -1,0 +1,66 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.003
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.003
+Problem:    Crash when using a console dialog and the first choice does not
+	    have a default button. (Darin Ohashi)
+Solution:   Allocate two more characters for the [] around the character for
+	    the default choice.
+Files:	    src/message.c
+
+
+*** ../vim-6.3.002/src/message.c	Wed Jun  9 14:56:25 2004
+--- src/message.c	Fri Jun 11 20:14:02 2004
+***************
+*** 2918,2923 ****
+--- 2918,2930 ----
+  		    + 3;		/* for the ": " and NUL */
+  	    lenhotkey++;		/* for the NUL */
+  
++ 	    /* If no hotkey is specified first char is used. */
++ 	    if (!has_hotkey[0])
++ 	    {
++ 		first_hotkey = TRUE;
++ 		len += 2;		/* "x" -> "[x]" */
++ 	    }
++ 
+  	    /*
+  	     * Now allocate and load the strings
+  	     */
+***************
+*** 2938,2947 ****
+  
+  	    /* define first default hotkey */
+  	    (void)copy_char(buttons, hotkp, TRUE);
+- 
+- 	    /* If no hotkey is specified first char is used. */
+- 	    if (!has_hotkey[0])
+- 		first_hotkey = TRUE;
+  
+  	    /* Remember where the choices start, displaying starts here when
+  	     * "hotkp" typed at the more prompt. */
+--- 2945,2950 ----
+*** ../vim-6.3.002/src/version.c	Thu Jun 10 21:08:20 2004
+--- src/version.c	Fri Jun 11 20:17:37 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     3,
+  /**/
+
+-- 
+From "know your smileys":
+ :.-(	Crying
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

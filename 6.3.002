@@ -1,0 +1,147 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.002
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.002
+Problem:    When using translated help files with non-ASCII latin1 characters
+	    in the first line the utf-8 detection is wrong.
+Solution:   Properly detect utf-8 characters.  When a mix of encodings is
+	    detected continue with the next language and avoid a "no matches"
+	    error because of "got_int" being set.  Add the directory name to
+	    the error message for a duplicate tag.
+Files:	    src/ex_cmds.c
+
+
+*** ../vim-6.3.001/src/ex_cmds.c	Wed Jun  9 14:56:26 2004
+--- src/ex_cmds.c	Thu Jun 10 21:08:05 2004
+***************
+*** 5300,5305 ****
+--- 5300,5306 ----
+      int		utf8 = MAYBE;
+      int		this_utf8;
+      int		firstline;
++     int		mix = FALSE;	/* detected mixed encodings */
+  # endif
+  
+      /*
+***************
+*** 5313,5319 ****
+  						    EW_FILE|EW_SILENT) == FAIL
+  	    || filecount == 0)
+      {
+! 	EMSG2("E151: No match: %s", NameBuff);
+  	return;
+      }
+  
+--- 5314,5321 ----
+  						    EW_FILE|EW_SILENT) == FAIL
+  	    || filecount == 0)
+      {
+! 	if (!got_int)
+! 	    EMSG2("E151: No match: %s", NameBuff);
+  	return;
+      }
+  
+***************
+*** 5377,5391 ****
+  	    if (firstline)
+  	    {
+  		/* Detect utf-8 file by a non-ASCII char in the first line. */
+! 		this_utf8 = FALSE;
+  		for (s = IObuff; *s != NUL; ++s)
+  		    if (*s >= 0x80)
+  			this_utf8 = TRUE;
+! 		if (utf8 == MAYBE)
+  		    utf8 = this_utf8;
+  		else if (utf8 != this_utf8)
+  		{
+  		    EMSG2(_("E670: Mix of help file encodings within a language: %s"), files[fi]);
+  		    got_int = TRUE;
+  		}
+  		firstline = FALSE;
+--- 5379,5408 ----
+  	    if (firstline)
+  	    {
+  		/* Detect utf-8 file by a non-ASCII char in the first line. */
+! 		this_utf8 = MAYBE;
+  		for (s = IObuff; *s != NUL; ++s)
+  		    if (*s >= 0x80)
++ 		    {
++ 			int l;
++ 
+  			this_utf8 = TRUE;
+! 			l = utf_ptr2len_check(s);
+! 			if (l == 1)
+! 			{
+! 			    /* Illegal UTF-8 byte sequence. */
+! 			    this_utf8 = FALSE;
+! 			    break;
+! 			}
+! 			s += l - 1;
+! 		    }
+! 		if (this_utf8 == MAYBE)	    /* only ASCII characters found */
+! 		    this_utf8 = FALSE;
+! 		if (utf8 == MAYBE)	    /* first file */
+  		    utf8 = this_utf8;
+  		else if (utf8 != this_utf8)
+  		{
+  		    EMSG2(_("E670: Mix of help file encodings within a language: %s"), files[fi]);
++ 		    mix = !got_int;
+  		    got_int = TRUE;
+  		}
+  		firstline = FALSE;
+***************
+*** 5463,5470 ****
+  		{
+  		    *p2 = NUL;
+  		    sprintf((char *)NameBuff,
+! 			    _("E154: Duplicate tag \"%s\" in file %s"),
+! 			    ((char_u **)ga.ga_data)[i], p2 + 1);
+  		    EMSG(NameBuff);
+  		    *p2 = '\t';
+  		    break;
+--- 5480,5487 ----
+  		{
+  		    *p2 = NUL;
+  		    sprintf((char *)NameBuff,
+! 			    _("E154: Duplicate tag \"%s\" in file %s/%s"),
+! 				     ((char_u **)ga.ga_data)[i], dir, p2 + 1);
+  		    EMSG(NameBuff);
+  		    *p2 = '\t';
+  		    break;
+***************
+*** 5502,5507 ****
+--- 5519,5528 ----
+  	    }
+  	}
+      }
++ #ifdef FEAT_MBYTE
++     if (mix)
++ 	got_int = FALSE;    /* continue with other languages */
++ #endif
+  
+      for (i = 0; i < ga.ga_len; ++i)
+  	vim_free(((char_u **)ga.ga_data)[i]);
+*** ../vim-6.3.001/src/version.c	Wed Jun  9 14:59:11 2004
+--- src/version.c	Thu Jun 10 20:53:19 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     2,
+  /**/
+
+-- 
+From "know your smileys":
+ %	Bike accident (a bit far-fetched, I suppose)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

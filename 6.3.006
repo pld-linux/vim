@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.006
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.006
+Problem:    ":breakadd file *foo" prepends the current directory to the file
+	    pattern. (Hari Krishna Dara)
+Solution:   Keep the pattern as-is.
+Files:	    src/ex_cmds2.c
+
+
+*** ../vim-6.3.005/src/ex_cmds2.c	Wed Jun  9 14:56:26 2004
+--- src/ex_cmds2.c	Sun Jun 13 12:52:13 2004
+***************
+*** 431,438 ****
+  	vim_free(q);
+  	if (p == NULL)
+  	    return FAIL;
+! 	bp->dbg_name = fix_fname(p);
+! 	vim_free(p);
+  #ifdef MACOS_CLASSIC
+  	if (bp->dbg_name != NULL)
+  	    slash_n_colon_adjust(bp->dbg_name);
+--- 431,437 ----
+  	vim_free(q);
+  	if (p == NULL)
+  	    return FAIL;
+! 	bp->dbg_name = p;
+  #ifdef MACOS_CLASSIC
+  	if (bp->dbg_name != NULL)
+  	    slash_n_colon_adjust(bp->dbg_name);
+*** ../vim-6.3.005/src/version.c	Wed Jun 16 10:56:31 2004
+--- src/version.c	Wed Jun 16 12:33:36 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     6,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+134. You consider bandwidth to be more important than carats.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

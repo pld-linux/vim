@@ -1,0 +1,95 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.005
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.005
+Problem:    Crash when searching for a pattern with a character offset and
+	    starting in a closed fold. (Frank Butler)
+Solution:   Check for the column to be past the end of the line.  Also fix
+	    that a pattern with a character offset relative to the end isn't
+	    read back from the viminfo properly.
+Files:	    src/search.c
+
+
+*** ../vim-6.3.004/src/search.c	Sun Jun 13 12:33:41 2004
+--- src/search.c	Wed Jun 16 10:46:17 2004
+***************
+*** 1138,1147 ****
+  	/*
+  	 * If there is a character offset, subtract it from the current
+  	 * position, so we don't get stuck at "?pat?e+2" or "/pat/s-2".
+  	 * This is not done for a line offset, because then we would not be vi
+  	 * compatible.
+  	 */
+! 	if (!spats[0].off.line && spats[0].off.off)
+  	{
+  	    if (spats[0].off.off > 0)
+  	    {
+--- 1138,1148 ----
+  	/*
+  	 * If there is a character offset, subtract it from the current
+  	 * position, so we don't get stuck at "?pat?e+2" or "/pat/s-2".
++ 	 * Skip this if pos.col is near MAXCOL (closed fold).
+  	 * This is not done for a line offset, because then we would not be vi
+  	 * compatible.
+  	 */
+! 	if (!spats[0].off.line && spats[0].off.off && pos.col < MAXCOL - 2)
+  	{
+  	    if (spats[0].off.off > 0)
+  	    {
+***************
+*** 1209,1215 ****
+  
+  		retval = 2;	    /* pattern found, line offset added */
+  	    }
+! 	    else
+  	    {
+  		/* to the right, check for end of file */
+  		if (spats[0].off.off > 0)
+--- 1210,1216 ----
+  
+  		retval = 2;	    /* pattern found, line offset added */
+  	    }
+! 	    else if (pos.col < MAXCOL - 2)	/* just in case */
+  	    {
+  		/* to the right, check for end of file */
+  		if (spats[0].off.off > 0)
+***************
+*** 4404,4410 ****
+  	if (lp[3] == 'L')
+  	    off_line = TRUE;
+  	if (lp[4] == 'E')
+! 	    off_end = TRUE;
+  	lp += 5;
+  	off = getdigits(&lp);
+      }
+--- 4405,4411 ----
+  	if (lp[3] == 'L')
+  	    off_line = TRUE;
+  	if (lp[4] == 'E')
+! 	    off_end = SEARCH_END;
+  	lp += 5;
+  	off = getdigits(&lp);
+      }
+*** ../vim-6.3.004/src/version.c	Sun Jun 13 12:33:41 2004
+--- src/version.c	Wed Jun 16 10:51:48 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     5,
+  /**/
+
+-- 
+In a world without fences, who needs Gates and Windows?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

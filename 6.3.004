@@ -1,0 +1,85 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.004
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.004
+Problem:    When searching for a long string (140 chars in a 80 column
+	    terminal) get three hit-enter prompts. (Benji Fisher)
+Solution:   Avoid the hit-enter prompt when giving the message for wrapping
+	    around the end of the buffer.  Don't give that message again when
+	    the string was not found.
+Files:	    src/message.c, src/search.c
+
+
+*** ../vim-6.3.003/src/message.c	Fri Jun 11 20:20:22 2004
+--- src/message.c	Sun Jun 13 12:15:03 2004
+***************
+*** 2572,2577 ****
+--- 2572,2579 ----
+      if (msg_silent != 0)
+  	return;
+  
++     /* Don't want a hit-enter prompt here. */
++     ++no_wait_return;
+  #ifdef FEAT_EVAL
+      set_vim_var_string(VV_WARNINGMSG, message, -1);
+  #endif
+***************
+*** 2590,2595 ****
+--- 2592,2598 ----
+      msg_nowait = TRUE;	    /* don't wait for this message */
+      msg_col = 0;
+  #endif
++     --no_wait_return;
+  }
+  
+  /*
+*** ../vim-6.3.003/src/search.c	Wed Jun  9 14:56:27 2004
+--- src/search.c	Sun Jun 13 12:27:03 2004
+***************
+*** 808,817 ****
+  	    at_first_line = FALSE;
+  
+  	    /*
+! 	     * stop the search if wrapscan isn't set, after an interrupt and
+! 	     * after a match
+  	     */
+! 	    if (!p_ws || got_int || called_emsg || break_loop || found)
+  		break;
+  
+  	    /*
+--- 808,817 ----
+  	    at_first_line = FALSE;
+  
+  	    /*
+! 	     * Stop the search if wrapscan isn't set, after an interrupt,
+! 	     * after a match and after looping twice.
+  	     */
+! 	    if (!p_ws || got_int || called_emsg || break_loop || found || loop)
+  		break;
+  
+  	    /*
+*** ../vim-6.3.003/src/version.c	Fri Jun 11 20:20:22 2004
+--- src/version.c	Sun Jun 13 12:18:27 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     4,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+102. When filling out your driver's license application, you give
+     your IP address.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
