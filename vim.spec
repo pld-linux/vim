@@ -55,7 +55,9 @@ Summary(pl):	Vim skompilowany statycznie
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 Provides:	vi
+Obsoletes:	vi
 Requires:	ncurses >= 4.2-12
+
 %description static
 The classic Unix text editor. This version is build with minimal
 feature and is installed in /bin as a rescue tool. The installation of
