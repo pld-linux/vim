@@ -1,3 +1,5 @@
+# TODO:
+# - some nice icon
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -29,7 +31,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -49,6 +51,7 @@ Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
+Source14:	%{name}.desktop
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -873,6 +876,8 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
+install %{SOURCE14}	$RPM_BUILD_ROOT%{_desktopdir}
+
 %if %{with athena}
 install -m755 src/bin/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena
 install %{SOURCE10}	$RPM_BUILD_ROOT%{_desktopdir}
@@ -926,6 +931,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/rvim
+%{_desktopdir}/%{name}.desktop
 
 %if %{with static}
 %files static
