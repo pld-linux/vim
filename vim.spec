@@ -18,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		6.3
-%define		_patchlevel	029
+%define		_patchlevel	033
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -31,7 +31,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	0.1
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -103,6 +103,10 @@ Patch126:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.026
 Patch127:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.027
 Patch128:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.028
 Patch129:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.029
+Patch130:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.030
+Patch131:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.031
+Patch132:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.032
+Patch133:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.033
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
@@ -566,6 +570,10 @@ element bonobo.
 %patch127 -p0
 %patch128 -p0
 %patch129 -p0
+%patch130 -p0
+%patch131 -p0
+%patch132 -p0
+%patch133 -p0
 
 # kvim
 %patch999 -p1
