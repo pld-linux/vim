@@ -2727,7 +2727,7 @@ diff -Nur vim60am.old/src/spell/local.h vim60am/src/spell/local.h
 +** Prefix part of default private dictionary.  Under MS-DOS 8.3
 +** filename limitation, we are in trouble...
 +*/
-+#define DEFPDICT ".isp."
++#define DEFPDICT ".ispell_"
 +
 +/* old place to look for default word list */
 +#define OLDPDICT   ".isp."

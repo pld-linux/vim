@@ -6,8 +6,10 @@
 # _without_gtk		- without gtk+-based gvim support
 # _without_gnome	- without gnome-based gvim support
 # _with_ispell		- with spell checking (non-standard feature; disables RIGHTLEFT and FKMAP)
-# _with_python		- with support for pyhon scripts
-# _with_perl		- with support for perl scripts
+# _with_perl		- with perl interp
+# _with_python		- with python interp
+# _with_ruby		- with ruby interp
+# _with_tcl		- with tcl interp
 
 %define		_ver		6.0
 %define		_patchlevel	158
@@ -20,7 +22,7 @@ Summary(pt_BR):	Editor visual incrementado
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	6.0.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -53,6 +55,8 @@ BuildRequires:	ncurses-devel
 %{!?_without_static:BuildRequires:	ncurses-static}
 %{?_with_perl:BuildRequires:		perl-devel}
 %{?_with_python:BuildRequires:		python-devel}
+%{?_with_ruby:BuildRequires:		ruby}
+%{?_with_tcl:BuildRequires:		tcl-devel}
 Requires:	%{name}-rt = %{version}
 %{?_without_static:Requires:	%{name}-static = %{version}}
 Obsoletes:	vim-enhanced
@@ -259,7 +263,10 @@ autoconf
 	%{?_with_perl:--enable-perlinterp} \
 	%{!?_with_python:--disable-pythoninterp} \
 	%{?_with_python:--enable-pythoninterp} \
-	--disable-rubyinterp \
+	%{!?_with_ruby:--disable-rubyinterp} \
+	%{?_with_ruby:--enable-rubyinterp} \
+	%{!?_with_tcl:--disable-tclinterp} \
+	%{?_with_tcl:--enable-tclinterp} \
 	--enable-cscope \
 	--enable-gpm \
 	--with-features=huge \
@@ -280,6 +287,7 @@ LDFLAGS="%{rpmldflags} -static"
 	--without-x \
 	--disable-perlinterp \
 	--disable-pythoninterp \
+	--disable-rubyinterp \
 	--disable-tclinterp \
 	--disable-cscope \
 	--disable-gpm \
@@ -303,6 +311,10 @@ LDFLAGS="%{rpmldflags}"
 	%{?_with_perl:--enable-perlinterp} \
 	%{!?_with_python:--disable-pythoninterp} \
 	%{?_with_python:--enable-pythoninterp} \
+	%{!?_with_ruby:--disable-rubyinterp} \
+	%{?_with_ruby:--enable-rubyinterp} \
+	%{!?_with_tcl:--disable-tclinterp} \
+	%{?_with_tcl:--enable-tclinterp} \
 	--enable-cscope \
 	--enable-fontset \
 	--disable-gpm \
@@ -322,6 +334,10 @@ mv -f vim gvim.athena
 	%{?_with_perl:--enable-perlinterp} \
 	%{!?_with_python:--disable-pythoninterp} \
 	%{?_with_python:--enable-pythoninterp} \
+	%{!?_with_ruby:--disable-rubyinterp} \
+	%{?_with_ruby:--enable-rubyinterp} \
+	%{!?_with_tcl:--disable-tclinterp} \
+	%{?_with_tcl:--enable-tclinterp} \
 	--enable-multibyte \
 	--enable-cscope \
 	--enable-fontset \
@@ -342,6 +358,10 @@ mv -f vim gvim.motif
 	%{?_with_perl:--enable-perlinterp} \
 	%{!?_with_python:--disable-pythoninterp} \
 	%{?_with_python:--enable-pythoninterp} \
+	%{!?_with_ruby:--disable-rubyinterp} \
+	%{?_with_ruby:--enable-rubyinterp} \
+	%{!?_with_tcl:--disable-tclinterp} \
+	%{?_with_tcl:--enable-tclinterp} \
 	--disable-gpm \
 	--enable-cscope \
 	--enable-fontset \
@@ -360,6 +380,10 @@ mv -f vim gvim.gtk
 	%{?_with_perl:--enable-perlinterp} \
 	%{!?_with_python:--disable-pythoninterp} \
 	%{?_with_python:--enable-pythoninterp} \
+	%{!?_with_ruby:--disable-rubyinterp} \
+	%{?_with_ruby:--enable-rubyinterp} \
+	%{!?_with_tcl:--disable-tclinterp} \
+	%{?_with_tcl:--enable-tclinterp} \
 	--disable-gpm \
 	--enable-cscope \
 	--enable-fontset \
@@ -375,7 +399,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{%{_prefix}/X11R6/bin,%{_applnkdir}/Development/Editors}
 
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
-rm $RPM_BUILD_ROOT%{_bindir}/*
+rm -f $RPM_BUILD_ROOT%{_bindir}/*
 
 %{!?_without_static:install src/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim}
 %{?_without_static:install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi}
