@@ -2,7 +2,7 @@ Summary:	Vi IMproved - a Vi clone
 Summary(pl):	Vi IMproved - klon edytora Vi
 Name:		vim
 Version:	5.6
-Release:	5
+Release:	6
 Copyright:	Charityware
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
