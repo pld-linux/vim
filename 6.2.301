@@ -1,0 +1,159 @@
+To: vim-dev@vim.org
+Subject: patch 6.2.301
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.301
+Problem:    The "select all" item from the popup menu doesn't work for Select
+	    mode.
+Solution:   Use the same commands as for the "Edit.select all" menu.
+	    (Benji Fisher)
+Files:	    runtime/menu.vim
+
+
+*** ../vim-6.2.301/runtime/menu.vim	Sun Jan 18 21:19:56 2004
+--- runtime/menu.vim	Mon Mar  1 16:43:00 2004
+***************
+*** 2,8 ****
+  " You can also use this as a start for your own set of menus.
+  "
+  " Maintainer:	Bram Moolenaar <Bram@vim.org>
+! " Last Change:	2004 Jan 08
+  
+  " Note that ":an" (short for ":anoremenu") is often used to make a menu work
+  " in all modes and avoid side effects from mappings defined by the user.
+--- 2,8 ----
+  " You can also use this as a start for your own set of menus.
+  "
+  " Maintainer:	Bram Moolenaar <Bram@vim.org>
+! " Last Change:	2004 Mar 01
+  
+  " Note that ":an" (short for ":anoremenu") is often used to make a menu work
+  " in all modes and avoid side effects from mappings defined by the user.
+***************
+*** 145,150 ****
+--- 145,161 ----
+    nnoremap <silent> <script> <SID>Paste "=@+.'xy'<CR>gPFx"_2x
+  endif
+  
++ " Use maps for items that are present both in Edit and Popup menu.
++ if has("virtualedit")
++   vnoremap <script> <SID>vPaste	"-c<Esc><SID>Paste
++   inoremap <script> <SID>iPaste	<Esc><SID>Pastegi
++ else
++   vnoremap <script> <SID>vPaste	"-c<Esc>gix<Esc><SID>Paste"_x
++   inoremap <script> <SID>iPaste	x<Esc><SID>Paste"_s
++ endif
++ nnoremap <SID>SelectAll	:exe "norm gg" . (&slm == "" ? "VG" : "gH\<C-O>G")<CR>
++ 
++ 
+  " Edit menu
+  an 20.310 &Edit.&Undo<Tab>u			u
+  an 20.320 &Edit.&Redo<Tab>^R			<C-R>
+***************
+*** 156,168 ****
+  cnoremenu 20.350 &Edit.&Copy<Tab>"+y		<C-Y>
+  nnoremenu 20.360 &Edit.&Paste<Tab>"+gP		"+gP
+  cnoremenu	 &Edit.&Paste<Tab>"+gP		<C-R>+
+! if has("virtualedit")
+!   vnoremenu <script>	 &Edit.&Paste<Tab>"+gP	"-c<Esc><SID>Paste
+!   inoremenu <script>	 &Edit.&Paste<Tab>"+gP	<Esc><SID>Pastegi
+! else
+!   vnoremenu <script>	 &Edit.&Paste<Tab>"+gP	"-c<Esc>gix<Esc><SID>Paste"_x
+!   inoremenu <script>	 &Edit.&Paste<Tab>"+gP	x<Esc><SID>Paste"_s
+! endif
+  nnoremenu 20.370 &Edit.Put\ &Before<Tab>[p	[p
+  inoremenu	 &Edit.Put\ &Before<Tab>[p	<C-O>[p
+  nnoremenu 20.380 &Edit.Put\ &After<Tab>]p	]p
+--- 167,174 ----
+  cnoremenu 20.350 &Edit.&Copy<Tab>"+y		<C-Y>
+  nnoremenu 20.360 &Edit.&Paste<Tab>"+gP		"+gP
+  cnoremenu	 &Edit.&Paste<Tab>"+gP		<C-R>+
+! vnoremenu <script> &Edit.&Paste<Tab>"+gP	<SID>vPaste
+! inoremenu <script> &Edit.&Paste<Tab>"+gP	<SID>iPaste
+  nnoremenu 20.370 &Edit.Put\ &Before<Tab>[p	[p
+  inoremenu	 &Edit.Put\ &Before<Tab>[p	<C-O>[p
+  nnoremenu 20.380 &Edit.Put\ &After<Tab>]p	]p
+***************
+*** 170,176 ****
+  if has("win32") || has("win16")
+    vnoremenu 20.390 &Edit.&Delete<Tab>x		x
+  endif
+! an <silent> 20.400 &Edit.&Select\ all<Tab>ggVG	:if &slm != ""<Bar>exe ":norm gggH<C-O>G"<Bar>else<Bar>exe ":norm ggVG"<Bar>endif<CR>
+  
+  an 20.405	 &Edit.-SEP2-				<Nop>
+  if has("win32")  || has("win16") || has("gui_gtk") || has("gui_motif")
+--- 176,183 ----
+  if has("win32") || has("win16")
+    vnoremenu 20.390 &Edit.&Delete<Tab>x		x
+  endif
+! noremenu  <script> <silent> 20.400 &Edit.&Select\ All<Tab>ggVG	<C-\><C-N><SID>SelectAll
+! noremenu! <script> <silent> 20.400 &Edit.&Select\ All<Tab>ggVG	<C-\><C-N><SID>SelectAll
+  
+  an 20.405	 &Edit.-SEP2-				<Nop>
+  if has("win32")  || has("win16") || has("gui_gtk") || has("gui_motif")
+***************
+*** 756,775 ****
+  cnoremenu 1.30 PopUp.&Copy		<C-Y>
+  nnoremenu 1.40 PopUp.&Paste		"+gP
+  cnoremenu 1.40 PopUp.&Paste		<C-R>+
+! if has("virtualedit")
+!   vnoremenu <script> 1.40 PopUp.&Paste	"-c<Esc><SID>Paste
+!   inoremenu <script> 1.40 PopUp.&Paste	<Esc><SID>Pastegi
+! else
+!   vnoremenu <script> 1.40 PopUp.&Paste	"-c<Esc>gix<Esc><SID>Paste"_x
+!   inoremenu <script> 1.40 PopUp.&Paste	x<Esc><SID>Paste"_s
+! endif
+  vnoremenu 1.50 PopUp.&Delete		x
+  an 1.55 PopUp.-SEP2-			<Nop>
+  vnoremenu 1.60 PopUp.Select\ Blockwise	<C-V>
+  an 1.70 PopUp.Select\ &Word		vaw
+  an 1.80 PopUp.Select\ &Line		V
+  an 1.90 PopUp.Select\ &Block		<C-V>
+! an 1.100 PopUp.Select\ &All		ggVG
+  
+  " The GUI toolbar (for MS-Windows and GTK)
+  if has("toolbar")
+--- 763,779 ----
+  cnoremenu 1.30 PopUp.&Copy		<C-Y>
+  nnoremenu 1.40 PopUp.&Paste		"+gP
+  cnoremenu 1.40 PopUp.&Paste		<C-R>+
+! vnoremenu <script> 1.40 PopUp.&Paste	<SID>vPaste
+! inoremenu <script> 1.40 PopUp.&Paste	<SID>iPaste
+  vnoremenu 1.50 PopUp.&Delete		x
+  an 1.55 PopUp.-SEP2-			<Nop>
+  vnoremenu 1.60 PopUp.Select\ Blockwise	<C-V>
+  an 1.70 PopUp.Select\ &Word		vaw
+  an 1.80 PopUp.Select\ &Line		V
+  an 1.90 PopUp.Select\ &Block		<C-V>
+! noremenu  <script> <silent> 1.100 PopUp.Select\ &All	<C-\><C-N><SID>SelectAll
+! noremenu! <script> <silent> 1.100 PopUp.Select\ &All	<C-\><C-N><SID>SelectAll
+! 
+  
+  " The GUI toolbar (for MS-Windows and GTK)
+  if has("toolbar")
+*** ../vim-6.2.301/src/version.c	Mon Mar  1 10:34:00 2004
+--- src/version.c	Mon Mar  1 16:39:12 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     301,
+  /**/
+
+-- 
+ARTHUR:    Will you ask your master if he wants to join my court at Camelot?!
+GUARD #1:  But then of course African swallows are not migratory.
+GUARD #2:  Oh, yeah...
+GUARD #1:  So they couldn't bring a coconut back anyway...
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

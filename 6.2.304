@@ -1,0 +1,483 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.304 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.304 (extra, after 6.2.256)
+Problem:    Mac: No proper support for 'encoding'.  Conversion without iconv()
+	    is not possible.
+Solution:   Convert input from 'termencoding' to 'encoding'.  Add
+	    mac_string_convert().  Convert text for the clipboard when needed.
+	    (Eckehard Berns)
+Files:	    src/gui_mac.c, src/mbyte.c, src/structs.h, src/vim.h
+
+
+*** ../vim-6.2.303/src/gui_mac.c	Sat Feb 28 15:30:58 2004
+--- src/gui_mac.c	Thu Feb 26 22:24:26 2004
+***************
+*** 2081,2087 ****
+  {
+      /* TODO: add support for COMMAND KEY */
+      long		menu;
+!     unsigned char	string[10];
+      short		num, i;
+      short		len = 0;
+      KeySym		key_sym;
+--- 2081,2087 ----
+  {
+      /* TODO: add support for COMMAND KEY */
+      long		menu;
+!     unsigned char	string[20];
+      short		num, i;
+      short		len = 0;
+      KeySym		key_sym;
+***************
+*** 2190,2196 ****
+  	}
+  	else
+  	{
+! 	    string[ len++ ] = key_char;
+  	}
+  
+  	if (len == 1 && string[0] == CSI)
+--- 2190,2225 ----
+  	}
+  	else
+  	{
+! #ifdef FEAT_MBYTE
+! 	    if (input_conv.vc_type != CONV_NONE)
+! 	    {
+! 		char_u	from[2], *to;
+! 		int	l;
+! 
+! 		from[0] = key_char;
+! 		from[1] = NUL;
+! 		l = 1;
+! 		to = string_convert(&input_conv, from, &l);
+! 		if (to != NULL)
+! 		{
+! 		    for (i = 0; i < l && len < 19; i++)
+! 		    {
+! 			if (to[i] == CSI)
+! 			{
+! 			    string[len++] = KS_EXTRA;
+! 			    string[len++] = KE_CSI;
+! 			}
+! 			else
+! 			    string[len++] = to[i];
+! 		    }
+! 		    vim_free(to);
+! 		}
+! 		else
+! 		    string[len++] = key_char;
+! 	    }
+! 	    else
+! #endif
+! 		string[len++] = key_char;
+  	}
+  
+  	if (len == 1 && string[0] == CSI)
+***************
+*** 3021,3026 ****
+--- 3050,3059 ----
+      }
+  #endif
+  
++ #ifdef FEAT_MBYTE
++     set_option_value((char_u *)"termencoding", 0L, (char_u *)"macroman", 0);
++ #endif
++ 
+      /* TODO: Load bitmap if using TOOLBAR */
+      return OK;
+  }
+***************
+*** 3498,3509 ****
+      int		len;
+      int		flags;
+  {
+  
+  #if defined(FEAT_GUI) && defined(MACOS_X)
+      /*
+       * On OS X, try using Quartz-style text antialiasing.
+       */
+!     SInt32 sys_version = 0;
+  
+      Gestalt(gestaltSystemVersion, &sys_version);
+      if (sys_version >= 0x1020)
+--- 3531,3555 ----
+      int		len;
+      int		flags;
+  {
++ #if defined(FEAT_GUI) && defined(MACOS_X)
++     SInt32	sys_version;
++ #endif
++ #ifdef FEAT_MBYTE
++     char_u	*tofree = NULL;
++ 
++     if (output_conv.vc_type != CONV_NONE)
++     {
++ 	tofree = string_convert(&output_conv, s, &len);
++ 	if (tofree != NULL)
++ 	    s = tofree;
++     }
++ #endif
+  
+  #if defined(FEAT_GUI) && defined(MACOS_X)
+      /*
+       * On OS X, try using Quartz-style text antialiasing.
+       */
+!     sys_version = 0;
+  
+      Gestalt(gestaltSystemVersion, &sys_version);
+      if (sys_version >= 0x1020)
+***************
+*** 3578,3583 ****
+--- 3624,3633 ----
+  	    LineTo (FILL_X(col + len) - 1, FILL_Y(row + 1) - 1);
+  	}
+      }
++ 
++ #ifdef FEAT_MBYTE
++     vim_free(tofree);
++ #endif
+  }
+  
+  /*
+***************
+*** 3984,3990 ****
+  #endif
+      int		type;
+      char	*searchCR;
+!     char	*tempclip;
+  
+  
+  #ifdef USE_CARBONIZED
+--- 4034,4040 ----
+  #endif
+      int		type;
+      char	*searchCR;
+!     char_u	*tempclip;
+  
+  
+  #ifdef USE_CARBONIZED
+***************
+*** 4012,4018 ****
+  #ifdef USE_CARBONIZED
+  	/* In CARBON we don't need a Handle, a pointer is good */
+  	textOfClip = NewHandle (scrapSize);
+! 	/* tempclip = (char *)lalloc(scrapSize+1, TRUE); */
+  #else
+  	textOfClip = NewHandle(0);
+  #endif
+--- 4062,4068 ----
+  #ifdef USE_CARBONIZED
+  	/* In CARBON we don't need a Handle, a pointer is good */
+  	textOfClip = NewHandle (scrapSize);
+! 	/* tempclip = lalloc(scrapSize+1, TRUE); */
+  #else
+  	textOfClip = NewHandle(0);
+  #endif
+***************
+*** 4025,4035 ****
+  
+  	type = (strchr(*textOfClip, '\r') != NULL) ? MLINE : MCHAR;
+  
+! 	tempclip = (char *)lalloc(scrapSize+1, TRUE);
+  	STRNCPY(tempclip, *textOfClip, scrapSize);
+  	tempclip[scrapSize] = 0;
+  
+! 	searchCR = tempclip;
+  	while (searchCR != NULL)
+  	{
+  	    searchCR = strchr(searchCR, '\r');
+--- 4075,4085 ----
+  
+  	type = (strchr(*textOfClip, '\r') != NULL) ? MLINE : MCHAR;
+  
+! 	tempclip = lalloc(scrapSize+1, TRUE);
+  	STRNCPY(tempclip, *textOfClip, scrapSize);
+  	tempclip[scrapSize] = 0;
+  
+! 	searchCR = (char *)tempclip;
+  	while (searchCR != NULL)
+  	{
+  	    searchCR = strchr(searchCR, '\r');
+***************
+*** 4039,4047 ****
+  
+  	}
+  
+! 	clip_yank_selection(type, (char_u *) tempclip, scrapSize, cbd);
+  
+! 	free(tempclip);
+  	HUnlock(textOfClip);
+  
+  	DisposeHandle(textOfClip);
+--- 4089,4112 ----
+  
+  	}
+  
+! #ifdef FEAT_MBYTE
+! 	if (input_conv.vc_type != CONV_NONE)
+! 	{
+! 	    char_u	*to;
+! 	    int		l = scrapSize;
+! 
+! 	    to = string_convert(&input_conv, tempclip, &l);
+! 	    if (to != NULL)
+! 	    {
+! 		vim_free(tempclip);
+! 		tempclip = to;
+! 		scrapSize = l;
+! 	    }
+! 	}
+! #endif
+! 	clip_yank_selection(type, tempclip, scrapSize, cbd);
+  
+! 	vim_free(tempclip);
+  	HUnlock(textOfClip);
+  
+  	DisposeHandle(textOfClip);
+***************
+*** 4094,4099 ****
+--- 4159,4180 ----
+      cbd->owned = FALSE;
+  
+      type = clip_convert_selection(&str, (long_u *) &scrapSize, cbd);
++ 
++ #ifdef FEAT_MBYTE
++     if (str != NULL && output_conv.vc_type != CONV_NONE)
++     {
++ 	char_u	*to;
++ 	int	l = scrapSize;
++ 
++ 	to = string_convert(&output_conv, str, &l);
++ 	if (to != NULL)
++ 	{
++ 	    vim_free(str);
++ 	    str = to;
++ 	    scrapSize = l;
++ 	}
++     }
++ #endif
+  
+      if (type >= 0)
+      {
+*** ../vim-6.2.303/src/mbyte.c	Sun Feb 15 13:26:35 2004
+--- src/mbyte.c	Fri Feb 27 14:21:42 2004
+***************
+*** 217,223 ****
+  #define IDX_CP1251	35
+      {"cp1251",		ENC_8BIT,		1251},
+  #define IDX_MACROMAN	36
+!     {"macroman",	ENC_8BIT,		0},
+  #define IDX_COUNT	37
+  };
+  
+--- 248,254 ----
+  #define IDX_CP1251	35
+      {"cp1251",		ENC_8BIT,		1251},
+  #define IDX_MACROMAN	36
+!     {"macroman",	ENC_8BIT + ENC_MACROMAN, 0},
+  #define IDX_COUNT	37
+  };
+  
+***************
+*** 5132,5137 ****
+--- 5332,5356 ----
+  	vcp->vc_cpto = (to_prop & ENC_UNICODE) ? 0 : encname2codepage(to);
+      }
+  #endif
++ #ifdef MACOS_X
++     else if ((from_prop & ENC_MACROMAN) && (to_prop & ENC_LATIN1))
++     {
++ 	vcp->vc_type = CONV_MAC_LATIN1;
++     }
++     else if ((from_prop & ENC_MACROMAN) && (to_prop & ENC_UNICODE))
++     {
++ 	vcp->vc_type = CONV_MAC_UTF8;
++ 	vcp->vc_factor = 2;	/* up to twice as long */
++     }
++     else if ((from_prop & ENC_LATIN1) && (to_prop & ENC_MACROMAN))
++     {
++ 	vcp->vc_type = CONV_LATIN1_MAC;
++     }
++     else if ((from_prop & ENC_UNICODE) && (to_prop & ENC_MACROMAN))
++     {
++ 	vcp->vc_type = CONV_UTF8_MAC;
++     }
++ #endif
+  # ifdef USE_ICONV
+      else
+      {
+***************
+*** 5177,5182 ****
+--- 5396,5478 ----
+      return dlen;
+  }
+  
++ #if defined(MACOS_X)
++ static char_u *mac_string_convert __ARGS((char_u *ptr, int len, int *lenp, CFStringEncoding from, CFStringEncoding to));
++ 
++ /*
++  * A Mac version of string_convert() for special cases.
++  */
++     static char_u *
++ mac_string_convert(ptr, len, lenp, from, to)
++     char_u		*ptr;
++     int			len;
++     int			*lenp;
++     CFStringEncoding	from;
++     CFStringEncoding	to;
++ {
++     char_u		*retval, *d;
++     CFStringRef		cfstr;
++     int			buflen, in, out, l, i;
++ 
++     cfstr = CFStringCreateWithBytes(NULL, ptr, len, from, 0);
++     if (cfstr == NULL)
++ 	return NULL;
++     if (to == kCFStringEncodingUTF8)
++ 	buflen = len * 6 + 1;
++     else
++ 	buflen = len + 1;
++     retval = alloc(buflen);
++     if (retval == NULL)
++     {
++ 	CFRelease(cfstr);
++ 	return NULL;
++     }
++     if (!CFStringGetCString(cfstr, retval, buflen, to))
++     {
++ 	CFRelease(cfstr);
++ 	/* conversion failed for the whole string, but maybe it will work
++ 	 * for each character */
++ 	for (d = retval, in = 0, out = 0; in < len && out < buflen - 1;)
++ 	{
++ 	    if (from == kCFStringEncodingUTF8)
++ 		l = utf_ptr2len_check(ptr + in);
++ 	    else
++ 		l = 1;
++ 	    cfstr = CFStringCreateWithBytes(NULL, ptr + in, l, from, 0);
++ 	    if (cfstr == NULL)
++ 	    {
++ 		*d++ = '?';
++ 		out++;
++ 	    }
++ 	    else
++ 	    {
++ 		if (!CFStringGetCString(cfstr, d, buflen - out, to))
++ 		{
++ 		    *d++ = '?';
++ 		    out++;
++ 		}
++ 		else
++ 		{
++ 		    i = strlen(d);
++ 		    d += i;
++ 		    out += i;
++ 		}
++ 		CFRelease(cfstr);
++ 	    }
++ 	    in += l;
++ 	}
++ 	*d = NUL;
++ 	if (lenp != NULL)
++ 	    *lenp = out;
++ 	return retval;
++     }
++     CFRelease(cfstr);
++     if (lenp != NULL)
++ 	*lenp = strlen(retval);
++     return retval;
++ }
++ #endif
++ 
+  /*
+   * Convert text "ptr[*lenp]" according to "vcp".
+   * Returns the result in allocated memory and sets "*lenp".
+***************
+*** 5256,5261 ****
+--- 5552,5583 ----
+  	    if (lenp != NULL)
+  		*lenp = (int)(d - retval);
+  	    break;
++ 
++ # ifdef MACOS_X
++ 	case CONV_MAC_LATIN1:
++ 	    retval = mac_string_convert(ptr, len, lenp,
++ 					kCFStringEncodingMacRoman,
++ 					kCFStringEncodingISOLatin1);
++ 	    break;
++ 
++ 	case CONV_LATIN1_MAC:
++ 	    retval = mac_string_convert(ptr, len, lenp,
++ 					kCFStringEncodingISOLatin1,
++ 					kCFStringEncodingMacRoman);
++ 	    break;
++ 
++ 	case CONV_MAC_UTF8:
++ 	    retval = mac_string_convert(ptr, len, lenp,
++ 					kCFStringEncodingMacRoman,
++ 					kCFStringEncodingUTF8);
++ 	    break;
++ 
++ 	case CONV_UTF8_MAC:
++ 	    retval = mac_string_convert(ptr, len, lenp,
++ 					kCFStringEncodingUTF8,
++ 					kCFStringEncodingMacRoman);
++ 	    break;
++ # endif
+  
+  # ifdef USE_ICONV
+  	case CONV_ICONV:	/* conversion with output_conv.vc_fd */
+*** ../vim-6.2.303/src/structs.h	Sun Feb 29 21:06:13 2004
+--- src/structs.h	Sun Feb 29 16:45:20 2004
+***************
+*** 832,837 ****
+--- 832,843 ----
+  #ifdef WIN3264
+  # define CONV_CODEPAGE		4	/* codepage -> codepage */
+  #endif
++ #ifdef MACOS_X
++ # define CONV_MAC_LATIN1	5
++ # define CONV_LATIN1_MAC	6
++ # define CONV_MAC_UTF8		7
++ # define CONV_UTF8_MAC		8
++ #endif
+  
+  /*
+   * Structure used for mappings and abbreviations.
+*** ../vim-6.2.303/src/vim.h	Sun Feb 29 21:06:13 2004
+--- src/vim.h	Wed Feb 25 14:42:25 2004
+***************
+*** 1656,1661 ****
+--- 1656,1662 ----
+  # define ENC_2WORD	0x100	    /* Unicode: UTF-16 */
+  
+  # define ENC_LATIN1	0x200	    /* Latin1 */
++ # define ENC_MACROMAN	0x400	    /* Mac Roman (not Macro Man! :-) */
+  #endif
+  
+  #ifdef FEAT_MBYTE
+*** ../vim-6.2.303/src/version.c	Mon Mar  1 17:01:39 2004
+--- src/version.c	Mon Mar  1 17:03:01 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     304,
+  /**/
+
+-- 
+Shit makes the flowers grow and that's beautiful
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.307
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.307 (after 6.2.299)
+Problem:    Installing help files fails.
+Solution:   Expand wildcards for translated help files separately.
+Files:	    src/Makefile
+
+
+*** ../vim-6.2.306/src/Makefile	Sun Feb 29 21:06:13 2004
+--- src/Makefile	Mon Mar  1 20:03:04 2004
+***************
+*** 1657,1663 ****
+  # Generate the help tags with ":helptags" to handle all languages.
+  	-@cd $(HELPSOURCE); VIMEXE=$(VIMTARGET) $(MAKE) vimtags
+  	cd $(HELPSOURCE); \
+! 		files=`ls *.txt *.??x tags tags-??`; \
+  		$(INSTALL_DATA) $$files  $(DEST_HELP); \
+  		cd $(DEST_HELP); \
+  		chmod $(HELPMOD) $$files
+--- 1667,1674 ----
+  # Generate the help tags with ":helptags" to handle all languages.
+  	-@cd $(HELPSOURCE); VIMEXE=$(VIMTARGET) $(MAKE) vimtags
+  	cd $(HELPSOURCE); \
+! 		files=`ls *.txt tags`; \
+! 		files="$$files `ls *.??x tags-?? 2>/dev/null || true`"; \
+  		$(INSTALL_DATA) $$files  $(DEST_HELP); \
+  		cd $(DEST_HELP); \
+  		chmod $(HELPMOD) $$files
+*** ../vim-6.2.306/src/version.c	Mon Mar  1 21:40:02 2004
+--- src/version.c	Mon Mar  1 21:48:46 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     307,
+  /**/
+
+-- 
+WOMAN:   I didn't know we had a king. I thought we were an autonomous
+         collective.
+DENNIS:  You're fooling yourself.  We're living in a dictatorship.  A
+         self-perpetuating autocracy in which the working classes--
+WOMAN:   Oh there you go, bringing class into it again.
+DENNIS:  That's what it's all about if only people would--
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
