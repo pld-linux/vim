@@ -52,6 +52,7 @@ Patch5:		%{name}-ac25x.patch
 Patch6:		%{name}-vimrc.patch
 Patch7:		%{name}-no_libelf.patch
 Patch8:		%{name}-egrep.patch
+Patch9:		%{name}-specsyntax.patch
 Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030322.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.002
@@ -475,6 +476,7 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %build
 cd src
