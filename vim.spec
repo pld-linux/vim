@@ -18,8 +18,8 @@
 %bcond_without	ispell		# don't build vim.ispell
 %bcond_without	home_etc	# without home_etc support
 #
-%define		_ver		6.3
-%define		_patchlevel	064
+%define		_ver		7.0
+%define		_patchlevel	060
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -31,16 +31,16 @@ Summary(ru):	Visual editor IMproved - Âƒ…Œ”‘◊≈ŒŒœ “¡◊…ÃÿŒŸ  Ú≈ƒ¡À‘œ“ :)
 Summary(tr):	Geli˛mi˛ bir vi s¸r¸m¸
 Summary(uk):	Visual editor IMproved - ¥ƒ…Œœ ˜¶“Œ…  Ú≈ƒ¡À‘œ“ :)
 Name:		vim
-Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Version:	%{_ver}
+Release:	0.%{_patchlevel}.1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
-Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
-# Source0-md5:	821fda8f14d674346b87e3ef9cb96389
-Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
+Source0:	ftp://ftp.vim.org/pub/vim/unstable/snapshot/%{name}-%{_ver}%{_patchlevel}.zip
+# Source0-md5:	abc14d4f000fa37281b0d77469560c9e
+#Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
 # Source1-md5:	5395c4dacbf1c5008b22c4b86794e8a7
-Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
+#Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
 # Source2-md5:	6e4bd6c8122bcb9dc576514bdb52484e
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
@@ -80,70 +80,6 @@ Patch18:	%{name}-po-syntax.patch
 Patch19:	%{name}-modprobe.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
-Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.001
-Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.002
-Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.003
-Patch104:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.004
-Patch105:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.005
-Patch106:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.006
-Patch107:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.007
-Patch108:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.008
-Patch109:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.009
-Patch110:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.010
-Patch111:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.011
-Patch112:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.012
-Patch113:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.013
-Patch114:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.014
-Patch115:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.015
-Patch116:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.016
-Patch117:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.017
-Patch118:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.018
-Patch119:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.019
-Patch120:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.020
-Patch121:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.021
-Patch122:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.022
-Patch123:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.023
-Patch124:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.024
-Patch125:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.025
-Patch126:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.026
-Patch127:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.027
-Patch128:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.028
-Patch129:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.029
-Patch130:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.030
-Patch131:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.031
-Patch132:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.032
-Patch133:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.033
-Patch134:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.034
-Patch135:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.035
-Patch136:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.036
-Patch137:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.037
-Patch138:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.038
-Patch139:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.039
-Patch140:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.040
-Patch141:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.041
-Patch142:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.042
-Patch143:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.043
-Patch144:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.044
-Patch145:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.045
-Patch146:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.046
-Patch147:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.047
-Patch148:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.048
-Patch149:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.049
-Patch150:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.050
-Patch151:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.051
-Patch152:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.052
-Patch153:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.053
-Patch154:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.054
-Patch155:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.055
-Patch156:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.056
-Patch157:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.057
-Patch158:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.058
-Patch159:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.059
-Patch160:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.060
-Patch161:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.061
-Patch162:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.062
-Patch163:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.063
-Patch164:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.064
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
@@ -575,82 +511,16 @@ Wersja edytora Vim pracuj±ca w ∂rodowisku X Window, zbudowana jako
 element bonobo.
 
 %prep
-%setup -q -b1 -b2 -a5 -n %{name}%(echo %{_ver} | tr -d .)
-
-# official patches
-%patch101 -p0
-%patch102 -p0
-%patch103 -p0
-%patch104 -p0
-%patch105 -p0
-%patch106 -p0
-%patch107 -p0
-%patch108 -p0
-%patch109 -p0
-%patch110 -p0
-%patch111 -p0
-%patch112 -p0
-%patch113 -p0
-%patch114 -p0
-%patch115 -p0
-%patch116 -p0
-%patch117 -p0
-%patch118 -p0
-%patch119 -p0
-%patch120 -p0
-%patch121 -p0
-%patch122 -p0
-%patch123 -p0
-%patch124 -p0
-%patch125 -p0
-%patch126 -p0
-%patch127 -p0
-%patch128 -p0
-%patch129 -p0
-%patch130 -p0
-%patch131 -p0
-%patch132 -p0
-%patch133 -p0
-%patch134 -p0
-%patch135 -p0
-%patch136 -p0
-%patch137 -p0
-%patch138 -p0
-%patch139 -p0
-%patch140 -p0
-%patch141 -p0
-%patch142 -p0
-%patch143 -p0
-%patch144 -p0
-%patch145 -p0
-%patch146 -p0
-%patch147 -p0
-%patch148 -p0
-%patch149 -p0
-%patch150 -p0
-%patch151 -p0
-%patch152 -p0
-%patch153 -p0
-%patch154 -p0
-%patch155 -p0
-%patch156 -p0
-%patch157 -p0
-%patch158 -p0
-%patch159 -p0
-%patch160 -p0
-%patch161 -p0
-%patch162 -p0
-%patch163 -p0
-%patch164 -p0
+%setup -q -c -a5
 
 # kvim
-%patch999 -p1
+#%patch999 -p1
 
 %patch0 -p1
 %{?with_bonobo:%patch99 -p1}
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
+#%patch3 -p1
 %ifarch alpha
 %patch4 -p1
 %endif
@@ -659,15 +529,15 @@ element bonobo.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p1
+#%patch10 -p1
 %{?with_bonobo:%patch11 -p1}
 %{?with_home_etc:%patch12 -p1}
 %{?with_selinux:%patch13 -p1}
-%patch14 -p1
-%patch15 -p1
+#%patch14 -p1
+#%patch15 -p1
 %patch16 -p1
-%patch17 -p1
-%patch18 -p1
+#%patch17 -p1
+#%patch18 -p1
 %patch19 -p0 -b .modprobe
 
 install %{SOURCE15} runtime/indent
