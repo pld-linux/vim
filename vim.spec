@@ -1,8 +1,8 @@
-Summary:	Vim static
-Summary(pl):	Vim skompilowany statycznie
+Summary:	Vim built with ncurses
+Summary(pl):	Vim korzystaj±cy z bibliotek ncurses
 Name:		vim
-Version:	5.4d
-Release:	2d
+Version:	5.4e
+Release:	2
 #######		ftp://ftp.nl.vim.org/pub/vim/unreleased/unix
 Source0:	%{name}-%{version}-src.tar.gz
 Source1:	%{name}-%{version}-rt.tar.gz
@@ -10,22 +10,27 @@ Source1:	%{name}-%{version}-rt.tar.gz
 Source2:	%{name}-%{version}-extra.tar.gz
 Source3:	gvim.wmconfig
 Patch0:		%{name}-hold_gui_events.patch
-Patch1:		%{name}-clip.patch
+Patch1:		%{name}-CMDLINE_COMPL.patch
 Copyright:	GPL
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 URL:		http://www.vim.org/
+Requires:       ncurses >= 4.2-12
+Obsoletes:	vim-gtk
+Obsoletes:	vim-lesstif
+Obsoletes:	vim-athena
 Buildroot:	/tmp/%{name}-%{version}-root
 
-%description
-The classic Unix text editor. This version is build with minimal
-feature and is installed in /bin as a rescue tool. The installation of
-this package is STRONGLY recommended.
+%description 
+The classic Unix text editor build with ncurses library. It adds
+multiple windows, multi-level undo, block highliting, and many other
+features to the standard vi program.
 
 %description -l pl
-Pakiet zawiera vim - klasyczny (unixowy) edytor tekstowy skompilowany 
-statycznie. Instalacja tego pakietu jest MOCNO zalecana, mo¿e on pomóc
-Tobie uratowaæ system w czasie awarii.
+Wersja edytora vim skompilowana z bibliotek± ncurses. W porownaniu z
+edytorem vi, ta wersja oferuje dodatkowo pracê z wieloma plikami,
+wielopoziomowe operacje cofnij, bloki, pod¶wietlanie sk³adni i wiele
+innych usprawnieñ.
 
 %package	rt 
 Summary:	Vim runtime files
@@ -43,50 +48,32 @@ W tym pakiecie znajdziesz dokumentacjê, makra, pliki konfiguracyjne i strony
 podrêcznika edytora vim. Je¿eli zamierzasz korzystaæ z vim-a, powiniene¶
 zainstalowaæ ten pakiet.
 
-#%package	slang
-#Summary:	Vim 5.3 built with slang
-#Summary(pl):	Vim 5.3 korzystaj±cy z bibliotek Slang
-#Group:		Applications/Editors/Vim
-#Group(pl):	Alikacje/Edytory/Vim
-#Obsoletes:	vim-ncurses
-
-#%description slang
-#The classic Unix text editor build with slang library. It adds
-#multiple windows, multi-level undo, block highliting, and many other
-#features to the standard vi program.
-
-#%description slang -l pl
-#Wersja edytora vim skompilowana z bibliotek± slang. W porownaniu z
-#edytorem vi, ta wersja oferuje dodatkowo pracê z wieloma plikami,
-#wielopoziomowe operacje cofnij, bloki, pod¶wietlanie sk³adni i wiele
-#innych usprawnieñ.
-
-%package	ncurses 
-Summary:	Vim built with ncurses
-Summary(pl):	Vim korzystaj±cy z bibliotek ncurses
+%package	static
+Summary:	Vim static
+Summary(pl):	Vim skompilowany statycznie
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Requires:	ncurses
-Obsoletes:	vim-slang
+Requires:	ncurses >= 4.2-12
 
-%description ncurses
-The classic Unix text editor build with ncurses library. It adds
-multiple windows, multi-level undo, block highliting, and many other
-features to the standard vi program.
+%description static
+The classic Unix text editor. This version is build with minimal
+feature and is installed in /bin as a rescue tool. The installation of
+this package is STRONGLY recommended.
 
-%description ncurses -l pl
-Wersja edytora vim skompilowana z bibliotek± ncurses. W porownaniu z
-edytorem vi, ta wersja oferuje dodatkowo pracê z wieloma plikami,
-wielopoziomowe operacje cofnij, bloki, pod¶wietlanie sk³adni i wiele
-innych usprawnieñ.
+%description static -l pl
+Pakiet zawiera vim - klasyczny (unixowy) edytor tekstowy skompilowany 
+statycznie. Instalacja tego pakietu jest MOCNO zalecana, mo¿e on pomóc
+Tobie uratowaæ system w czasie awarii.
 
 %package	athena
 Summary:	Vim built with X11 and athena support
 Summary(pl):	Vim pod X-Window korzystaj±cy z Athena Widget Set
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Requires:       ncurses >= 4.2-12
 Obsoletes:	vim-lesstif
 Obsoletes:	vim-gtk
+Obsoletes:	vim-ncurses
 
 %description athena 
 The classic Unix text editor now also under X Window System! 
@@ -104,6 +91,7 @@ Group(pl):	Aplikacje/Edytory/Vim
 Requires:	lesstif
 Obsoletes:	vim-athena
 Obsoletes:	vim-gtk
+Obsoletes:	vim-ncurses
 
 %description lesstif
 The classic Unix text editor now also under X Window System! 
@@ -118,9 +106,11 @@ Summary:	Vim built with X11 and gtk support
 Summary(pl):	Vim pod X-Window korzystaj±cy z bibliotek gtk
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Requires:	gtk+
+Requires:       ncurses >= 4.2-12
+Requires:	gtk+ 
 Obsoletes:	vim-athena
 Obsoletes:	vim-lesstif
+Obsoletes:      vim-ncurses
 
 %description gtk
 The classic Unix text editor now also under X Window System!
@@ -131,54 +121,88 @@ Wersja edytora vim pracuj±ca w graficznym ¶rodowisku X Window
 z wykorzystaniem gtk.
 
 %prep
-%setup -q  -b 1 -b 2
-%patch 
+%setup  -q  -b 1 -b 2
+%patch0 -p0 
 %patch1 -p1
 
 %build
 cd src
 
-LDFLAGS=-static CFLAGS=-O ./configure --disable-gui --without-x \
---disable-perlinterp --disable-pythoninterp --disable-tclinterp \
---disable-cscope --enable-min-features \
---datadir=/etc --with-tlib=termcap --prefix=/usr
+LDFLAGS=-static CFLAGS=-O \
+./configure \
+	--disable-gui \
+	--without-x \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-tclinterp \
+	--disable-cscope \
+	--disable-gpm \
+	--enable-min-features \
+	--datadir=/etc \
+	--with-tlib=ncurses \
+	--prefix=/usr
 make vim
 make xxd/xxd
-mv vim vim.termcap
-mv xxd/xxd xxd.termcap
-
-#make distclean
-#LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" ./configure --disable-gui --without-x \
-#--disable-perlinterp --disable-pythoninterp --disable-tclinterp \
-#--disable-cscope --with-tlib=slang --prefix=/usr
-#make
-#mv src/vim src/vim.slang
+mv vim vim.static
+mv xxd/xxd xxd.static
 
 make distclean
-LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" ./configure --disable-gui --without-x \
---disable-perlinterp --disable-pythoninterp --disable-tclinterp \
---disable-cscope --with-tlib=ncurses --prefix=/usr
+LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
+./configure \
+	--enable-max-features \
+	--disable-gui \
+	--without-x \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-tclinterp \
+	--disable-cscope \
+	--with-tlib=ncurses \
+	--prefix=/usr
 make vim
 mv vim vim.ncurses
 
 make distclean
-LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" ./configure --enable-gui=athena --with-x \
---disable-perlinterp --disable-pythoninterp --disable-tclinterp \
---disable-cscope --with-tlib=termcap --prefix=/usr
+LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
+./configure \
+        --enable-max-features \
+	--enable-gui=athena \
+	--with-x \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-tclinterp \
+	--disable-cscope \
+	--with-tlib=ncurses \
+	--prefix=/usr
 make vim
 mv vim vim.athena
 
 make distclean
-LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" ./configure --enable-gui=motif --with-x \
---disable-perlinterp --disable-pythoninterp --disable-tclinterp \
---disable-cscope --with-tlib=termcap --prefix=/usr
+LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
+./configure \
+        --enable-max-features \
+	--enable-gui=motif \
+	--with-x \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-tclinterp \
+	--disable-cscope \
+	--with-tlib=ncurses \
+	--prefix=/usr
 make vim
 mv vim vim.lesstif
 
 make distclean
-LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" ./configure --enable-gui=gtk --with-x \
---disable-perlinterp --disable-pythoninterp --disable-tclinterp \
---disable-cscope --with-tlib=termcap --prefix=/usr
+LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
+./configure \
+        --enable-max-features \
+	--enable-gui=gtk \
+	--with-x \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-tclinterp \
+	--disable-cscope \
+	--with-tlib=ncurses \
+	--prefix=/usr
 make vim
 mv vim vim.gtk
 
@@ -193,10 +217,8 @@ install -d $RPM_BUILD_ROOT/usr/{bin,X11R6/bin,share/vim/{doc,tutor},man/man1}
 
 # make prefix=$RPM_BUILD_ROOT/usr install
 
-install -s src/vim.termcap $RPM_BUILD_ROOT/bin/vi
-install -s src/xxd.termcap $RPM_BUILD_ROOT/bin/xxd
-
-#install -s src/vim.slang $RPM_BUILD_ROOT/usr/bin/vim.slang
+install -s src/vim.static $RPM_BUILD_ROOT/bin/vi
+install -s src/xxd.static $RPM_BUILD_ROOT/bin/xxd
 
 install -s src/vim.ncurses $RPM_BUILD_ROOT/usr/bin/vim.ncurses
 install -s src/vim.athena  $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.athena
@@ -226,7 +248,7 @@ cp -a runtime/syntax $RPM_BUILD_ROOT/usr/share/vim/syntax
 cp -a runtime/tutor/tutor  $RPM_BUILD_ROOT/usr/share/vim/tutor/tutor
 
 install runtime/*.vim $RPM_BUILD_ROOT/usr/share/vim
-install runtime/vimrc_example $RPM_BUILD_ROOT/usr/share/vim/vimrc
+install runtime/vimrc_example.vim $RPM_BUILD_ROOT/usr/share/vim/vimrc
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/X11/wmconfig/gvim
 
 touch $RPM_BUILD_ROOT/usr/bin/vim $RPM_BUILD_ROOT/usr/X11R6/bin/gvim
@@ -249,62 +271,65 @@ gzip -9nf $RPM_BUILD_ROOT/usr/man/man1/*
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-#%post slang
-#ln -sf /usr/bin/vim.slang /usr/bin/vim
-
-%post ncurses
+%post
 ln -sf /usr/bin/vim.ncurses /usr/bin/vim
 
 %post athena
 ln -sf /usr/X11R6/bin/gvim.athena /usr/X11R6/bin/gvim
+ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 
 %post lesstif 
 ln -sf /usr/X11R6/bin/gvim.lesstif /usr/X11R6/bin/gvim
+ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 
 %post gtk
 ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
+ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 
-%files
-%attr(755,root,root) /bin/*
-%attr(755,root,root) /usr/bin/vi
-
-#%files slang
-#%attr(711,root,root) /usr/bin/vim.slang
-#%attr(711,root,root) /usr/bin/rvim
-#%attr(711,root,root) %ghost /usr/bin/vim
-
-%files ncurses
+%files 
+%defattr(644,root,root,755)
 %attr(755,root,root) /usr/bin/vim.ncurses
 %attr(755,root,root) /usr/bin/rvim
 %attr(755,root,root) %ghost /usr/bin/vim
 
+%files static
+%defattr(644,root,root,755)
+%attr(755,root,root) /bin/*
+%attr(755,root,root) /usr/bin/vi
+
 %files athena
+%defattr(644,root,root,755)
 %attr(755,root,root) /usr/X11R6/bin/gvim.athena
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 %attr(644,root,root) %config(missingok) /etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
+%attr(755,root,root) %ghost /usr/bin/vim
 
 %files lesstif 
+%defattr(644,root,root,755)
 %attr(755,root,root) /usr/X11R6/bin/gvim.lesstif
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 %attr(644,root,root) %config(missingok) /etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
+%attr(755,root,root) %ghost /usr/bin/vim
 
 %files gtk
+%defattr(644,root,root,755)
 %attr(755,root,root) /usr/X11R6/bin/gvim.gtk
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 %attr(644,root,root) %config(missingok) /etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
+%attr(755,root,root) %ghost /usr/bin/vim
 
 %files rt
 %defattr(644,root,root,755)
 
 %attr(755,root,root) /usr/bin/vimtutor
 
-%attr(644,root,man ) /usr/man/man1/*
+/usr/man/man1/*
 
 %dir /usr/share/vim
 /usr/share/vim/macros
@@ -324,6 +349,12 @@ ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
 %config %verify(not size mtime md5) /usr/share/vim/vimrc
 
 %changelog
+* Tue Feb 23 1999 Artur Frysiak <wiget@usa.net>
+  [5.4e-1d]
+- removed vim-clip.patch (now in 5.4e)
+- added vim-CMDLINE_COMPL.patch (allow compile with --enable-min-features)
+- added %%defattr macro to all subpackages
+
 * Thu Feb 04 1999 Wojtek ¦lusarczyk <wojtek@shadow.eu.org>
   [5.4d-2d]
 - symlink /usr/bin/vi -> /bin/vi
@@ -347,7 +378,7 @@ ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
   [5.3-4d]
 - fixed some errors in rt subpackage. 
   by Ziemek Borowski <ziembor@mail.ceu.edu.pl>
-- fixed etcdir in vim-ststic subpackage.
+- fixed etcdir in vim-static subpackage.
 
 * Thu Nov 12 1998 Arkadiusz Mi¶kiewicz <misiek@misiek.eu.org>
   [5.3-2d]
