@@ -1,0 +1,159 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.066
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.066
+Problem:    Backup file may get wrong permissions.
+Solution:   Use permissions of original file for backup file in more places.
+Files:	    src/fileio.c
+
+
+*** ../vim-6.3.029/src/fileio.c	Sat Sep 18 21:13:25 2004
+--- src/fileio.c	Fri Mar 18 12:56:41 2005
+***************
+*** 3314,3320 ****
+  		    /* Open with O_EXCL to avoid the file being created while
+  		     * we were sleeping (symlink hacker attack?) */
+  		    bfd = mch_open((char *)backup,
+! 				       O_WRONLY|O_CREAT|O_EXTRA|O_EXCL, 0666);
+  		    if (bfd < 0)
+  		    {
+  			vim_free(backup);
+--- 3314,3320 ----
+  		    /* Open with O_EXCL to avoid the file being created while
+  		     * we were sleeping (symlink hacker attack?) */
+  		    bfd = mch_open((char *)backup,
+! 				O_WRONLY|O_CREAT|O_EXTRA|O_EXCL, perm & 0777);
+  		    if (bfd < 0)
+  		    {
+  			vim_free(backup);
+***************
+*** 3698,3704 ****
+      while ((fd = mch_open((char *)wfname, O_WRONLY | O_EXTRA | (append
+  			? (forceit ? (O_APPEND | O_CREAT) : O_APPEND)
+  			: (O_CREAT | O_TRUNC))
+! 			, 0666)) < 0)
+      {
+  	/*
+  	 * A forced write will try to create a new file if the old one is
+--- 3698,3704 ----
+      while ((fd = mch_open((char *)wfname, O_WRONLY | O_EXTRA | (append
+  			? (forceit ? (O_APPEND | O_CREAT) : O_APPEND)
+  			: (O_CREAT | O_TRUNC))
+! 			, perm & 0777)) < 0)
+      {
+  	/*
+  	 * A forced write will try to create a new file if the old one is
+***************
+*** 4104,4110 ****
+  		if ((fd = mch_open((char *)backup, O_RDONLY | O_EXTRA, 0)) >= 0)
+  		{
+  		    if ((write_info.bw_fd = mch_open((char *)fname,
+! 			  O_WRONLY | O_CREAT | O_TRUNC | O_EXTRA, 0666)) >= 0)
+  		    {
+  			/* copy the file. */
+  			write_info.bw_buf = smallbuf;
+--- 4104,4111 ----
+  		if ((fd = mch_open((char *)backup, O_RDONLY | O_EXTRA, 0)) >= 0)
+  		{
+  		    if ((write_info.bw_fd = mch_open((char *)fname,
+! 				    O_WRONLY | O_CREAT | O_TRUNC | O_EXTRA,
+! 							   perm & 0777)) >= 0)
+  		    {
+  			/* copy the file. */
+  			write_info.bw_buf = smallbuf;
+***************
+*** 4261,4267 ****
+  
+  	    if (org == NULL
+  		    || (empty_fd = mch_open(org, O_CREAT | O_EXTRA | O_EXCL,
+! 								   0666)) < 0)
+  	      EMSG(_("E206: patchmode: can't touch empty original file"));
+  	    else
+  	      close(empty_fd);
+--- 4262,4268 ----
+  
+  	    if (org == NULL
+  		    || (empty_fd = mch_open(org, O_CREAT | O_EXTRA | O_EXCL,
+! 							    perm & 0777)) < 0)
+  	      EMSG(_("E206: patchmode: can't touch empty original file"));
+  	    else
+  	      close(empty_fd);
+***************
+*** 5693,5698 ****
+--- 5694,5703 ----
+      BPTR	flock;
+  #endif
+      struct stat	st;
++     long	perm;
++ #ifdef HAVE_ACL
++     vim_acl_T	acl;		/* ACL from original file */
++ #endif
+  
+      /*
+       * When the names are identical, there is nothing to do.
+***************
+*** 5743,5752 ****
+      /*
+       * Rename() failed, try copying the file.
+       */
+      fd_in = mch_open((char *)from, O_RDONLY|O_EXTRA, 0);
+      if (fd_in == -1)
+  	return -1;
+!     fd_out = mch_open((char *)to, O_CREAT|O_EXCL|O_WRONLY|O_EXTRA, 0666);
+      if (fd_out == -1)
+      {
+  	close(fd_in);
+--- 5748,5764 ----
+      /*
+       * Rename() failed, try copying the file.
+       */
++     perm = mch_getperm(from);
++ #ifdef HAVE_ACL
++     /* For systems that support ACL: get the ACL from the original file. */
++     acl = mch_get_acl(from);
++ #endif
+      fd_in = mch_open((char *)from, O_RDONLY|O_EXTRA, 0);
+      if (fd_in == -1)
+  	return -1;
+! 
+!     /* Create the new file with same permissions as the original. */
+!     fd_out = mch_open((char *)to, O_CREAT|O_EXCL|O_WRONLY|O_EXTRA, (int)perm);
+      if (fd_out == -1)
+      {
+  	close(fd_in);
+***************
+*** 5777,5782 ****
+--- 5789,5798 ----
+  	errmsg = _("E210: Error reading \"%s\"");
+  	to = from;
+      }
++     mch_setperm(to, perm);
++ #ifdef HAVE_ACL
++     mch_set_acl(to, acl);
++ #endif
+      if (errmsg != NULL)
+      {
+  	EMSG2(errmsg, to);
+*** ../vim-6.3.029/src/version.c	Fri Mar 18 10:56:48 2005
+--- src/version.c	Fri Mar 18 13:36:18 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     66,
+  /**/
+
+-- 
+Why is "abbreviation" such a long word?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

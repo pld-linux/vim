@@ -1,0 +1,129 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.065
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.065 
+Problem:    The euro digraph doesn't always work.
+Solution:   Add an "e=" digraph for Unicode euro character and adjust the
+            help files.
+Files:      src/digraph.c, runtime/doc/digraph.txt
+
+
+*** ../vim-6.3.034/src/digraph.c	Wed Jun  9 14:56:25 2004
+--- src/digraph.c	Fri Mar 18 10:50:52 2005
+***************
+*** 1428,1433 ****
+--- 1428,1434 ----
+  	{'L', 'i', 0x20a4},
+  	{'P', 't', 0x20a7},
+  	{'W', '=', 0x20a9},
++ 	{'=', 'e', 0x20ac}, /* euro */
+  	{'o', 'C', 0x2103},
+  	{'c', 'o', 0x2105},
+  	{'o', 'F', 0x2109},
+*** ../vim-6.3.034/runtime/doc/digraph.txt	Wed Jun  9 14:56:28 2004
+--- runtime/doc/digraph.txt	Fri Mar 18 10:52:35 2005
+***************
+*** 1,4 ****
+! *digraph.txt*   For Vim version 6.3.  Last change: 2001 Sep 03
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *digraph.txt*   For Vim version 6.3.  Last change: 2005 Mar 18
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 28,34 ****
+  							*E104* *E39*
+  :dig[raphs] {char1}{char2} {number} ...
+  			Add digraph {char1}{char2} to the list.  {number} is
+! 			the decimal representation of the character.
+  			Example: >
+  	:digr e: 235 a: 228
+  <			Avoid defining a digraph with '_' (underscore) as the
+--- 28,35 ----
+  							*E104* *E39*
+  :dig[raphs] {char1}{char2} {number} ...
+  			Add digraph {char1}{char2} to the list.  {number} is
+! 			the decimal representation of the character.  Normally
+! 			it is the Unicode character, see |digraph-encoding|.
+  			Example: >
+  	:digr e: 235 a: 228
+  <			Avoid defining a digraph with '_' (underscore) as the
+***************
+*** 48,54 ****
+  if you look at it on a system that does not support digraphs or if you print
+  this file.
+  
+! The decimal number is the number of the character.
+  
+  ==============================================================================
+  2. Using digraphs					*digraphs-use*
+--- 49,72 ----
+  if you look at it on a system that does not support digraphs or if you print
+  this file.
+  
+! 							*digraph-encoding*
+! The decimal number normally is the Unicode number of the character.  Note that
+! the meaning doesn't change when 'encoding' changes.  The character will be
+! converted from Unicode to 'encoding' when needed.  This does require the
+! conversion to be available, it might fail.
+! 
+! When Vim was compiled without the +multi_byte feature, you need to specify the
+! character in the encoding given with 'encoding'.  You might want to use
+! something like this: >
+! 
+! 	if has("multi_byte")
+! 		digraph oe 339
+! 	elseif &encoding == "iso-8859-15"
+! 		digraph oe 189
+! 	endif
+! 
+! This defines the "oe" digraph for a character that is number 339 in Unicode
+! and 189 in latin9 (iso-8859-15).
+  
+  ==============================================================================
+  2. Using digraphs					*digraphs-use*
+***************
+*** 142,147 ****
+--- 160,173 ----
+  These are the RFC1345 digraphs for the one-byte characters.  See the output of
+  ":digraphs" for the others.  The characters above 255 are only available when
+  Vim was compiled with the |+multi_byte| feature.
++ 
++ EURO
++ 
++ Exception: RFC1345 doesn't specify the euro sign.  In Vim the digraph =e was
++ added for this.  Note the difference between latin1, where the digraph Cu is
++ used for the currency sign, and latin9 (iso-8859-15), where the digraph =e is
++ used for the euro sign, while both of them are the character 164, 0xa4.
++ 
+  							*digraph-table*
+  char  digraph	hex	dec	official name ~
+  ^@	NU	0x00	  0	NULL (NUL)
+*** ../vim-6.3.034/src/version.c	Fri Mar 11 19:16:20 2005
+--- src/version.c	Fri Mar 18 10:54:13 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     65,
+  /**/
+
+-- 
+Lawmakers made it obligatory for everybody to take at least one bath
+each week -- on Saturday night.
+		[real standing law in Vermont, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

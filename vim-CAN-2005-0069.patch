@@ -1,0 +1,27 @@
+diff -burN vim63.orig/runtime/tools/tcltags vim63/runtime/tools/tcltags
+--- vim63.orig/runtime/tools/tcltags	2005-03-19 15:54:53.345907600 +0100
++++ vim63/runtime/tools/tcltags	2005-03-19 15:55:45.333004360 +0100
+@@ -8,7 +8,8 @@
+ program_version="0.3"
+ program_author="Darren Hiebert"
+ author_email="darren@hiebert.com"
+-tmp_tagfile=/tmp/${program_name}.$$
++tmp_tagfile=`mktem -t tcltagXXXXXX` || exit 1
++trap "rm -rf $tmp_tagfile" 0 1 2 3 9 11 13 15
+ 
+ usage="\
+ Usage: $program_name [-au] [-{f|o} tagfile] [--format=n] file(s)
+diff -burN vim63.orig/runtime/tools/vimspell.sh vim63/runtime/tools/vimspell.sh
+--- vim63.orig/runtime/tools/vimspell.sh	2005-03-19 15:54:53.345907600 +0100
++++ vim63/runtime/tools/vimspell.sh	2005-03-19 15:56:32.960763840 +0100
+@@ -13,9 +13,7 @@
+ # March 1999
+ 
+ INFILE=$1
+-OUTFILE=/tmp/vimspell.$$
+-# if you have "tempfile", use the following line
+-#OUTFILE=`tempfile`
++OUTFILE=`mktemp -t vimspellXXXXXX` || exit 1
+ 
+ #
+ # local spellings

@@ -1,0 +1,68 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.067
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.067 (after 6.3.066)
+Problem:    Newly created file gets execute permission.
+Solution:   Check for "perm" to be negative before using it.
+Files:	    src/fileio.c
+
+
+*** ../vim-6.3.030/src/fileio.c	Fri Mar 18 13:37:34 2005
+--- src/fileio.c	Fri Mar 18 19:16:29 2005
+***************
+*** 3698,3704 ****
+      while ((fd = mch_open((char *)wfname, O_WRONLY | O_EXTRA | (append
+  			? (forceit ? (O_APPEND | O_CREAT) : O_APPEND)
+  			: (O_CREAT | O_TRUNC))
+! 			, perm & 0777)) < 0)
+      {
+  	/*
+  	 * A forced write will try to create a new file if the old one is
+--- 3698,3704 ----
+      while ((fd = mch_open((char *)wfname, O_WRONLY | O_EXTRA | (append
+  			? (forceit ? (O_APPEND | O_CREAT) : O_APPEND)
+  			: (O_CREAT | O_TRUNC))
+! 			, perm < 0 ? 0666 : (perm & 0777))) < 0)
+      {
+  	/*
+  	 * A forced write will try to create a new file if the old one is
+***************
+*** 4262,4268 ****
+  
+  	    if (org == NULL
+  		    || (empty_fd = mch_open(org, O_CREAT | O_EXTRA | O_EXCL,
+! 							    perm & 0777)) < 0)
+  	      EMSG(_("E206: patchmode: can't touch empty original file"));
+  	    else
+  	      close(empty_fd);
+--- 4262,4268 ----
+  
+  	    if (org == NULL
+  		    || (empty_fd = mch_open(org, O_CREAT | O_EXTRA | O_EXCL,
+! 					perm < 0 ? 0666 : (perm & 0777))) < 0)
+  	      EMSG(_("E206: patchmode: can't touch empty original file"));
+  	    else
+  	      close(empty_fd);
+*** ../vim-6.3.030/src/version.c	Fri Mar 18 13:37:34 2005
+--- src/version.c	Fri Mar 18 19:17:45 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     67,
+  /**/
+
+-- 
+If corn oil comes from corn, where does baby oil come from?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
