@@ -12,7 +12,7 @@
 # _with_bonobo		- with bonobo patch (doesn't work at the moment)
 
 %define		_ver		6.2
-%define		_patchlevel	060
+%define		_patchlevel	071
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -26,7 +26,7 @@ Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
 #Version:	%{_ver}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -116,6 +116,17 @@ Patch157:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.057
 Patch158:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.058
 Patch159:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.059
 Patch160:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.060
+Patch161:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.061
+Patch162:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.062
+Patch163:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.063
+Patch164:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.064
+Patch165:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.065
+Patch166:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.066
+Patch167:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.067
+Patch168:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.068
+Patch169:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.069
+Patch170:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.070
+Patch171:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.071
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -560,6 +571,17 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch158 -p0
 %patch159 -p0
 %patch160 -p0
+%patch161 -p0
+%patch162 -p0
+%patch163 -p0
+%patch164 -p0
+%patch165 -p0
+%patch166 -p0
+%patch167 -p0
+%patch168 -p0
+%patch169 -p0
+%patch170 -p0
+%patch171 -p0
 
 %patch0 -p1
 %{?_with_bonobo:%patch99 -p1}
