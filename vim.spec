@@ -35,6 +35,8 @@ Patch4:		%{name}-ispell.patch
 Patch5:		%{name}-pl.patch
 Patch6:		%{name}-shsyntax.patch
 URL:		http://www.vim.org/
+BuildRequires:	autoconf
+BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
 %{!?_without_athena:BuildRequires:	Xaw3d-devel}
