@@ -49,8 +49,6 @@ BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
-%{!?_without_athena:BuildRequires:	Xaw3d-devel}
-%{!?_without_gnome:BuildRequires:	esound-devel}
 %{!?_without_gnome:BuildRequires:	gnome-libs-devel}
 %{!?_without_gtk:BuildRequires:		gtk+-devel}
 %{!?_without_motif:BuildRequires:	motif-devel}
