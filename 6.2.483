@@ -1,0 +1,147 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.483 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.483 (extra, after 6.2.482)
+Problem:    See 6.2.482.
+Solution:   Extra part of patch 6.2.482.
+Files:	    src/gui_photon.c, src/gui_w48.c, src/os_msdos.c, src/os_mswin.c
+
+
+*** ../vim-6.2.482/src/gui_photon.c	Sat Sep 27 19:40:03 2003
+--- src/gui_photon.c	Mon Apr 19 19:02:05 2004
+***************
+*** 1978,1984 ****
+      static int
+  hex_digit(int c)
+  {
+!     if (vim_isdigit(c))
+  	return( c - '0' );
+      c = TOLOWER_ASC(c);
+      if (c >= 'a' && c <= 'f')
+--- 1978,1984 ----
+      static int
+  hex_digit(int c)
+  {
+!     if (VIM_ISDIGIT(c))
+  	return( c - '0' );
+      c = TOLOWER_ASC(c);
+      if (c >= 'a' && c <= 'f')
+*** ../vim-6.2.482/src/gui_w48.c	Fri Apr 16 11:08:02 2004
+--- src/gui_w48.c	Mon Apr 19 19:02:23 2004
+***************
+*** 1188,1194 ****
+      static int
+  hex_digit(int c)
+  {
+!     if (vim_isdigit(c))
+  	return c - '0';
+      c = TOLOWER_ASC(c);
+      if (c >= 'a' && c <= 'f')
+--- 1188,1194 ----
+      static int
+  hex_digit(int c)
+  {
+!     if (VIM_ISDIGIT(c))
+  	return c - '0';
+      c = TOLOWER_ASC(c);
+      if (c >= 'a' && c <= 'f')
+*** ../vim-6.2.482/src/os_msdos.c	Sun Feb 29 14:48:02 2004
+--- src/os_msdos.c	Mon Apr 19 19:03:34 2004
+***************
+*** 378,384 ****
+      p = *pp;
+      if (*p == '-')		/* skip negative sign */
+  	++p;
+!     while(isdigit(*p))
+      {
+  	retval = (retval * 10) + (*p - '0');
+  	++p;
+--- 378,384 ----
+      p = *pp;
+      if (*p == '-')		/* skip negative sign */
+  	++p;
+!     while (VIM_ISDIGIT(*p))
+      {
+  	retval = (retval * 10) + (*p - '0');
+  	++p;
+***************
+*** 1794,1800 ****
+      static int	    modes[]   = { BW40,	  C40,	 BW80,	 C80,	MONO,	C4350};
+  
+      mode = -1;
+!     if (isdigit(*arg))		    /* mode number given */
+  	mode = atoi((char *)arg);
+      else
+      {
+--- 1794,1800 ----
+      static int	    modes[]   = { BW40,	  C40,	 BW80,	 C80,	MONO,	C4350};
+  
+      mode = -1;
+!     if (VIM_ISDIGIT(*arg))		    /* mode number given */
+  	mode = atoi((char *)arg);
+      else
+      {
+***************
+*** 3007,3013 ****
+  	    || STRICMP(name, "PRN") == 0
+  	    || ((STRNICMP(name, "COM", 3) == 0
+  		    || STRNICMP(name, "LPT", 3) == 0)
+! 		&& isdigit(name[3])
+  		&& name[4] == NUL))
+  	return NODE_WRITABLE;
+      /* TODO: NODE_OTHER? */
+--- 3007,3013 ----
+  	    || STRICMP(name, "PRN") == 0
+  	    || ((STRNICMP(name, "COM", 3) == 0
+  		    || STRNICMP(name, "LPT", 3) == 0)
+! 		&& VIM_ISDIGIT(name[3])
+  		&& name[4] == NUL))
+  	return NODE_WRITABLE;
+      /* TODO: NODE_OTHER? */
+*** ../vim-6.2.482/src/os_mswin.c	Fri Apr 16 11:08:02 2004
+--- src/os_mswin.c	Mon Apr 19 19:04:20 2004
+***************
+*** 2983,2989 ****
+  	}
+  	else
+  	{
+! 	    if (!isdigit(*str))
+  		break;
+  
+  	    points *= 10;
+--- 2983,2989 ----
+  	}
+  	else
+  	{
+! 	    if (!VIM_ISDIGIT(*str))
+  		break;
+  
+  	    points *= 10;
+*** ../vim-6.2.482/src/version.c	Mon Apr 19 20:26:43 2004
+--- src/version.c	Mon Apr 19 20:28:12 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     483,
+  /**/
+
+-- 
+(letter from Mark to Mike, about the film's probable certificate)
+      For an 'A' we would have to: Lose as many shits as possible; Take Jesus
+      Christ out, if possible; Loose "I fart in your general direction"; Lose
+      "the oral sex"; Lose "oh, fuck off"; Lose "We make castanets out of your
+      testicles"
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

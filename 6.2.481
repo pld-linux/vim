@@ -1,0 +1,250 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.481
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.481
+Problem:    When writing a file it is not possible to specify that hard and/or
+	    symlinks are to be broken instead of preserved.
+Solution:   Add the "breaksymlink" and "breakhardlink" values to 'backupcopy'.
+	    (Simon Ekstrand)
+Files:	    runtime/doc/options.txt, src/fileio.c, src/option.c, src/option.h
+
+
+*** ../vim-6.2.480/runtime/doc/options.txt	Mon Apr  5 19:51:11 2004
+--- runtime/doc/options.txt	Sun Apr 18 17:03:19 2004
+***************
+*** 1,4 ****
+! *options.txt*	For Vim version 6.2.  Last change: 2004 Apr 05
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+--- 1,4 ----
+! *options.txt*	For Vim version 6.2.  Last change: 2004 Apr 18
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+***************
+*** 834,844 ****
+  			global
+  			{not in Vi}
+  	When writing a file and a backup is made, this option tells how it's
+! 	done:
+  	"yes"	make a copy of the file and overwrite the original one
+  	"no"	rename the file and write a new one
+  	"auto"	one of the previous, what works best
+  
+  	Making a copy and overwriting the original file:
+  	- Takes extra time to copy the file.
+  	+ When the file has special attributes, is a (hard/symbolic) link or
+--- 836,852 ----
+  			global
+  			{not in Vi}
+  	When writing a file and a backup is made, this option tells how it's
+! 	done.  This is a comma separated list of words.
+! 	
+! 	The main values are:
+  	"yes"	make a copy of the file and overwrite the original one
+  	"no"	rename the file and write a new one
+  	"auto"	one of the previous, what works best
+  
++ 	Extra values that can be combined with the ones above are:
++ 	"breaksymlink"	always break symlinks when writing
++ 	"breakhardlink"	always break hardlinks when writing
++ 
+  	Making a copy and overwriting the original file:
+  	- Takes extra time to copy the file.
+  	+ When the file has special attributes, is a (hard/symbolic) link or
+***************
+*** 856,861 ****
+--- 864,878 ----
+  	is possible without side effects (the attributes can be passed on and
+  	and the file is not a link) that is used.  When problems are expected,
+  	a copy will be made.
++ 
++ 	The "breaksymlink" and "breakhardlink" values can be used in
++ 	combination with any of "yes", "no" and "auto".  When included, they
++ 	force Vim to always break either symbolic or hard links by doing
++ 	exactly what the "no" option does, renaming the original file to
++ 	become the backup and writing a new file in its place.  This can be
++ 	useful for example in source trees where all the files are symbolic or
++ 	hard links and any changes should stay in the local source tree, not
++ 	be propagated back to the original source.
+  							*crontab*
+  	One situation where "no" and "auto" will cause problems: A program
+  	that opens a file, invokes Vim to edit that file, and then tests if
+*** ../vim-6.2.480/src/fileio.c	Fri Apr 16 19:59:33 2004
+--- src/fileio.c	Mon Apr 19 09:52:52 2004
+***************
+*** 2876,2887 ****
+       */
+      if (!(append && *p_pm == NUL) && !filtering && perm >= 0 && dobackup)
+      {
+! 	if (*p_bkc == 'y' || append)	/* "yes" */
+  	    backup_copy = TRUE;
+  #if defined(UNIX) || defined(WIN32)
+! 	else if (*p_bkc == 'a')		/* "auto" */
+  	{
+- 	    struct stat	st;
+  	    int		i;
+  
+  # ifdef UNIX
+--- 2876,2890 ----
+       */
+      if (!(append && *p_pm == NUL) && !filtering && perm >= 0 && dobackup)
+      {
+! #if defined(UNIX) || defined(WIN32)
+! 	struct stat st;
+! #endif
+! 
+! 	if ((bkc_flags & BKC_YES) || append)	/* "yes" */
+  	    backup_copy = TRUE;
+  #if defined(UNIX) || defined(WIN32)
+! 	else if ((bkc_flags & BKC_AUTO))	/* "auto" */
+  	{
+  	    int		i;
+  
+  # ifdef UNIX
+***************
+*** 2932,2937 ****
+--- 2935,2965 ----
+  		}
+  	    }
+  	}
++ 
++ # ifdef UNIX
++ 	/*
++ 	 * Break symlinks and/or hardlinks if we've been asked to.
++ 	 */
++ 	if ((bkc_flags & BKC_BREAKSYMLINK) || (bkc_flags & BKC_BREAKHARDLINK))
++ 	{
++ 	    int	lstat_res;
++ 
++ 	    lstat_res = mch_lstat((char *)fname, &st);
++ 
++ 	    /* Symlinks. */
++ 	    if ((bkc_flags & BKC_BREAKSYMLINK)
++ 		    && lstat_res == 0
++ 		    && st.st_ino != st_old.st_ino)
++ 		backup_copy = FALSE;
++ 
++ 	    /* Hardlinks. */
++ 	    if ((bkc_flags & BKC_BREAKHARDLINK)
++ 		    && st_old.st_nlink > 1
++ 		    && (lstat_res != 0 || st.st_ino == st_old.st_ino))
++ 		backup_copy = FALSE;
++ 	}
++ #endif
++ 
+  #endif
+  
+  	/* make sure we have a valid backup extension to use */
+*** ../vim-6.2.480/src/option.c	Wed Apr 14 11:08:53 2004
+--- src/option.c	Sun Apr 18 17:20:24 2004
+***************
+*** 402,408 ****
+      {"backup",	    "bk",   P_BOOL|P_VI_DEF|P_VIM,
+  			    (char_u *)&p_bk, PV_NONE,
+  			    {(char_u *)FALSE, (char_u *)0L}},
+!     {"backupcopy",  "bkc",  P_STRING|P_VIM,
+  			    (char_u *)&p_bkc, PV_NONE,
+  #ifdef UNIX
+  			    {(char_u *)"yes", (char_u *)"auto"}
+--- 402,408 ----
+      {"backup",	    "bk",   P_BOOL|P_VI_DEF|P_VIM,
+  			    (char_u *)&p_bk, PV_NONE,
+  			    {(char_u *)FALSE, (char_u *)0L}},
+!     {"backupcopy",  "bkc",  P_STRING|P_VIM|P_COMMA|P_NODUP,
+  			    (char_u *)&p_bkc, PV_NONE,
+  #ifdef UNIX
+  			    {(char_u *)"yes", (char_u *)"auto"}
+***************
+*** 2391,2397 ****
+  static char *(p_ambw_values[]) = {"single", "double", NULL};
+  #endif
+  static char *(p_bg_values[]) = {"light", "dark", NULL};
+- static char *(p_bkc_values[]) = {"yes", "auto", "no", NULL};
+  static char *(p_nf_values[]) = {"octal", "hex", "alpha", NULL};
+  static char *(p_ff_values[]) = {FF_UNIX, FF_DOS, FF_MAC, NULL};
+  #ifdef FEAT_WAK
+--- 2403,2408 ----
+***************
+*** 4295,4300 ****
+--- 4306,4312 ----
+      (void)init_chartab();
+  
+      (void)opt_strings_flags(p_cmp, p_cmp_values, &cmp_flags, TRUE);
++     (void)opt_strings_flags(p_bkc, p_bkc_values, &bkc_flags, TRUE);
+  #ifdef FEAT_SESSION
+      (void)opt_strings_flags(p_ssop, p_ssop_values, &ssop_flags, TRUE);
+      (void)opt_strings_flags(p_vop, p_ssop_values, &vop_flags, TRUE);
+***************
+*** 4624,4631 ****
+      /* 'backupcopy' */
+      else if (varp == &p_bkc)
+      {
+! 	if (check_opt_strings(p_bkc, p_bkc_values, FALSE) != OK)
+  	    errmsg = e_invarg;
+      }
+  
+      /* 'backupext' and 'patchmode' */
+--- 4636,4651 ----
+      /* 'backupcopy' */
+      else if (varp == &p_bkc)
+      {
+! 	if (opt_strings_flags(p_bkc, p_bkc_values, &bkc_flags, TRUE) != OK)
+  	    errmsg = e_invarg;
++ 	if (((bkc_flags & BKC_AUTO) != 0)
++ 		+ ((bkc_flags & BKC_YES) != 0)
++ 		+ ((bkc_flags & BKC_NO) != 0) != 1)
++ 	{
++ 	    /* Must have exactly one of "auto", "yes"  and "no". */
++ 	    (void)opt_strings_flags(oldval, p_bkc_values, &bkc_flags, TRUE);
++ 	    errmsg = e_invarg;
++ 	}
+      }
+  
+      /* 'backupext' and 'patchmode' */
+*** ../vim-6.2.480/src/option.h	Fri Apr  2 21:06:43 2004
+--- src/option.h	Sun Apr 18 17:18:35 2004
+***************
+*** 301,306 ****
+--- 301,315 ----
+  EXTERN char_u	*p_bg;		/* 'background' */
+  EXTERN int	p_bk;		/* 'backup' */
+  EXTERN char_u	*p_bkc;		/* 'backupcopy' */
++ EXTERN unsigned	bkc_flags;
++ #ifdef IN_OPTION_C
++ static char *(p_bkc_values[]) = {"yes", "auto", "no", "breaksymlink", "breakhardlink", NULL};
++ #endif
++ # define BKC_YES		0x001
++ # define BKC_AUTO		0x002
++ # define BKC_NO			0x004
++ # define BKC_BREAKSYMLINK	0x008
++ # define BKC_BREAKHARDLINK	0x010
+  EXTERN char_u	*p_bdir;	/* 'backupdir' */
+  EXTERN char_u	*p_bex;		/* 'backupext' */
+  #ifdef FEAT_WILDIGN
+*** ../vim-6.2.480/src/version.c	Sat Apr 17 21:14:10 2004
+--- src/version.c	Mon Apr 19 16:51:55 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     481,
+  /**/
+
+-- 
+A disclaimer for the disclaimer:
+"and before I get a huge amount of complaints , I have no control over the
+disclaimer at the end of this mail :-)" (Timothy Aldrich)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

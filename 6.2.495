@@ -1,0 +1,499 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.495 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.495 (extra, after 6.2.456)
+Problem:    Win32: The file dialog doesn't work on Windows 95.
+Solution:   Put the wide code of gui_mch_browse() in gui_mch_browseW() and use
+	    it only on Windows NT/2000/XP.
+Files:	    src/gui_w32.c, src/gui_w48.c
+
+
+*** ../vim-6.2.494/src/gui_w32.c	Fri Apr 16 11:08:02 2004
+--- src/gui_w32.c	Fri Apr 23 17:10:40 2004
+***************
+*** 202,209 ****
+  #define VIM_NAME	"vim"
+  #define VIM_CLASS	"Vim"
+  
+- static OSVERSIONINFO os_version;    /* like it says.  Init in gui_mch_init() */
+- 
+  /* Initial size for the dialog template.  For gui_mch_dialog() it's fixed,
+   * thus there should be room for every dialog.  For tearoffs it's made bigger
+   * when needed. */
+--- 201,206 ----
+***************
+*** 545,551 ****
+  	y = lpwpos->y;
+  	cx = lpwpos->cx;
+  	cy = lpwpos->cy;
+!         netbeans_frame_moved(x, y);
+      }
+      /* Allow to send WM_SIZE and WM_MOVE */
+      FORWARD_WM_WINDOWPOSCHANGED(hwnd, lpwpos, DefWindowProc);
+--- 542,548 ----
+  	y = lpwpos->y;
+  	cx = lpwpos->cx;
+  	cy = lpwpos->cy;
+! 	netbeans_frame_moved(x, y);
+      }
+      /* Allow to send WM_SIZE and WM_MOVE */
+      FORWARD_WM_WINDOWPOSCHANGED(hwnd, lpwpos, DefWindowProc);
+*** ../vim-6.2.494/src/gui_w48.c	Mon Apr 19 20:29:16 2004
+--- src/gui_w48.c	Fri Apr 23 17:11:29 2004
+***************
+*** 286,291 ****
+--- 286,295 ----
+  static int		s_timed_out = FALSE;
+  static int		dead_key = 0;	/* 0 - no dead key, 1 - dead key pressed */
+  
++ #ifdef WIN3264
++ static OSVERSIONINFO os_version;    /* like it says.  Init in gui_mch_init() */
++ #endif
++ 
+  #ifdef FEAT_BEVAL
+  /* balloon-eval WM_NOTIFY_HANDLER */
+  static void Handle_WM_Notify __ARGS((HWND hwnd, LPNMHDR pnmh));
+***************
+*** 2710,2739 ****
+  
+  #ifdef FEAT_BROWSE
+  /*
+!  * Convert the string s to the proper format for a filter string by replacing
+!  * the \t and \n delimeters with \0.
+!  * Returns the converted string in allocated memory.
+   */
+- # ifdef FEAT_MBYTE
+      static WCHAR *
+! # else
+!     static char_u *
+! # endif
+! convert_filter(char_u *s)
+  {
+- # ifdef FEAT_MBYTE
+      WCHAR	*res;
+- # else
+-     char_u	*res;
+- # endif
+      unsigned	s_len = (unsigned)STRLEN(s);
+      unsigned	i;
+  
+! # ifdef FEAT_MBYTE
+!     res = (WCHAR *)alloc((s_len + 3) * 2);
+! # else
+!     res = alloc(s_len + 3);
+! # endif
+      if (res != NULL)
+      {
+  	for (i = 0; i < s_len; ++i)
+--- 2714,2736 ----
+  
+  #ifdef FEAT_BROWSE
+  /*
+!  * The file browser exists in two versions: with "W" uses wide characters,
+!  * without "W" the current codepage.  When FEAT_MBYTE is defined and on
+!  * Windows NT/2000/XP the "W" functions are used.
+!  */
+! 
+! # if defined(FEAT_MBYTE) && defined(WIN3264)
+! /*
+!  * Wide version of convert_filter().  Keep in sync!
+   */
+      static WCHAR *
+! convert_filterW(char_u *s)
+  {
+      WCHAR	*res;
+      unsigned	s_len = (unsigned)STRLEN(s);
+      unsigned	i;
+  
+!     res = (WCHAR *)alloc((s_len + 3) * sizeof(WCHAR));
+      if (res != NULL)
+      {
+  	for (i = 0; i < s_len; ++i)
+***************
+*** 2750,2766 ****
+  }
+  
+  /*
+!  * Pop open a file browser and return the file selected, in allocated memory,
+!  * or NULL if Cancel is hit.
+!  *  saving  - TRUE if the file will be saved to, FALSE if it will be opened.
+!  *  title   - Title message for the file browser dialog.
+!  *  dflt    - Default name of file.
+!  *  ext     - Default extension to be added to files without extensions.
+!  *  initdir - directory in which to open the browser (NULL = current dir)
+!  *  filter  - Filter for matched files to choose from.
+   */
+!     char_u *
+! gui_mch_browse(
+  	int saving,
+  	char_u *title,
+  	char_u *dflt,
+--- 2747,2756 ----
+  }
+  
+  /*
+!  * Wide version of gui_mch_browse().  Keep in sync!
+   */
+!     static char_u *
+! gui_mch_browseW(
+  	int saving,
+  	char_u *title,
+  	char_u *dflt,
+***************
+*** 2768,2774 ****
+  	char_u *initdir,
+  	char_u *filter)
+  {
+- #ifdef FEAT_MBYTE
+      /* We always use the wide function.  This means enc_to_ucs2() must work,
+       * otherwise it fails miserably! */
+      OPENFILENAMEW	fileStruct;
+--- 2758,2763 ----
+***************
+*** 2779,2797 ****
+      WCHAR		*extp = NULL;
+      WCHAR		*initdirp = NULL;
+      WCHAR		*filterp;
+- #else
+-     OPENFILENAME	fileStruct;
+-     char_u		fileBuf[MAXPATHL];
+-     char_u		*initdirp = NULL;
+-     char_u		*filterp;
+- #endif
+      char_u		*p;
+  
+      if (dflt == NULL)
+  	fileBuf[0] = NUL;
+      else
+      {
+- #ifdef FEAT_MBYTE
+  	wp = enc_to_ucs2(dflt, NULL);
+  	if (wp == NULL)
+  	    fileBuf[0] = NUL;
+--- 2768,2779 ----
+***************
+*** 2802,2840 ****
+  	    fileBuf[i] = NUL;
+  	    vim_free(wp);
+  	}
+- #else
+- 	STRNCPY(fileBuf, dflt, MAXPATHL - 1);
+- 	fileBuf[MAXPATHL - 1] = NUL;
+- #endif
+      }
+  
+      /* Convert the filter to Windows format. */
+!     filterp = convert_filter(filter);
+  
+!     memset(&fileStruct, 0, sizeof(OPENFILENAME));
+  #ifdef OPENFILENAME_SIZE_VERSION_400
+      /* be compatible with Windows NT 4.0 */
+!     /* TODO: what when using OPENFILENAMEW??? */
+      fileStruct.lStructSize = sizeof(OPENFILENAME_SIZE_VERSION_400);
+  #else
+      fileStruct.lStructSize = sizeof(fileStruct);
+  #endif
+  
+- #ifdef FEAT_MBYTE
+      if (title != NULL)
+  	titlep = enc_to_ucs2(title, NULL);
+      fileStruct.lpstrTitle = titlep;
+- #else
+-     fileStruct.lpstrTitle = title;
+- #endif
+  
+- #ifdef FEAT_MBYTE
+      if (ext != NULL)
+  	extp = enc_to_ucs2(ext, NULL);
+      fileStruct.lpstrDefExt = extp;
+- #else
+-     fileStruct.lpstrDefExt = ext;
+- #endif
+  
+      fileStruct.lpstrFile = fileBuf;
+      fileStruct.nMaxFile = MAXPATHL;
+--- 2784,2810 ----
+  	    fileBuf[i] = NUL;
+  	    vim_free(wp);
+  	}
+      }
+  
+      /* Convert the filter to Windows format. */
+!     filterp = convert_filterW(filter);
+  
+!     memset(&fileStruct, 0, sizeof(OPENFILENAMEW));
+  #ifdef OPENFILENAME_SIZE_VERSION_400
+      /* be compatible with Windows NT 4.0 */
+!     /* TODO: what to use for OPENFILENAMEW??? */
+      fileStruct.lStructSize = sizeof(OPENFILENAME_SIZE_VERSION_400);
+  #else
+      fileStruct.lStructSize = sizeof(fileStruct);
+  #endif
+  
+      if (title != NULL)
+  	titlep = enc_to_ucs2(title, NULL);
+      fileStruct.lpstrTitle = titlep;
+  
+      if (ext != NULL)
+  	extp = enc_to_ucs2(ext, NULL);
+      fileStruct.lpstrDefExt = extp;
+  
+      fileStruct.lpstrFile = fileBuf;
+      fileStruct.nMaxFile = MAXPATHL;
+***************
+*** 2844,2850 ****
+      if (initdir != NULL && *initdir != NUL)
+      {
+  	/* Must have backslashes here, no matter what 'shellslash' says */
+- #ifdef FEAT_MBYTE
+  	initdirp = enc_to_ucs2(initdir, NULL);
+  	if (initdirp != NULL)
+  	{
+--- 2814,2819 ----
+***************
+*** 2852,2864 ****
+  		if (*wp == '/')
+  		    *wp = '\\';
+  	}
+- #else
+- 	initdirp = vim_strsave(initdir);
+- 	if (initdirp != NULL)
+- 	    for (p = initdirp; *p != NUL; ++p)
+- 		if (*p == '/')
+- 		    *p = '\\';
+- #endif
+  	fileStruct.lpstrInitialDir = initdirp;
+      }
+  
+--- 2821,2826 ----
+***************
+*** 2877,2913 ****
+  #endif
+      if (saving)
+      {
+- #ifdef FEAT_MBYTE
+  	if (!GetSaveFileNameW(&fileStruct))
+- #else
+- 	if (!GetSaveFileName(&fileStruct))
+- #endif
+  	    return NULL;
+      }
+      else
+      {
+- #ifdef FEAT_MBYTE
+  	if (!GetOpenFileNameW(&fileStruct))
+- #else
+- 	if (!GetOpenFileName(&fileStruct))
+- #endif
+  	    return NULL;
+      }
+  
+      vim_free(filterp);
+      vim_free(initdirp);
+- #ifdef FEAT_MBYTE
+      vim_free(titlep);
+      vim_free(extp);
+- #endif
+  
+- #ifdef FEAT_MBYTE
+      /* Convert from UCS2 to 'encoding'. */
+      p = ucs2_to_enc(fileBuf, NULL);
+!     if (p != NULL)		/* when out of memory we get garbage... */
+  	STRCPY(fileBuf, p);
+      vim_free(p);
+  #endif
+  
+      /* Give focus back to main window (when using MDI). */
+      SetFocus(s_hwnd);
+--- 2839,3004 ----
+  #endif
+      if (saving)
+      {
+  	if (!GetSaveFileNameW(&fileStruct))
+  	    return NULL;
+      }
+      else
+      {
+  	if (!GetOpenFileNameW(&fileStruct))
+  	    return NULL;
+      }
+  
+      vim_free(filterp);
+      vim_free(initdirp);
+      vim_free(titlep);
+      vim_free(extp);
+  
+      /* Convert from UCS2 to 'encoding'. */
+      p = ucs2_to_enc(fileBuf, NULL);
+!     if (p != NULL)
+! 	/* when out of memory we get garbage for non-ASCII chars */
+  	STRCPY(fileBuf, p);
+      vim_free(p);
++ 
++     /* Give focus back to main window (when using MDI). */
++     SetFocus(s_hwnd);
++ 
++     /* Shorten the file name if possible */
++     mch_dirname(IObuff, IOSIZE);
++     p = shorten_fname((char_u *)fileBuf, IObuff);
++     if (p == NULL)
++ 	p = (char_u *)fileBuf;
++     return vim_strsave(p);
++ }
++ # endif /* FEAT_MBYTE */
++ 
++ 
++ /*
++  * Convert the string s to the proper format for a filter string by replacing
++  * the \t and \n delimeters with \0.
++  * Returns the converted string in allocated memory.
++  *
++  * Keep in sync with convert_filterW() above!
++  */
++     static char_u *
++ convert_filter(char_u *s)
++ {
++     char_u	*res;
++     unsigned	s_len = (unsigned)STRLEN(s);
++     unsigned	i;
++ 
++     res = alloc(s_len + 3);
++     if (res != NULL)
++     {
++ 	for (i = 0; i < s_len; ++i)
++ 	    if (s[i] == '\t' || s[i] == '\n')
++ 		res[i] = '\0';
++ 	    else
++ 		res[i] = s[i];
++ 	res[s_len] = NUL;
++ 	/* Add two extra NULs to make sure it's properly terminated. */
++ 	res[s_len + 1] = NUL;
++ 	res[s_len + 2] = NUL;
++     }
++     return res;
++ }
++ 
++ /*
++  * Pop open a file browser and return the file selected, in allocated memory,
++  * or NULL if Cancel is hit.
++  *  saving  - TRUE if the file will be saved to, FALSE if it will be opened.
++  *  title   - Title message for the file browser dialog.
++  *  dflt    - Default name of file.
++  *  ext     - Default extension to be added to files without extensions.
++  *  initdir - directory in which to open the browser (NULL = current dir)
++  *  filter  - Filter for matched files to choose from.
++  *
++  * Keep in sync with gui_mch_browseW() above!
++  */
++     char_u *
++ gui_mch_browse(
++ 	int saving,
++ 	char_u *title,
++ 	char_u *dflt,
++ 	char_u *ext,
++ 	char_u *initdir,
++ 	char_u *filter)
++ {
++     OPENFILENAME	fileStruct;
++     char_u		fileBuf[MAXPATHL];
++     char_u		*initdirp = NULL;
++     char_u		*filterp;
++     char_u		*p;
++ 
++ # if defined(FEAT_MBYTE) && defined(WIN3264)
++     if (os_version.dwPlatformId == VER_PLATFORM_WIN32_NT)
++ 	return gui_mch_browseW(saving, title, dflt, ext, initdir, filter);
++ # endif
++ 
++     if (dflt == NULL)
++ 	fileBuf[0] = NUL;
++     else
++     {
++ 	STRNCPY(fileBuf, dflt, MAXPATHL - 1);
++ 	fileBuf[MAXPATHL - 1] = NUL;
++     }
++ 
++     /* Convert the filter to Windows format. */
++     filterp = convert_filter(filter);
++ 
++     memset(&fileStruct, 0, sizeof(OPENFILENAME));
++ #ifdef OPENFILENAME_SIZE_VERSION_400
++     /* be compatible with Windows NT 4.0 */
++     fileStruct.lStructSize = sizeof(OPENFILENAME_SIZE_VERSION_400);
++ #else
++     fileStruct.lStructSize = sizeof(fileStruct);
+  #endif
++ 
++     fileStruct.lpstrTitle = title;
++     fileStruct.lpstrDefExt = ext;
++ 
++     fileStruct.lpstrFile = fileBuf;
++     fileStruct.nMaxFile = MAXPATHL;
++     fileStruct.lpstrFilter = filterp;
++     fileStruct.hwndOwner = s_hwnd;		/* main Vim window is owner*/
++     /* has an initial dir been specified? */
++     if (initdir != NULL && *initdir != NUL)
++     {
++ 	/* Must have backslashes here, no matter what 'shellslash' says */
++ 	initdirp = vim_strsave(initdir);
++ 	if (initdirp != NULL)
++ 	    for (p = initdirp; *p != NUL; ++p)
++ 		if (*p == '/')
++ 		    *p = '\\';
++ 	fileStruct.lpstrInitialDir = initdirp;
++     }
++ 
++     /*
++      * TODO: Allow selection of multiple files.  Needs another arg to this
++      * function to ask for it, and need to use OFN_ALLOWMULTISELECT below.
++      * Also, should we use OFN_FILEMUSTEXIST when opening?  Vim can edit on
++      * files that don't exist yet, so I haven't put it in.  What about
++      * OFN_PATHMUSTEXIST?
++      * Don't use OFN_OVERWRITEPROMPT, Vim has its own ":confirm" dialog.
++      */
++     fileStruct.Flags = (OFN_NOCHANGEDIR | OFN_PATHMUSTEXIST | OFN_HIDEREADONLY);
++ #ifdef FEAT_SHORTCUT
++     if (curbuf->b_p_bin)
++ 	fileStruct.Flags |= OFN_NODEREFERENCELINKS;
++ #endif
++     if (saving)
++     {
++ 	if (!GetSaveFileName(&fileStruct))
++ 	    return NULL;
++     }
++     else
++     {
++ 	if (!GetOpenFileName(&fileStruct))
++ 	    return NULL;
++     }
++ 
++     vim_free(filterp);
++     vim_free(initdirp);
+  
+      /* Give focus back to main window (when using MDI). */
+      SetFocus(s_hwnd);
+*** ../vim-6.2.494/src/version.c	Fri Apr 23 15:40:30 2004
+--- src/version.c	Sun Apr 25 13:03:26 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     495,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+28. You have comandeered your teenager's phone line for the net and even his
+    friends know not to call on his line anymore.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

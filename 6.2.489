@@ -1,0 +1,74 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.489
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.489
+Problem:    When accidentally opening a session in Vim which has already been
+	    opened in another Vim there is a long row of ATTENTION prompts.
+	    Need to quit each of them to get out. (Robert Webb)
+Solution:   Add the "Abort" alternative to the dialog.
+Files:	    src/memline.c
+
+
+*** ../vim-6.2.488/src/memline.c	Fri Apr 16 22:03:45 2004
+--- src/memline.c	Tue Apr 20 20:10:50 2004
+***************
+*** 3727,3735 ****
+  					: name,
+  # if defined(UNIX) || defined(__EMX__) || defined(VMS)
+  				    process_still_running
+! 					? (char_u *)_("&Open Read-Only\n&Edit anyway\n&Recover\n&Quit") :
+  # endif
+! 					(char_u *)_("&Open Read-Only\n&Edit anyway\n&Recover\n&Quit\n&Delete it"), 1, NULL))
+  			{
+  			    case 1:
+  				buf->b_p_ro = TRUE;
+--- 3727,3735 ----
+  					: name,
+  # if defined(UNIX) || defined(__EMX__) || defined(VMS)
+  				    process_still_running
+! 					? (char_u *)_("&Open Read-Only\n&Edit anyway\n&Recover\n&Quit\n&Abort") :
+  # endif
+! 					(char_u *)_("&Open Read-Only\n&Edit anyway\n&Recover\n&Quit\n&Abort\n&Delete it"), 1, NULL))
+  			{
+  			    case 1:
+  				buf->b_p_ro = TRUE;
+***************
+*** 3743,3748 ****
+--- 3743,3752 ----
+  				swap_exists_action = SEA_QUIT;
+  				break;
+  			    case 5:
++ 				swap_exists_action = SEA_QUIT;
++ 				got_int = TRUE;
++ 				break;
++ 			    case 6:
+  				mch_remove(fname);
+  				break;
+  			}
+*** ../vim-6.2.488/src/version.c	Tue Apr 20 17:22:22 2004
+--- src/version.c	Tue Apr 20 20:13:03 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     489,
+  /**/
+
+-- 
+DENNIS: Oh, very nice. King, eh!  I expect you've got a palace and fine
+        clothes and courtiers and plenty of food.  And how d'you get that?  By
+        exploiting the workers! By hanging on to outdated imperialist dogma
+        which perpetuates the social and economic differences in our society!
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,65 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.490
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.490
+Problem:    With 'paragraph' it is not possible to use a single dot as a
+	    paragraph boundary.  (Dorai Sitaram)
+Solution:   Allow using "  " (two spaces) in 'paragraph' to match ".$" or
+	    ". $"
+Files:	    src/search.c
+
+
+*** ../vim-6.2.489/src/search.c	Mon Apr 19 20:26:43 2004
+--- src/search.c	Tue Apr 20 20:34:34 2004
+***************
+*** 2476,2483 ****
+  
+      for (macro = opt; macro[0]; ++macro)
+      {
+! 	if (macro[0] == s[0] && (((s[1] == NUL || s[1] == ' ') &&
+! 		   (macro[1] == NUL || macro[1] == ' ')) || macro[1] == s[1]))
+  	    break;
+  	++macro;
+  	if (macro[0] == NUL)
+--- 2476,2490 ----
+  
+      for (macro = opt; macro[0]; ++macro)
+      {
+! 	/* Accept two characters in the option being equal to two characters
+! 	 * in the line.  A space in the option matches with a space in the
+! 	 * line or the line having ended. */
+! 	if (       (macro[0] == s[0]
+! 		    || (macro[0] == ' '
+! 			&& (s[0] == NUL || s[0] == ' ')))
+! 		&& (macro[1] == s[1]
+! 		    || ((macro[1] == NUL || macro[1] == ' ')
+! 			&& (s[0] == NUL || s[1] == NUL || s[1] == ' '))))
+  	    break;
+  	++macro;
+  	if (macro[0] == NUL)
+*** ../vim-6.2.489/src/version.c	Tue Apr 20 20:15:33 2004
+--- src/version.c	Tue Apr 20 20:44:46 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     490,
+  /**/
+
+-- 
+OLD WOMAN: King of the WHO?
+ARTHUR:    The Britons.
+OLD WOMAN: Who are the Britons?
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

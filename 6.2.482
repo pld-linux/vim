@@ -1,0 +1,2316 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.482
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.482
+Problem:    Repeating insert of CTRL-K 1 S doesn't work.  The superscript 1 is
+	    considered to be a digit. (Juergen Kraemer)
+Solution:   In vim_isdigit() only accept '0' to '9'.  Use VIM_ISDIGIT() for
+	    speed where possible.  Also add vim_isxdigit().
+Files:	    src/buffer.c, src/charset.c, src/diff.c, src/digraph.c,
+	    src/edit.c, src/eval.c,, src/ex_cmds.c, src/ex_cmds2.c,
+	    src/ex_docmd.c, src/ex_eval.c, src/ex_getln.c, 
+	    src/if_xcmdsrv.c, src/farsi.c, src/fileio.c, src/fold.c,
+	    src/getchar.c, src/gui.c, src/if_cscope.c, src/macros.h,
+	    src/main.c, src/mark.c, src/mbyte.c, src/menu.c, src/misc1.c,
+	    src/misc2.c, src/normal.c, src/ops.c, src/option.c,
+	    src/proto/charset.pro, src/regexp.c, src/screen.c, src/search.c,
+	    src/syntax.c, src/tag.c, src/term.c, src/termlib.c
+
+
+*** ../vim-6.2.481/src/buffer.c	Sun Apr  4 12:06:41 2004
+--- src/buffer.c	Mon Apr 19 19:00:31 2004
+***************
+*** 783,789 ****
+  		arg = skipwhite(arg);
+  		if (*arg == NUL)
+  		    break;
+! 		if (!isdigit(*arg))
+  		{
+  		    p = skiptowhite_esc(arg);
+  		    bnr = buflist_findpat(arg, p, command == DOBUF_WIPE, FALSE);
+--- 783,789 ----
+  		arg = skipwhite(arg);
+  		if (*arg == NUL)
+  		    break;
+! 		if (!VIM_ISDIGIT(*arg))
+  		{
+  		    p = skiptowhite_esc(arg);
+  		    bnr = buflist_findpat(arg, p, command == DOBUF_WIPE, FALSE);
+***************
+*** 3241,3247 ****
+  	    s++;
+  	    l = -1;
+  	}
+! 	if (isdigit(*s))
+  	{
+  	    minwid = (int)getdigits(&s);
+  	    if (minwid < 0)	/* overflow */
+--- 3241,3247 ----
+  	    s++;
+  	    l = -1;
+  	}
+! 	if (VIM_ISDIGIT(*s))
+  	{
+  	    minwid = (int)getdigits(&s);
+  	    if (minwid < 0)	/* overflow */
+***************
+*** 3259,3265 ****
+  	if (*s == '.')
+  	{
+  	    s++;
+! 	    if (isdigit(*s))
+  	    {
+  		maxwid = (int)getdigits(&s);
+  		if (maxwid <= 0)	/* overflow */
+--- 3259,3265 ----
+  	if (*s == '.')
+  	{
+  	    s++;
+! 	    if (VIM_ISDIGIT(*s))
+  	    {
+  		maxwid = (int)getdigits(&s);
+  		if (maxwid <= 0)	/* overflow */
+***************
+*** 3550,3556 ****
+  		for (; l < minwid && p + 1 < out + outlen; l++)
+  		{
+  		    /* Don't put a "-" in front of a digit. */
+! 		    if (l + 1 == minwid && fillchar == '-' && isdigit(*t))
+  			*p++ = ' ';
+  		    else
+  			*p++ = fillchar;
+--- 3550,3556 ----
+  		for (; l < minwid && p + 1 < out + outlen; l++)
+  		{
+  		    /* Don't put a "-" in front of a digit. */
+! 		    if (l + 1 == minwid && fillchar == '-' && VIM_ISDIGIT(*t))
+  			*p++ = ' ';
+  		    else
+  			*p++ = fillchar;
+***************
+*** 3565,3571 ****
+  		/* Change a space by fillchar, unless fillchar is '-' and a
+  		 * digit follows. */
+  		if (fillable && p[-1] == ' '
+! 					 && (!isdigit(*t) || fillchar != '-'))
+  		    p[-1] = fillchar;
+  	    }
+  	    for (; l < minwid && p + 1 < out + outlen; l++)
+--- 3565,3571 ----
+  		/* Change a space by fillchar, unless fillchar is '-' and a
+  		 * digit follows. */
+  		if (fillable && p[-1] == ' '
+! 				     && (!VIM_ISDIGIT(*t) || fillchar != '-'))
+  		    p[-1] = fillchar;
+  	    }
+  	    for (; l < minwid && p + 1 < out + outlen; l++)
+*** ../vim-6.2.481/src/charset.c	Tue Mar 23 23:11:09 2004
+--- src/charset.c	Mon Apr 19 19:00:38 2004
+***************
+*** 170,176 ****
+  		tilde = TRUE;
+  		++p;
+  	    }
+! 	    if (isdigit(*p))
+  		c = getdigits(&p);
+  	    else
+  		c = *p++;
+--- 170,176 ----
+  		tilde = TRUE;
+  		++p;
+  	    }
+! 	    if (VIM_ISDIGIT(*p))
+  		c = getdigits(&p);
+  	    else
+  		c = *p++;
+***************
+*** 178,184 ****
+  	    if (*p == '-' && p[1] != NUL)
+  	    {
+  		++p;
+! 		if (isdigit(*p))
+  		    c2 = getdigits(&p);
+  		else
+  		    c2 = *p++;
+--- 178,184 ----
+  	    if (*p == '-' && p[1] != NUL)
+  	    {
+  		++p;
+! 		if (VIM_ISDIGIT(*p))
+  		    c2 = getdigits(&p);
+  		else
+  		    c2 = *p++;
+***************
+*** 1432,1450 ****
+  skipdigits(p)
+      char_u	*p;
+  {
+!     while (isdigit(*p))	/* skip to next non-digit */
+  	++p;
+      return p;
+  }
+  
+  /*
+!  * vim_isdigit: version of isdigit() that can handle characters > 0x100.
+   */
+      int
+  vim_isdigit(c)
+!     int	    c;
+  {
+!     return (c > 0 && c < 0x100 && isdigit(c));
+  }
+  
+  /*
+--- 1433,1468 ----
+  skipdigits(p)
+      char_u	*p;
+  {
+!     while (VIM_ISDIGIT(*p))	/* skip to next non-digit */
+  	++p;
+      return p;
+  }
+  
+  /*
+!  * Variant of isdigit() that can handle characters > 0x100.
+!  * We don't use isdigit() here, because on some systems it also considers
+!  * superscript 1 to be a digit.
+!  * Use the VIM_ISDIGIT() macro for simple arguments.
+   */
+      int
+  vim_isdigit(c)
+!     int		c;
+! {
+!     return (c >= '0' && c <= '9');
+! }
+! 
+! /*
+!  * Variant of isxdigit() that can handle characters > 0x100.
+!  * We don't use isxdigit() here, because on some systems it also considers
+!  * superscript 1 to be a digit.
+!  */
+!     int
+! vim_isxdigit(c)
+!     int		c;
+  {
+!     return (c >= '0' && c <= '9')
+! 	|| (c >= 'a' && c <= 'f')
+! 	|| (c >= 'A' && c <= 'F');
+  }
+  
+  /*
+***************
+*** 1549,1559 ****
+      if (ptr[0] == '0')			/* could be hex or octal */
+      {
+  	hex = ptr[1];
+! 	if (dohex && (hex == 'X' || hex == 'x') && isxdigit(ptr[2]))
+  	    ptr += 2;			/* hexadecimal */
+  	else
+  	{
+! 	    if (dooct && isdigit(hex))
+  		hex = '0';		/* octal */
+  	    else
+  		hex = 0;		/* 0 by itself is decimal */
+--- 1567,1577 ----
+      if (ptr[0] == '0')			/* could be hex or octal */
+      {
+  	hex = ptr[1];
+! 	if (dohex && (hex == 'X' || hex == 'x') && vim_isxdigit(ptr[2]))
+  	    ptr += 2;			/* hexadecimal */
+  	else
+  	{
+! 	    if (dooct && VIM_ISDIGIT(hex))
+  		hex = '0';		/* octal */
+  	    else
+  		hex = 0;		/* 0 by itself is decimal */
+***************
+*** 1578,1584 ****
+  	else
+  	{
+  	    /* hex */
+! 	    while (isxdigit(*ptr))
+  	    {
+  		n = 16 * n + (long)hex2nr(*ptr);
+  		un = 16 * un + (unsigned long)hex2nr(*ptr);
+--- 1596,1602 ----
+  	else
+  	{
+  	    /* hex */
+! 	    while (vim_isxdigit(*ptr))
+  	    {
+  		n = 16 * n + (long)hex2nr(*ptr);
+  		un = 16 * un + (unsigned long)hex2nr(*ptr);
+***************
+*** 1589,1595 ****
+      else
+      {
+  	/* decimal */
+! 	while (isdigit(*ptr))
+  	{
+  	    n = 10 * n + (long)(*ptr - '0');
+  	    un = 10 * un + (unsigned long)(*ptr - '0');
+--- 1607,1613 ----
+      else
+      {
+  	/* decimal */
+! 	while (VIM_ISDIGIT(*ptr))
+  	{
+  	    n = 10 * n + (long)(*ptr - '0');
+  	    un = 10 * un + (unsigned long)(*ptr - '0');
+***************
+*** 1635,1641 ****
+  hexhex2nr(p)
+      char_u	*p;
+  {
+!     if (!isxdigit(p[0]) || !isxdigit(p[1]))
+  	return -1;
+      return (hex2nr(p[0]) << 4) + hex2nr(p[1]);
+  }
+--- 1653,1659 ----
+  hexhex2nr(p)
+      char_u	*p;
+  {
+!     if (!vim_isxdigit(p[0]) || !vim_isxdigit(p[1]))
+  	return -1;
+      return (hex2nr(p[0]) << 4) + hex2nr(p[1]);
+  }
+*** ../vim-6.2.481/src/diff.c	Wed Mar  3 21:08:15 2004
+--- src/diff.c	Mon Apr 19 19:00:42 2004
+***************
+*** 1539,1545 ****
+  	    p += 6;
+  	    diff_flags_new |= DIFF_FILLER;
+  	}
+! 	else if (STRNCMP(p, "context:", 8) == 0 && isdigit(p[8]))
+  	{
+  	    p += 8;
+  	    diff_context_new = getdigits(&p);
+--- 1539,1545 ----
+  	    p += 6;
+  	    diff_flags_new |= DIFF_FILLER;
+  	}
+! 	else if (STRNCMP(p, "context:", 8) == 0 && VIM_ISDIGIT(p[8]))
+  	{
+  	    p += 8;
+  	    diff_context_new = getdigits(&p);
+***************
+*** 1791,1797 ****
+  	p = eap->arg + STRLEN(eap->arg);
+  	while (p > eap->arg && vim_iswhite(p[-1]))
+  	    --p;
+! 	for (i = 0; isdigit(eap->arg[i]) && eap->arg + i < p; ++i)
+  	    ;
+  	if (eap->arg + i == p)	    /* digits only */
+  	    i = atol((char *)eap->arg);
+--- 1791,1797 ----
+  	p = eap->arg + STRLEN(eap->arg);
+  	while (p > eap->arg && vim_iswhite(p[-1]))
+  	    --p;
+! 	for (i = 0; vim_isdigit(eap->arg[i]) && eap->arg + i < p; ++i)
+  	    ;
+  	if (eap->arg + i == p)	    /* digits only */
+  	    i = atol((char *)eap->arg);
+*** ../vim-6.2.481/src/digraph.c	Sun Mar 14 20:12:26 2004
+--- src/digraph.c	Mon Apr 19 19:00:45 2004
+***************
+*** 2200,2206 ****
+  	    return;
+  	}
+  	str = skipwhite(str);
+! 	if (!isdigit(*str))
+  	{
+  	    EMSG(_(e_number_exp));
+  	    return;
+--- 2200,2206 ----
+  	    return;
+  	}
+  	str = skipwhite(str);
+! 	if (!VIM_ISDIGIT(*str))
+  	{
+  	    EMSG(_(e_number_exp));
+  	    return;
+*** ../vim-6.2.481/src/edit.c	Sat Apr  3 17:00:08 2004
+--- src/edit.c	Mon Apr 19 19:00:48 2004
+***************
+*** 3713,3732 ****
+  #endif
+  		    )
+  	    {
+! 		/* Careful: isxdigit() on Win32 can handle only 0-255 */
+! 		if (nc < 0 || nc > 255 || (!vim_isdigit(nc) && !isxdigit(nc)))
+  		    break;
+  		cc = cc * 16 + hex2nr(nc);
+  	    }
+  	    else if (octal)
+  	    {
+! 		if (!vim_isdigit(nc) || (nc > '7'))
+  		    break;
+  		cc = cc * 8 + nc - '0';
+  	    }
+  	    else
+  	    {
+! 		if (!vim_isdigit(nc))
+  		    break;
+  		cc = cc * 10 + nc - '0';
+  	    }
+--- 3713,3731 ----
+  #endif
+  		    )
+  	    {
+! 		if (!vim_isxdigit(nc))
+  		    break;
+  		cc = cc * 16 + hex2nr(nc);
+  	    }
+  	    else if (octal)
+  	    {
+! 		if (nc < '0' || nc > '7')
+  		    break;
+  		cc = cc * 8 + nc - '0';
+  	    }
+  	    else
+  	    {
+! 		if (!VIM_ISDIGIT(nc))
+  		    break;
+  		cc = cc * 10 + nc - '0';
+  	    }
+***************
+*** 4566,4572 ****
+  
+      /* Only digits need special treatment.  Translate them into a string of
+       * three digits. */
+!     if (vim_isdigit(c))
+      {
+  	sprintf((char *)buf, "%03d", c);
+  	AppendToRedobuff(buf);
+--- 4565,4571 ----
+  
+      /* Only digits need special treatment.  Translate them into a string of
+       * three digits. */
+!     if (VIM_ISDIGIT(c))
+      {
+  	sprintf((char *)buf, "%03d", c);
+  	AppendToRedobuff(buf);
+diff: src/eval.c,: No such file or directory
+*** ../vim-6.2.481/src/ex_cmds.c	Wed Apr 14 22:39:35 2004
+--- src/ex_cmds.c	Mon Apr 19 19:00:57 2004
+***************
+*** 1833,1839 ****
+      char_u	*s, *d;
+      long	len;
+  
+!     if (virp->vir_line[off] == Ctrl_V && isdigit(virp->vir_line[off + 1]))
+      {
+  	len = atol((char *)virp->vir_line + off + 1);
+  	retval = lalloc(len, TRUE);
+--- 1833,1839 ----
+      char_u	*s, *d;
+      long	len;
+  
+!     if (virp->vir_line[off] == Ctrl_V && vim_isdigit(virp->vir_line[off + 1]))
+      {
+  	len = atol((char *)virp->vir_line + off + 1);
+  	retval = lalloc(len, TRUE);
+***************
+*** 3334,3340 ****
+  
+      if (*x != 0)
+      {
+! 	if (!isdigit(*x))
+  	{
+  	    EMSG(_("E144: non-numeric argument to :z"));
+  	    return;
+--- 3334,3340 ----
+  
+      if (*x != 0)
+      {
+! 	if (!VIM_ISDIGIT(*x))
+  	{
+  	    EMSG(_("E144: non-numeric argument to :z"));
+  	    return;
+***************
+*** 3647,3653 ****
+       * check for a trailing count
+       */
+      cmd = skipwhite(cmd);
+!     if (isdigit(*cmd))
+      {
+  	i = getdigits(&cmd);
+  	if (i <= 0 && !eap->skip && do_error)
+--- 3647,3653 ----
+       * check for a trailing count
+       */
+      cmd = skipwhite(cmd);
+!     if (VIM_ISDIGIT(*cmd))
+      {
+  	i = getdigits(&cmd);
+  	if (i <= 0 && !eap->skip && do_error)
+***************
+*** 5573,5579 ****
+  
+  		    /* If the name is a number use that for the typenr,
+  		     * otherwise use a negative number. */
+! 		    if (isdigit(*arg))
+  			sp->sn_typenr = atoi((char *)arg);
+  		    else
+  		    {
+--- 5573,5579 ----
+  
+  		    /* If the name is a number use that for the typenr,
+  		     * otherwise use a negative number. */
+! 		    if (VIM_ISDIGIT(*arg))
+  			sp->sn_typenr = atoi((char *)arg);
+  		    else
+  		    {
+***************
+*** 5753,5759 ****
+  
+  	/* first arg could be placed sign id */
+  	arg1 = arg;
+! 	if (isdigit(*arg))
+  	{
+  	    id = getdigits(&arg);
+  	    if (!vim_iswhite(*arg) && *arg != NUL)
+--- 5753,5759 ----
+  
+  	/* first arg could be placed sign id */
+  	arg1 = arg;
+! 	if (VIM_ISDIGIT(*arg))
+  	{
+  	    id = getdigits(&arg);
+  	    if (!vim_iswhite(*arg) && *arg != NUL)
+*** ../vim-6.2.481/src/ex_cmds2.c	Fri Apr  2 22:25:53 2004
+--- src/ex_cmds2.c	Mon Apr 19 19:01:02 2004
+***************
+*** 393,399 ****
+      p = skipwhite(p + 4);
+  
+      /* Find optional line number. */
+!     if (isdigit(*p))
+      {
+  	bp->dbg_lnum = getdigits(&p);
+  	p = skipwhite(p);
+--- 393,399 ----
+      p = skipwhite(p + 4);
+  
+      /* Find optional line number. */
+!     if (VIM_ISDIGIT(*p))
+      {
+  	bp->dbg_lnum = getdigits(&p);
+  	p = skipwhite(p);
+***************
+*** 502,508 ****
+      int		i;
+      linenr_T	best_lnum = 0;
+  
+!     if (isdigit(*eap->arg))
+      {
+  	/* ":breakdel {nr}" */
+  	nr = atol((char *)eap->arg);
+--- 502,508 ----
+      int		i;
+      linenr_T	best_lnum = 0;
+  
+!     if (vim_isdigit(*eap->arg))
+      {
+  	/* ":breakdel {nr}" */
+  	nr = atol((char *)eap->arg);
+***************
+*** 4688,4694 ****
+       */
+      fontsize = PRT_PS_DEFAULT_FONTSIZE;
+      for (p = p_pfn; (p = vim_strchr(p, ':')) != NULL; ++p)
+! 	if (p[1] == 'h' && isdigit(p[2]))
+  	    fontsize = atoi((char *)p + 2);
+      prt_font_metrics(fontsize);
+  
+--- 4688,4694 ----
+       */
+      fontsize = PRT_PS_DEFAULT_FONTSIZE;
+      for (p = p_pfn; (p = vim_strchr(p, ':')) != NULL; ++p)
+! 	if (p[1] == 'h' && VIM_ISDIGIT(p[2]))
+  	    fontsize = atoi((char *)p + 2);
+      prt_font_metrics(fontsize);
+  
+*** ../vim-6.2.481/src/ex_docmd.c	Fri Apr 16 11:14:51 2004
+--- src/ex_docmd.c	Mon Apr 19 19:01:12 2004
+***************
+*** 1625,1631 ****
+   * 2. handle command modifiers.
+   */
+  	p = ea.cmd;
+! 	if (isdigit(*ea.cmd))
+  	    p = skipwhite(skipdigits(ea.cmd));
+  	switch (*p)
+  	{
+--- 1625,1631 ----
+   * 2. handle command modifiers.
+   */
+  	p = ea.cmd;
+! 	if (VIM_ISDIGIT(*ea.cmd))
+  	    p = skipwhite(skipdigits(ea.cmd));
+  	switch (*p)
+  	{
+***************
+*** 2253,2259 ****
+  #else
+  	    && valid_yank_reg(*ea.arg, ea.cmdidx != CMD_put)
+  #endif
+! 	    && !((ea.argt & COUNT) && isdigit(*ea.arg)))
+      {
+  	ea.regname = *ea.arg++;
+  #ifdef FEAT_EVAL
+--- 2251,2257 ----
+  #else
+  	    && valid_yank_reg(*ea.arg, ea.cmdidx != CMD_put)
+  #endif
+! 	    && !((ea.argt & COUNT) && VIM_ISDIGIT(*ea.arg)))
+      {
+  	ea.regname = *ea.arg++;
+  #ifdef FEAT_EVAL
+***************
+*** 2271,2277 ****
+       * Check for a count.  When accepting a BUFNAME, don't use "123foo" as a
+       * count, it's a buffer name.
+       */
+!     if ((ea.argt & COUNT) && isdigit(*ea.arg)
+  	    && (!(ea.argt & BUFNAME) || *(p = skipdigits(ea.arg)) == NUL
+  							  || vim_iswhite(*p)))
+      {
+--- 2269,2275 ----
+       * Check for a count.  When accepting a BUFNAME, don't use "123foo" as a
+       * count, it's a buffer name.
+       */
+!     if ((ea.argt & COUNT) && VIM_ISDIGIT(*ea.arg)
+  	    && (!(ea.argt & BUFNAME) || *(p = skipdigits(ea.arg)) == NUL
+  							  || vim_iswhite(*p)))
+      {
+***************
+*** 2669,2675 ****
+  		    k = 0;
+  		    while (k < len && *np != NUL && *cp++ == *np++)
+  			k++;
+! 		    if (k == len || (*np == NUL && isdigit(eap->cmd[k])))
+  		    {
+  			/* If finding a second match, the command is
+  			 * ambiguous.  But not if a buffer-local command
+--- 2667,2673 ----
+  		    k = 0;
+  		    while (k < len && *np != NUL && *cp++ == *np++)
+  			k++;
+! 		    if (k == len || (*np == NUL && vim_isdigit(eap->cmd[k])))
+  		    {
+  			/* If finding a second match, the command is
+  			 * ambiguous.  But not if a buffer-local command
+***************
+*** 2941,2947 ****
+  		    k = 0;
+  		    while (k < i && *np != NUL && *cp++ == *np++)
+  			k++;
+! 		    if (k == i || (*np == NUL && isdigit(cmd[k])))
+  		    {
+  			if (k == i && found)
+  			{
+--- 2939,2945 ----
+  		    k = 0;
+  		    while (k < i && *np != NUL && *cp++ == *np++)
+  			k++;
+! 		    if (k == i || (*np == NUL && VIM_ISDIGIT(cmd[k])))
+  		    {
+  			if (k == i && found)
+  			{
+***************
+*** 3564,3570 ****
+  {
+      int		delim;
+  
+!     while (*cmd != NUL && (vim_isspace(*cmd) || isdigit(*cmd) ||
+  			    vim_strchr((char_u *)".$%'/?-+,;", *cmd) != NULL))
+      {
+  	if (*cmd == '\'')
+--- 3562,3568 ----
+  {
+      int		delim;
+  
+!     while (*cmd != NUL && (vim_isspace(*cmd) || VIM_ISDIGIT(*cmd) ||
+  			    vim_strchr((char_u *)".$%'/?-+,;", *cmd) != NULL))
+      {
+  	if (*cmd == '\'')
+***************
+*** 3745,3767 ****
+  			break;
+  
+  	    default:
+! 			if (isdigit(*cmd))	/* absolute line number */
+  			    lnum = getdigits(&cmd);
+  	}
+  
+  	for (;;)
+  	{
+  	    cmd = skipwhite(cmd);
+! 	    if (*cmd != '-' && *cmd != '+' && !isdigit(*cmd))
+  		break;
+  
+  	    if (lnum == MAXLNUM)
+  		lnum = curwin->w_cursor.lnum;	/* "+1" is same as ".+1" */
+! 	    if (isdigit(*cmd))
+  		i = '+';		/* "number" is same as "+number" */
+  	    else
+  		i = *cmd++;
+! 	    if (!isdigit(*cmd))		/* '+' is '+1', but '+0' is not '+1' */
+  		n = 1;
+  	    else
+  		n = getdigits(&cmd);
+--- 3743,3765 ----
+  			break;
+  
+  	    default:
+! 			if (VIM_ISDIGIT(*cmd))	/* absolute line number */
+  			    lnum = getdigits(&cmd);
+  	}
+  
+  	for (;;)
+  	{
+  	    cmd = skipwhite(cmd);
+! 	    if (*cmd != '-' && *cmd != '+' && !VIM_ISDIGIT(*cmd))
+  		break;
+  
+  	    if (lnum == MAXLNUM)
+  		lnum = curwin->w_cursor.lnum;	/* "+1" is same as ".+1" */
+! 	    if (VIM_ISDIGIT(*cmd))
+  		i = '+';		/* "number" is same as "+number" */
+  	    else
+  		i = *cmd++;
+! 	    if (!VIM_ISDIGIT(*cmd))	/* '+' is '+1', but '+0' is not '+1' */
+  		n = 1;
+  	    else
+  		n = getdigits(&cmd);
+***************
+*** 7525,7531 ****
+      /* ":mkview" or ":mkview 9": generate file name with 'viewdir' */
+      if (eap->cmdidx == CMD_mkview
+  	    && (*eap->arg == NUL
+! 		|| (isdigit(*eap->arg) && eap->arg[1] == NUL)))
+      {
+  	eap->forceit = TRUE;
+  	fname = get_view_file(*eap->arg);
+--- 7523,7529 ----
+      /* ":mkview" or ":mkview 9": generate file name with 'viewdir' */
+      if (eap->cmdidx == CMD_mkview
+  	    && (*eap->arg == NUL
+! 		|| (vim_isdigit(*eap->arg) && eap->arg[1] == NUL)))
+      {
+  	eap->forceit = TRUE;
+  	fname = get_view_file(*eap->arg);
+***************
+*** 8002,8008 ****
+      }
+  
+      n = 1;
+!     if (isdigit(*eap->arg))	/* get count */
+      {
+  	n = getdigits(&eap->arg);
+  	eap->arg = skipwhite(eap->arg);
+--- 8000,8006 ----
+      }
+  
+      n = 1;
+!     if (vim_isdigit(*eap->arg))	/* get count */
+      {
+  	n = getdigits(&eap->arg);
+  	eap->arg = skipwhite(eap->arg);
+*** ../vim-6.2.481/src/ex_eval.c	Wed Apr 14 11:08:53 2004
+--- src/ex_eval.c	Mon Apr 19 19:01:17 2004
+***************
+*** 283,291 ****
+  
+  			/* Skip the extra "Vim " prefix for message "E458". */
+  			tmsg = elem->msg;
+! 			if (STRNCMP(tmsg, "Vim E", 5) == 0 && isdigit(tmsg[5])
+! 				&& isdigit(tmsg[6]) && isdigit(tmsg[7])
+! 				&& tmsg[8] == ':' && tmsg[9] == ' ')
+  			    (*msg_list)->throw_msg = &tmsg[4];
+  			else
+  			    (*msg_list)->throw_msg = tmsg;
+--- 283,294 ----
+  
+  			/* Skip the extra "Vim " prefix for message "E458". */
+  			tmsg = elem->msg;
+! 			if (STRNCMP(tmsg, "Vim E", 5) == 0
+! 				&& VIM_ISDIGIT(tmsg[5])
+! 				&& VIM_ISDIGIT(tmsg[6])
+! 				&& VIM_ISDIGIT(tmsg[7])
+! 				&& tmsg[8] == ':'
+! 				&& tmsg[9] == ' ')
+  			    (*msg_list)->throw_msg = &tmsg[4];
+  			else
+  			    (*msg_list)->throw_msg = tmsg;
+***************
+*** 473,483 ****
+  	 * parentheses and move it to the end. */
+  	for (p = mesg; ; p++)
+  	{
+! 	    if (*p == NUL || (*p == 'E' &&
+! 			isdigit(p[1]) &&
+! 			(p[2] == ':' || (isdigit(p[2]) &&
+! 					 (p[3] == ':' || (isdigit(p[3]) &&
+! 							  p[4] == ':'))))))
+  	    {
+  		if (*p == NUL || p == mesg)  /* 'E123' missing or at beginning */
+  		    STRCAT(val, mesg);
+--- 476,489 ----
+  	 * parentheses and move it to the end. */
+  	for (p = mesg; ; p++)
+  	{
+! 	    if (*p == NUL
+! 		    || (*p == 'E'
+! 			&& VIM_ISDIGIT(p[1])
+! 			&& (p[2] == ':'
+! 			    || (VIM_ISDIGIT(p[2])
+! 				&& (p[3] == ':'
+! 				    || (VIM_ISDIGIT(p[3])
+! 					&& p[4] == ':'))))))
+  	    {
+  		if (*p == NUL || p == mesg)  /* 'E123' missing or at beginning */
+  		    STRCAT(val, mesg);
+*** ../vim-6.2.481/src/ex_getln.c	Fri Apr 16 11:14:51 2004
+--- src/ex_getln.c	Mon Apr 19 19:01:20 2004
+***************
+*** 4702,4708 ****
+      long	num;
+  
+      *str = skipwhite(*str);
+!     if (**str == '-' || isdigit(**str))	/* parse "from" part of range */
+      {
+  	vim_str2nr(*str, NULL, &len, FALSE, FALSE, &num, NULL);
+  	*str += len;
+--- 4702,4708 ----
+      long	num;
+  
+      *str = skipwhite(*str);
+!     if (**str == '-' || vim_isdigit(**str))  /* parse "from" part of range */
+      {
+  	vim_str2nr(*str, NULL, &len, FALSE, FALSE, &num, NULL);
+  	*str += len;
+***************
+*** 4752,4758 ****
+  	return;
+      }
+  
+!     if (!(isdigit(*arg) || *arg == '-' || *arg == ','))
+      {
+  	end = arg;
+  	while (ASCII_ISALPHA(*end)
+--- 4752,4758 ----
+  	return;
+      }
+  
+!     if (!(VIM_ISDIGIT(*arg) || *arg == '-' || *arg == ','))
+      {
+  	end = arg;
+  	while (ASCII_ISALPHA(*end)
+*** ../vim-6.2.481/src/if_xcmdsrv.c	Thu Mar 25 19:25:28 2004
+--- src/if_xcmdsrv.c	Mon Apr 19 17:50:30 2004
+***************
+*** 1198,1204 ****
+  		    case 'r':
+  			end = skipwhite(p + 2);
+  			resWindow = 0;
+! 			while (isxdigit(*end))
+  			{
+  			    resWindow = 16 * resWindow + (long_u)hex2nr(*end);
+  			    ++end;
+--- 1198,1204 ----
+  		    case 'r':
+  			end = skipwhite(p + 2);
+  			resWindow = 0;
+! 			while (vim_isxdigit(*end))
+  			{
+  			    resWindow = 16 * resWindow + (long_u)hex2nr(*end);
+  			    ++end;
+***************
+*** 1436,1441 ****
+  {
+      int len = STRLEN(str);
+  
+!     return (len > 1 && isdigit(str[len - 1]));
+  }
+  #endif	/* FEAT_CLIENTSERVER */
+--- 1436,1441 ----
+  {
+      int len = STRLEN(str);
+  
+!     return (len > 1 && vim_isdigit(str[len - 1]));
+  }
+  #endif	/* FEAT_CLIENTSERVER */
+*** ../vim-6.2.481/src/farsi.c	Fri Feb 22 20:10:20 2002
+--- src/farsi.c	Mon Apr 19 19:01:22 2004
+***************
+*** 762,768 ****
+      if (IS_SPECIAL(c))
+  	return c;
+  
+!     if (vim_isdigit(c) || ((c == '.' || c == '+' || c == '-' ||
+  	c == '^' || c == '%' || c == '#' || c == '=')  && revins))
+      {
+  	if (!revins)
+--- 762,768 ----
+      if (IS_SPECIAL(c))
+  	return c;
+  
+!     if (VIM_ISDIGIT(c) || ((c == '.' || c == '+' || c == '-' ||
+  	c == '^' || c == '%' || c == '#' || c == '=')  && revins))
+      {
+  	if (!revins)
+*** ../vim-6.2.481/src/fileio.c	Mon Apr 19 17:00:44 2004
+--- src/fileio.c	Mon Apr 19 19:01:43 2004
+***************
+*** 4741,4747 ****
+  get_win_fio_flags(ptr)
+      char_u	*ptr;
+  {
+!     if (ptr[0] == 'c' && ptr[1] == 'p' && isdigit(ptr[2]))
+  	return FIO_PUT_CP(atoi(ptr + 2)) | FIO_CODEPAGE;
+      return 0;
+  }
+--- 4754,4760 ----
+  get_win_fio_flags(ptr)
+      char_u	*ptr;
+  {
+!     if (ptr[0] == 'c' && ptr[1] == 'p' && VIM_ISDIGIT(ptr[2]))
+  	return FIO_PUT_CP(atoi(ptr + 2)) | FIO_CODEPAGE;
+      return 0;
+  }
+*** ../vim-6.2.481/src/fold.c	Wed Apr 14 11:08:53 2004
+--- src/fold.c	Mon Apr 19 19:01:50 2004
+***************
+*** 1874,1880 ****
+  	{
+  	    /* Found the marker, include a digit if it's there. */
+  	    len = markerlen;
+! 	    if (isdigit(p[len]))
+  		++len;
+  	    if (*cms != NUL)
+  	    {
+--- 1874,1880 ----
+  	{
+  	    /* Found the marker, include a digit if it's there. */
+  	    len = markerlen;
+! 	    if (VIM_ISDIGIT(p[len]))
+  		++len;
+  	    if (*cms != NUL)
+  	    {
+***************
+*** 1950,1962 ****
+  	if (STRNCMP(s, curwin->w_p_fmr, foldstartmarkerlen) == 0)
+  	{
+  	    len = foldstartmarkerlen;
+! 	    if (isdigit(s[len]))
+  		++len;
+  	}
+  	else if (STRNCMP(s, foldendmarker, foldendmarkerlen) == 0)
+  	{
+  	    len = foldendmarkerlen;
+! 	    if (isdigit(s[len]))
+  		++len;
+  	}
+  	else if (cms_end != NULL)
+--- 1950,1962 ----
+  	if (STRNCMP(s, curwin->w_p_fmr, foldstartmarkerlen) == 0)
+  	{
+  	    len = foldstartmarkerlen;
+! 	    if (VIM_ISDIGIT(s[len]))
+  		++len;
+  	}
+  	else if (STRNCMP(s, foldendmarker, foldendmarkerlen) == 0)
+  	{
+  	    len = foldendmarkerlen;
+! 	    if (VIM_ISDIGIT(s[len]))
+  		++len;
+  	}
+  	else if (cms_end != NULL)
+***************
+*** 3064,3070 ****
+  	{
+  	    /* found startmarker: set flp->lvl */
+  	    s += foldstartmarkerlen;
+! 	    if (isdigit(*s))
+  	    {
+  		n = atoi((char *)s);
+  		if (n > 0)
+--- 3064,3070 ----
+  	{
+  	    /* found startmarker: set flp->lvl */
+  	    s += foldstartmarkerlen;
+! 	    if (VIM_ISDIGIT(*s))
+  	    {
+  		n = atoi((char *)s);
+  		if (n > 0)
+***************
+*** 3089,3095 ****
+  	{
+  	    /* found endmarker: set flp->lvl_next */
+  	    s += foldendmarkerlen;
+! 	    if (isdigit(*s))
+  	    {
+  		n = atoi((char *)s);
+  		if (n > 0)
+--- 3089,3095 ----
+  	{
+  	    /* found endmarker: set flp->lvl_next */
+  	    s += foldendmarkerlen;
+! 	    if (VIM_ISDIGIT(*s))
+  	    {
+  		n = atoi((char *)s);
+  		if (n > 0)
+*** ../vim-6.2.481/src/getchar.c	Sun Apr  4 12:10:13 2004
+--- src/getchar.c	Mon Apr 19 19:01:57 2004
+***************
+*** 813,819 ****
+      /* try to enter the count (in place of a previous count) */
+      if (count)
+      {
+! 	while (isdigit(c))	/* skip "old" count */
+  	    c = read_redo(FALSE, old_redo);
+  	add_num_buff(&stuffbuff, count);
+      }
+--- 813,819 ----
+      /* try to enter the count (in place of a previous count) */
+      if (count)
+      {
+! 	while (VIM_ISDIGIT(c))	/* skip "old" count */
+  	    c = read_redo(FALSE, old_redo);
+  	add_num_buff(&stuffbuff, count);
+      }
+***************
+*** 2083,2089 ****
+  				for (s = typebuf.tb_buf + typebuf.tb_off + 1;
+  					s < typebuf.tb_buf + typebuf.tb_off
+  							      + typebuf.tb_len
+! 				   && (isdigit(*s) || *s == ';' || *s == ' ');
+  					++s)
+  				    ;
+  				if (*s == 'r' || *s == '|') /* found one */
+--- 2083,2090 ----
+  				for (s = typebuf.tb_buf + typebuf.tb_off + 1;
+  					s < typebuf.tb_buf + typebuf.tb_off
+  							      + typebuf.tb_len
+! 				   && (VIM_ISDIGIT(*s) || *s == ';'
+! 								|| *s == ' ');
+  					++s)
+  				    ;
+  				if (*s == 'r' || *s == '|') /* found one */
+*** ../vim-6.2.481/src/gui.c	Mon Apr 12 15:41:18 2004
+--- src/gui.c	Mon Apr 19 19:02:02 2004
+***************
+*** 1499,1505 ****
+  	if (s[0] == ESC && s[1] == '|')
+  	{
+  	    p = s + 2;
+! 	    if (isdigit(*p))
+  	    {
+  		arg1 = getdigits(&p);
+  		if (p > s + len)
+--- 1499,1505 ----
+  	if (s[0] == ESC && s[1] == '|')
+  	{
+  	    p = s + 2;
+! 	    if (VIM_ISDIGIT(*p))
+  	    {
+  		arg1 = getdigits(&p);
+  		if (p > s + len)
+*** ../vim-6.2.481/src/if_cscope.c	Wed Apr 14 11:08:53 2004
+--- src/if_cscope.c	Mon Apr 19 19:02:28 2004
+***************
+*** 1401,1408 ****
+      }
+  
+      /* only single digit positive and negative integers are allowed */
+!     if ((strlen(stok) < 2 && isdigit((int)(stok[0])))
+! 	    || (strlen(stok) < 3 && stok[0] == '-' && isdigit((int)(stok[1]))))
+  	i = atoi(stok);
+      else
+      {
+--- 1401,1409 ----
+      }
+  
+      /* only single digit positive and negative integers are allowed */
+!     if ((strlen(stok) < 2 && VIM_ISDIGIT((int)(stok[0])))
+! 	    || (strlen(stok) < 3 && stok[0] == '-'
+! 					      && VIM_ISDIGIT((int)(stok[1]))))
+  	i = atoi(stok);
+      else
+      {
+*** ../vim-6.2.481/src/macros.h	Tue Apr  6 21:31:48 2004
+--- src/macros.h	Mon Apr 19 20:10:12 2004
+***************
+*** 109,114 ****
+--- 109,120 ----
+  # define ASCII_ISUPPER(c) ((c) < 0x7f && isupper(c))
+  #endif
+  
++ /* Use our own isdigit() replacement, because on MS-Windows isdigit() returns
++  * non-zero for superscript 1.  Also avoids that isdigit() crashes for numbers
++  * below 0 and above 255.  For complicated arguments and in/decrement use
++  * vim_isdigit() instead. */
++ #define VIM_ISDIGIT(c) ((c) >= '0' && (c) <= '9')
++ 
+  /* macro version of chartab().
+   * Only works with values 0-255!
+   * Doesn't work for UTF-8 mode with chars >= 0x80. */
+*** ../vim-6.2.481/src/main.c	Fri Apr 16 22:03:45 2004
+--- src/main.c	Mon Apr 19 17:50:59 2004
+***************
+*** 809,815 ****
+  
+  	    case 'w':		/* "-w{number}"	set window height */
+  				/* "-w {scriptout}"	write to script */
+! 		if (isdigit(((char_u *)argv[0])[argv_idx]))
+  		{
+  		    argv_idx = -1;
+  		    break;			/* not implemented, ignored */
+--- 809,815 ----
+  
+  	    case 'w':		/* "-w{number}"	set window height */
+  				/* "-w {scriptout}"	write to script */
+! 		if (vim_isdigit(((char_u *)argv[0])[argv_idx]))
+  		{
+  		    argv_idx = -1;
+  		    break;			/* not implemented, ignored */
+***************
+*** 2299,2308 ****
+      int		*idx;	    /* index in argument, is incremented */
+      int		def;	    /* default value */
+  {
+!     if (isdigit(p[*idx]))
+      {
+  	def = atoi((char *)&(p[*idx]));
+! 	while (isdigit(p[*idx]))
+  	    *idx = *idx + 1;
+      }
+      return def;
+--- 2299,2308 ----
+      int		*idx;	    /* index in argument, is incremented */
+      int		def;	    /* default value */
+  {
+!     if (vim_isdigit(p[*idx]))
+      {
+  	def = atoi((char *)&(p[*idx]));
+! 	while (vim_isdigit(p[*idx]))
+  	    *idx = *idx + 1;
+      }
+      return def;
+*** ../vim-6.2.481/src/mark.c	Tue Mar 30 22:19:53 2004
+--- src/mark.c	Mon Apr 19 19:02:37 2004
+***************
+*** 371,379 ****
+      {
+  	posp = &(curbuf->b_namedm[c - 'a']);
+      }
+!     else if (ASCII_ISUPPER(c) || vim_isdigit(c))	/* named file mark */
+      {
+! 	if (vim_isdigit(c))
+  	    c = c - '0' + NMARKS;
+  	else
+  	    c -= 'A';
+--- 371,379 ----
+      {
+  	posp = &(curbuf->b_namedm[c - 'a']);
+      }
+!     else if (ASCII_ISUPPER(c) || VIM_ISDIGIT(c))	/* named file mark */
+      {
+! 	if (VIM_ISDIGIT(c))
+  	    c = c - '0' + NMARKS;
+  	else
+  	    c -= 'A';
+***************
+*** 1220,1226 ****
+  #ifndef EBCDIC
+  	    *str <= 127 &&
+  #endif
+! 	    ((*virp->vir_line == '\'' && (isdigit(*str) || isupper(*str)))
+  	     || (*virp->vir_line == '-' && *str == '\'')))
+      {
+  	if (*str == '\'')
+--- 1220,1226 ----
+  #ifndef EBCDIC
+  	    *str <= 127 &&
+  #endif
+! 	    ((*virp->vir_line == '\'' && (VIM_ISDIGIT(*str) || isupper(*str)))
+  	     || (*virp->vir_line == '-' && *str == '\'')))
+      {
+  	if (*str == '\'')
+***************
+*** 1243,1249 ****
+  	    fm = NULL;
+  #endif
+  	}
+! 	else if (isdigit(*str))
+  	    fm = &namedfm[*str - '0' + NMARKS];
+  	else
+  	    fm = &namedfm[*str - 'A'];
+--- 1243,1249 ----
+  	    fm = NULL;
+  #endif
+  	}
+! 	else if (VIM_ISDIGIT(*str))
+  	    fm = &namedfm[*str - '0' + NMARKS];
+  	else
+  	    fm = &namedfm[*str - 'A'];
+*** ../vim-6.2.481/src/mbyte.c	Wed Apr  7 10:52:49 2004
+--- src/mbyte.c	Mon Apr 19 19:02:40 2004
+***************
+*** 377,383 ****
+      if (i >= 0)
+  	return enc_canon_table[i].prop;
+  #ifdef WIN3264
+!     if (name[0] == 'c' && name[1] == 'p' && isdigit(name[2]))
+      {
+  	CPINFO	cpinfo;
+  
+--- 377,383 ----
+      if (i >= 0)
+  	return enc_canon_table[i].prop;
+  #ifdef WIN3264
+!     if (name[0] == 'c' && name[1] == 'p' && VIM_ISDIGIT(name[2]))
+      {
+  	CPINFO	cpinfo;
+  
+***************
+*** 439,445 ****
+      }
+  
+  #ifdef WIN3264
+!     if (p_enc[0] == 'c' && p_enc[1] == 'p' && isdigit(p_enc[2]))
+      {
+  	CPINFO	cpinfo;
+  
+--- 439,445 ----
+      }
+  
+  #ifdef WIN3264
+!     if (p_enc[0] == 'c' && p_enc[1] == 'p' && VIM_ISDIGIT(p_enc[2]))
+      {
+  	CPINFO	cpinfo;
+  
+*** ../vim-6.2.481/src/menu.c	Mon Mar 22 20:54:36 2004
+--- src/menu.c	Mon Apr 19 19:02:44 2004
+***************
+*** 164,170 ****
+       * Fill in the priority table.
+       */
+      for (p = arg; *p; ++p)
+! 	if (!isdigit(*p) && *p != '.')
+  	    break;
+      if (vim_iswhite(*p))
+      {
+--- 164,170 ----
+       * Fill in the priority table.
+       */
+      for (p = arg; *p; ++p)
+! 	if (!VIM_ISDIGIT(*p) && *p != '.')
+  	    break;
+      if (vim_iswhite(*p))
+      {
+***************
+*** 1212,1218 ****
+  
+      /* Check for priority numbers, enable and disable */
+      for (p = arg; *p; ++p)
+! 	if (!isdigit(*p) && *p != '.')
+  	    break;
+  
+      if (!vim_iswhite(*p))
+--- 1212,1218 ----
+  
+      /* Check for priority numbers, enable and disable */
+      for (p = arg; *p; ++p)
+! 	if (!VIM_ISDIGIT(*p) && *p != '.')
+  	    break;
+  
+      if (!vim_iswhite(*p))
+*** ../vim-6.2.481/src/misc1.c	Mon Apr  5 20:28:39 2004
+--- src/misc1.c	Mon Apr 19 19:02:56 2004
+***************
+*** 396,402 ****
+  	return -1;
+      line = ml_get(lnum);
+      p = skipwhite(line);
+!     if (!isdigit(*p))
+  	return -1;
+      p = skipdigits(p);
+      if (vim_strchr((char_u *)":.)]}\t ", *p) == NULL)
+--- 396,402 ----
+  	return -1;
+      line = ml_get(lnum);
+      p = skipwhite(line);
+!     if (!VIM_ISDIGIT(*p))
+  	return -1;
+      p = skipdigits(p);
+      if (vim_strchr((char_u *)":.)]}\t ", *p) == NULL)
+***************
+*** 983,989 ****
+  		    {
+  			if (*p == COM_RIGHT || *p == COM_LEFT)
+  			    c = *p;
+! 			else if (isdigit(*p) || *p == '-')
+  			    off = getdigits(&p);
+  		    }
+  		    if (c == COM_RIGHT)    /* right adjusted leader */
+--- 983,989 ----
+  		    {
+  			if (*p == COM_RIGHT || *p == COM_LEFT)
+  			    c = *p;
+! 			else if (VIM_ISDIGIT(*p) || *p == '-')
+  			    off = getdigits(&p);
+  		    }
+  		    if (c == COM_RIGHT)    /* right adjusted leader */
+***************
+*** 2970,2976 ****
+      {
+  	windgoto(msg_row, msg_col);
+  	c = safe_vgetc();
+! 	if (vim_isdigit(c))
+  	{
+  	    n = n * 10 + c - '0';
+  	    msg_putchar(c);
+--- 2970,2976 ----
+      {
+  	windgoto(msg_row, msg_col);
+  	c = safe_vgetc();
+! 	if (VIM_ISDIGIT(c))
+  	{
+  	    n = n * 10 + c - '0';
+  	    msg_putchar(c);
+***************
+*** 4290,4296 ****
+  	    if (p[1] == '\\')		    /* '\n' or '\000' */
+  	    {
+  		++i;
+! 		while (isdigit(p[i - 1]))   /* '\000' */
+  		    ++i;
+  	    }
+  	    if (p[i] == '\'')		    /* check for trailing ' */
+--- 4290,4296 ----
+  	    if (p[1] == '\\')		    /* '\n' or '\000' */
+  	    {
+  		++i;
+! 		while (vim_isdigit(p[i - 1]))   /* '\000' */
+  		    ++i;
+  	    }
+  	    if (p[i] == '\'')		    /* check for trailing ' */
+***************
+*** 5165,5171 ****
+  	if (*options == '.')	    /* ".5s" means a fraction */
+  	{
+  	    fraction = atol((char *)++options);
+! 	    while (isdigit(*options))
+  	    {
+  		++options;
+  		if (divider)
+--- 5283,5289 ----
+  	if (*options == '.')	    /* ".5s" means a fraction */
+  	{
+  	    fraction = atol((char *)++options);
+! 	    while (VIM_ISDIGIT(*options))
+  	    {
+  		++options;
+  		if (divider)
+***************
+*** 5311,5317 ****
+  		    what = *p++;
+  		else if (*p == COM_LEFT || *p == COM_RIGHT)
+  		    align = *p++;
+! 		else if (isdigit(*p) || *p == '-')
+  		    off = getdigits(&p);
+  		else
+  		    ++p;
+--- 5431,5437 ----
+  		    what = *p++;
+  		else if (*p == COM_LEFT || *p == COM_RIGHT)
+  		    align = *p++;
+! 		else if (VIM_ISDIGIT(*p) || *p == '-')
+  		    off = getdigits(&p);
+  		else
+  		    ++p;
+*** ../vim-6.2.481/src/misc2.c	Fri Apr 16 21:10:08 2004
+--- src/misc2.c	Mon Apr 19 19:03:02 2004
+***************
+*** 2215,2221 ****
+      {
+  	end_of_name = bp + 1;
+  
+! 	if (STRNICMP(src + 1, "char-", 5) == 0 && isdigit(src[6]))
+  	{
+  	    /* <Char-123> or <Char-033> or <Char-0x33> */
+  	    vim_str2nr(src + 6, NULL, NULL, TRUE, TRUE, NULL, &n);
+--- 2215,2221 ----
+      {
+  	end_of_name = bp + 1;
+  
+! 	if (STRNICMP(src + 1, "char-", 5) == 0 && VIM_ISDIGIT(src[6]))
+  	{
+  	    /* <Char-123> or <Char-033> or <Char-0x33> */
+  	    vim_str2nr(src + 6, NULL, NULL, TRUE, TRUE, NULL, &n);
+***************
+*** 2866,2872 ****
+  			{
+  			    if (mshape_names[i] == NULL)
+  			    {
+! 				if (!isdigit(*p))
+  				    return (char_u *)N_("E547: Illegal mouseshape");
+  				if (round == 2)
+  				    shape_table[idx].mshape =
+--- 2866,2872 ----
+  			{
+  			    if (mshape_names[i] == NULL)
+  			    {
+! 				if (!VIM_ISDIGIT(*p))
+  				    return (char_u *)N_("E547: Illegal mouseshape");
+  				if (round == 2)
+  				    shape_table[idx].mshape =
+***************
+*** 2906,2912 ****
+  			if (len != 0)
+  			{
+  			    p += len;
+! 			    if (!isdigit(*p))
+  				return (char_u *)N_("E548: digit expected");
+  			    n = getdigits(&p);
+  			    if (len == 3)   /* "ver" or "hor" */
+--- 2906,2912 ----
+  			if (len != 0)
+  			{
+  			    p += len;
+! 			    if (!VIM_ISDIGIT(*p))
+  				return (char_u *)N_("E548: digit expected");
+  			    n = getdigits(&p);
+  			    if (len == 3)   /* "ver" or "hor" */
+***************
+*** 5326,5332 ****
+  
+  	if (table[idx].hasnum)
+  	{
+! 	    if (!isdigit(*p))
+  		return (char_u *)N_("E552: digit expected");
+  
+  	    table[idx].number = getdigits(&p); /*advances p*/
+--- 5342,5348 ----
+  
+  	if (table[idx].hasnum)
+  	{
+! 	    if (!VIM_ISDIGIT(*p))
+  		return (char_u *)N_("E552: digit expected");
+  
+  	    table[idx].number = getdigits(&p); /*advances p*/
+*** ../vim-6.2.481/src/normal.c	Thu Apr  8 12:29:56 2004
+--- src/normal.c	Mon Apr 19 19:03:06 2004
+***************
+*** 4259,4266 ****
+      int		old_fen = curwin->w_p_fen;
+  #endif
+  
+!     if (vim_isdigit(nchar))
+      {
+  	if (checkclearop(cap->oap))
+  	    return;
+  	n = nchar - '0';
+--- 4259,4269 ----
+      int		old_fen = curwin->w_p_fen;
+  #endif
+  
+!     if (VIM_ISDIGIT(nchar))
+      {
++ 	/*
++ 	 * "z123{nchar}": edit the count before obtaining {nchar}
++ 	 */
+  	if (checkclearop(cap->oap))
+  	    return;
+  	n = nchar - '0';
+***************
+*** 4282,4288 ****
+  #endif
+  	    if (nchar == K_DEL || nchar == K_KDEL)
+  		n /= 10;
+! 	    else if (vim_isdigit(nchar))
+  		n = n * 10 + (nchar - '0');
+  	    else if (nchar == CAR)
+  	    {
+--- 4285,4291 ----
+  #endif
+  	    if (nchar == K_DEL || nchar == K_KDEL)
+  		n /= 10;
+! 	    else if (VIM_ISDIGIT(nchar))
+  		n = n * 10 + (nchar - '0');
+  	    else if (nchar == CAR)
+  	    {
+***************
+*** 8355,8361 ****
+  # ifdef FEAT_CLIPBOARD
+  	    adjust_clip_reg(&regname);
+  # endif
+! 	    if (regname == 0 || isdigit(regname)
+  # ifdef FEAT_CLIPBOARD
+  		    || (clip_unnamed && (regname == '*' || regname == '+'))
+  # endif
+--- 8390,8396 ----
+  # ifdef FEAT_CLIPBOARD
+  	    adjust_clip_reg(&regname);
+  # endif
+! 	    if (regname == 0 || VIM_ISDIGIT(regname)
+  # ifdef FEAT_CLIPBOARD
+  		    || (clip_unnamed && (regname == '*' || regname == '+'))
+  # endif
+*** ../vim-6.2.481/src/ops.c	Sun Apr  4 12:34:29 2004
+--- src/ops.c	Mon Apr 19 19:03:09 2004
+***************
+*** 833,839 ****
+  	return;
+      }
+      i = regname;
+!     if (isdigit(i))
+  	i -= '0';
+      else if (ASCII_ISLOWER(i))
+  	i = CharOrdLow(i) + 10;
+--- 833,839 ----
+  	return;
+      }
+      i = regname;
+!     if (VIM_ISDIGIT(i))
+  	i -= '0';
+      else if (ASCII_ISLOWER(i))
+  	i = CharOrdLow(i) + 10;
+***************
+*** 4627,4633 ****
+  		{
+  		    bdp->endspaces = incr - bdp->endspaces;
+  		    if (pend != pstart)
+! 		    pend = prev_pend;
+  		}
+  	    }
+  	}
+--- 4672,4678 ----
+  		{
+  		    bdp->endspaces = incr - bdp->endspaces;
+  		    if (pend != pstart)
+! 			pend = prev_pend;
+  		}
+  	    }
+  	}
+***************
+*** 4709,4722 ****
+       */
+      col = curwin->w_cursor.col;
+      if (dohex)
+! 	while (col > 0 && isxdigit(ptr[col]))
+  	    --col;
+      if (       dohex
+  	    && col > 0
+  	    && (ptr[col] == 'X'
+  		|| ptr[col] == 'x')
+  	    && ptr[col - 1] == '0'
+! 	    && isxdigit(ptr[col + 1]))
+      {
+  	/*
+  	 * Found hexadecimal number, move to its start.
+--- 4754,4767 ----
+       */
+      col = curwin->w_cursor.col;
+      if (dohex)
+! 	while (col > 0 && vim_isxdigit(ptr[col]))
+  	    --col;
+      if (       dohex
+  	    && col > 0
+  	    && (ptr[col] == 'X'
+  		|| ptr[col] == 'x')
+  	    && ptr[col - 1] == '0'
+! 	    && vim_isxdigit(ptr[col + 1]))
+      {
+  	/*
+  	 * Found hexadecimal number, move to its start.
+***************
+*** 4731,4742 ****
+  	col = curwin->w_cursor.col;
+  
+  	while (ptr[col] != NUL
+! 		&& !isdigit(ptr[col])
+  		&& !(doalp && ASCII_ISALPHA(ptr[col])))
+  	    ++col;
+  
+  	while (col > 0
+! 		&& isdigit(ptr[col - 1])
+  		&& !(doalp && ASCII_ISALPHA(ptr[col])))
+  	    --col;
+      }
+--- 4776,4787 ----
+  	col = curwin->w_cursor.col;
+  
+  	while (ptr[col] != NUL
+! 		&& !vim_isdigit(ptr[col])
+  		&& !(doalp && ASCII_ISALPHA(ptr[col])))
+  	    ++col;
+  
+  	while (col > 0
+! 		&& vim_isdigit(ptr[col - 1])
+  		&& !(doalp && ASCII_ISALPHA(ptr[col])))
+  	    --col;
+      }
+***************
+*** 4750,4756 ****
+       */
+      firstdigit = ptr[col];
+      RLADDSUBFIX(ptr);
+!     if ((!isdigit(firstdigit) && !(doalp && ASCII_ISALPHA(firstdigit)))
+  	    || u_save_cursor() != OK)
+      {
+  	beep_flush();
+--- 4795,4801 ----
+       */
+      firstdigit = ptr[col];
+      RLADDSUBFIX(ptr);
+!     if ((!VIM_ISDIGIT(firstdigit) && !(doalp && ASCII_ISALPHA(firstdigit)))
+  	    || u_save_cursor() != OK)
+      {
+  	beep_flush();
+*** ../vim-6.2.481/src/option.c	Mon Apr 19 17:00:44 2004
+--- src/option.c	Mon Apr 19 19:03:26 2004
+***************
+*** 3626,3632 ****
+  				&& (*arg == '<'
+  				    || *arg == '^'
+  				    || ((!arg[1] || vim_iswhite(arg[1]))
+! 					&& !isdigit(*arg))))
+  			{
+  			    value = string_to_key(arg);
+  			    if (value == 0 && (long *)varp != &p_wcm)
+--- 3638,3644 ----
+  				&& (*arg == '<'
+  				    || *arg == '^'
+  				    || ((!arg[1] || vim_iswhite(arg[1]))
+! 					&& !VIM_ISDIGIT(*arg))))
+  			{
+  			    value = string_to_key(arg);
+  			    if (value == 0 && (long *)varp != &p_wcm)
+***************
+*** 3636,3642 ****
+  			    }
+  			}
+  				/* allow negative numbers (for 'undolevels') */
+! 			else if (*arg == '-' || isdigit(*arg))
+  			{
+  			    i = 0;
+  			    if (*arg == '-')
+--- 3648,3654 ----
+  			    }
+  			}
+  				/* allow negative numbers (for 'undolevels') */
+! 			else if (*arg == '-' || VIM_ISDIGIT(*arg))
+  			{
+  			    i = 0;
+  			    if (*arg == '-')
+***************
+*** 3648,3654 ****
+  #else
+  			    value = atol((char *)arg);
+  #endif
+! 			    while (isdigit(arg[i]))
+  				++i;
+  			    if (arg[i] != NUL && !vim_iswhite(arg[i]))
+  			    {
+--- 3660,3666 ----
+  #else
+  			    value = atol((char *)arg);
+  #endif
+! 			    while (VIM_ISDIGIT(arg[i]))
+  				++i;
+  			    if (arg[i] != NUL && !vim_iswhite(arg[i]))
+  			    {
+***************
+*** 3753,3759 ****
+  			     * backwards compatibility with Vim 3.0.
+  			     * Misuse errbuf[] for the resulting string.
+  			     */
+! 			    else if (varp == (char_u *)&p_ww && isdigit(*arg))
+  			    {
+  				*errbuf = NUL;
+  				i = getdigits(&arg);
+--- 3765,3772 ----
+  			     * backwards compatibility with Vim 3.0.
+  			     * Misuse errbuf[] for the resulting string.
+  			     */
+! 			    else if (varp == (char_u *)&p_ww
+! 							 && VIM_ISDIGIT(*arg))
+  			    {
+  				*errbuf = NUL;
+  				i = getdigits(&arg);
+***************
+*** 4217,4223 ****
+      char_u  *p;
+  
+      p = find_viminfo_parameter(type);
+!     if (p != NULL && isdigit(*p))
+  	return atoi((char *)p);
+      return -1;
+  }
+--- 4230,4236 ----
+      char_u  *p;
+  
+      p = find_viminfo_parameter(type);
+!     if (p != NULL && VIM_ISDIGIT(*p))
+  	return atoi((char *)p);
+      return -1;
+  }
+***************
+*** 5004,5010 ****
+  	    while (*s && *s != ':')
+  	    {
+  		if (vim_strchr((char_u *)COM_ALL, *s) == NULL
+! 						 && !isdigit(*s) && *s != '-')
+  		{
+  		    errmsg = illegal_char(errbuf, *s);
+  		    break;
+--- 5017,5023 ----
+  	    while (*s && *s != ':')
+  	    {
+  		if (vim_strchr((char_u *)COM_ALL, *s) == NULL
+! 					     && !VIM_ISDIGIT(*s) && *s != '-')
+  		{
+  		    errmsg = illegal_char(errbuf, *s);
+  		    break;
+***************
+*** 5075,5084 ****
+  		++s;		/* no extra chars */
+  	    else		/* must have a number */
+  	    {
+! 		while (isdigit(*++s))
+  		    ;
+  
+! 		if (!isdigit(*(s - 1)))
+  		{
+  		    if (errbuf != NULL)
+  		    {
+--- 5088,5097 ----
+  		++s;		/* no extra chars */
+  	    else		/* must have a number */
+  	    {
+! 		while (vim_isdigit(*++s))
+  		    ;
+  
+! 		if (!VIM_ISDIGIT(*(s - 1)))
+  		{
+  		    if (errbuf != NULL)
+  		    {
+***************
+*** 5545,5551 ****
+      /* 'backspace' */
+      else if (varp == &p_bs)
+      {
+! 	if (isdigit(*p_bs))
+  	{
+  	    if (*p_bs >'2' || p_bs[1] != NUL)
+  		errmsg = e_invarg;
+--- 5558,5564 ----
+      /* 'backspace' */
+      else if (varp == &p_bs)
+      {
+! 	if (VIM_ISDIGIT(*p_bs))
+  	{
+  	    if (*p_bs >'2' || p_bs[1] != NUL)
+  		errmsg = e_invarg;
+***************
+*** 5918,5931 ****
+  	}
+  	if (*s == '-')
+  	    s++;
+! 	while (isdigit(*s))
+  	    s++;
+  	if (*s == STL_HIGHLIGHT)
+  	    continue;
+  	if (*s == '.')
+  	{
+  	    s++;
+! 	    while (*s && isdigit(*s))
+  		s++;
+  	}
+  	if (*s == '(')
+--- 5931,5944 ----
+  	}
+  	if (*s == '-')
+  	    s++;
+! 	while (VIM_ISDIGIT(*s))
+  	    s++;
+  	if (*s == STL_HIGHLIGHT)
+  	    continue;
+  	if (*s == '.')
+  	{
+  	    s++;
+! 	    while (*s && VIM_ISDIGIT(*s))
+  		s++;
+  	}
+  	if (*s == '(')
+*** ../vim-6.2.481/src/proto/charset.pro	Sun Jun  1 12:26:05 2003
+--- src/proto/charset.pro	Mon Apr 19 19:00:00 2004
+***************
+*** 33,38 ****
+--- 33,39 ----
+  char_u *skipwhite __ARGS((char_u *p));
+  char_u *skipdigits __ARGS((char_u *p));
+  int vim_isdigit __ARGS((int c));
++ int vim_isxdigit __ARGS((int c));
+  char_u *skiptowhite __ARGS((char_u *p));
+  char_u *skiptowhite_esc __ARGS((char_u *p));
+  long getdigits __ARGS((char_u **pp));
+*** ../vim-6.2.481/src/regexp.c	Wed Apr 14 11:08:53 2004
+--- src/regexp.c	Mon Apr 19 19:04:33 2004
+***************
+*** 1723,1729 ****
+  			  }
+  
+  		default:
+! 			  if (isdigit(c) || c == '<' || c == '>')
+  			  {
+  			      long_u	n = 0;
+  			      int	cmp;
+--- 1723,1729 ----
+  			  }
+  
+  		default:
+! 			  if (VIM_ISDIGIT(c) || c == '<' || c == '>')
+  			  {
+  			      long_u	n = 0;
+  			      int	cmp;
+***************
+*** 1731,1737 ****
+  			      cmp = c;
+  			      if (cmp == '<' || cmp == '>')
+  				  c = getchr();
+! 			      while (isdigit(c))
+  			      {
+  				  n = n * 10 + (c - '0');
+  				  c = getchr();
+--- 1731,1737 ----
+  			      cmp = c;
+  			      if (cmp == '<' || cmp == '>')
+  				  c = getchr();
+! 			      while (VIM_ISDIGIT(c))
+  			      {
+  				  n = n * 10 + (c - '0');
+  				  c = getchr();
+***************
+*** 1917,1923 ****
+  				break;
+  			    case CLASS_DIGIT:
+  				for (cu = 1; cu <= 255; cu++)
+! 				    if (isdigit(cu))
+  					regc(cu);
+  				break;
+  			    case CLASS_GRAPH:
+--- 1917,1923 ----
+  				break;
+  			    case CLASS_DIGIT:
+  				for (cu = 1; cu <= 255; cu++)
+! 				    if (VIM_ISDIGIT(cu))
+  					regc(cu);
+  				break;
+  			    case CLASS_GRAPH:
+***************
+*** 1952,1958 ****
+  				break;
+  			    case CLASS_XDIGIT:
+  				for (cu = 1; cu <= 255; cu++)
+! 				    if (isxdigit(cu))
+  					regc(cu);
+  				break;
+  			    case CLASS_TAB:
+--- 1952,1958 ----
+  				break;
+  			    case CLASS_XDIGIT:
+  				for (cu = 1; cu <= 255; cu++)
+! 				    if (vim_isxdigit(cu))
+  					regc(cu);
+  				break;
+  			    case CLASS_TAB:
+***************
+*** 2541,2552 ****
+      *minval = getdigits(&regparse);
+      if (*regparse == ',')	    /* There is a comma */
+      {
+! 	if (isdigit(*++regparse))
+  	    *maxval = getdigits(&regparse);
+  	else
+  	    *maxval = MAX_LIMIT;
+      }
+!     else if (isdigit(*first_char))
+  	*maxval = *minval;	    /* It was \{n} or \{-n} */
+      else
+  	*maxval = MAX_LIMIT;	    /* It was \{} or \{-} */
+--- 2541,2552 ----
+      *minval = getdigits(&regparse);
+      if (*regparse == ',')	    /* There is a comma */
+      {
+! 	if (vim_isdigit(*++regparse))
+  	    *maxval = getdigits(&regparse);
+  	else
+  	    *maxval = MAX_LIMIT;
+      }
+!     else if (VIM_ISDIGIT(*first_char))
+  	*maxval = *minval;	    /* It was \{n} or \{-n} */
+      else
+  	*maxval = MAX_LIMIT;	    /* It was \{} or \{-} */
+***************
+*** 3405,3411 ****
+  	    break;
+  
+  	  case SIDENT:
+! 	    if (isdigit(*reginput) || !vim_isIDc(c))
+  		return FALSE;
+  	    ADVANCE_REGINPUT();
+  	    break;
+--- 3405,3411 ----
+  	    break;
+  
+  	  case SIDENT:
+! 	    if (VIM_ISDIGIT(*reginput) || !vim_isIDc(c))
+  		return FALSE;
+  	    ADVANCE_REGINPUT();
+  	    break;
+***************
+*** 3417,3423 ****
+  	    break;
+  
+  	  case SKWORD:
+! 	    if (isdigit(*reginput) || !vim_iswordp(reginput))
+  		return FALSE;
+  	    ADVANCE_REGINPUT();
+  	    break;
+--- 3417,3423 ----
+  	    break;
+  
+  	  case SKWORD:
+! 	    if (VIM_ISDIGIT(*reginput) || !vim_iswordp(reginput))
+  		return FALSE;
+  	    ADVANCE_REGINPUT();
+  	    break;
+***************
+*** 3429,3435 ****
+  	    break;
+  
+  	  case SFNAME:
+! 	    if (isdigit(*reginput) || !vim_isfilec(c))
+  		return FALSE;
+  	    ADVANCE_REGINPUT();
+  	    break;
+--- 3429,3435 ----
+  	    break;
+  
+  	  case SFNAME:
+! 	    if (VIM_ISDIGIT(*reginput) || !vim_isfilec(c))
+  		return FALSE;
+  	    ADVANCE_REGINPUT();
+  	    break;
+***************
+*** 3441,3447 ****
+  	    break;
+  
+  	  case SPRINT:
+! 	    if (isdigit(*reginput) || ptr2cells(reginput) != 1)
+  		return FALSE;
+  	    ADVANCE_REGINPUT();
+  	    break;
+--- 3441,3447 ----
+  	    break;
+  
+  	  case SPRINT:
+! 	    if (VIM_ISDIGIT(*reginput) || ptr2cells(reginput) != 1)
+  		return FALSE;
+  	    ADVANCE_REGINPUT();
+  	    break;
+***************
+*** 4339,4345 ****
+        case SIDENT + ADD_NL:
+  	while (count < maxcount)
+  	{
+! 	    if (vim_isIDc(*scan) && (testval || !isdigit(*scan)))
+  	    {
+  		ADVANCE_P(scan);
+  	    }
+--- 4339,4345 ----
+        case SIDENT + ADD_NL:
+  	while (count < maxcount)
+  	{
+! 	    if (vim_isIDc(*scan) && (testval || !VIM_ISDIGIT(*scan)))
+  	    {
+  		ADVANCE_P(scan);
+  	    }
+***************
+*** 4368,4374 ****
+        case SKWORD + ADD_NL:
+  	while (count < maxcount)
+  	{
+! 	    if (vim_iswordp(scan) && (testval || !isdigit(*scan)))
+  	    {
+  		ADVANCE_P(scan);
+  	    }
+--- 4368,4374 ----
+        case SKWORD + ADD_NL:
+  	while (count < maxcount)
+  	{
+! 	    if (vim_iswordp(scan) && (testval || !VIM_ISDIGIT(*scan)))
+  	    {
+  		ADVANCE_P(scan);
+  	    }
+***************
+*** 4397,4403 ****
+        case SFNAME + ADD_NL:
+  	while (count < maxcount)
+  	{
+! 	    if (vim_isfilec(*scan) && (testval || !isdigit(*scan)))
+  	    {
+  		ADVANCE_P(scan);
+  	    }
+--- 4397,4403 ----
+        case SFNAME + ADD_NL:
+  	while (count < maxcount)
+  	{
+! 	    if (vim_isfilec(*scan) && (testval || !VIM_ISDIGIT(*scan)))
+  	    {
+  		ADVANCE_P(scan);
+  	    }
+***************
+*** 4435,4441 ****
+  		if (got_int)
+  		    break;
+  	    }
+! 	    else if (ptr2cells(scan) == 1 && (testval || !isdigit(*scan)))
+  	    {
+  		ADVANCE_P(scan);
+  	    }
+--- 4435,4441 ----
+  		if (got_int)
+  		    break;
+  	    }
+! 	    else if (ptr2cells(scan) == 1 && (testval || !VIM_ISDIGIT(*scan)))
+  	    {
+  		ADVANCE_P(scan);
+  	    }
+*** ../vim-6.2.481/src/screen.c	Mon Apr  5 21:24:08 2004
+--- src/screen.c	Mon Apr 19 19:04:36 2004
+***************
+*** 5253,5259 ****
+  	    if (*++p == '-')
+  		p++;
+  	    if (atoi((char *) p))
+! 		while (isdigit(*p))
+  		    p++;
+  	    if (*p++ != '(')
+  		p = p_ruf;
+--- 5253,5259 ----
+  	    if (*++p == '-')
+  		p++;
+  	    if (atoi((char *) p))
+! 		while (VIM_ISDIGIT(*p))
+  		    p++;
+  	    if (*p++ != '(')
+  		p = p_ruf;
+*** ../vim-6.2.481/src/search.c	Fri Apr  9 19:30:09 2004
+--- src/search.c	Mon Apr 19 19:04:47 2004
+***************
+*** 1038,1044 ****
+  	     * offset, because it is meaningless and the 's' could be a
+  	     * substitute command.
+  	     */
+! 	    if (*p == '+' || *p == '-' || isdigit(*p))
+  		spats[0].off.line = TRUE;
+  	    else if ((options & SEARCH_OPT) &&
+  					(*p == 'e' || *p == 's' || *p == 'b'))
+--- 1038,1044 ----
+  	     * offset, because it is meaningless and the 's' could be a
+  	     * substitute command.
+  	     */
+! 	    if (*p == '+' || *p == '-' || VIM_ISDIGIT(*p))
+  		spats[0].off.line = TRUE;
+  	    else if ((options & SEARCH_OPT) &&
+  					(*p == 'e' || *p == 's' || *p == 'b'))
+***************
+*** 1047,1063 ****
+  		    spats[0].off.end = SEARCH_END;
+  		++p;
+  	    }
+! 	    if (isdigit(*p) || *p == '+' || *p == '-')	   /* got an offset */
+  	    {
+  					    /* 'nr' or '+nr' or '-nr' */
+! 		if (isdigit(*p) || isdigit(*(p + 1)))
+  		    spats[0].off.off = atol((char *)p);
+  		else if (*p == '-')	    /* single '-' */
+  		    spats[0].off.off = -1;
+  		else			    /* single '+' */
+  		    spats[0].off.off = 1;
+  		++p;
+! 		while (isdigit(*p))	    /* skip number */
+  		    ++p;
+  	    }
+  
+--- 1047,1063 ----
+  		    spats[0].off.end = SEARCH_END;
+  		++p;
+  	    }
+! 	    if (VIM_ISDIGIT(*p) || *p == '+' || *p == '-')  /* got an offset */
+  	    {
+  					    /* 'nr' or '+nr' or '-nr' */
+! 		if (VIM_ISDIGIT(*p) || VIM_ISDIGIT(*(p + 1)))
+  		    spats[0].off.off = atol((char *)p);
+  		else if (*p == '-')	    /* single '-' */
+  		    spats[0].off.off = -1;
+  		else			    /* single '+' */
+  		    spats[0].off.off = 1;
+  		++p;
+! 		while (VIM_ISDIGIT(*p))	    /* skip number */
+  		    ++p;
+  	    }
+  
+*** ../vim-6.2.481/src/syntax.c	Thu Apr  1 15:42:48 2004
+--- src/syntax.c	Mon Apr 19 19:04:54 2004
+***************
+*** 5274,5280 ****
+  		arg_end = key + 11;
+  	    else
+  		arg_end = key + 9;
+! 	    if (arg_end[-1] != '=' || !isdigit(*arg_end))
+  	    {
+  		illegal = TRUE;
+  		break;
+--- 5274,5280 ----
+  		arg_end = key + 11;
+  	    else
+  		arg_end = key + 9;
+! 	    if (arg_end[-1] != '=' || !VIM_ISDIGIT(*arg_end))
+  	    {
+  		illegal = TRUE;
+  		break;
+***************
+*** 6523,6529 ****
+  		HL_TABLE()[idx].sg_cterm_bold = FALSE;
+  	    }
+  
+! 	    if (isdigit(*arg))
+  		color = atoi((char *)arg);
+  	    else if (STRICMP(arg, "fg") == 0)
+  	    {
+--- 6523,6529 ----
+  		HL_TABLE()[idx].sg_cterm_bold = FALSE;
+  	    }
+  
+! 	    if (VIM_ISDIGIT(*arg))
+  		color = atoi((char *)arg);
+  	    else if (STRICMP(arg, "fg") == 0)
+  	    {
+*** ../vim-6.2.481/src/tag.c	Thu Apr 15 20:45:41 2004
+--- src/tag.c	Mon Apr 19 19:05:04 2004
+***************
+*** 2414,2420 ****
+  	else
+  	    ++p;
+  
+! 	if (!isdigit(*p))	    /* check for start of line number */
+  	    return FAIL;
+  	tagp->command = p;
+  
+--- 2414,2420 ----
+  	else
+  	    ++p;
+  
+! 	if (!VIM_ISDIGIT(*p))	    /* check for start of line number */
+  	    return FAIL;
+  	tagp->command = p;
+  
+***************
+*** 3347,3353 ****
+      /* Repeat for addresses separated with ';' */
+      for (;;)
+      {
+! 	if (isdigit(*str))
+  	    str = skipdigits(str);
+  	else if (*str == '/' || *str == '?')
+  	{
+--- 3347,3353 ----
+      /* Repeat for addresses separated with ';' */
+      for (;;)
+      {
+! 	if (VIM_ISDIGIT(*str))
+  	    str = skipdigits(str);
+  	else if (*str == '/' || *str == '?')
+  	{
+***************
+*** 3360,3366 ****
+  	else
+  	    str = NULL;
+  	if (str == NULL || *str != ';'
+! 		      || !(isdigit(str[1]) || str[1] == '/' || str[1] == '?'))
+  	    break;
+  	++str;	/* skip ';' */
+      }
+--- 3360,3366 ----
+  	else
+  	    str = NULL;
+  	if (str == NULL || *str != ';'
+! 		  || !(VIM_ISDIGIT(str[1]) || str[1] == '/' || str[1] == '?'))
+  	    break;
+  	++str;	/* skip ';' */
+      }
+*** ../vim-6.2.481/src/term.c	Tue Mar 30 21:49:18 2004
+--- src/term.c	Mon Apr 19 19:05:20 2004
+***************
+*** 3806,3812 ****
+  		     * key code.
+  		     */
+  		    if (termcodes[idx].name[0] == 'K'
+! 					   && isdigit(termcodes[idx].name[1]))
+  		    {
+  			for (j = idx + 1; j < tc_len; ++j)
+  			    if (termcodes[j].len == slen &&
+--- 3806,3812 ----
+  		     * key code.
+  		     */
+  		    if (termcodes[idx].name[0] == 'K'
+! 				       && VIM_ISDIGIT(termcodes[idx].name[1]))
+  		    {
+  			for (j = idx + 1; j < tc_len; ++j)
+  			    if (termcodes[j].len == slen &&
+***************
+*** 3838,3844 ****
+  		j = 0;
+  		extra = 0;
+  		for (i = 2 + (tp[0] != CSI);
+! 			i < len && (isdigit(tp[i])
+  			    || tp[i] == ';' || tp[i] == '.'); ++i)
+  		    if (tp[i] == ';' && ++j == 1)
+  			extra = atoi((char *)tp + i + 1);
+--- 3838,3844 ----
+  		j = 0;
+  		extra = 0;
+  		for (i = 2 + (tp[0] != CSI);
+! 			i < len && (VIM_ISDIGIT(tp[i])
+  			    || tp[i] == ';' || tp[i] == '.'); ++i)
+  		    if (tp[i] == ';' && ++j == 1)
+  			extra = atoi((char *)tp + i + 1);
+***************
+*** 4724,4730 ****
+      /*
+       * Check for #n at start only: function key n
+       */
+!     if (from_part && src[0] == '#' && isdigit(src[1]))	    /* function key */
+      {
+  	result[dlen++] = K_SPECIAL;
+  	result[dlen++] = 'k';
+--- 4724,4730 ----
+      /*
+       * Check for #n at start only: function key n
+       */
+!     if (from_part && src[0] == '#' && VIM_ISDIGIT(src[1]))  /* function key */
+      {
+  	result[dlen++] = K_SPECIAL;
+  	result[dlen++] = 'k';
+*** ../vim-6.2.481/src/termlib.c	Sat Jul 26 21:25:27 2003
+--- src/termlib.c	Mon Apr 19 19:05:31 2004
+***************
+*** 335,341 ****
+  		    case '9':
+  			**buf = 0;
+  			    /* get up to three digits */
+! 			for (i = 0; i < 3 && isdigit(*tmp); ++i)
+  			    **buf = **buf * 8 + *tmp++ - '0';
+  			(*buf)++;
+  			tmp--;
+--- 335,341 ----
+  		    case '9':
+  			**buf = 0;
+  			    /* get up to three digits */
+! 			for (i = 0; i < 3 && VIM_ISDIGIT(*tmp); ++i)
+  			    **buf = **buf * 8 + *tmp++ - '0';
+  			(*buf)++;
+  			tmp--;
+***************
+*** 480,486 ****
+      if (addup)					/* add upline */
+  	if (UP) {
+  	    ptr=UP;
+! 	    while (isdigit(*ptr) || *ptr == '.')
+  		ptr++;
+  	    if (*ptr == '*')
+  		ptr++;
+--- 480,486 ----
+      if (addup)					/* add upline */
+  	if (UP) {
+  	    ptr=UP;
+! 	    while (VIM_ISDIGIT(*ptr) || *ptr == '.')
+  		ptr++;
+  	    if (*ptr == '*')
+  		ptr++;
+***************
+*** 491,497 ****
+      if (addbak)					/* add backspace */
+  	if (BC) {
+  	    ptr=BC;
+! 	    while (isdigit(*ptr) || *ptr == '.')
+  		ptr++;
+  	    if (*ptr == '*')
+  		ptr++;
+--- 491,497 ----
+      if (addbak)					/* add backspace */
+  	if (BC) {
+  	    ptr=BC;
+! 	    while (VIM_ISDIGIT(*ptr) || *ptr == '.')
+  		ptr++;
+  	    if (*ptr == '*')
+  		ptr++;
+***************
+*** 542,554 ****
+  	counter,			/* digits */
+  	atol __ARGS((const char *));
+  
+!     if (isdigit(*cp)) {
+  	counter = 0;
+  	frac = 1000;
+! 	while (isdigit(*cp))
+  	    counter = counter * 10L + (long)(*cp++ - '0');
+  	if (*cp == '.')
+! 	    while (isdigit(*++cp)) {
+  		counter = counter * 10L + (long)(*cp++ - '0');
+  		frac = frac * 10;
+  	    }
+--- 542,554 ----
+  	counter,			/* digits */
+  	atol __ARGS((const char *));
+  
+!     if (VIM_ISDIGIT(*cp)) {
+  	counter = 0;
+  	frac = 1000;
+! 	while (VIM_ISDIGIT(*cp))
+  	    counter = counter * 10L + (long)(*cp++ - '0');
+  	if (*cp == '.')
+! 	    while (VIM_ISDIGIT(*++cp)) {
+  		counter = counter * 10L + (long)(*cp++ - '0');
+  		frac = frac * 10;
+  	    }
+*** ../vim-6.2.481/src/version.c	Mon Apr 19 17:00:44 2004
+--- src/version.c	Mon Apr 19 20:14:42 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     482,
+  /**/
+
+-- 
+If corn oil comes from corn, where does baby oil come from?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,68 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.494
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.494
+Problem:    Using diff mode with two windows, when moving horizontally in
+	    inserted lines, a fold in the other window may open.
+Solution:   Compute the line number in the other window correctly.
+Files:	    src/diff.c
+
+
+*** ../vim-6.2.493/src/diff.c	Mon Apr 19 23:00:46 2004
+--- src/diff.c	Fri Apr 23 15:35:04 2004
+***************
+*** 2167,2172 ****
+--- 2167,2173 ----
+      diff_T	*dp;
+      int		idx;
+      int		i;
++     linenr_T	n;
+  
+      idx = diff_buf_idx(curbuf);
+      if (idx == DB_COUNT)		/* safety check */
+***************
+*** 2190,2196 ****
+      if (i == DB_COUNT)			/* safety check */
+  	return (linenr_T)0;
+  
+!     return lnum + (dp->df_lnum[i] - dp->df_lnum[idx]);
+  }
+  #endif
+  
+--- 2191,2200 ----
+      if (i == DB_COUNT)			/* safety check */
+  	return (linenr_T)0;
+  
+!     n = lnum + (dp->df_lnum[i] - dp->df_lnum[idx]);
+!     if (n > dp->df_lnum[i] + dp->df_count[i])
+! 	n = dp->df_lnum[i] + dp->df_count[i];
+!     return n;
+  }
+  #endif
+  
+*** ../vim-6.2.493/src/version.c	Fri Apr 23 15:19:46 2004
+--- src/version.c	Fri Apr 23 15:40:17 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     494,
+  /**/
+
+-- 
+Never enter the boss's office unless it's absolutely necessary.  Every boss
+saves one corner of the desk for useless assignments that are doled out like
+Halloween candy to each visitor.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

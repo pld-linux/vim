@@ -1,0 +1,221 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.484
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.484
+Problem:    MS-Windows: With the included diff.exe, differences after a CTRL-Z
+	    are not recognized.  (Peter Keresztes)
+Solution:   Write the files with unix fileformat and invoke diff with --binary
+	    if possible.
+Files:	    src/diff.c
+
+
+*** ../vim-6.2.483/src/diff.c	Mon Apr 19 20:26:42 2004
+--- src/diff.c	Mon Apr 19 22:56:44 2004
+***************
+*** 57,67 ****
+--- 57,73 ----
+  
+  static int diff_a_works = MAYBE; /* TRUE when "diff -a" works, FALSE when it
+  				    doesn't work, MAYBE when not checked yet */
++ #if defined(MSWIN) || defined(MSDOS)
++ static int diff_bin_works = MAYBE; /* TRUE when "diff --binary" works, FALSE
++ 				      when it doesn't work, MAYBE when not
++ 				      checked yet */
++ #endif
+  
+  static int diff_buf_idx __ARGS((buf_T *buf));
+  static void diff_check_unchanged __ARGS((diff_T *dp));
+  static int diff_check_sanity __ARGS((diff_T *dp));
+  static void diff_redraw __ARGS((int dofold));
++ static int diff_write __ARGS((buf_T *buf, char_u *fname));
+  static void diff_file __ARGS((char_u *tmp_orig, char_u *tmp_new, char_u *tmp_diff));
+  static void diff_clear __ARGS((void));
+  static int diff_equal_entry __ARGS((diff_T *dp, int idx1, int idx2));
+***************
+*** 564,569 ****
+--- 570,597 ----
+  }
+  
+  /*
++  * Write buffer "buf" to file "name".
++  * Always use 'fileformat' set to "unix".
++  * Return FAIL for failure
++  */
++     static int
++ diff_write(buf, fname)
++     buf_T	*buf;
++     char_u	*fname;
++ {
++     int		r;
++     char_u	*save_ff;
++ 
++     save_ff = buf->b_p_ff;
++     buf->b_p_ff = vim_strsave((char_u *)FF_UNIX);
++     r = buf_write(buf, fname, NULL, (linenr_T)1, buf->b_ml.ml_line_count,
++ 					     NULL, FALSE, FALSE, FALSE, TRUE);
++     free_string_option(buf->b_p_ff);
++     buf->b_p_ff = save_ff;
++     return r;
++ }
++ 
++ /*
+   * Completely update the diffs for the buffers involved.
+   * This uses the ordinary "diff" command.
+   * The buffers are written to a file, also for unmodified buffers (the file
+***************
+*** 648,661 ****
+  	    mch_remove(tmp_orig);
+  	}
+  
+- 	/* If we checked if "-a" works already, break here. */
+- 	if (diff_a_works != MAYBE
+  #ifdef FEAT_EVAL
+! 		|| *p_dex != NUL
+  #endif
+! 		)
+! 		break;
+  	diff_a_works = ok;
+  	if (ok)
+  	    break;
+      }
+--- 676,706 ----
+  	    mch_remove(tmp_orig);
+  	}
+  
+  #ifdef FEAT_EVAL
+! 	/* When using 'diffexpr' break here. */
+! 	if (*p_dex != NUL)
+! 	    break;
+  #endif
+! 
+! #if defined(MSWIN) || defined(MSDOS)
+! 	/* If the "-a" argument works, also check if "--binary" works. */
+! 	if (ok && diff_a_works == MAYBE && diff_bin_works == MAYBE)
+! 	{
+! 	    diff_a_works = TRUE;
+! 	    diff_bin_works = TRUE;
+! 	    continue;
+! 	}
+! 	if (!ok && diff_a_works == TRUE && diff_bin_works == TRUE)
+! 	    /* Tried --binary, but it failed. */
+! 	    diff_bin_works = FALSE;
+! #endif
+! 
+! 	/* If we checked if "-a" works already, break here. */
+! 	if (diff_a_works != MAYBE)
+! 	    break;
+  	diff_a_works = ok;
++ 
++ 	/* If "-a" works break here, otherwise retry without "-a". */
+  	if (ok)
+  	    break;
+      }
+***************
+*** 663,675 ****
+      {
+  	EMSG(_("E97: Cannot create diffs"));
+  	diff_a_works = MAYBE;
+  	goto theend;
+      }
+  
+      /* Write the first buffer to a tempfile. */
+      buf = diffbuf[idx_orig];
+!     if (buf_write(buf, tmp_orig, NULL, (linenr_T)1, buf->b_ml.ml_line_count,
+! 				     NULL, FALSE, FALSE, FALSE, TRUE) == FAIL)
+  	goto theend;
+  
+      /* Make a difference between the first buffer and every other. */
+--- 708,722 ----
+      {
+  	EMSG(_("E97: Cannot create diffs"));
+  	diff_a_works = MAYBE;
++ #if defined(MSWIN) || defined(MSDOS)
++ 	diff_bin_works = MAYBE;
++ #endif
+  	goto theend;
+      }
+  
+      /* Write the first buffer to a tempfile. */
+      buf = diffbuf[idx_orig];
+!     if (diff_write(buf, tmp_orig) == FAIL)
+  	goto theend;
+  
+      /* Make a difference between the first buffer and every other. */
+***************
+*** 678,685 ****
+  	buf = diffbuf[idx_new];
+  	if (buf == NULL)
+  	    continue;
+! 	if (buf_write(buf, tmp_new, NULL, (linenr_T)1, buf->b_ml.ml_line_count,
+! 				     NULL, FALSE, FALSE, FALSE, TRUE) == FAIL)
+  	    continue;
+  	diff_file(tmp_orig, tmp_new, tmp_diff);
+  
+--- 725,731 ----
+  	buf = diffbuf[idx_new];
+  	if (buf == NULL)
+  	    continue;
+! 	if (diff_write(buf, tmp_new) == FAIL)
+  	    continue;
+  	diff_file(tmp_orig, tmp_new, tmp_diff);
+  
+***************
+*** 717,730 ****
+  #endif
+      {
+  	cmd = alloc((unsigned)(STRLEN(tmp_orig) + STRLEN(tmp_new)
+! 				+ STRLEN(tmp_diff) + STRLEN(p_srr) + 17));
+  	if (cmd != NULL)
+  	{
+  	    /* Build the diff command and execute it.  Always use -a, binary
+  	     * differences are of no use.  Ignore errors, diff returns
+  	     * non-zero when differences have been found. */
+! 	    sprintf((char *)cmd, "diff %s%s%s%s %s",
+  		    diff_a_works == FALSE ? "" : "-a ",
+  		    (diff_flags & DIFF_IWHITE) ? "-b " : "",
+  		    (diff_flags & DIFF_ICASE) ? "-i " : "",
+  		    tmp_orig, tmp_new);
+--- 763,781 ----
+  #endif
+      {
+  	cmd = alloc((unsigned)(STRLEN(tmp_orig) + STRLEN(tmp_new)
+! 				+ STRLEN(tmp_diff) + STRLEN(p_srr) + 27));
+  	if (cmd != NULL)
+  	{
+  	    /* Build the diff command and execute it.  Always use -a, binary
+  	     * differences are of no use.  Ignore errors, diff returns
+  	     * non-zero when differences have been found. */
+! 	    sprintf((char *)cmd, "diff %s%s%s%s%s %s",
+  		    diff_a_works == FALSE ? "" : "-a ",
++ #if defined(MSWIN) || defined(MSDOS)
++ 		    diff_bin_works == TRUE ? "--binary " : "",
++ #else
++ 		    "",
++ #endif
+  		    (diff_flags & DIFF_IWHITE) ? "-b " : "",
+  		    (diff_flags & DIFF_ICASE) ? "-i " : "",
+  		    tmp_orig, tmp_new);
+*** ../vim-6.2.483/src/version.c	Mon Apr 19 20:29:16 2004
+--- src/version.c	Mon Apr 19 22:44:58 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     484,
+  /**/
+
+-- 
+Wi n0t trei a h0liday in Sweden thi yer?
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

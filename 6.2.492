@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.492
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.492
+Problem:    When using ":redraw" while there is a message, the next ":echo"
+	    still causes text to scroll. (Yasuhiro Matsumoto)
+Solution:   Reset msg_didout and msg_col, so that after ":redraw" the next
+	    message overwrites an existing one.
+Files:	    src/ex_docmd.c
+
+
+*** ../vim-6.2.491/src/ex_docmd.c	Mon Apr 19 20:26:42 2004
+--- src/ex_docmd.c	Thu Apr 22 11:49:41 2004
+***************
+*** 7441,7446 ****
+--- 7439,7449 ----
+  #endif
+      RedrawingDisabled = r;
+      p_lz = p;
++ 
++     /* Reset msg_didout, so that a message that's there is overwritten. */
++     msg_didout = FALSE;
++     msg_col = 0;
++ 
+      out_flush();
+  }
+  
+*** ../vim-6.2.491/src/version.c	Thu Apr 22 20:28:32 2004
+--- src/version.c	Fri Apr 23 12:01:33 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     492,
+  /**/
+
+-- 
+I think that you'll agree that engineers are very effective in their social
+interactions.  It's the "normal" people who are nuts.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

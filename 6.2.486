@@ -1,0 +1,162 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.486
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.486 (6.2.482)
+Problem:    Diff for eval.c is missing.
+Solution:   Addition to patch 6.2.482.
+Files:	    src/eval.c
+
+
+*** ../vim-6.2.485/src/eval.c	Tue Apr 20 12:52:53 2004
+--- src/eval.c	Tue Apr 20 10:37:31 2004
+***************
+*** 817,823 ****
+  	    /* If the result is a string, check if there is a non-digit before
+  	     * the number. */
+  	    s = retvar.var_val.var_string;
+! 	    if (!isdigit(*s) && *s != '-')
+  		*cp = *s++;
+  	    retval = atol((char *)s);
+  	}
+--- 817,823 ----
+  	    /* If the result is a string, check if there is a non-digit before
+  	     * the number. */
+  	    s = retvar.var_val.var_string;
+! 	    if (!VIM_ISDIGIT(*s) && *s != '-')
+  		*cp = *s++;
+  	    retval = atol((char *)s);
+  	}
+***************
+*** 1148,1154 ****
+  	    /*
+  	     * ":let var = expr": Set internal variable.
+  	     */
+! 	    else if (eval_isnamec(*arg) && !isdigit(*arg))
+  	    {
+  		/* Find the end of the name. */
+  		p = find_name_end(arg, &expr_start, &expr_end);
+--- 1148,1154 ----
+  	    /*
+  	     * ":let var = expr": Set internal variable.
+  	     */
+! 	    else if (eval_isnamec(*arg) && !VIM_ISDIGIT(*arg))
+  	    {
+  		/* Find the end of the name. */
+  		p = find_name_end(arg, &expr_start, &expr_end);
+***************
+*** 2589,2595 ****
+  		case 'x':
+  		case 'u': /* Unicode: "\u0023" */
+  		case 'U':
+! 			  if (isxdigit(p[1]))
+  			  {
+  			      int	n, nr;
+  			      int	c = toupper(*p);
+--- 2589,2595 ----
+  		case 'x':
+  		case 'u': /* Unicode: "\u0023" */
+  		case 'U':
+! 			  if (vim_isxdigit(p[1]))
+  			  {
+  			      int	n, nr;
+  			      int	c = toupper(*p);
+***************
+*** 2599,2605 ****
+  			      else
+  				  n = 4;
+  			      nr = 0;
+! 			      while (--n >= 0 && isxdigit(p[1]))
+  			      {
+  				  ++p;
+  				  nr = (nr << 4) + hex2nr(*p);
+--- 2599,2605 ----
+  			      else
+  				  n = 4;
+  			      nr = 0;
+! 			      while (--n >= 0 && vim_isxdigit(p[1]))
+  			      {
+  				  ++p;
+  				  nr = (nr << 4) + hex2nr(*p);
+***************
+*** 6463,6481 ****
+  	for (stropt = get_var_string(&argvars[2]); *stropt != NUL; ++stropt)
+  	    switch (*stropt)
+  	    {
+! 		case 'a': case 'A': /* append */
+  		    append = TRUE;
+  		    break;
+! 		case 'v': case 'c': /* character-wise selection */
+  		    yank_type = MCHAR;
+  		    break;
+! 		case 'V': case 'l': /*line-wise selection */
+  		    yank_type = MLINE;
+  		    break;
+  #ifdef FEAT_VISUAL
+! 		case 'b': case Ctrl_V: /*block-wise selection*/
+  		    yank_type = MBLOCK;
+! 		    if (isdigit(stropt[1]))
+  		    {
+  			++stropt;
+  			block_len = getdigits(&stropt) - 1;
+--- 6463,6481 ----
+  	for (stropt = get_var_string(&argvars[2]); *stropt != NUL; ++stropt)
+  	    switch (*stropt)
+  	    {
+! 		case 'a': case 'A':	/* append */
+  		    append = TRUE;
+  		    break;
+! 		case 'v': case 'c':	/* character-wise selection */
+  		    yank_type = MCHAR;
+  		    break;
+! 		case 'V': case 'l':	/* line-wise selection */
+  		    yank_type = MLINE;
+  		    break;
+  #ifdef FEAT_VISUAL
+! 		case 'b': case Ctrl_V:	/* block-wise selection */
+  		    yank_type = MBLOCK;
+! 		    if (VIM_ISDIGIT(stropt[1]))
+  		    {
+  			++stropt;
+  			block_len = getdigits(&stropt) - 1;
+***************
+*** 8243,8249 ****
+  	name += 2;
+  	if (current_funccal == NULL)
+  	    return NULL;
+! 	if (isdigit(*name))
+  	{
+  	    i = atol((char *)name);
+  	    if (i == 0)					/* a:0 */
+--- 8243,8249 ----
+  	name += 2;
+  	if (current_funccal == NULL)
+  	    return NULL;
+! 	if (VIM_ISDIGIT(*name))
+  	{
+  	    i = atol((char *)name);
+  	    if (i == 0)					/* a:0 */
+*** ../vim-6.2.485/src/version.c	Tue Apr 20 12:52:53 2004
+--- src/version.c	Tue Apr 20 12:59:38 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     486,
+  /**/
+
+-- 
+We apologise again for the fault in the subtitles.  Those responsible for
+sacking the people who have just been sacked have been sacked.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
