@@ -29,11 +29,16 @@ Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
+# Source0-md5:	7fd0f915adc7c0dab89772884268b030
 Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
+# Source1-md5:	ed6742805866d11d6a28267330980ab1
 Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
+# Source2-md5:	0f0940353f98e309da9693c29bb349a7
 # packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.*
 Source3:	%{name}-patches-%{_ver}.%{_patchlevel}.tar.bz2
+# Source3-md5:	706357700c34ebb7da7b78717afd83f3
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
+# Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
