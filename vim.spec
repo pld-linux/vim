@@ -13,7 +13,7 @@
 %bcond_with	bonobo	# with bonobo component (breaks other things)
 #
 %define		_ver		6.2
-%define		_patchlevel	338
+%define		_patchlevel	360
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -102,6 +102,28 @@ Patch435:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.335
 Patch436:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.336
 Patch437:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.337
 Patch438:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.338
+Patch439:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.339
+Patch440:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.340
+Patch441:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.341
+Patch442:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.342
+Patch443:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.343
+Patch444:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.344
+Patch445:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.345
+Patch446:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.346
+Patch447:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.347
+Patch448:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.348
+Patch449:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.349
+Patch450:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.350
+Patch451:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.351
+Patch452:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.352
+Patch453:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.353
+Patch454:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.354
+Patch455:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.355
+Patch456:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.356
+Patch457:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.357
+Patch458:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.358
+Patch459:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.359
+Patch460:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.360
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.294.diff.bz2
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
@@ -576,6 +598,28 @@ element bonobo.
 %patch436 -p0
 %patch437 -p0
 %patch438 -p0
+%patch439 -p0
+%patch440 -p0
+%patch441 -p0
+%patch442 -p0
+%patch443 -p0
+%patch444 -p0
+%patch445 -p0
+%patch446 -p0
+%patch447 -p0
+%patch448 -p0
+%patch449 -p0
+%patch450 -p0
+%patch451 -p0
+%patch452 -p0
+%patch453 -p0
+%patch454 -p0
+%patch455 -p0
+%patch456 -p0
+%patch457 -p0
+%patch458 -p0
+%patch459 -p0
+%patch460 -p0
 
 %patch999 -p1
 
