@@ -24,7 +24,7 @@ diff -Nur vim-5.4k/src/os_unix.h vim-5.4k.pld/src/os_unix.h
  # define MAKEEF		"vim##.err"
  #else
 -# define MAKEEF		"/tmp/vim##.err"
-+# define MAKEEF		"~/tmp/vim##.err,/var/lib/vim/vim##.err"
++# define MAKEEF		"~/tmp/vim##.err"
  #endif
  
  #ifdef OS2

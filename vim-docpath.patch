@@ -24,17 +24,17 @@
  Syntax files for various languages.
  .TP
 -/usr/local/lib/vim/vimrc
-+/usr/share/vim/macros/vimrc
++/etc/vim/vimrc
  System wide
  .B Vim
  initializations.
  .TP
 -/usr/local/lib/vim/gvimrc
-+/usr/share/vim//macros/gvimrc
++/etc/vim/gvimrc
  System wide gvim initializations.
  .TP
 -/usr/local/lib/vim/optwin.vim
-+/usr/share/vim//optwin.vim
++/usr/share/vim/optwin.vim
  Script used for the ":options" command, a nice way to view and set options.
  .TP
 -/usr/local/lib/vim/menu.vim

@@ -28,7 +28,7 @@ diff -Nru vim-5.7/src/feature.h vim-5.7.new/src/feature.h
   */
  #ifndef SYS_OPTWIN_FILE
 -# define SYS_OPTWIN_FILE	"$VIMRUNTIME/optwin.vim"
-+#define SYS_OPTWIN_FILE	"/etc/vim/optwin.vim"
++# define SYS_OPTWIN_FILE	"$VIMRUNTIME/optwin.vim"
  #endif
  
  /*
