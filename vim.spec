@@ -12,7 +12,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.1
-%define		_patchlevel	413
+%define		_patchlevel	416
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -39,7 +39,7 @@ Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
-Patch0:		http://regexxer.sourceforge.net/vim/vim-gtk2-20030321.patch.gz
+Patch0:		http://regexxer.sourceforge.net/vim/vim-gtk2-20030325.patch.gz
 Patch1:		%{name}-sysconfdir.patch
 Patch2:		%{name}-visual.patch
 Patch3:		%{name}-paths.patch
@@ -75,8 +75,9 @@ BuildRequires:	ncurses-devel
 %{?_with_python:BuildRequires:		python-devel}
 %{?_with_ruby:BuildRequires:		ruby}
 %{?_with_tcl:BuildRequires:		tcl-devel}
+%{?_without_static:Provides:	%{name}-static = %{version}-%{release}}
 Requires:	%{name}-rt = %{version}
-%{?_without_static:Requires:	%{name}-static = %{version}}
+%{?_without_static:Obsoletes:	%{name}-static}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -472,7 +473,7 @@ cd src
 # needed to prevent deconfiguring
 cp -f configure auto
 
-%if %{!?_without_static:1}%{?_without_static:0}
+%if 0%{!?_without_static:1}
 %{__make} distclean
 LDFLAGS="%{rpmldflags} -static"
 %configure \
@@ -541,7 +542,7 @@ mv -f vim vim.ncurses
 %{__make} vim
 mv -f vim vim.ispell
 
-%if %{!?_without_athena:1}%{?_without_athena:0}
+%if 0%{!?_without_athena:1}
 %{__make} distclean
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
@@ -565,7 +566,7 @@ mv -f vim vim.ispell
 mv -f vim gvim.athena
 %endif
 
-%if %{!?_without_motif:1}%{?_without_motif:0}
+%if 0%{!?_without_motif:1}
 %{__make} distclean
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
@@ -590,7 +591,7 @@ mv -f vim gvim.athena
 mv -f vim gvim.motif
 %endif
 
-%if %{!?_without_gtk:1}%{?_without_gtk:0}
+%if 0%{!?_without_gtk:1}
 %{__make} distclean
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
@@ -614,7 +615,7 @@ mv -f vim gvim.motif
 mv -f vim gvim.gtk
 %endif
 
-%if %{!?_without_gnome:1}%{?_without_gnome:0}
+%if 0%{!?_without_gnome:1}
 %{__make} distclean
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
@@ -704,16 +705,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/rvim
 
-%files ispell
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/vim.ispell
-
-%files -n xxd
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/xxd
-%{_mandir}/man1/xxd.1*
-
+%if 0%{!?_without_static:1}
 %files static
+%endif
 %defattr(644,root,root,755)
 %attr(755,root,root) /bin/*
 
@@ -737,6 +731,15 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_mandir}/pl/man1/ex.1*
 %lang(pl) %{_mandir}/pl/man1/view.1*
 %lang(pl) %{_mandir}/pl/man1/rview.1*
+
+%files ispell
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/vim.ispell
+
+%files -n xxd
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/xxd
+%{_mandir}/man1/xxd.1*
 
 %files rt
 %defattr(644,root,root,755)
