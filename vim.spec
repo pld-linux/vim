@@ -12,7 +12,7 @@
 %bcond_without	bonobo	# without bonobo component
 #
 %define		_ver		6.2
-%define		_patchlevel	211
+%define		_patchlevel	214
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -25,7 +25,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -71,6 +71,9 @@ Patch308:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.208
 Patch309:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.209
 Patch310:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.210
 Patch311:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.211
+Patch312:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.212
+Patch313:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.213
+Patch314:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.214
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -497,6 +500,9 @@ element bonobo.
 %patch309 -p0
 %patch310 -p0
 %patch311 -p0
+%patch312 -p0
+%patch313 -p0
+%patch314 -p0
 
 %patch0 -p1
 %{?with_bonobo:%patch99 -p1}
