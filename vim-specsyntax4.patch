@@ -27,7 +27,7 @@
 -syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(define\|patch\d*\|setup\|configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\)\>' end='$' contains=specCommandOpts,specMacroIdentifier
 +syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(\(un\)\?define\|patch\d*\|setup\|configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\|bcond_with\(out\)\?\|include\)\>' end='$' contains=specCommandOpts,specMacroIdentifier,specSectionMacroBcondArea
  syn region specSectionMacroBracketArea oneline matchgroup=specSectionMacro start='^%{\(configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\)}' end='$' contains=specCommandOpts,specMacroIdentifier
-+syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??\(with\(out\)\?_[a-zA-Z_]\+\|debug\):' skip='\\}' end='}' contains=ALLBUT,shCase
++syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??\(with\(out\)\?_[a-zA-Z0-9_]\+\|debug\):' skip='\\}' end='}' contains=ALLBUT,shCase
  
  "%% Files Section %%
  "TODO %config valid parameters: missingok\|noreplace
