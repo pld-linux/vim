@@ -1,0 +1,144 @@
+To: vim-dev@vim.org
+Subject: Patch 5.7.017
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+------------
+
+Patch 5.7.017
+Problem:    When using a Vim script for Vim 6.0 with <SID> before a function
+	    name, it produces an error message even when inside an "if version
+	    >= 600".  (Charles Campbell)
+Solution:   Ignore errors in the function name when the function is not going
+	    to be defined.
+Files:	    src/eval.c
+
+
+*** ../vim-5.7.16/src/eval.c	Tue Jun  6 12:55:14 2000
+--- src/eval.c	Thu Nov 16 15:18:27 2000
+***************
+*** 4822,4828 ****
+  	return;
+      }
+  
+!     if (!isupper(*eap->arg))
+      {
+  	EMSG2("Function name must start with a capital: %s", eap->arg);
+  	return;
+--- 4822,4828 ----
+  	return;
+      }
+  
+!     if (!isupper(*eap->arg) && !eap->skip)
+      {
+  	EMSG2("Function name must start with a capital: %s", eap->arg);
+  	return;
+***************
+*** 4858,4864 ****
+      name = eap->arg;
+      for (p = name; isalpha(*p) || isdigit(*p) || *p == '_'; ++p)
+  	;
+!     if (p == name)
+      {
+  	EMSG("Function name required");
+  	return;
+--- 4858,4864 ----
+      name = eap->arg;
+      for (p = name; isalpha(*p) || isdigit(*p) || *p == '_'; ++p)
+  	;
+!     if (p == name && !eap->skip)
+      {
+  	EMSG("Function name required");
+  	return;
+***************
+*** 4867,4874 ****
+      p = skipwhite(p);
+      if (*p != '(')
+      {
+! 	EMSG2("Missing '(': %s", name);
+! 	return;
+      }
+      p = skipwhite(p + 1);
+  
+--- 4867,4878 ----
+      p = skipwhite(p);
+      if (*p != '(')
+      {
+! 	if (!eap->skip)
+! 	{
+! 	    EMSG2("Missing '(': %s", name);
+! 	    return;
+! 	}
+! 	p = vim_strchr(p, '(');
+      }
+      p = skipwhite(p + 1);
+  
+***************
+*** 4893,4899 ****
+  		++p;
+  	    if (arg == p || isdigit(*arg))
+  	    {
+! 		EMSG2("Illegal argument: %s", arg);
+  		goto erret;
+  	    }
+  	    if (ga_grow(&newargs, 1) == FAIL)
+--- 4897,4904 ----
+  		++p;
+  	    if (arg == p || isdigit(*arg))
+  	    {
+! 		if (!eap->skip)
+! 		    EMSG2("Illegal argument: %s", arg);
+  		goto erret;
+  	    }
+  	    if (ga_grow(&newargs, 1) == FAIL)
+***************
+*** 4915,4921 ****
+  	p = skipwhite(p);
+  	if (mustend && *p != ')')
+  	{
+! 	    EMSG2(e_invarg2, eap->arg);
+  	    goto erret;
+  	}
+      }
+--- 4920,4927 ----
+  	p = skipwhite(p);
+  	if (mustend && *p != ')')
+  	{
+! 	    if (!eap->skip)
+! 		EMSG2(e_invarg2, eap->arg);
+  	    goto erret;
+  	}
+      }
+***************
+*** 4941,4947 ****
+  
+      if (*p != NUL && *p != '"' && *p != '\n')
+      {
+! 	EMSG(e_trailing);
+  	goto erret;
+      }
+  
+--- 4947,4954 ----
+  
+      if (*p != NUL && *p != '"' && *p != '\n')
+      {
+! 	if (!eap->skip)
+! 	    EMSG(e_trailing);
+  	goto erret;
+      }
+  
+*** ../vim-5.7.16/src/version.c	Thu Nov 16 15:15:50 2000
+--- src/version.c	Thu Nov 16 15:15:17 2000
+***************
+*** 439,440 ****
+--- 439,442 ----
+  {   /* Add new patch number below this line */
++ /**/
++     17,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+145. You e-mail your boss, informing him you'll be late.
+
+///  Bram Moolenaar     Bram@moolenaar.net     http://www.moolenaar.net  \\\
+\\\  Vim: http://www.vim.org      ICCF Holland: http://iccf-holland.org  ///

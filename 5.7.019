@@ -1,0 +1,47 @@
+To: vim-dev@vim.org
+Subject: Patch 5.7.019
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+------------
+
+Patch 5.7.019
+Problem:    Multibyte: In a substitute string, a multi-byte character isn't
+	    skipped properly, can be a problem when the second byte is a
+	    backslash.
+Solution:   Skip an extra byte for a double-byte character. (Muraoka Taro)
+Files:	    src/ex_cmds.c
+
+
+*** ../vim-5.7.18/src/ex_cmds.c	Thu Nov 16 15:15:49 2000
+--- src/ex_cmds.c	Tue Nov 28 22:27:29 2000
+***************
+*** 3083,3088 ****
+--- 3083,3093 ----
+  		    cmd[0] = Ctrl('V');
+  		++cmd;
+  	    }
++ #ifdef MULTI_BYTE
++ 	    /* skip an extra byte for a double-byte character */
++ 	    if (is_dbcs && cmd[1] != NUL && IsLeadByte(cmd[0]))
++ 		++cmd;
++ #endif
+  	    ++cmd;
+  	}
+  
+*** ../vim-5.7.18/src/version.c	Tue Nov 28 22:50:07 2000
+--- src/version.c	Tue Nov 28 22:49:21 2000
+***************
+*** 439,440 ****
+--- 439,442 ----
+  {   /* Add new patch number below this line */
++ /**/
++     19,
+  /**/
+
+-- 
+Apologies for taking up the bandwidth with the apology.  Anything else I
+can apologise for ...... er no can't think of anything, sorry about that. 
+		Andy Hunt (Member of British Olympic Apology Squad)
+
+///  Bram Moolenaar     Bram@moolenaar.net     http://www.moolenaar.net  \\\
+\\\  Vim: http://www.vim.org      ICCF Holland: http://iccf-holland.org  ///

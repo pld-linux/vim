@@ -1,0 +1,44 @@
+To: vim-dev@vim.org
+Subject: Patch 5.7.014
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+------------
+
+Patch 5.7.014
+Problem:    Rot13 encoding was done on characters with accents, which is
+	    wrong. (Sven Gottwald)
+Solution:   Only do rot13 encoding on ASCII characters.
+Files:	    src/ops.c
+
+
+*** ../vim-5.7.13/src/ops.c	Sat Oct  7 13:42:12 2000
+--- src/ops.c	Wed Nov  1 09:38:24 2000
+***************
+*** 1793,1798 ****
+--- 1793,1801 ----
+      if (c & 0xff00)	/* No lower/uppercase letter */
+  	return;
+  #endif
++     /* Only do rot13 encoding for ASCII characters. */
++     if (c >= 0x80 && op_type == OP_ROT13)
++ 	return;
+      nc = c;
+      if (islower(c))
+      {
+*** ../vim-5.7.13/src/version.c	Thu Oct 26 21:44:39 2000
+--- src/version.c	Wed Nov  1 09:41:30 2000
+***************
+*** 439,440 ****
+--- 439,442 ----
+  {   /* Add new patch number below this line */
++ /**/
++     14,
+  /**/
+
+-- 
+No engineer can take a shower without wondering if some sort of Teflon coating
+would make showering unnecessary.
+				(Scott Adams - The Dilbert principle)
+
+///  Bram Moolenaar     Bram@moolenaar.net     http://www.moolenaar.net  \\\
+\\\  Vim: http://www.vim.org      ICCF Holland: http://iccf-holland.org  ///
