@@ -18,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		6.3
-%define		_patchlevel	033
+%define		_patchlevel	041
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -107,6 +107,14 @@ Patch130:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.030
 Patch131:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.031
 Patch132:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.032
 Patch133:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.033
+Patch134:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.034
+Patch135:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.035
+Patch136:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.036
+Patch137:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.037
+Patch138:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.038
+Patch139:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.039
+Patch140:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.040
+Patch141:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.041
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
@@ -574,6 +582,14 @@ element bonobo.
 %patch131 -p0
 %patch132 -p0
 %patch133 -p0
+%patch134 -p0
+%patch135 -p0
+%patch136 -p0
+%patch137 -p0
+%patch138 -p0
+%patch139 -p0
+%patch140 -p0
+%patch141 -p0
 
 # kvim
 %patch999 -p1
