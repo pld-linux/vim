@@ -892,7 +892,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ko) %{_datadir}/vim/v*/lang/ko
 %lang(pl) %{_datadir}/vim/v*/lang/pl
 %lang(sk) %{_datadir}/vim/v*/lang/sk
-%lang(no) %{_datadir}/vim/v*/lang/no
+%lang(nb) %{_datadir}/vim/v*/lang/no
 #%lang(tr) %{_datadir}/vim/v*/lang/tr
 %lang(uk) %{_datadir}/vim/v*/lang/uk
 %lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN*
@@ -909,7 +909,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_datadir}/vim/v*/lang/menu_ja_jp*
 %lang(ko) %{_datadir}/vim/v*/lang/menu_ko_kr*
 %lang(nl) %{_datadir}/vim/v*/lang/menu_nl_nl*
-%lang(no) %{_datadir}/vim/v*/lang/menu_no_no*
+%lang(nb) %{_datadir}/vim/v*/lang/menu_no_no*
 %lang(pl) %{_datadir}/vim/v*/lang/menu_pl_pl*
 %lang(pt) %{_datadir}/vim/v*/lang/menu_pt_br*
 %lang(sk) %{_datadir}/vim/v*/lang/menu_sk_sk*
