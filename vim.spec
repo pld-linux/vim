@@ -13,7 +13,7 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	6.0z
-Release:	3
+Release:	4
 Epoch:		1
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -404,7 +404,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(it) %{_datadir}/vim/v*/lang/*it*
 %lang(ja) %{_datadir}/vim/v*/lang/*ja*
 %lang(ko) %{_datadir}/vim/v*/lang/*ko*
-%lang(pl) %{_datadir}/vim/v*/lang/*pl*
+#%lang(pl) %{_datadir}/vim/v*/lang/*pl*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/*zh*
 %{_datadir}/vim/v*/macros
 %{_datadir}/vim/v*/plugin
