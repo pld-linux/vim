@@ -16,7 +16,7 @@
 %bcond_without	home_etc # don't use home_etc
 #
 %define		_ver		6.3
-%define		_patchlevel	001
+%define		_patchlevel	006
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -70,9 +70,15 @@ Patch14:	%{name}-specsyntax4.patch
 Patch15:	%{name}-po.patch
 Patch16:	%{name}-filetype_vim-perl_tests.patch
 Patch17:	%{name}-pl.po.patch
+Patch18:	%{name}-po-syntax.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.001
+Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.002
+Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.003
+Patch104:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.004
+Patch105:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.005
+Patch106:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.006
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
@@ -506,6 +512,11 @@ element bonobo.
 
 # official patches
 %patch101 -p0
+%patch102 -p0
+%patch103 -p0
+%patch104 -p0
+%patch105 -p0
+%patch106 -p0
 
 # kvim
 %patch999 -p1
@@ -530,6 +541,7 @@ element bonobo.
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
+%patch18 -p1
 
 %build
 cd src
