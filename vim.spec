@@ -13,7 +13,7 @@
 %bcond_with	bonobo	# with bonobo component (breaks other things)
 #
 %define		_ver		6.2
-%define		_patchlevel	360
+%define		_patchlevel	396
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -26,7 +26,7 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	0.1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -124,6 +124,42 @@ Patch457:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.357
 Patch458:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.358
 Patch459:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.359
 Patch460:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.360
+Patch461:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.361
+Patch462:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.362
+Patch463:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.363
+Patch464:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.364
+Patch465:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.365
+Patch466:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.366
+Patch467:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.367
+Patch468:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.368
+Patch469:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.369
+Patch470:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.370
+Patch471:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.371
+Patch472:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.372
+Patch473:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.373
+Patch474:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.374
+Patch475:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.375
+Patch476:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.376
+Patch477:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.377
+Patch478:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.378
+Patch479:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.379
+Patch480:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.380
+Patch481:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.381
+Patch482:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.382
+Patch483:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.383
+Patch484:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.384
+Patch485:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.385
+Patch486:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.386
+Patch487:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.387
+Patch488:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.388
+Patch489:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.389
+Patch490:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.390
+Patch491:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.391
+Patch492:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.392
+Patch493:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.393
+Patch494:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.394
+Patch495:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.395
+Patch496:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.396
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.294.diff.bz2
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
@@ -620,7 +656,44 @@ element bonobo.
 %patch458 -p0
 %patch459 -p0
 %patch460 -p0
+%patch461 -p0
+%patch462 -p0
+%patch463 -p0
+%patch464 -p0
+#%patch465 -p0
+%patch466 -p0
+%patch467 -p0
+%patch468 -p0
+%patch469 -p0
+%patch470 -p0
+%patch471 -p0
+%patch472 -p0
+%patch473 -p0
+%patch474 -p0
+%patch475 -p0
+%patch476 -p0
+%patch477 -p0
+%patch478 -p0
+%patch479 -p0
+%patch480 -p0
+%patch481 -p0
+%patch482 -p0
+%patch483 -p0
+%patch484 -p0
+%patch485 -p0
+%patch486 -p0
+%patch487 -p0
+%patch488 -p0
+%patch489 -p0
+%patch490 -p0
+%patch491 -p0
+%patch492 -p0
+%patch493 -p0
+%patch494 -p0
+%patch495 -p0
+%patch496 -p0
 
+# kvim
 %patch999 -p1
 
 %patch0 -p1
