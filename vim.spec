@@ -24,7 +24,7 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	2
+Release:	3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -611,7 +611,7 @@ mv -f vim gvim.gnome
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
-	$RPM_BUILD_ROOT{%{_prefix}/X11R6/bin,%{_applnkdir}/Development/Editors}
+	$RPM_BUILD_ROOT{%{_prefix}/X11R6/bin,%{_applnkdir}/Editors}
 
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
@@ -656,10 +656,10 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 %{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
 %{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
 
-%{!?_without_athena:install %{SOURCE10}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_motif: install %{SOURCE11}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_gtk:   install %{SOURCE12}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_gnome: install %{SOURCE13}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_athena:install %{SOURCE10}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
+%{!?_without_motif: install %{SOURCE11}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
+%{!?_without_gtk:   install %{SOURCE12}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
+%{!?_without_gnome: install %{SOURCE13}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
 
 bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
@@ -777,14 +777,14 @@ rm -rf $RPM_BUILD_ROOT
 %files -n gvim-athena
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_prefix}/X11R6/bin/gvim.athena
-%{_applnkdir}/Development/Editors/gvim-athena.desktop
+%{_applnkdir}/Editors/gvim-athena.desktop
 %endif
 
 %if %{!?_without_motif:1}%{?_without_motif:0}
 %files -n gvim-motif
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_prefix}/X11R6/bin/gvim.motif
-%{_applnkdir}/Development/Editors/gvim-motif.desktop
+%{_applnkdir}/Editors/gvim-motif.desktop
 %endif
 
 %if %{!?_without_gtk:1}%{?_without_gtk:0}
@@ -794,12 +794,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_prefix}/X11R6/bin/rgvim
 %attr(755,root,root) %{_prefix}/X11R6/bin/rgview
 %attr(755,root,root) %verify(not link) %{_prefix}/X11R6/bin/gvim
-%{_applnkdir}/Development/Editors/gvim-gtk.desktop
+%{_applnkdir}/Editors/gvim-gtk.desktop
 %endif
 
 %if %{!?_without_gnome:1}%{?_without_gnome:0}
 %files -n gvim-gnome
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gnome
-%{_applnkdir}/Development/Editors/gvim-gnome.desktop
+%{_applnkdir}/Editors/gvim-gnome.desktop
 %endif
