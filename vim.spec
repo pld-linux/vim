@@ -652,8 +652,7 @@ element bonobo.
 %patch356 -p0
 %patch357 -p0
 %patch358 -p0
-# conflicts with ispell.patch (to be done)
-#%patch359 -p0
+%patch359 -p0
 %patch360 -p0
 %patch361 -p0
 %patch362 -p0
