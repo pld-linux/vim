@@ -1017,9 +1017,12 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sr) %{_datadir}/vim/v*/lang/menu_sr*
 %lang(sv) %{_datadir}/vim/v*/lang/menu_sv*
 %lang(uk) %{_datadir}/vim/v*/lang/menu_uk*
+%lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.cp936*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.gb2312*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_*chinese*gb*
+%lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh.cp950*
+%lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh.big5*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 
