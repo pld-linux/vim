@@ -327,7 +327,7 @@ rm -rf $RPM_BUILD_ROOT
 %files rt
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vimtutor
-%dit %{_sysconfdir}/vim
+%dir %{_sysconfdir}/vim
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/menu
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/vimrc
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/gvimrc
