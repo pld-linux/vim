@@ -13,7 +13,7 @@
 %bcond_with	bonobo	# with bonobo component (breaks other things)
 #
 %define		_ver		6.2
-%define		_patchlevel	253
+%define		_patchlevel	263
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -26,7 +26,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	0.1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -116,6 +116,16 @@ Patch350:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.250
 Patch351:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.251
 Patch352:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.252
 Patch353:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.253
+Patch354:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.254
+Patch355:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.255
+Patch356:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.256
+Patch357:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.257
+Patch358:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.258
+Patch359:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.259
+Patch360:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.260
+Patch361:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.261
+Patch362:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.262
+Patch363:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.263
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.246.diff.bz2
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
@@ -603,6 +613,16 @@ element bonobo.
 %patch351 -p0
 %patch352 -p0
 %patch353 -p0
+%patch354 -p0
+%patch355 -p0
+%patch356 -p0
+%patch357 -p0
+%patch358 -p0
+#%patch359 -p0
+%patch360 -p0
+%patch361 -p0
+%patch362 -p0
+%patch363 -p0
 %patch999 -p1
 
 
