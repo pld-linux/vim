@@ -9,9 +9,11 @@
 # _with_python		- with python interp
 # _with_ruby		- with ruby interp
 # _with_tcl		- with tcl interp
+# TODO:
+# - add --with-modifiedby and --with-compiledby
 
 %define		_ver		6.2
-#%define		_patchlevel	451
+%define		_patchlevel	010
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -23,8 +25,8 @@ Summary(ru):	Visual editor IMproved - Единственно Правильный Редактор :)
 Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
-#Version:	%{_ver}.%{_patchlevel}
-Version:	%{_ver}
+Version:	%{_ver}.%{_patchlevel}
+#Version:	%{_ver}
 Release:	1
 Epoch:		4
 License:	Charityware
@@ -35,9 +37,6 @@ Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
 Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
 # Source2-md5:	db0db37baea01874867d8d2414db104c
 Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
-# packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.3*
-#Source3:	%{name}-patches-%{_ver}.401-%{_patchlevel}.tar.bz2
-# Source3-md5: 92712276457a367a56a9389e178c0c3d
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 Source10:	g%{name}-athena.desktop
@@ -54,10 +53,16 @@ Patch6:		%{name}-vimrc.patch
 Patch7:		%{name}-no_libelf.patch
 Patch8:		%{name}-egrep.patch
 Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030322.patch
-#Patch100:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.1-100.gz
-#Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.101-200.gz
-#Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.201-300.gz
-#Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.301-400.gz
+Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001
+Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.002
+Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.003
+Patch104:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.004
+Patch105:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.005
+Patch106:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.006
+Patch107:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.007
+Patch108:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.008
+Patch109:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.009
+Patch110:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.010
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -437,19 +442,18 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 повн╕стю граф╕чним ╕нтерфейсом та п╕дтримкою миш╕.
 
 %prep
-## setup -q -b1 -b2 -n %{name}%(echo %{version} | sed -e "s#\.##g")
-#%%setup -q -b1 -b2 -a3 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
-%setup -q -b1 -b2 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
-#%patch100 -p0
-#%patch101 -p0
-#%patch102 -p0
-#%patch103 -p0
-
-# skiping patches that are for "extra" package and apply the rest of official patches
-#for f in patches/6.1.* ; do
-#	echo "Applying official patch `basename $f` ..."
-#	patch -s -p0 < $f
-#done
+%setup -q -b1 -b2 -n %{name}%(echo %{_ver} | tr -d .)
+# official patches
+%patch101 -p0
+%patch102 -p0
+%patch103 -p0
+%patch104 -p0
+%patch105 -p0
+%patch106 -p0
+%patch107 -p0
+%patch108 -p0
+%patch109 -p0
+%patch110 -p0
 
 %patch0 -p1
 %{?_with_bonobo:%patch99 -p1}
@@ -463,6 +467,7 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+
 
 %build
 cd src
@@ -755,6 +760,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/lang/README*
 
 %lang(af) %{_datadir}/vim/v*/lang/af
+%lang(en_GB) %{_datadir}/vim/v*/lang/en_gb
 %lang(cs) %{_datadir}/vim/v*/lang/cs
 %lang(de) %{_datadir}/vim/v*/lang/de
 %lang(es) %{_datadir}/vim/v*/lang/es
@@ -764,28 +770,35 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ko) %{_datadir}/vim/v*/lang/ko
 %lang(pl) %{_datadir}/vim/v*/lang/pl
 %lang(sk) %{_datadir}/vim/v*/lang/sk
+%lang(no) %{_datadir}/vim/v*/lang/no
 #%lang(tr) %{_datadir}/vim/v*/lang/tr
 %lang(uk) %{_datadir}/vim/v*/lang/uk
 %lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN*
-%lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW
+%lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW*
 
 %lang(af) %{_datadir}/vim/v*/lang/menu_af_af*
 %lang(cs) %{_datadir}/vim/v*/lang/menu_cs_cz*
 %lang(de) %{_datadir}/vim/v*/lang/menu_de_de*
 %lang(es) %{_datadir}/vim/v*/lang/menu_es_es*
+%lang(en_GB) %{_datadir}/vim/v*/lang/menu_en_gb*
 %lang(fr) %{_datadir}/vim/v*/lang/menu_fr_fr*
 %lang(hu) %{_datadir}/vim/v*/lang/menu_hu_hu*
 %lang(it) %{_datadir}/vim/v*/lang/menu_it_it*
 %lang(ja) %{_datadir}/vim/v*/lang/menu_ja_jp*
 %lang(ko) %{_datadir}/vim/v*/lang/menu_ko_kr*
 %lang(nl) %{_datadir}/vim/v*/lang/menu_nl_nl*
+%lang(no) %{_datadir}/vim/v*/lang/menu_no_no*
 %lang(pl) %{_datadir}/vim/v*/lang/menu_pl_pl*
+%lang(pt) %{_datadir}/vim/v*/lang/menu_pt_br*
 %lang(sk) %{_datadir}/vim/v*/lang/menu_sk_sk*
+%lang(sr) %{_datadir}/vim/v*/lang/menu_sr_yu*
+%lang(uk) %{_datadir}/vim/v*/lang/menu_uk_ua*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 
 %{_datadir}/vim/v*/macros
 %{_datadir}/vim/v*/plugin
+%{_datadir}/vim/v*/print
 %{_datadir}/vim/v*/syntax
 %{_datadir}/vim/v*/tutor
 %{_datadir}/vim/v*/colors
