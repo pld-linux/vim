@@ -26,7 +26,7 @@ Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
 #Version:	%{_ver}
-Release:	1
+Release:	1.1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -53,6 +53,7 @@ Patch7:		%{name}-egrep.patch
 Patch8:		%{name}-spec-fix.patch
 Patch9:		%{name}-specsyntax.patch
 Patch10:	%{name}-specsyntax-pld.patch
+Patch11:	%{name}-bonobo.patch
 Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030726.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.002
@@ -120,15 +121,18 @@ BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
+%{?_with_bonobo:BuildRequires:	libbonoboui-devel >= 2.2.0}
+%{?_with_bonobo:BuildRequires:	ORBit2-devel}
+%{?_with_bonobo:BuildRequires:	nautilus-devel >= 2.2.0}
 %{!?_without_gtk:BuildRequires:		gtk+2-devel >= 2.2.1}
 %{!?_without_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %{!?_without_motif:BuildRequires:	motif-devel}
 %{!?_without_static:BuildRequires:	glibc-static}
 %{!?_without_static:BuildRequires:	ncurses-static}
-%{?_with_perl:BuildRequires:		perl-devel}
-%{?_with_python:BuildRequires:		python-devel}
-%{?_with_ruby:BuildRequires:		ruby}
-%{?_with_tcl:BuildRequires:		tcl-devel}
+%{?_with_perl:BuildRequires:	perl-devel}
+%{?_with_python:BuildRequires:	python-devel}
+%{?_with_ruby:BuildRequires:	ruby}
+%{?_with_tcl:BuildRequires:	tcl-devel}
 %{?_without_static:Provides:	%{name}-static = %{epoch}:%{version}-%{release}}
 Requires:	%{name}-rt = %{epoch}:%{version}
 %{?_without_static:Obsoletes:	%{name}-static}
@@ -570,6 +574,7 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%{?_with_bonobo:%patch11 -p1}
 
 %build
 cd src
@@ -822,6 +827,12 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 %{!?_without_gtk:   install %{SOURCE12}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
 %{!?_without_gnome: install %{SOURCE13}		$RPM_BUILD_ROOT%{_desktopdir}}
 
+# Bonobo
+%if 0%{?_with_bonobo:1}
+install -d $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
+install src/Vim_Control.server $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
+%endif
+
 bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
 %clean
@@ -982,4 +993,5 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.gnome
 %{_desktopdir}/gvim-gnome.desktop
+%{?_with_bonobo:%{_libdir}/bonobo/servers/*}
 %endif
