@@ -82,8 +82,8 @@ BuildRequires:	ncurses-devel
 %{?_with_python:BuildRequires:		python-devel}
 %{?_with_ruby:BuildRequires:		ruby}
 %{?_with_tcl:BuildRequires:		tcl-devel}
-%{?_without_static:Provides:	%{name}-static = %{version}-%{release}}
-Requires:	%{name}-rt = %{version}
+%{?_without_static:Provides:	%{name}-static = %{epoch}:%{version}-%{release}}
+Requires:	%{name}-rt = %{epoch}:%{version}
 %{?_without_static:Obsoletes:	%{name}-static}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -242,7 +242,7 @@ zalecana, mo¿e on pomóc Ci uratowaæ system w czasie awarii.
 Summary:	Vim with ispell support
 Summary(pl):	Vim z wsparciem dla ispella
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{version}
+Requires:	%{name}-rt = %{epoch}:%{version}
 Conflicts:	ispell < 3.2.06
 Conflicts:	ispell-pl < 20021127-2
 
@@ -344,7 +344,7 @@ köra.
 Summary:	Vim for X Window built with Athena
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Athena
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{version}
+Requires:	%{name}-rt = %{epoch}:%{version}
 Requires:	iconv
 Obsoletes:	vim-X11
 
@@ -370,7 +370,7 @@ Set, ÝÏ ÄÏÚ×ÏÌÑ¤ ÚÁÐÕÓËÁÔÉ VIM ÑË ÐÒÉËÌÁÄÎÕ ÐÒÏÇÒÁÍÕ X Window System -
 Summary:	Vim for X Window built with Motif
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Motif
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{version}
+Requires:	%{name}-rt = %{epoch}:%{version}
 Requires:	iconv
 Obsoletes:	vim-X11
 
@@ -396,7 +396,7 @@ Motif, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
 Summary:	Vim for X Window built with gtk
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GTK
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{version}
+Requires:	%{name}-rt = %{epoch}:%{version}
 Requires:	iconv
 Obsoletes:	vim-X11
 
@@ -423,7 +423,7 @@ GTK, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
 Summary:	Vim for X Window built with gnome
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GNOME
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{version}
+Requires:	%{name}-rt = %{epoch}:%{version}
 Requires:	iconv
 Obsoletes:	vim-X11
 
