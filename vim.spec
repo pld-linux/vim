@@ -46,6 +46,7 @@ Patch25:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.021
 Patch26:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.022
 Patch27:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.023
 Patch28:	%{name}-mktemp.patch
+Patch29:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.024
 URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
 %{!?bcond_off_static:BuildRequires:	ncurses-static}
@@ -208,6 +209,7 @@ biblioteki GTK.
 %patch26 -p2
 %patch27 -p2
 %patch28 -p1
+%patch29 -p2
 
 %build
 cd src
