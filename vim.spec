@@ -34,15 +34,15 @@ Patch3:		%{name}-phphighlight.patch
 Patch4:		%{name}-paths.patch
 #Patch5:		%{name}-speed_t.patch
 URL:		http://www.vim.org/
-BuildRequires:	ncurses-devel
-%{!?_without_static:BuildRequires:	ncurses-static}
-%{!?_without_static:BuildRequires:	glibc-static}
 BuildRequires:	gpm-devel
+BuildRequires:	ncurses-devel
 %{!?_without_athena:BuildRequires:	Xaw3d-devel}
-%{!?_without_motif:BuildRequires:	motif-devel}
-%{!?_without_gtk:BuildRequires:	gtk+-devel}
-%{!?_without_gnome:BuildRequires:	gnome-libs-devel}
 %{!?_without_gnome:BuildRequires:	esound-devel}
+%{!?_without_gnome:BuildRequires:	gnome-libs-devel}
+%{!?_without_gtk:BuildRequires:	gtk+-devel}
+%{!?_without_motif:BuildRequires:	motif-devel}
+%{!?_without_static:BuildRequires:	glibc-static}
+%{!?_without_static:BuildRequires:	ncurses-static}
 Requires:	%{name}-rt = %{version}
 %{?_without_static:Requires:	%{name}-static = %{version}}
 Obsoletes:	vim-enhanced
@@ -84,7 +84,7 @@ Group(pl):	Aplikacje/Edytory/Vim
 Provides:	vi
 Obsoletes:	vi
 Obsoletes:	vim-minimal
- 
+
 %description static
 Text editor similar to Vi. This version is build with minimal feature
 and is installed in /bin as a rescue tool. The installation of this
@@ -96,13 +96,14 @@ i posiada minimaln± ilo¶æ dodatków. Jest instalowana w /bin jako
 narzêdzie dla administratora. Instalacja tego pakietu jest MOCNO
 zalecana, mo¿e on pomóc Ci uratowaæ system w czasie awarii.
 
-%package rt 
+%package rt
 Summary:	Vim runtime files
-Summary(pl):	Pliki przydatne edytorowi Vim 
+Summary(pl):	Pliki przydatne edytorowi Vim
 Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 Requires:	mktemp
+Requires:	which
 Obsoletes:	vim-common
 
 %description rt
