@@ -7003,15 +7003,15 @@ diff -burN -x '*.orig' vim-6.2.532.orig/src/version.h vim-6.2.532/src/version.h
 +++ vim-6.2.532/src/version.h	2004-05-08 09:25:23.993172512 +0200
 @@ -35,6 +35,10 @@
   */
- #define VIM_VERSION_NODOT	"vim62"
- #define VIM_VERSION_SHORT	"6.2"
+ #define VIM_VERSION_NODOT	"vim63"
+ #define VIM_VERSION_SHORT	"6.3"
 +#ifdef FEAT_SPELL_HL
-+#define VIM_VERSION_MEDIUM	"6.2 + ispell 3.1.20 WM-3"
++#define VIM_VERSION_MEDIUM	"6.3 + ispell 3.1.20 WM-3"
 +#else
- #define VIM_VERSION_MEDIUM	"6.2"
+ #define VIM_VERSION_MEDIUM	"6.3"
 +#endif
- #define VIM_VERSION_LONG	"VIM - Vi IMproved 6.2 (2003 Jun 1)"
- #define VIM_VERSION_LONG_DATE	"VIM - Vi IMproved 6.2 (2003 Jun 1, compiled "
+ #define VIM_VERSION_LONG	"VIM - Vi IMproved 6.3 (2004 June 7)"
+ #define VIM_VERSION_LONG_DATE	"VIM - Vi IMproved 6.3 (2004 June 7, compiled "
 diff -burN -x '*.orig' vim-6.2.532.orig/src/vim.h vim-6.2.532/src/vim.h
 --- vim-6.2.532.orig/src/vim.h	2004-05-08 08:55:11.000000000 +0200
 +++ vim-6.2.532/src/vim.h	2004-05-08 09:27:06.192635832 +0200
