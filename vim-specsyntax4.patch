@@ -66,3 +66,15 @@
    HiLink specColon			Special
    HiLink specCommand			Statement
    HiLink specCommandOpts		specOpts
+diff -Nura vim62.bef/runtime/syntax/spec.vim vim62.new/runtime/syntax/spec.vim
+--- vim62.bef/runtime/syntax/spec.vim	2004-06-06 07:05:21.000000000 +0200
++++ vim62.new/runtime/syntax/spec.vim	2004-06-06 07:15:34.000000000 +0200
+@@ -85,7 +85,7 @@
+ 
+ "One line macros - valid in all ScriptAreas
+ "tip: remember do include new itens on specScriptArea's skip section
+-syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(\(un\)\?define\|patch\d*\|setup\|configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\|bcond_with\(out\)\?\|include\)\>' end='$' contains=specCommandOpts,specMacroIdentifier,specSectionMacroBcondArea
++syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(\(un\)\?define\|dump\|trace\|patch\d*\|setup\|configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\|bcond_with\(out\)\?\|include\)\>' end='$' contains=specCommandOpts,specMacroIdentifier,specSectionMacroBcondArea
+ syn region specSectionMacroBracketArea oneline matchgroup=specSectionMacro start='^%{\(configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\)}' end='$' contains=specCommandOpts,specMacroIdentifier
+ syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??\(with\(out\)\?_[a-zA-Z_]\+\|debug\):' skip='\\}' end='}' contains=ALLBUT,shCase
+ 
