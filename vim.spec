@@ -12,7 +12,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.1
-%define		_patchlevel	416
+%define		_patchlevel	422
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
