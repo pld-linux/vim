@@ -218,6 +218,7 @@ mv -f vim vim.ncurses
 
 %if %{!?_without_static:1}%{?_without_static:0}
 %{__make} distclean
+LDFLAGS="%{rpmldflags} -static"
 %configure \
 	--disable-gui \
 	--without-x \
@@ -240,6 +241,7 @@ mv -f xxd/xxd xxd.static
 
 %if %{!?_without_athena:1}%{?_without_athena:0}
 %{__make} distclean
+LDFLAGS="%{rpmldflags}"
 %configure \
 	--with-features=huge \
 	--enable-gui=athena \
