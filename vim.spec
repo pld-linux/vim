@@ -18,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		6.3
-%define		_patchlevel	067
+%define		_patchlevel	068
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -147,6 +147,7 @@ Patch164:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.064
 Patch165:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.065
 Patch166:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.066
 Patch167:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.067
+Patch168:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.068
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
