@@ -1,0 +1,48 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.063
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.063
+Problem:    When a CursorHold autocommand changes to another window
+	    (temporarily) 'mousefocus' stops working.
+Solution:   Call gui_mouse_correct() after triggering CursorHold.
+Files:	    src/gui.c
+
+
+*** ../vim-6.3.050/src/gui.c	Sun Sep  5 20:48:38 2004
+--- src/gui.c	Fri Mar 11 19:11:00 2005
+***************
+*** 2626,2631 ****
+--- 2626,2635 ----
+  	    update_screen(VALID);
+  	    showruler(FALSE);
+  	    setcursor();
++ 	    /* In case the commands moved the focus to another window
++ 	     * (temporarily). */
++ 	    if (need_mouse_correct)
++ 		gui_mouse_correct();
+  
+  	    once_already = 1;
+  	    retval = 0;
+*** ../vim-6.3.050/src/version.c	Sun Feb 13 20:46:05 2005
+--- src/version.c	Fri Mar 11 19:12:29 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     63,
+  /**/
+
+-- 
+Trees moving back and forth is what makes the wind blow.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

@@ -1,0 +1,50 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.064
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.064
+Problem:    line2byte(line("$") + 1) sometimes returns the wrong number.
+	    (Charles Campbell)
+Solution:   Flush the cached line before counting the bytes.
+Files:	    src/memline.c
+
+
+*** ../vim-6.3.041/src/memline.c	Wed Jun  9 14:56:26 2004
+--- src/memline.c	Thu Feb 17 11:02:53 2005
+***************
+*** 4247,4252 ****
+--- 4247,4255 ----
+      int		ffdos = (get_fileformat(buf) == EOL_DOS);
+      int		extra = 0;
+  
++     /* take care of cached line first */
++     ml_flush_line(curbuf);
++ 
+      if (buf->b_ml.ml_usedchunks == -1
+  	    || buf->b_ml.ml_chunksize == NULL
+  	    || line < 0)
+*** ../vim-6.3.041/src/version.c	Fri Mar 11 19:14:17 2005
+--- src/version.c	Fri Mar 11 19:15:46 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     64,
+  /**/
+
+-- 
+FATHER:    You killed eight wedding guests in all!
+LAUNCELOT: Er, Well ... the thing is ... I thought your son was a lady.
+FATHER:    I can understand that.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
