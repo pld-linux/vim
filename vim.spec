@@ -14,7 +14,7 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	6.0aq
-Release:	2
+Release:	3
 Epoch:		2
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -35,6 +35,7 @@ Patch1:		%{name}-visual.patch
 Patch2:		%{name}-phphighlight.patch
 Patch3:		%{name}-paths.patch
 Patch4:		%{name}-ispell.patch
+Patch5:		%{name}-pl.patch
 URL:		http://www.vim.org/
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
@@ -218,6 +219,7 @@ biblioteki GNOME.
 %patch2 -p1
 %patch3 -p1
 %{?_with_ispell:%patch4 -p1}
+%patch5 -p1
 
 %build
 cd src
