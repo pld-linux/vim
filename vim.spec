@@ -224,12 +224,12 @@ install -d $RPM_BUILD_ROOT/usr/{bin,X11R6/bin,share/vim/{doc,tutor},man/man1}
 install -s src/vim.static $RPM_BUILD_ROOT/bin/vi
 install -s src/xxd.static $RPM_BUILD_ROOT/bin/xxd
 
-install -s src/vim.ncurses $RPM_BUILD_ROOT/usr/bin/vim.ncurses
+install -s src/vim.ncurses $RPM_BUILD_ROOT%{_bindir}/vim.ncurses
 install -s src/vim.athena  $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.athena
 install -s src/vim.lesstif $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.lesstif
 install -s src/vim.gtk     $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.gtk
 
-install    src/vimtutor	   $RPM_BUILD_ROOT/usr/bin/vimtutor
+install    src/vimtutor	   $RPM_BUILD_ROOT%{_bindir}/vimtutor
 
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
 
@@ -255,7 +255,7 @@ install runtime/*.vim $RPM_BUILD_ROOT%{_datadir}/vim
 install runtime/vimrc_example.vim $RPM_BUILD_ROOT%{_datadir}/vim/vimrc
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/X11/wmconfig/gvim
 
-touch $RPM_BUILD_ROOT/usr/bin/vim $RPM_BUILD_ROOT/usr/X11R6/bin/gvim
+touch $RPM_BUILD_ROOT%{_bindir}/vim $RPM_BUILD_ROOT/usr/X11R6/bin/gvim
 
 install runtime/doc/*.txt $RPM_BUILD_ROOT%{_datadir}/vim/doc
 install runtime/doc/tags  $RPM_BUILD_ROOT%{_datadir}/vim/doc
@@ -263,8 +263,8 @@ install runtime/doc/tags  $RPM_BUILD_ROOT%{_datadir}/vim/doc
 ln -sf vi $RPM_BUILD_ROOT/bin/ex
 ln -sf vi $RPM_BUILD_ROOT/bin/view
 ln -sf vi $RPM_BUILD_ROOT/bin/rview
-ln -sf /bin/vi $RPM_BUILD_ROOT/usr/bin/vi
-ln -sf vim $RPM_BUILD_ROOT/usr/bin/rvim
+ln -sf /bin/vi $RPM_BUILD_ROOT%{_bindir}/vi
+ln -sf vim $RPM_BUILD_ROOT%{_bindir}/rvim
 
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgvim
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/gview
@@ -276,30 +276,30 @@ gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man1/*
 rm -rf $RPM_BUILD_ROOT
 
 %post
-ln -sf /usr/bin/vim.ncurses /usr/bin/vim
+ln -sf %{_bindir}/vim.ncurses /usr/bin/vim
 
 %post athena
 ln -sf /usr/X11R6/bin/gvim.athena /usr/X11R6/bin/gvim
-ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
+ln -sf /usr/X11R6/bin/gvim %{_bindir}/vim
 
 %post lesstif 
 ln -sf /usr/X11R6/bin/gvim.lesstif /usr/X11R6/bin/gvim
-ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
+ln -sf /usr/X11R6/bin/gvim %{_bindir}/vim
 
 %post gtk
 ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
-ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
+ln -sf /usr/X11R6/bin/gvim %{_bindir}/vim
 
 %files 
 %defattr(644,root,root,755)
-%attr(755,root,root) /usr/bin/vim.ncurses
-%attr(755,root,root) /usr/bin/rvim
-%attr(755,root,root) %ghost /usr/bin/vim
+%attr(755,root,root) %{_bindir}/vim.ncurses
+%attr(755,root,root) %{_bindir}/rvim
+%attr(755,root,root) %ghost %{_bindir}/vim
 
 %files static
 %defattr(644,root,root,755)
 %attr(755,root,root) /bin/*
-%attr(755,root,root) /usr/bin/vi
+%attr(755,root,root) %{_bindir}/vi
 
 %files athena
 %defattr(644,root,root,755)
@@ -308,7 +308,7 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 /etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
-%attr(755,root,root) %ghost /usr/bin/vim
+%attr(755,root,root) %ghost %{_bindir}/vim
 
 %files lesstif 
 %defattr(644,root,root,755)
@@ -317,7 +317,7 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 /etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
-%attr(755,root,root) %ghost /usr/bin/vim
+%attr(755,root,root) %ghost %{_bindir}/vim
 
 %files gtk
 %defattr(644,root,root,755)
@@ -326,12 +326,12 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 /etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
-%attr(755,root,root) %ghost /usr/bin/vim
+%attr(755,root,root) %ghost %{_bindir}/vim
 
 %files rt
 %defattr(644,root,root,755)
 
-%attr(755,root,root) /usr/bin/vimtutor
+%attr(755,root,root) %{_bindir}/vimtutor
 
 %{_mandir}/man1/*
 
@@ -371,7 +371,7 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 
 * Thu Feb 04 1999 Wojtek ¦lusarczyk <wojtek@shadow.eu.org>
   [5.4d-2d]
-- symlink /usr/bin/vi -> /bin/vi
+- symlink %{_bindir}/vi -> /bin/vi
 - doc package moved to %{_datadir}/vim/doc (crazy cpio .. ;)
 
 * Tue Feb  2 1999 Artur Frysiak <wiget@usa.net>
