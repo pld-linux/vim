@@ -6,4 +6,5 @@ Exec=gvim.gnome
 Terminal=0
 Icon=gnome-word.png
 Type=Application
+Categories=Application;TextEditor;
 # vi: encoding=utf-8
