@@ -80,12 +80,12 @@ Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.003
 Patch104:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.004
 Patch105:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.005
 Patch106:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.006
-Patch107:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.007
-Patch108:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.008
-Patch109:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.009
-Patch110:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.010
-Patch111:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.011
-Patch112:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.012
+Patch107:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.007
+Patch108:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.008
+Patch109:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.009
+Patch110:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.010
+Patch111:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.011
+Patch112:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.012
 Patch113:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.013
 Patch114:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.014
 Patch115:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.015
@@ -895,7 +895,7 @@ echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
 
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/rvim
+ln -sf vim$RPM_BUILD_ROOT%{_bindir}/rvim
 ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
@@ -924,7 +924,7 @@ install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 
 %if %{with kde}
-install -m755 src/bin/kvim  $RPM_BUILD_ROOT%{_bindir}/kvim
+install -m755 src/bin/kvim $RPM_BUILD_ROOT%{_bindir}/kvim
 install -d $RPM_BUILD_ROOT%{_desktopdir}/kde
 install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,22x22}/actions
 install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{32x32,48x48,64x64}/apps
