@@ -11,7 +11,7 @@
 %bcond_with	ruby	# with ruby interp
 %bcond_with	tcl	# with tcl interp
 %bcond_with	bonobo	# with bonobo component (breaks other things)
-%bcond_without  selinux # without selinux
+%bcond_without	selinux	# without selinux
 %bcond_without	ispell	# disable vim.ispell
 %bcond_without	home_etc # don't use home_etc
 #
