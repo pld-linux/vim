@@ -28,21 +28,6 @@ Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
-Group(cs):	Aplikace/Editory/Vim
-Group(da):	Programmer/Tekstbehandlere/Vim
-Group(de):	Applikationen/Editoren/Vim
-Group(es):	Aplicaciones/Editores/Vim
-Group(fr):	Applications/Editeurs/Vim
-Group(is):	Forrit/Ritlar/Vim
-Group(it):	Applicazioni/Editor/Vim
-Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
-Group(no):	Applikasjoner/Editorer/Vim
-Group(pl):	Aplikacje/Edytory/Vim
-Group(pt):	AplicaГУes/Editores/Vim
-Group(ru):	Приложения/Редакторы/Vim
-Group(sl):	Programi/Urejevalniki/Vim
-Group(sv):	TillДmpningar/Editorer/Vim
-Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
 Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
 Source2:	g%{name}-athena.desktop
@@ -184,21 +169,6 @@ VIsual editor iMproved - це оновлений та значно пол╕пшений клон
 Summary:	Utility to convert files to hexdump or do the reverse
 Summary(pl):	NarzЙdzie do zamiany plikСw na postaФ szesnastkow╠ i odwrotnie
 Group:		Applications/Editors/Vim
-Group(cs):	Aplikace/Editory/Vim
-Group(da):	Programmer/Tekstbehandlere/Vim
-Group(de):	Applikationen/Editoren/Vim
-Group(es):	Aplicaciones/Editores/Vim
-Group(fr):	Applications/Editeurs/Vim
-Group(is):	Forrit/Ritlar/Vim
-Group(it):	Applicazioni/Editor/Vim
-Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
-Group(no):	Applikasjoner/Editorer/Vim
-Group(pl):	Aplikacje/Edytory/Vim
-Group(pt):	AplicaГУes/Editores/Vim
-Group(ru):	Приложения/Редакторы/Vim
-Group(sl):	Programi/Urejevalniki/Vim
-Group(sv):	TillДmpningar/Editorer/Vim
-Group(uk):	Прикладн╕ Програми/Редактори/Vim
 
 %description -n xxd
 xxd creates a hex dump of a given file or standard input. It can also
@@ -218,21 +188,6 @@ wyj╤cie. Co wiЙcej, mo©e byФ u©yty do modyfikowania plikСw binarnych.
 Summary:	Statically linked Vim
 Summary(pl):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
-Group(cs):	Aplikace/Editory/Vim
-Group(da):	Programmer/Tekstbehandlere/Vim
-Group(de):	Applikationen/Editoren/Vim
-Group(es):	Aplicaciones/Editores/Vim
-Group(fr):	Applications/Editeurs/Vim
-Group(is):	Forrit/Ritlar/Vim
-Group(it):	Applicazioni/Editor/Vim
-Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
-Group(no):	Applikasjoner/Editorer/Vim
-Group(pl):	Aplikacje/Edytory/Vim
-Group(pt):	AplicaГУes/Editores/Vim
-Group(ru):	Приложения/Редакторы/Vim
-Group(sl):	Programi/Urejevalniki/Vim
-Group(sv):	TillДmpningar/Editorer/Vim
-Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Provides:	vi
 Obsoletes:	vi
 Obsoletes:	vim-minimal
@@ -278,21 +233,6 @@ Summary(sv):	De gemensamma filerna som behЖvs av alla versioner av redigeraren V
 Summary(uk):	Файли, потр╕бн╕ для будь-яко╖ верс╕╖ редактору vim
 Summary(zh_CN):	хн╨н╟Ф╠╬╣д VIM ╠Ю╪╜фВкЫпХ╣д╧╚сцнд╪Ч║ё
 Group:		Applications/Editors/Vim
-Group(cs):	Aplikace/Editory/Vim
-Group(da):	Programmer/Tekstbehandlere/Vim
-Group(de):	Applikationen/Editoren/Vim
-Group(es):	Aplicaciones/Editores/Vim
-Group(fr):	Applications/Editeurs/Vim
-Group(is):	Forrit/Ritlar/Vim
-Group(it):	Applicazioni/Editor/Vim
-Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
-Group(no):	Applikasjoner/Editorer/Vim
-Group(pl):	Aplikacje/Edytory/Vim
-Group(pt):	AplicaГУes/Editores/Vim
-Group(ru):	Приложения/Редакторы/Vim
-Group(sl):	Programi/Urejevalniki/Vim
-Group(sv):	TillДmpningar/Editorer/Vim
-Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Requires:	mktemp
 Requires:	which
 Obsoletes:	vim-common
@@ -363,21 +303,6 @@ kЖra.
 Summary:	Vim for X Window built with Athena
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki Athena
 Group:		Applications/Editors/Vim
-Group(cs):	Aplikace/Editory/Vim
-Group(da):	Programmer/Tekstbehandlere/Vim
-Group(de):	Applikationen/Editoren/Vim
-Group(es):	Aplicaciones/Editores/Vim
-Group(fr):	Applications/Editeurs/Vim
-Group(is):	Forrit/Ritlar/Vim
-Group(it):	Applicazioni/Editor/Vim
-Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
-Group(no):	Applikasjoner/Editorer/Vim
-Group(pl):	Aplikacje/Edytory/Vim
-Group(pt):	AplicaГУes/Editores/Vim
-Group(ru):	Приложения/Редакторы/Vim
-Group(sl):	Programi/Urejevalniki/Vim
-Group(sv):	TillДmpningar/Editorer/Vim
-Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Requires:	%{name}-rt = %{version}
 Requires:	iconv
 Obsoletes:	vim-X11
@@ -404,21 +329,6 @@ Set, що дозволя╓ запускати VIM як прикладну програму X Window System -
 Summary:	Vim for X Window built with Motif
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki Motif
 Group:		Applications/Editors/Vim
-Group(cs):	Aplikace/Editory/Vim
-Group(da):	Programmer/Tekstbehandlere/Vim
-Group(de):	Applikationen/Editoren/Vim
-Group(es):	Aplicaciones/Editores/Vim
-Group(fr):	Applications/Editeurs/Vim
-Group(is):	Forrit/Ritlar/Vim
-Group(it):	Applicazioni/Editor/Vim
-Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
-Group(no):	Applikasjoner/Editorer/Vim
-Group(pl):	Aplikacje/Edytory/Vim
-Group(pt):	AplicaГУes/Editores/Vim
-Group(ru):	Приложения/Редакторы/Vim
-Group(sl):	Programi/Urejevalniki/Vim
-Group(sv):	TillДmpningar/Editorer/Vim
-Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Requires:	%{name}-rt = %{version}
 Requires:	iconv
 Obsoletes:	vim-X11
@@ -445,21 +355,6 @@ Motif, что позволяет запускать VIM как приложение X Window System - с
 Summary:	Vim for X Window built with gtk
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki GTK
 Group:		Applications/Editors/Vim
-Group(cs):	Aplikace/Editory/Vim
-Group(da):	Programmer/Tekstbehandlere/Vim
-Group(de):	Applikationen/Editoren/Vim
-Group(es):	Aplicaciones/Editores/Vim
-Group(fr):	Applications/Editeurs/Vim
-Group(is):	Forrit/Ritlar/Vim
-Group(it):	Applicazioni/Editor/Vim
-Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
-Group(no):	Applikasjoner/Editorer/Vim
-Group(pl):	Aplikacje/Edytory/Vim
-Group(pt):	AplicaГУes/Editores/Vim
-Group(ru):	Приложения/Редакторы/Vim
-Group(sl):	Programi/Urejevalniki/Vim
-Group(sv):	TillДmpningar/Editorer/Vim
-Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Requires:	%{name}-rt = %{version}
 Requires:	iconv
 Obsoletes:	vim-X11
@@ -487,21 +382,6 @@ GTK, что позволяет запускать VIM как приложение X Window System - с
 Summary:	Vim for X Window built with gnome
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki GNOME
 Group:		Applications/Editors/Vim
-Group(cs):	Aplikace/Editory/Vim
-Group(da):	Programmer/Tekstbehandlere/Vim
-Group(de):	Applikationen/Editoren/Vim
-Group(es):	Aplicaciones/Editores/Vim
-Group(fr):	Applications/Editeurs/Vim
-Group(is):	Forrit/Ritlar/Vim
-Group(it):	Applicazioni/Editor/Vim
-Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
-Group(no):	Applikasjoner/Editorer/Vim
-Group(pl):	Aplikacje/Edytory/Vim
-Group(pt):	AplicaГУes/Editores/Vim
-Group(ru):	Приложения/Редакторы/Vim
-Group(sl):	Programi/Urejevalniki/Vim
-Group(sv):	TillДmpningar/Editorer/Vim
-Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Requires:	%{name}-rt = %{version}
 Requires:	iconv
 Obsoletes:	vim-X11
