@@ -1,0 +1,57 @@
+--- vim60z.orig/src/po/zh_TW.po	Tue Feb 20 12:33:33 2001
++++ vim60z/src/po/zh_TW.po	Sat Apr 14 16:33:48 2001
+@@ -871,7 +871,7 @@
+ 
+ #: ex_docmd.c:2955
+ msgid "Only one file name allowed"
+-msgstr "¥u¤¹³\\¤@­ÓÀÉ"
++msgstr "¥u¤¹³\¤@­ÓÀÉ"
+ 
+ #: ex_docmd.c:3502
+ #, c-format
+@@ -1075,8 +1075,8 @@
+ 
+ #: ex_docmd.c:8325
+ #, c-format
+ msgid "Searching for \"%s\""
+-msgstr "·j´MÜ \"%s\""
++msgstr "·j´M \"%s\""
+ 
+ #: ex_docmd.c:8345
+ #, c-format
+@@ -3006,7 +3006,7 @@
+ "--- Menus ---"
+ msgstr ""
+ "\n"
+-"--- ¥\\¯àªí ---"
++"--- ¥\¯àªí ---"
+ 
+ #: menu.c:1820
+ #~ msgid "Tear off this menu"
+@@ -3019,7 +3019,7 @@
+ #: menu.c:1905
+ #, c-format
+ msgid "Menu not found: %s"
+-msgstr "[¥\\¯àªí] §ä¤£¨ì %s"
++msgstr "[¥\¯àªí] §ä¤£¨ì %s"
+ 
+ #: menu.c:1974
+ #, c-format
+@@ -4504,7 +4504,7 @@
+ 
+ #: version.c:702
+ msgid "  Features included (+) or not (-):\n"
+-msgstr " ¥Ø«e¥i¨Ï¥Î(+) »P¤£¥i¨Ï¥Î(-)ªº¥\\¯à¦Cªí:\n"
++msgstr " ¥Ø«e¥i¨Ï¥Î(+) »P¤£¥i¨Ï¥Î(-)ªº¥\¯à¦Cªí:\n"
+ 
+ #: version.c:714
+ msgid "   system vimrc file: \""
+@@ -4880,7 +4880,7 @@
+ 
+ #: globals.h:973
+ msgid "Not allowed in sandbox"
+-msgstr "sandbox ¸Ì¤£¤¹³\\"
++msgstr "sandbox ¸Ì¤£¤¹³\"
+ 
+ #: globals.h:975
+ msgid "Invalid scroll size"

@@ -1,0 +1,11 @@
+--- vim60/src/spell/config.h.orig	Mon Feb 18 21:18:22 2002
++++ vim60/src/spell/config.h	Mon Feb 18 21:19:42 2002
+@@ -496,7 +496,7 @@
+ #define MASKTYPE	long
+ #endif
+ #ifndef MASKTYPE_WIDTH
+-#define MASKTYPE_WIDTH	32
++#define MASKTYPE_WIDTH	64
+ #endif
+ #if MASKBITS < MASKTYPE_WIDTH
+ #undef MASKBITS

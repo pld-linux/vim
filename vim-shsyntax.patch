@@ -1,0 +1,12 @@
+--- vim60/runtime/syntax/sh.vim.orig	Thu Sep 20 17:29:50 2001
++++ vim60/runtime/syntax/sh.vim	Sun Sep 30 14:08:21 2001
+@@ -120,6 +120,9 @@
+   syn region shRepeat   matchgroup=shStatement   start="\<while\>" end="\<in\>" end="\<do\>"me=e-2	contains=ALLBUT,@shLoopList
+   syn region shRepeat   matchgroup=shStatement   start="\<until\>" end="\<in\>" end="\<do\>"me=e-2	contains=ALLBUT,@shLoopList
+   syn region shCaseEsac matchgroup=shConditional start="\<select\>" matchgroup=shConditional end="\<in\>" end="\<do\>" contains=ALLBUT,@shLoopList
++else
++  syn region shRepeat   matchgroup=shStatement   start="\<while\>" end="\<do\>"me=e-2 contains=ALLBUT,@shLoopList
++  syn region shRepeat   matchgroup=shStatement   start="\<until\>" end="\<do\>"me=e-2 contains=ALLBUT,@shLoopList
+ endif
+ 
+ " case

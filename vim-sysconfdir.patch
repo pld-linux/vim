@@ -1,34 +1,16 @@
-diff -Nru vim-5.7/src/feature.h vim-5.7.new/src/feature.h
---- vim-5.7/src/feature.h	Wed Mar 29 16:10:34 2000
-+++ vim-5.7.new/src/feature.h	Mon Sep 11 05:38:06 2000
-@@ -607,12 +607,12 @@
- /*
-  * SYS_VIMRC_FILE	Name of the system-wide .vimrc file.
+diff -urN vim60z.org/src/os_unix.h vim60z/src/os_unix.h
+--- vim60z.org/src/os_unix.h	Mon Apr  2 19:38:15 2001
++++ vim60z/src/os_unix.h	Mon Apr  2 19:41:59 2001
+@@ -183,10 +183,10 @@
+  * Unix system-dependent file names
   */
--/* #define SYS_VIMRC_FILE	"/etc/vimrc" */
-+#define SYS_VIMRC_FILE	"/etc/vim/vimrc"
- 
- /*
-  * SYS_GVIMRC_FILE	Name of the system-wide .gvimrc file.
-  */
--/* #define SYS_GVIMRC_FILE	"/etc/gvimrc" */
-+#define SYS_GVIMRC_FILE	"/etc/vim/gvimrc"
- 
- /*
-  * VIM_HLP		Name of the help file.
-@@ -632,13 +632,13 @@
- /*
-  * SYS_MENU_FILE	Name of the default menu.vim file.
-  */
--/* # define SYS_MENU_FILE	"$VIMRUNTIME/menu.vim" */
-+/* # define SYS_MENU_FILE	"$VIMRUNTIME/menu.vim" */
- 
- /*
-  * SYS_OPTWIN_FILE	Name of the default optwin.vim file.
-  */
- #ifndef SYS_OPTWIN_FILE
--# define SYS_OPTWIN_FILE	"$VIMRUNTIME/optwin.vim"
-+# define SYS_OPTWIN_FILE	"$VIMRUNTIME/optwin.vim"
+ #ifndef SYS_VIMRC_FILE
+-# define SYS_VIMRC_FILE "$VIM/vimrc"
++# define SYS_VIMRC_FILE "/etc/vim/vimrc"
  #endif
- 
- /*
+ #ifndef SYS_GVIMRC_FILE
+-# define SYS_GVIMRC_FILE "$VIM/gvimrc"
++# define SYS_GVIMRC_FILE "/etc/vim/gvimrc"
+ #endif
+ #ifndef DFLT_HELPFILE
+ # define DFLT_HELPFILE	"$VIMRUNTIME/doc/help.txt"

@@ -1,0 +1,15 @@
+--- vim61/src/configure.in.orig	Wed Oct  2 10:41:30 2002
++++ vim61/src/configure.in	Wed Oct  2 10:54:27 2002
+@@ -1352,9 +1352,9 @@
+ dnl Checks for header files.
+ AC_CHECK_HEADER(elf.h, HAS_ELF=1)
+ dnl AC_CHECK_HEADER(dwarf.h, SVR4=1)
+-if test "$HAS_ELF" = 1; then
+-  AC_CHECK_LIB(elf, main)
+-fi
++dnl if test "$HAS_ELF" = 1; then
++dnl  AC_CHECK_LIB(elf, main)
++dnl fi
+ 
+ AC_HEADER_DIRENT
+ 

@@ -1,13 +1,11 @@
-diff -ur vim-5.3.orig/src/screen.c vim-5.3/src/screen.c
---- vim-5.3.orig/src/screen.c	Sun Aug 23 15:49:32 1998
-+++ vim-5.3/src/screen.c	Thu Sep  3 03:45:06 1998
-@@ -1085,7 +1085,8 @@
- 	}
+--- vim60z/src/screen.c~	Tue Apr 10 15:47:51 2001
++++ vim60z/src/screen.c	Tue Apr 10 15:49:00 2001
+@@ -2328,7 +2328,7 @@
+ 
  #ifndef MSDOS
  	/* Check if the character under the cursor should not be inverted */
 -	if (!highlight_match && lnum == curwin->w_cursor.lnum && wp == curwin
-+	if (!highlight_match && *T_VI == NUL
-+		&& lnum == curwin->w_cursor.lnum && wp == curwin
- # ifdef USE_GUI
++	if (!highlight_match && *T_VI == NUL && lnum == curwin->w_cursor.lnum && wp == curwin
+ # ifdef FEAT_GUI
  		&& !gui.in_use
  # endif
