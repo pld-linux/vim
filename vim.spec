@@ -12,8 +12,8 @@ Summary(fr):	editeur VIM : VIsual editor iMproved
 Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
-Version:	6.0z
-Release:	4
+Version:	6.0ae
+Release:	1
 Epoch:		1
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -32,8 +32,7 @@ Patch1:		%{name}-visual.patch
 Patch2:		%{name}-lilo.patch
 Patch3:		%{name}-phphighlight.patch
 Patch4:		%{name}-paths.patch
-Patch5:		%{name}-speed_t.patch
-Patch6:		%{name}-gettext.patch
+#Patch5:		%{name}-speed_t.patch
 URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
 %{!?bcond_off_static:BuildRequires:	ncurses-static}
@@ -197,8 +196,7 @@ biblioteki GNOME.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
-%patch5 -p1
-%patch6 -p1
+#%patch5 -p1
 
 %build
 cd src
