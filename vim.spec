@@ -12,7 +12,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.1
-%define		_patchlevel	408
+%define		_patchlevel	413
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -39,7 +39,7 @@ Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
-Patch0:		http://regexxer.sourceforge.net/vim/vim-gtk2-20030316.patch.gz
+Patch0:		http://regexxer.sourceforge.net/vim/vim-gtk2-20030321.patch.gz
 Patch1:		%{name}-sysconfdir.patch
 Patch2:		%{name}-visual.patch
 Patch3:		%{name}-paths.patch
@@ -50,6 +50,7 @@ Patch7:		%{name}-vimrc.patch
 Patch8:		%{name}-no_libelf.patch
 Patch9:		%{name}-egrep.patch
 Patch10:		%{name}-ocaml.patch
+Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030322.patch
 Patch100:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.1-100.gz
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.101-200.gz
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.201-300.gz
@@ -451,6 +452,7 @@ for f in patches/6.1.* ; do
 done
 
 %patch0 -p0
+%{?_with_bonobo:%patch99 -p1}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -483,6 +485,7 @@ LDFLAGS="%{rpmldflags} -static"
 	--disable-cscope \
 	--disable-gpm \
 	--disable-multibyte \
+	%{?_with_bonobo:--disable-bonobo} \
 	--with-features=small \
 	--with-tlib=tinfo \
 	--disable-nls
@@ -503,6 +506,7 @@ LDFLAGS="%{rpmldflags}"
 	%{?_with_ruby:--enable-rubyinterp} \
 	%{!?_with_tcl:--disable-tclinterp} \
 	%{?_with_tcl:--enable-tclinterp} \
+	%{?_with_bonobo:--disable-bonobo} \
 	--enable-cscope \
 	--enable-gpm \
 	--with-features=huge \
@@ -526,6 +530,7 @@ mv -f vim vim.ncurses
 	%{?_with_ruby:--enable-rubyinterp} \
 	%{!?_with_tcl:--disable-tclinterp} \
 	%{?_with_tcl:--enable-tclinterp} \
+	%{?_with_bonobo:--disable-bonobo} \
 	--enable-cscope \
 	--enable-gpm \
 	--with-features=huge \
@@ -550,6 +555,7 @@ mv -f vim vim.ispell
 	%{?_with_ruby:--enable-rubyinterp} \
 	%{!?_with_tcl:--disable-tclinterp} \
 	%{?_with_tcl:--enable-tclinterp} \
+	%{?_with_bonobo:--disable-bonobo} \
 	--enable-cscope \
 	--enable-fontset \
 	--disable-gpm \
@@ -573,6 +579,7 @@ mv -f vim gvim.athena
 	%{?_with_ruby:--enable-rubyinterp} \
 	%{!?_with_tcl:--disable-tclinterp} \
 	%{?_with_tcl:--enable-tclinterp} \
+	%{?_with_bonobo:--disable-bonobo} \
 	--enable-multibyte \
 	--enable-cscope \
 	--enable-fontset \
@@ -598,6 +605,7 @@ mv -f vim gvim.motif
 	%{?_with_ruby:--enable-rubyinterp} \
 	%{!?_with_tcl:--disable-tclinterp} \
 	%{?_with_tcl:--enable-tclinterp} \
+	%{?_with_bonobo:--disable-bonobo} \
 	--disable-gpm \
 	--enable-cscope \
 	%{?_with_gtk1:--enable-fontset} \
@@ -611,6 +619,7 @@ mv -f vim gvim.gtk
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome%{!?_with_gtk1:2} \
+	%{?_with_bonobo:--enable-bonobo} \
 	%{!?_with_gtk1:--enable-gtk2-check} \
 	%{!?_with_gtk1:--enable-gnome-check} \
 	--with-x \
