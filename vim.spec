@@ -25,7 +25,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	6.1
-Release:	2
+Release:	3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -189,6 +189,8 @@ Summary(pl):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
 Provides:	vi
 Obsoletes:	vi
+Obsoletes:	elvis-static
+Obsoletes:	nvi
 Obsoletes:	vim-minimal
 
 %description static
