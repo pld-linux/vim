@@ -27,7 +27,7 @@ Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
 #Version:	%{_ver}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -48,11 +48,13 @@ Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
 Patch3:		%{name}-ispell.patch
 Patch4:		%{name}-ispell-axp.patch
-Patch5:		%{name}-ac25x.patch
-Patch6:		%{name}-vimrc.patch
-Patch7:		%{name}-no_libelf.patch
-Patch8:		%{name}-egrep.patch
+#Patch5:		%{name}-ac25x.patch
+Patch5:		%{name}-vimrc.patch
+Patch6:		%{name}-no_libelf.patch
+Patch7:		%{name}-egrep.patch
+Patch8:		%{name}-spec-fix.patch
 Patch9:		%{name}-specsyntax.patch
+Patch10:	%{name}-specsyntax-pld.patch
 Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030322.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.002
@@ -486,11 +488,12 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %ifarch alpha
 %patch4 -p1
 %endif
-#%patch5 -p1
+%patch5 -p1
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 %build
 cd src
