@@ -1,0 +1,385 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.124 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.124 (after 6.2.121)(extra)
+Problem:    Mac: Recursive use of M4FLAGS causes problems.  When running Vim
+	    directly it can't find the runtime files.  (Emily Jackson)
+	    Using GNU constructs causes warnings with other make programs.
+	    (Ronald Schild)
+Solution:   Use another name for the M4FLAGS variable.
+	    Don't remove "Vim.app" from the path.
+	    Update the explanation for compiling on the Mac. (Eric Kow)
+	    Don't use $(shell ) and $(addprefix ).
+Files:	    src/INSTALLmac.txt, src/Makefile, src/misc1.c
+
+
+*** ../vim-6.2.123/src/INSTALLmac.txt	Sun May  4 22:40:16 2003
+--- src/INSTALLmac.txt	Wed Oct 15 16:50:16 2003
+***************
+*** 3,69 ****
+  This file contains instructions for compiling Vim. If you already have an
+  executable version of Vim, you don't need this.
+  
+! -----------------------------------------------------------
+  
+! Here's a summary of how Vim can be compiled under MacOS, depending on
+! the version of MacOS, the compiler and the interface.
+  
+! A. Supported compiler and environement
+  
+!  1. CodeWarrior (pre-MacOS X)
+!  2. MPW (pre-MacOS X)
+!  3. Project Builder (MacOS X)
+!  4. Unix Compiler (MacOS X)
+  
+! B. Supported user interface
+  
+!  1. Original MacOS Toolbox   [Compile with A.1 and A.2]
+!  2. Carbon MacOS	     [Compile with A.3]
+!  3. X (Athena, GTK, Motif).  [Compile with A.4]
+!  4. Plain Text		     [Compile with A.4]
+  
+!  NOTE: Sorry, Cocoa is not expected to be supported for now.
+! 
+! C. Supported "OS" style
+! 
+!  1. MacOS		     [Compile as B.1]
+!  2. MacOS X		     [Compile as B.2]
+!  3. BSD Unix		     [Compile as B.2, B.3 and B.4]
+! 
+! -----------------------------------------------------------
+! 
+! Special Consideration
+! ---------------------
+! 
+! B.2: Compiling for Carbon
+! 
+!  Currently the Carbon version can only be compiled properly under MacOS X.
+!  The binary created in that way does'nt work under previous version.
+! 
+! B.3: Compiling for X
+! 
+!  You need to first install XFree86 and XDarwin.
+!  Please visit http://www.XDarwin.org
+! 
+! C.1: The MacOS version
+! 
+!  Both ':' and '/' supported as path separator.
+! 
+! C.2: The MacOS X version
+! 
+!  Only '/' supported as path separator.
+! 
+! C.3: The BSD Unix version
+  
+   Only '/' supported as path separator.
+-  Shell command can be invoked (:!)
+  
+! -----------------------------------------------------------
+  
+! A.1: Compiling with CodeWarior
+  
+   1. Expand the resource file:
+!    - ../src/os_mac.rsr.hqx (to produce ../src/gui_mac.rsrc)
+  
+   2. Expand the project file:
+     - ../src/os_mac.sit.hqx (to produce ../src/vim.mcp)
+--- 3,74 ----
+  This file contains instructions for compiling Vim. If you already have an
+  executable version of Vim, you don't need this.
+  
+! An alternate way of building that Benji Fisher uses can be found here:
+  
+! 	http://macvim.swdev.org/OSX/#Developers
+  
+! ----------------------------------------------------------------------------
+! Summary
+! ----------------------------------------------------------------------------
+  
+! 1 MacOS X
+!  1.1. Carbon interface
+!  1.2. X (Athena, GTK, Motif) or plain text.  
+  
+! 2 MacOS Classic
+!  2.1. CodeWarrior 
+!  2.2. MPW 
+  
+! NOTE: The Carbon version can only be compiled properly under
+!       MacOS X.
+  
+! ----------------------------------------------------------------------------
+! 1 MacOS X
+! ----------------------------------------------------------------------------
+  
++ 1.0 Considerations
++  
+   Only '/' supported as path separator.
+  
+! 1.1 Carbon interface (default)
+!  
+!  You can compile vim with the standard Unix routine:
+!    cd ..
+!    ./configure
+!    make; make install
+!   
+!  This will create a working Vim.app application bundle in the src
+!  directory.  You can move this bundle (the Vim.app directory) anywhere
+!  you want, for example, /Applications.
+!  
+! 1.2 X-Windows or Plain Text 
+!  
+!  If you do not want the Carbon interface, you must explicitly tell
+!  configure to use a different GUI.
+!  
+!   cd ..
+!   ./configure --enable-gui=gtk2
+!   make; make install
+!  
+!  NOTE: The following GUI options are supported: 
+!         no (for text), motif, athena, nextaw 
+!         gtk, gtk2, gnome, gnome2,
+!   
+!  NOTE: You need to first install XFree86 and XDarwin.
+!        Please visit http://www.XDarwin.org
+!  
+! ----------------------------------------------------------------------------
+! MacOS 9 
+! ----------------------------------------------------------------------------
+  
+! Both ':' and '/' supported as path separator.
+  
++ 2.1: Compiling with CodeWarior
++  
+   1. Expand the resource file:
+!    open ../src/os_mac.rsr.hqx to produce ../src/gui_mac.rsrc:
+!    % cd vim62/src
+!    % open -a StuffIt\ Expander os_mac.rsr.hqx
+  
+   2. Expand the project file:
+     - ../src/os_mac.sit.hqx (to produce ../src/vim.mcp)
+***************
+*** 81,88 ****
+  
+   5. Compile
+  
+! 
+! A.2: Compiling with MPW.
+  
+   0. You will need a recent version of the MPW and the Universal Interfaces.
+      You can get both at:
+--- 86,92 ----
+  
+   5. Compile
+  
+! 2.2: Compiling with MPW.
+  
+   0. You will need a recent version of the MPW and the Universal Interfaces.
+      You can get both at:
+***************
+*** 94,100 ****
+      Apple.
+  
+   1. Expand the resource file:
+!    - ../src/os_mac.rsr.hqx (to produce ../src/gui_mac.rsrc)
+  
+   3. Double click on os_make.make, the MPW will now open in the correct
+      folder and load the CreateVimMake script. Change to the Worksheet
+--- 98,106 ----
+      Apple.
+  
+   1. Expand the resource file:
+!    open ../src/os_mac.rsr.hqx to produce ../src/gui_mac.rsrc:
+!    % cd vim62/src
+!    % open -a StuffIt\ Expander os_mac.rsr.hqx
+  
+   3. Double click on os_make.make, the MPW will now open in the correct
+      folder and load the CreateVimMake script. Change to the Worksheet
+***************
+*** 103,135 ****
+  
+   4. Select "Build" from the menu (or type command-B). Type the program name
+      into the dialog box.
+- 
+- A.3: Compiling with Project Builder.
+- 
+-  1. Expand the resource file:
+-    - ../src/os_mac.rsr.hqx (to produce ../src/gui_mac.rsrc)
+- 
+-  2. Open ../src/os_mac.pbproject with Project Builder
+- 
+-  3. Choose between C.2 and C.3
+- 
+-     In Target ... CCFLAGS use:
+- 
+-      -DMACOS_X
+-        if you want a normal MacOS X version (using os_mac.c)
+- 
+-      -DMACOS_X_UNIX
+-        if you want to use shell commands (using os_unix.c)
+-        NOTE: some functionality may be missing
+- 
+-  4. Hammer the build button in ;)
+- 
+- 
+- A.4: Using the unix compiler.
+- 
+-  From Terminal.app you can use "configure" and "make". Refer to INSTALL for
+-  full detail. The MacOS port is not involve here.
+- 
+  
+  ------------------------------------------------------
+  
+--- 109,114 ----
+*** ../vim-6.2.123/src/Makefile	Tue Oct 14 10:36:08 2003
+--- src/Makefile	Thu Oct 16 12:56:23 2003
+***************
+*** 2307,2315 ****
+  ### MacOS X installation
+  ###
+  ### This creates a runnable Vim.app in the src directory
+- ###
+- ### TODO: install the runtime files in Vim.app instead of
+- ### requiring that they be in a seperate directory.
+  
+  REZ    = /Developer/Tools/Rez
+  RESMRG = /Developer/Tools/ResMerger
+--- 2307,2312 ----
+***************
+*** 2320,2338 ****
+  VERSION = 6.2
+  
+  ### Common flags
+! M4FLAGS = $(M4FLAGS) -DAPP_EXE=$(VIMNAME) -DAPP_NAME=$(VIMNAME) \
+  		-DAPP_VER=$(VERSION) -DICON_APP=$(ICON_APP)
+  
+  ### Icons
+! # You can download Douglas Stebila's icons:
+! #	http://homepage.mac.com/dstebila/code/vim/
+! # TODO: Honestly, why don't we just go ahead and do this? OS 9?
+! # If you place those *.icns at src directory, it will be detected by this
+! # Makefile automatically, and used for Vim.
+! ICON_APP = $(shell if [ -e app.icns ] ; then echo app.icns ; else echo gui_mac.icns ; fi)
+! ICON_DOC = $(shell if [ -e doc.icns ] ; then echo doc.icns ; else echo ; fi)
+! ICON_DOCTXT = $(shell if [ -e doc-txt.icns ] ; then echo doc-txt.icns ; else echo ; fi)
+! ICONS = $(addprefix $(RESDIR)/, $(ICON_APP) $(ICON_DOC) $(ICON_DOCTXT))
+  
+  install_macosx: bundle-dir bundle-executable bundle-info bundle-resource \
+  	bundle-language
+--- 2317,2335 ----
+  VERSION = 6.2
+  
+  ### Common flags
+! M4FLAGSX = $(M4FLAGS) -DAPP_EXE=$(VIMNAME) -DAPP_NAME=$(VIMNAME) \
+  		-DAPP_VER=$(VERSION) -DICON_APP=$(ICON_APP)
+  
+  ### Icons
+! ICON_APP = gui_mac.icns
+! ICONS = $(RESDIR)/$(ICON_APP)
+! 
+! # If you uncomment the following lines the *.icns in the src directory will be
+! # detected by this Makefile automatically, and used for Vim.
+! #ICON_APP = $(shell if [ -e app.icns ] ; then echo app.icns ; else echo gui_mac.icns ; fi)
+! #ICON_DOC = $(shell if [ -e doc.icns ] ; then echo doc.icns ; else echo ; fi)
+! #ICON_DOCTXT = $(shell if [ -e doc-txt.icns ] ; then echo doc-txt.icns ; else echo ; fi)
+! #ICONS = $(addprefix $(RESDIR)/, $(ICON_APP) $(ICON_DOC) $(ICON_DOCTXT))
+  
+  install_macosx: bundle-dir bundle-executable bundle-info bundle-resource \
+  	bundle-language
+***************
+*** 2347,2353 ****
+  	@echo "Creating PkgInfo"
+  	@echo -n "APPLVIM!" > $(APPDIR)/Contents/PkgInfo
+  	@echo "Creating Info.plist"
+! 	m4 $(M4FLAGS) infplist.xml > $(APPDIR)/Contents/Info.plist
+  
+  bundle-resource: bundle-dir bundle-icons bundle-rsrc
+  
+--- 2344,2350 ----
+  	@echo "Creating PkgInfo"
+  	@echo -n "APPLVIM!" > $(APPDIR)/Contents/PkgInfo
+  	@echo "Creating Info.plist"
+! 	m4 $(M4FLAGSX) infplist.xml > $(APPDIR)/Contents/Info.plist
+  
+  bundle-resource: bundle-dir bundle-icons bundle-rsrc
+  
+*** ../vim-6.2.123/src/misc1.c	Sat Sep 27 19:48:50 2003
+--- src/misc1.c	Wed Oct 15 11:30:39 2003
+***************
+*** 20,28 ****
+  
+  static char_u *vim_version_dir __ARGS((char_u *vimdir));
+  static char_u *remove_tail __ARGS((char_u *p, char_u *pend, char_u *name));
+- #if defined(USE_EXE_NAME) && defined(MACOS_X)
+- static char_u *remove_tail_with_ext __ARGS((char_u *p, char_u *pend, char_u *name));
+- #endif
+  static int get_indent_str __ARGS((char_u *ptr, int ts));
+  static int copy_indent __ARGS((int size, char_u	*src));
+  
+--- 20,25 ----
+***************
+*** 3398,3404 ****
+  	    if (p == exe_name)
+  	    {
+  		pend = remove_tail(p, pend, (char_u *)"Contents/MacOS");
+- 		pend = remove_tail_with_ext(p, pend, (char_u *)".app");
+  		pend = remove_tail(p, pend, (char_u *)"build");
+  	    }
+  # endif
+--- 3399,3404 ----
+***************
+*** 3544,3573 ****
+  	return newend;
+      return pend;
+  }
+- 
+- #if defined(USE_EXE_NAME) && defined(MACOS_X)
+- /*
+-  * If the string between "p" and "pend" ends in "???.ext/", return "pend" minus
+-  * the length of "???.ext/".  Otherwise return "pend".
+-  */
+-     static char_u *
+- remove_tail_with_ext(p, pend, ext)
+-     char_u	*p;
+-     char_u	*pend;
+-     char_u	*ext;
+- {
+-     int		len = (int)STRLEN(ext) + 1;
+-     char_u	*newend = pend - len;
+- 
+-     if (newend >= p
+- 	    && fnamencmp(newend, ext, len - 1) == 0)
+- 	for (;newend != p && !vim_ispathsep(*(newend -1)); newend--);
+- 
+-     if (newend == p || vim_ispathsep(*(newend - 1)))
+- 	return newend;
+-     return pend;
+- }
+- #endif
+  
+  /*
+   * Call expand_env() and store the result in an allocated string.
+--- 3544,3549 ----
+*** ../vim-6.2.123/src/version.c	Fri Oct 17 12:01:21 2003
+--- src/version.c	Fri Oct 17 12:05:52 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     124,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+10E. You start counting in hex.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

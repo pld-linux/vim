@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.113
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.113
+Problem:    Using ":startinsert" after "$" works like "a" instead of "i".
+	    (Ajit Thakkar)
+Solution:   Reset "w_curswant" for ":startinsert" and reset o_eol in edit().
+Files:	    src/edit.c, src/ex_docmd.c
+
+
+*** ../vim-6.2.112/src/edit.c	Sat Sep 27 19:36:46 2003
+--- src/edit.c	Fri Oct  3 20:55:21 2003
+***************
+*** 420,429 ****
+  	}
+      }
+      else
+-     {
+  	arrow_used = FALSE;
+! 	o_eol = FALSE;
+!     }
+  
+      /* we are in insert mode now, don't need to start it anymore */
+      need_start_insertmode = FALSE;
+--- 420,427 ----
+  	}
+      }
+      else
+  	arrow_used = FALSE;
+!     o_eol = FALSE;
+  
+      /* we are in insert mode now, don't need to start it anymore */
+      need_start_insertmode = FALSE;
+*** ../vim-6.2.112/src/ex_docmd.c	Fri Sep 12 20:20:20 2003
+--- src/ex_docmd.c	Fri Oct  3 20:56:40 2003
+***************
+*** 7520,7526 ****
+--- 7520,7529 ----
+  	restart_edit = 'a';
+      }
+      else
++     {
+  	restart_edit = 'i';
++ 	curwin->w_curswant = 0;	    /* avoid MAXCOL */
++     }
+  }
+  
+  /*
+*** ../vim-6.2.112/src/version.c	Sun Oct 12 17:06:26 2003
+--- src/version.c	Sun Oct 12 17:08:03 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     113,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+177. You log off of your system because it's time to go to work.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

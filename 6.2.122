@@ -1,0 +1,132 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.122
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.122 (after 6.2.119)
+Problem:    Not all shells can expand [^~].  File missing.  (Guopeng Wen)
+Solution:   Use a simpler pattern.  Add the Aap recipe for the maze program
+	    and a clean version of the source code.
+Files:	    Makefile, runtime/macros/maze/Makefile,
+	    runtime/macros/maze/README.txt, runtime/macros/maze/main.aap,
+	    runtime/macros/maze/mazeclean.c
+
+
+*** ../vim-6.2.121/Makefile	Mon Oct 13 22:30:33 2003
+--- Makefile	Fri Oct 17 11:53:21 2003
+***************
+*** 614,619 ****
+--- 614,620 ----
+  		runtime/macros/maze/maze_5.78 \
+  		runtime/macros/maze/maze_mac \
+  		runtime/macros/maze/mazeansi.c \
++ 		runtime/macros/maze/mazeclean.c \
+  		runtime/macros/maze/poster \
+  		runtime/macros/shellmenu.vim \
+  		runtime/macros/swapmous.vim \
+***************
+*** 630,636 ****
+  		runtime/indoff.vim \
+  		runtime/termcap \
+  		runtime/tools/README.txt \
+! 		runtime/tools/[a-z]*[^~] \
+  		runtime/tutor/README.txt \
+  		runtime/tutor/tutor \
+  		runtime/tutor/tutor.vim \
+--- 631,637 ----
+  		runtime/indoff.vim \
+  		runtime/termcap \
+  		runtime/tools/README.txt \
+! 		runtime/tools/[a-z]*[a-z0-9] \
+  		runtime/tutor/README.txt \
+  		runtime/tutor/tutor \
+  		runtime/tutor/tutor.vim \
+*** ../vim-6.2.121/runtime/macros/maze/Makefile	Mon Jan 17 15:30:12 2000
+--- runtime/macros/maze/Makefile	Sun Oct 12 12:25:01 2003
+***************
+*** 1,6 ****
+  # It's simple...
+- # NOTE: The maze program doesn't work on x86 systems, might be a byte order
+- # problem.
+  
+  maze: mazeansi.c
+  	cc -o maze mazeansi.c
+--- 1,7 ----
+  # It's simple...
+  
+  maze: mazeansi.c
+  	cc -o maze mazeansi.c
++ 
++ mazeclean: mazeclean.c
++ 	cc -o mazeclean mazeclean.c
+*** ../vim-6.2.121/runtime/macros/maze/README.txt	Sun May  4 23:09:37 2003
+--- runtime/macros/maze/README.txt	Sun Oct 12 12:24:33 2003
+***************
+*** 5,11 ****
+  
+  The "-u maze.mac" loads the maze macros and skips loading your .vimrc, which
+  may contain settings and mappings that get in the way.
+- The maze program doesn't work on x86 systems, probably a byte order problem.
+  
+  
+  The original README:
+--- 5,10 ----
+*** ../vim-6.2.121/runtime/macros/maze/main.aap	Fri Oct 17 11:54:07 2003
+--- runtime/macros/maze/main.aap	Sun Oct 12 12:21:33 2003
+***************
+*** 0 ****
+--- 1,4 ----
++ # Aap recipe to build the maze program
++ :program maze : mazeansi.c
++ 
++ :program mazeclean : mazeclean.c
+*** ../vim-6.2.121/runtime/macros/maze/mazeclean.c	Fri Oct 17 11:54:07 2003
+--- runtime/macros/maze/mazeclean.c	Sun Oct 12 12:23:20 2003
+***************
+*** 0 ****
+--- 1,22 ----
++ /*
++  * Cleaned-up version of the maze program.
++  * Doesn't look as nice, but should work with all C compilers.
++  * Sascha Wilde, October 2003
++  */
++ #include <stdio.h>
++ #include <stdlib.h>
++ 
++ char *M, A, Z, E = 40, line[80], T[3];
++ int
++ main (C)
++ {
++   for (M = line + E, *line = A = scanf ("%d", &C); --E; line[E] = M[E] = E)
++     printf ("._");
++   for (; (A -= Z = !Z) || (printf ("\n|"), A = 39, C--); Z || printf (T))
++     T[Z] = Z[A - (E = A[line - Z]) && !C
++ 	     & A == M[A]
++ 	     | RAND_MAX/3 < rand ()
++ 	     || !C & !Z ? line[M[E] = M[A]] = E, line[M[A] = A - Z] =
++ 	     A, "_." : " |"];
++   return 0;
++ }
+*** ../vim-6.2.121/src/version.c	Tue Oct 14 10:36:08 2003
+--- src/version.c	Fri Oct 17 11:53:28 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     122,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+269. You receive an e-mail from the wife of a deceased president, offering
+     to send you twenty million dollar, and you are not even surprised.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

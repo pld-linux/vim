@@ -1,0 +1,95 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.114
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.114
+Problem:    When stdout is piped through "tee", the size of the screen may not
+	    be correct.
+Solution:   Use stdin instead of stdout for ioctl() when stdin is a tty and
+	    stdout isn't.
+Files:	    src/os_unix.c
+
+
+*** ../vim-6.2.113/src/os_unix.c	Sat Sep 27 19:36:47 2003
+--- src/os_unix.c	Wed Oct  1 15:33:39 2003
+***************
+*** 3042,3055 ****
+      /*
+       * 1. try using an ioctl. It is the most accurate method.
+       *
+!      * Try using TIOCGWINSZ first, some systems that have it also define TIOCGSIZE
+!      * but don't have a struct ttysize.
+       */
+  # ifdef TIOCGWINSZ
+      {
+  	struct winsize	ws;
+  
+! 	if (ioctl(1, TIOCGWINSZ, &ws) == 0)
+  	{
+  	    columns = ws.ws_col;
+  	    rows = ws.ws_row;
+--- 3042,3059 ----
+      /*
+       * 1. try using an ioctl. It is the most accurate method.
+       *
+!      * Try using TIOCGWINSZ first, some systems that have it also define
+!      * TIOCGSIZE but don't have a struct ttysize.
+       */
+  # ifdef TIOCGWINSZ
+      {
+  	struct winsize	ws;
++ 	int fd = 1;
+  
+! 	/* When stdout is not a tty, use stdin for the ioctl(). */
+! 	if (!isatty(fd) && isatty(read_cmd_fd))
+! 	    fd = read_cmd_fd;
+! 	if (ioctl(fd, TIOCGWINSZ, &ws) == 0)
+  	{
+  	    columns = ws.ws_col;
+  	    rows = ws.ws_row;
+***************
+*** 3059,3066 ****
+  #  ifdef TIOCGSIZE
+      {
+  	struct ttysize	ts;
+  
+! 	if (ioctl(1, TIOCGSIZE, &ts) == 0)
+  	{
+  	    columns = ts.ts_cols;
+  	    rows = ts.ts_lines;
+--- 3063,3074 ----
+  #  ifdef TIOCGSIZE
+      {
+  	struct ttysize	ts;
++ 	int fd = 1;
+  
+! 	/* When stdout is not a tty, use stdin for the ioctl(). */
+! 	if (!isatty(fd) && isatty(read_cmd_fd))
+! 	    fd = read_cmd_fd;
+! 	if (ioctl(fd, TIOCGSIZE, &ts) == 0)
+  	{
+  	    columns = ts.ts_cols;
+  	    rows = ts.ts_lines;
+*** ../vim-6.2.113/src/version.c	Sun Oct 12 17:10:47 2003
+--- src/version.c	Sun Oct 12 17:12:48 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     114,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+178. You look for an icon to double-click to open your bedroom window.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

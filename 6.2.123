@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.123
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.123 (after 6.2.118)
+Problem:    Running configure fails. (Tony Leneis)
+Solution:   Change "==" to "=" for a test.
+Files:	    src/auto/configure, src/configure.in
+
+
+*** ../vim-6.2.122/src/auto/configure	Mon Oct 13 22:21:06 2003
+--- src/auto/configure	Thu Oct 16 10:32:05 2003
+***************
+*** 1571,1577 ****
+      fi
+    fi
+  
+!   if test "x$MACOSX" == "xyes"; then 
+          dir=/System/Library/Perl
+      darwindir=$dir/darwin
+      if test -d $darwindir; then 
+--- 1571,1577 ----
+      fi
+    fi
+  
+!   if test "x$MACOSX" = "xyes"; then 
+          dir=/System/Library/Perl
+      darwindir=$dir/darwin
+      if test -d $darwindir; then 
+*** ../vim-6.2.122/src/configure.in	Mon Oct 13 22:21:06 2003
+--- src/configure.in	Thu Oct 16 10:31:42 2003
+***************
+*** 321,327 ****
+      fi
+    fi
+  
+!   if test "x$MACOSX" == "xyes"; then 
+      dnl Mac OS X 10.2 or 10.3
+      dir=/System/Library/Perl
+      darwindir=$dir/darwin
+--- 321,327 ----
+      fi
+    fi
+  
+!   if test "x$MACOSX" = "xyes"; then 
+      dnl Mac OS X 10.2 or 10.3
+      dir=/System/Library/Perl
+      darwindir=$dir/darwin
+*** ../vim-6.2.122/src/version.c	Fri Oct 17 11:55:09 2003
+--- src/version.c	Fri Oct 17 11:59:58 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     123,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+269. You wonder how you can make your dustbin produce Sesame Street's
+     Oscar's the Garbage Monster song when you empty it.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
