@@ -26,7 +26,7 @@ Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
 #Version:	%{_ver}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -182,7 +182,7 @@ BuildRequires:	ncurses-devel
 %{?with_tcl:BuildRequires:	tcl-devel}
 %{!?with_static:Provides:	%{name}-static = %{epoch}:%{version}-%{release}}
 Requires:	%{name}-rt = %{epoch}:%{version}
-%{!?witho_static:Obsoletes:	%{name}-static}
+%{!?with_static:Obsoletes:	%{name}-static}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -877,10 +877,14 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	DESTDIR=$RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
 
-%{?with_static:install src/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim}
-%{!?with_static:install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi}
-%{?with_static:install src/vim.static	$RPM_BUILD_ROOT/bin/vi}
-%{!?with_static:ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim}
+%if %{with static}
+install src/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim
+install src/vim.static	$RPM_BUILD_ROOT/bin/vi
+%else
+install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi
+ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
+%endif
+
 install src/vim.ispell				$RPM_BUILD_ROOT%{_bindir}/vim.ispell
 install src/xxd/xxd				$RPM_BUILD_ROOT%{_bindir}/xxd
 install src/vimtutor				$RPM_BUILD_ROOT%{_bindir}/vimtutor
@@ -906,20 +910,26 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
-%{?with_athena:install src/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena}
-%{?with_motif: install src/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif}
-%{?with_gtk:   install src/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk}
-%{?with_gnome: install src/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome}
-
-%{?with_gtk:ln -sf gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim}
-%{?with_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/rgvim}
-%{?with_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/gview}
-%{?with_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/rgview}
-
-%{?with_athena:install %{SOURCE10}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
-%{?with_motif: install %{SOURCE11}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
-%{?with_gtk:   install %{SOURCE12}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
-%{?with_gnome: install %{SOURCE13}		$RPM_BUILD_ROOT%{_desktopdir}}
+%if %{with athena}
+install src/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena
+install %{SOURCE10}	$RPM_BUILD_ROOT%{_applnkdir}/Editors
+%endif
+%if %{with motif}
+install src/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif
+install %{SOURCE11}	$RPM_BUILD_ROOT%{_applnkdir}/Editors
+%endif
+%if %{with gnome}
+install src/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome
+install %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
+%endif
+%if %{with gtk}
+install src/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
+ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_bindir}/gvim
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
+install %{SOURCE12}	$RPM_BUILD_ROOT%{_applnkdir}/Editors
+%endif
 
 # Bonobo
 %if %{with bonobo}
