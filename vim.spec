@@ -1,18 +1,21 @@
 Summary:	Vim built with ncurses
 Summary(pl):	Vim korzystaj±cy z bibliotek ncurses
 Name:		vim
-Version:	5.4f
+Version:	5.4h
 Release:	1
-#######		ftp://ftp.nl.vim.org/pub/vim/unreleased/unix
-Source0:	%{name}-%{version}-src.tar.gz
-Source1:	%{name}-%{version}-rt.tar.gz
-#######		ftp://ftp.nl.vim.org/pub/vim/unreleased/extra
-Source2:	%{name}-%{version}-extra.tar.gz
+Source0:        ftp://ftp.nl.vim.org/pub/vim/unreleased/unix/%{name}-%{version}-src.tar.gz
+Source1:        ftp://ftp.nl.vim.org/pub/vim/unreleased/unix/%{name}-%{version}-rt.tar.gz
+Source2:        ftp://ftp.nl.vim.org/pub/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
 Source3:	gvim.wmconfig
 Copyright:	GPL
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 URL:		http://www.vim.org/
+BuildPrereq:	ncurses-static
+BuildPrereq:	lesstif-devel
+BuildPrereq:	gtk+-devel
+BuildPrereq:	glib-devel
+BuildPrereq:	gpm-devel
 Requires:       ncurses >= 4.2-12
 Obsoletes:	vim-gtk
 Obsoletes:	vim-lesstif
@@ -107,6 +110,8 @@ Summary(pl):	Vim pod X-Window korzystaj±cy z bibliotek gtk
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 Requires:       ncurses >= 4.2-12
+Requires:	gtk+ >= 1.2.0
+Requires:	glib >= 1.2.0
 Obsoletes:	vim-athena
 Obsoletes:	vim-lesstif
 Obsoletes:      vim-ncurses
@@ -126,7 +131,7 @@ z wykorzystaniem gtk.
 %build
 cd src
 
-LDFLAGS=-static CFLAGS=-O \
+LDFLAGS="-static -s" CFLAGS="-O" \
 ./configure \
 	--disable-gui \
 	--without-x \
@@ -145,7 +150,7 @@ mv vim vim.static
 mv xxd/xxd xxd.static
 
 make distclean
-LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
+LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
 ./configure \
 	--enable-max-features \
 	--disable-gui \
@@ -161,7 +166,7 @@ make vim
 mv vim vim.ncurses
 
 make distclean
-LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
+LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
 ./configure \
         --enable-max-features \
 	--enable-gui=athena \
@@ -177,7 +182,7 @@ make vim
 mv vim vim.athena
 
 make distclean
-LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
+LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
 ./configure \
         --enable-max-features \
 	--enable-gui=motif \
@@ -193,7 +198,7 @@ make vim
 mv vim vim.lesstif
 
 make distclean
-LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
+LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
 ./configure \
         --enable-max-features \
 	--enable-gui=gtk \
@@ -351,6 +356,10 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 %config %verify(not size mtime md5) /usr/share/vim/vimrc
 
 %changelog
+* Wed Apr 21 1999 Artur Frysiak <wiget@pld.org.pl>
+  [5.4h-1]
+- build on rpm 3  
+
 * Fri Mar 12 1999 Artur Frysiak <wiget@pld.org.pl>
   [5.4f-1]
 - removed  vim-hold_gui_events.patch and vim-CMDLINE_COMPL.patch
