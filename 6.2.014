@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.014
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.014 (after 6.2.012)
+Problem:    XSMP doesn't work when using poll().
+Solution:   Use xsmp_idx instead of gpm_idx. (Neil Bird)
+Files:	    src/os_unix.c
+
+
+*** ../vim-6.2.013/src/os_unix.c	Wed Jun  4 21:11:37 2003
+--- src/os_unix.c	Thu Jun  5 12:21:28 2003
+***************
+*** 4108,4114 ****
+  	}
+  # endif
+  # ifdef USE_XSMP
+! 	if (xsmp_idx >= 0 && (fds[gpm_idx].revents & (POLLIN | POLLHUP)))
+  	{
+  	    if (fds[xsmp_idx].revents & POLLIN)
+  		xsmp_handle_requests();
+--- 4108,4114 ----
+  	}
+  # endif
+  # ifdef USE_XSMP
+! 	if (xsmp_idx >= 0 && (fds[xsmp_idx].revents & (POLLIN | POLLHUP)))
+  	{
+  	    if (fds[xsmp_idx].revents & POLLIN)
+  		xsmp_handle_requests();
+*** ../vim-6.2.013/src/version.c	Wed Jun  4 23:29:45 2003
+--- src/version.c	Thu Jun  5 12:23:42 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     14,
+  /**/
+
+-- 
+From "know your smileys":
+ %	Bike accident (a bit far-fetched, I suppose)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Help AIDS victims, buy at Amazon -- http://ICCF.nl/click1.html ///

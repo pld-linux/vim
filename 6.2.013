@@ -1,0 +1,50 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.013 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.013 (extra)
+Problem:    Win32: The registry key for uninstalling GvimExt still uses "6.1".
+Solution:   Change the version number to "6.2". (Ajit Thakkar)
+Files:	    src/GvimExt/GvimExt.reg
+
+
+*** ../vim-6.2.012/src/GvimExt/GvimExt.reg	Sun Jun  1 12:20:39 2003
+--- src/GvimExt/GvimExt.reg	Wed Jun  4 23:24:10 2003
+***************
+*** 15,20 ****
+  [HKEY_LOCAL_MACHINE\Software\Vim\Gvim]
+     "path"="gvim.exe"
+  
+! [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\Vim 6.1]
+     "DisplayName"="Vim 6.2: Edit with Vim popup menu entry"
+     "UninstallString"="uninstal.exe"
+--- 15,20 ----
+  [HKEY_LOCAL_MACHINE\Software\Vim\Gvim]
+     "path"="gvim.exe"
+  
+! [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\Vim 6.2]
+     "DisplayName"="Vim 6.2: Edit with Vim popup menu entry"
+     "UninstallString"="uninstal.exe"
+*** ../vim-6.2.012/src/version.c	Wed Jun  4 21:11:37 2003
+--- src/version.c	Wed Jun  4 23:25:53 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     13,
+  /**/
+
+-- 
+From "know your smileys":
+ :-D	Big smile
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Help AIDS victims, buy at Amazon -- http://ICCF.nl/click1.html ///
