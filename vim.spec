@@ -14,7 +14,7 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	6.0
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -27,13 +27,13 @@ Source3:	g%{name}-athena.desktop
 Source4:	g%{name}-motif.desktop
 Source5:	g%{name}-gtk.desktop
 Source6:	g%{name}-gnome.desktop
+#packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.0.*
+Source7:	%{name}-patches-6.0.101.tar.bz2
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-phphighlight.patch
 Patch3:		%{name}-paths.patch
 Patch4:		%{name}-ispell.patch
-Patch5:		%{name}-pl.patch
-Patch6:		%{name}-shsyntax.patch
 URL:		http://www.vim.org/
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -213,14 +213,20 @@ Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 bibliotek GNOME.
 
 %prep
-%setup -q -b1 -n %{name}%(echo %{version} | sed -e "s#\.##g")
+%setup -q -b1 -a7 -n %{name}%(echo %{version} | sed -e "s#\.##g")
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %{?_with_ispell:%patch4 -p1}
-%patch5 -p1
-%patch6 -p1
+
+# these patches are to "extra" package which we don't need (nor use)
+rm -f patches/6.0.{027,048,053,064,070,073,093}
+# apply the rest of officual patches
+for f in patches/6.0.* ; do
+	echo "Applying official patch `basename $f` ..."
+	patch -s -p0 < $f
+done
 
 %build
 cd src
@@ -439,7 +445,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ko) %{_datadir}/vim/v*/lang/ko
 %lang(pl) %{_datadir}/vim/v*/lang/pl
 %lang(sk) %{_datadir}/vim/v*/lang/sk
-%lang(tr) %{_datadir}/vim/v*/lang/tr
+#%lang(tr) %{_datadir}/vim/v*/lang/tr
 %lang(uk) %{_datadir}/vim/v*/lang/uk
 %lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW
