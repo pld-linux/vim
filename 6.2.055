@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.055
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.055
+Problem:    Using col('.') from CTRL-O in Insert mode does not return the
+	    correct value for multi-byte characters.
+Solution:   Correct the cursor position when it is necessary, move to the
+	    first byte of a multi-byte character. (Yasuhiro Matsumoto)
+Files:	    src/edit.c
+
+
+*** ../vim-6.2.054/src/edit.c	Thu May 29 20:35:21 2003
+--- src/edit.c	Thu Jul 10 00:58:03 2003
+***************
+*** 6007,6013 ****
+--- 6007,6020 ----
+  	}
+  	else
+  #endif
++ 	{
+  	    --curwin->w_cursor.col;
++ #ifdef FEAT_MBYTE
++ 	    /* Correct cursor for multi-byte character. */
++ 	    if (has_mbyte)
++ 		mb_adjust_cursor();
++ #endif
++ 	}
+      }
+  
+  #ifdef USE_IM_CONTROL
+*** ../vim-6.2.054/src/version.c	Sun Jul 27 15:01:56 2003
+--- src/version.c	Sun Jul 27 15:04:46 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     55,
+  /**/
+
+-- 
+Never under any circumstances take a sleeping pill
+and a laxative on the same night.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

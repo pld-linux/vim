@@ -1,0 +1,67 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.042 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.042 (extra)
+Problem:    Cygwin: gcc 3.2 has an optimizer problem, sometimes causing a
+	    crash.
+Solution:   Add -fno-strength-reduce to the compiler arguments. (Dan Sharp)
+Files:	    src/Make_cyg.mak
+
+
+*** ../vim-6.2.041/src/Make_cyg.mak	Tue May 27 21:15:20 2003
+--- src/Make_cyg.mak	Sun Jun 22 17:56:03 2003
+***************
+*** 4,10 ****
+  # This compiles Vim as a Windows application.  If you want Vim to run as a
+  # Cygwin application use the Makefile (just like on Unix).
+  #
+! # Last updated by Dan Sharp.  Last Change: 2003 May 07
+  #
+  # GUI		no or yes: set to yes if you want the GUI version (yes)
+  # PERL		define to path to Perl dir to get Perl support (not defined)
+--- 4,10 ----
+  # This compiles Vim as a Windows application.  If you want Vim to run as a
+  # Cygwin application use the Makefile (just like on Unix).
+  #
+! # Last updated by Dan Sharp.  Last Change: 2003 Jun 22
+  #
+  # GUI		no or yes: set to yes if you want the GUI version (yes)
+  # PERL		define to path to Perl dir to get Perl support (not defined)
+***************
+*** 235,240 ****
+--- 235,245 ----
+  OPTFLAG = -O2
+  endif
+  endif
++ 
++ # A bug in the GCC <= 3.2 optimizer can cause a crash.  The
++ # following option removes the problem optimization.
++ OPTFLAG += -fno-strength-reduce
++ 
+  INCLUDES += -s
+  
+  endif
+*** ../vim-6.2.041/src/version.c	Sat Jul 26 21:25:27 2003
+--- src/version.c	Sun Jul 27 13:39:12 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     42,
+  /**/
+
+-- 
+"Beware of bugs in the above code; I have only proved
+it correct, not tried it." -- Donald Knuth
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

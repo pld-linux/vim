@@ -1,0 +1,63 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.056 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.056 (extra)
+Problem:    Building with Sniff++ doesn't work.
+Solution:   Use the multi-threaded libc when needed. (Holger Ditting)
+Files:	    src/Make_mvc.mak
+
+
+*** ../vim-6.2.055/src/Make_mvc.mak	Sat May 24 21:43:54 2003
+--- src/Make_mvc.mak	Thu Jul  3 20:12:00 2003
+***************
+*** 251,261 ****
+  RCFLAGS = $(rcflags) $(rcvars) -DNDEBUG
+  PDB = /Fd$(OUTDIR)/
+  LINK_PDB = /PDB:$(OUTDIR)/
+! ! ifndef USE_MSVCRT
+! LIBC = libc.lib
+! ! else
+  CFLAGS = $(CFLAGS) -MD
+  LIBC = msvcrt.lib
+  ! endif
+  !else  # DEBUG
+  VIM = vimd
+--- 251,263 ----
+  RCFLAGS = $(rcflags) $(rcvars) -DNDEBUG
+  PDB = /Fd$(OUTDIR)/
+  LINK_PDB = /PDB:$(OUTDIR)/
+! ! ifdef USE_MSVCRT
+  CFLAGS = $(CFLAGS) -MD
+  LIBC = msvcrt.lib
++ ! elseif defined(MULTITHREADED)
++ LIBC = libcmt.lib
++ ! else
++ LIBC = libc.lib
+  ! endif
+  !else  # DEBUG
+  VIM = vimd
+*** ../vim-6.2.055/src/version.c	Sun Jul 27 15:06:48 2003
+--- src/version.c	Sun Jul 27 15:08:38 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     56,
+  /**/
+
+-- 
+If you had to identify, in one word, the reason why the
+human race has not achieved, and never will achieve, its
+full potential, that word would be "meetings."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,103 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.030
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.030
+Problem:    Mac: Warning for not being able to use precompiled header files.
+Solution:   Don't redefine select.  Use -no-cpp-precomp for compiling, so that
+	    function prototypes are still found.
+Files:	    src/os_unix.c, src/osdef.sh
+
+
+*** ../vim-6.2.029/src/os_unix.c	Thu Jul 24 21:29:03 2003
+--- src/os_unix.c	Thu Jul 24 21:25:57 2003
+***************
+*** 22,29 ****
+   * Some systems have a prototype for select() that has (int *) instead of
+   * (fd_set *), which is wrong. This define removes that prototype. We define
+   * our own prototype below.
+   */
+! #define select select_declared_wrong
+  
+  #include "vim.h"
+  
+--- 22,33 ----
+   * Some systems have a prototype for select() that has (int *) instead of
+   * (fd_set *), which is wrong. This define removes that prototype. We define
+   * our own prototype below.
++  * Don't use it for the Mac, it causes a warning for precompiled headers.
++  * TODO: use a configure check for precompiled headers?
+   */
+! #ifndef __APPLE__
+! # define select select_declared_wrong
+! #endif
+  
+  #include "vim.h"
+  
+*** ../vim-6.2.029/src/osdef.sh	Tue Apr  9 20:28:37 2002
+--- src/osdef.sh	Thu Jul 24 22:00:06 2003
+***************
+*** 21,27 ****
+  rm -f core* *.core
+  
+  cat << EOF > osdef0.c
+! #define select select_declared_wrong
+  #define tgetstr tgetstr_declared_wrong
+  #include "auto/config.h"
+  #include "os_unix.h"	/* bring in most header files, more follow below */
+--- 21,29 ----
+  rm -f core* *.core
+  
+  cat << EOF > osdef0.c
+! #ifndef __APPLE__
+! # define select select_declared_wrong
+! #endif
+  #define tgetstr tgetstr_declared_wrong
+  #include "auto/config.h"
+  #include "os_unix.h"	/* bring in most header files, more follow below */
+***************
+*** 41,47 ****
+  #endif
+  EOF
+  
+! $CC -I. -I$srcdir -E osdef0.c >osdef0.cc
+  
+  # insert a space in front of each line, so that a function name at the
+  # start of the line is matched with "[)*, 	]\1[ 	(]"
+--- 43,53 ----
+  #endif
+  EOF
+  
+! # Mac uses precompiled headers, but we need real headers here.
+! case `uname` in
+!     Darwin)	$CC -I. -I$srcdir -E -no-cpp-precomp osdef0.c >osdef0.cc;;
+!     *)		$CC -I. -I$srcdir -E osdef0.c >osdef0.cc;;
+! esac
+  
+  # insert a space in front of each line, so that a function name at the
+  # start of the line is matched with "[)*, 	]\1[ 	(]"
+*** ../vim-6.2.029/src/version.c	Thu Jul 24 21:52:31 2003
+--- src/version.c	Thu Jul 24 22:05:54 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     30,
+  /**/
+
+-- 
+SUPERIMPOSE "England AD 787".  After a few more seconds we hear hoofbeats in
+the distance.  They come slowly closer.  Then out of the mist comes KING
+ARTHUR followed by a SERVANT who is banging two half coconuts together.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

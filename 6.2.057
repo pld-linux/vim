@@ -1,0 +1,141 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.057 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.057 (extra)
+Problem:    Mac: With -DMACOS_X putenv() is defined twice, it is in a system
+	    library.  Get a warning for redefining OK.  Unused variables in
+	    os_mac.c
+Solution:   Define HAVE_PUTENV.  Undefine OK after including curses.h.
+	    Remove declarations for unused variables.
+Files:	    src/os_mac.c, src/os_mac.h, src/vim.h
+
+
+*** ../vim-6.2.056/src/os_mac.c	Sat Apr 19 15:11:45 2003
+--- src/os_mac.c	Mon Jul 28 14:37:52 2003
+***************
+*** 490,499 ****
+       */
+  #ifdef USE_UNIXFILENAME
+      OSStatus	status;
+-     OSErr	error;
+      FSRef	refFile;
+-     FSRef	refParent;
+-     FSSpec	specFile;
+      UInt32	pathSize = STRLEN(name) + 1;
+      char_u	*path;
+      Boolean	isDirectory;
+--- 490,496 ----
+***************
+*** 502,518 ****
+      if (path == NULL)
+  	return;
+  
+!     status=FSPathMakeRef ( (UInt8 *) name, &refFile, &isDirectory);
+      if (status)
+  	return;
+  
+!     status=FSRefMakePath (&refFile, (UInt8 *) path, pathSize);
+      if (status)
+  	return;
+  
+      /* Paranoid: Update the name if only the casing differ.*/
+      if (STRICMP(name, path) == 0)
+! 	STRCPY (name, path);
+  #endif
+  }
+  static char_u	*oldtitle = (char_u *) "gVim";
+--- 499,515 ----
+      if (path == NULL)
+  	return;
+  
+!     status = FSPathMakeRef((UInt8 *)name, &refFile, &isDirectory);
+      if (status)
+  	return;
+  
+!     status = FSRefMakePath(&refFile, (UInt8 *)path, pathSize);
+      if (status)
+  	return;
+  
+      /* Paranoid: Update the name if only the casing differ.*/
+      if (STRICMP(name, path) == 0)
+! 	STRCPY(name, path);
+  #endif
+  }
+  static char_u	*oldtitle = (char_u *) "gVim";
+***************
+*** 1150,1156 ****
+      exit(r);
+  }
+  
+- static int curr_tmode = TMODE_COOK;     /* contains current terminal mode */
+  
+      void
+  mch_settmode(tmode)
+--- 1147,1152 ----
+*** ../vim-6.2.056/src/os_mac.h	Fri Jul 25 22:30:18 2003
+--- src/os_mac.h	Mon Jul 28 14:24:31 2003
+***************
+*** 71,76 ****
+--- 71,78 ----
+  # include <curses.h>
+  # undef reg
+  # undef ospeed
++ /* OK defined to 0 in MacOS X 10.2 curses!  Remove it, we define it to be 1. */
++ # undef OK
+  #endif
+  #include <signal.h>
+  #include <errno.h>
+***************
+*** 375,380 ****
+--- 377,386 ----
+  # define HAVE_SETENV
+  # define HAVE_RENAME
+  # define mch_chdir(s) chdir(s)
++ #endif
++ 
++ #ifdef MACOS_X
++ # define HAVE_PUTENV
+  #endif
+  
+  /* A Mac constant causing big problem to syntax highlighting */
+*** ../vim-6.2.056/src/vim.h	Thu May 29 11:32:47 2003
+--- src/vim.h	Mon Jul 28 14:23:47 2003
+***************
+*** 529,538 ****
+  /* return values for functions */
+  #if !(defined(OK) && (OK == 1))
+  /* OK already defined to 1 in MacOS X curses, skip this */
+- /* OK defined to 0 in MacOS X 10.2 curses!  redefine it */
+- # if defined(OK) && defined(MACOS_X_UNIX)
+- #  undef OK
+- # endif
+  # define OK			1
+  #endif
+  #define FAIL			0
+--- 529,534 ----
+*** ../vim-6.2.056/src/version.c	Sun Jul 27 15:09:30 2003
+--- src/version.c	Mon Jul 28 14:36:14 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     57,
+  /**/
+
+-- 
+An easy way to determine if you have enough teamwork to be doomed is simply to
+measure how long it takes from the time you decide to go to lunch together
+until the time you actually eat.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.028
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.028
+Problem:    Cscope connection may kill Vim process and others.
+Solution:   Check for pid being larger than one. (Khorev Sergey)
+Files:	    src/if_cscope.c
+
+
+*** ../vim-6.2.027/src/if_cscope.c	Mon Jun 30 22:27:28 2003
+--- src/if_cscope.c	Tue Jul 22 09:46:01 2003
+***************
+*** 2114,2123 ****
+  
+      /*
+       * Safety check: If the PID would be zero here, the entire X session would
+!      * be killed...
+       */
+  #if defined(UNIX)
+!     if (csinfo[i].pid != 0)
+      {
+  	kill(csinfo[i].pid, SIGTERM);
+  	(void)waitpid(csinfo[i].pid, &pstat, 0);
+--- 2114,2123 ----
+  
+      /*
+       * Safety check: If the PID would be zero here, the entire X session would
+!      * be killed.  -1 and 1 are dangerous as well.
+       */
+  #if defined(UNIX)
+!     if (csinfo[i].pid > 1)
+      {
+  	kill(csinfo[i].pid, SIGTERM);
+  	(void)waitpid(csinfo[i].pid, &pstat, 0);
+*** ../vim-6.2.027/src/version.c	Thu Jul 24 21:48:47 2003
+--- src/version.c	Thu Jul 24 21:49:15 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     28,
+  /**/
+
+-- 
+It might look like I'm doing nothing, but at the cellular level
+I'm really quite busy.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

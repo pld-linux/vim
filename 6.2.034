@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.034
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.034
+Problem:    Mac: Compiler warning for redefining DEFAULT_TERM.
+Solution:   Fix double definition of DEFAULT_TERM.
+Files:	    src/term.c
+
+
+*** ../vim-6.2.033/src/term.c	Sun May 18 18:00:33 2003
+--- src/term.c	Fri Jul 25 21:29:50 2003
+***************
+*** 1394,1400 ****
+  # define DEFAULT_TERM	(char_u *)"beos-ansi"
+  #endif
+  
+! #if defined(MACOS)
+  # define DEFAULT_TERM	(char_u *)"dumb"
+  #endif
+  
+--- 1394,1400 ----
+  # define DEFAULT_TERM	(char_u *)"beos-ansi"
+  #endif
+  
+! #ifndef DEFAULT_TERM
+  # define DEFAULT_TERM	(char_u *)"dumb"
+  #endif
+  
+*** ../vim-6.2.033/src/version.c	Fri Jul 25 22:22:15 2003
+--- src/version.c	Fri Jul 25 22:24:06 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     34,
+  /**/
+
+-- 
+THEOREM: VI is perfect.
+PROOF: VI in roman numerals is 6.  The natural numbers < 6 which divide 6 are
+1, 2, and 3. 1+2+3 = 6.  So 6 is a perfect number.  Therefore, VI is perfect.
+QED
+						    -- Arthur Tateishi
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

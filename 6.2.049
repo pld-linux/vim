@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.049
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.049
+Problem:    Using a "-range=" argument with ":command" doesn't work and
+	    doesn't generate an error message.
+Solution:   Generate an error message.
+Files:	    src/ex_docmd.c
+
+
+*** ../vim-6.2.048/src/ex_docmd.c	Sat May 24 19:31:40 2003
+--- src/ex_docmd.c	Sat Jul 26 18:36:31 2003
+***************
+*** 4620,4626 ****
+  		*def = getdigits(&p);
+  		*argt |= (ZEROR | NOTADR);
+  
+! 		if (p != val + vallen)
+  		{
+  invalid_count:
+  		    EMSG(_("E178: Invalid default value for count"));
+--- 4622,4628 ----
+  		*def = getdigits(&p);
+  		*argt |= (ZEROR | NOTADR);
+  
+! 		if (p != val + vallen || vallen == 0)
+  		{
+  invalid_count:
+  		    EMSG(_("E178: Invalid default value for count"));
+*** ../vim-6.2.048/src/version.c	Sun Jul 27 14:32:03 2003
+--- src/version.c	Sun Jul 27 14:34:07 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     49,
+  /**/
+
+-- 
+FIRST VILLAGER: We have found a witch.  May we burn her?
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.026
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.026
+Problem:    Warning for utimes() argument.
+Solution:   Add a typecast.
+Files:	    src/fileio.c
+
+
+*** ../vim-6.2.025/src/fileio.c	Thu May 29 21:00:53 2003
+--- src/fileio.c	Tue Jun 24 15:34:24 2003
+***************
+*** 2318,2324 ****
+  #   ifdef NeXT
+      (void)utimes((char *)fname, tvp);
+  #   else
+!     (void)utimes((char *)fname, &tvp);
+  #   endif
+  #  endif
+  # endif
+--- 2318,2324 ----
+  #   ifdef NeXT
+      (void)utimes((char *)fname, tvp);
+  #   else
+!     (void)utimes((char *)fname, (const struct timeval *)&tvp);
+  #   endif
+  #  endif
+  # endif
+*** ../vim-6.2.025/src/version.c	Thu Jul 24 21:29:03 2003
+--- src/version.c	Thu Jul 24 21:43:40 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     26,
+  /**/
+
+-- 
+Mynd you, m00se bites Kan be pretty nasti ...
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.037
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.037
+Problem:    Win32: converting an encoding name to a codepage could result in
+	    an arbitrary number.
+Solution:   make encname2codepage() return zero if the encoding name doesn't
+	    contain a codepage number.
+Files:	    src/mbyte.c
+
+
+*** ../vim-6.2.036/src/mbyte.c	Tue Jun  3 21:09:52 2003
+--- src/mbyte.c	Sun Jun 22 17:05:41 2003
+***************
+*** 2773,2778 ****
+--- 2773,2780 ----
+  	cp = atoi(p + 2);
+      else if ((idx = enc_canon_search(p)) >= 0)
+  	cp = enc_canon_table[idx].codepage;
++     else
++ 	return 0;
+      if (IsValidCodePage(cp))
+  	return cp;
+      return 0;
+*** ../vim-6.2.036/src/version.c	Fri Jul 25 22:30:18 2003
+--- src/version.c	Fri Jul 25 22:33:47 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     37,
+  /**/
+
+-- 
+CART DRIVER: Bring out your dead!
+   There are legs stick out of windows and doors.  Two MEN are fighting in the
+   mud - covered from head to foot in it.  Another MAN is on his hands in
+   knees shovelling mud into his mouth.  We just catch sight of a MAN falling
+   into a well.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,68 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.024 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.024 (extra)
+Problem:    Win32: Compiler warnings for typecasts.
+Solution:   Use DWORD instead of WORD. (Walter Briscoe)
+Files:	    src/gui_w32.c
+
+
+*** ../vim-6.2.023/src/gui_w32.c	Thu Jul 24 21:01:35 2003
+--- src/gui_w32.c	Sun Jun 22 17:13:50 2003
+***************
+*** 2097,2103 ****
+  	if (menu->children == NULL)
+  	    menuID = (WORD)(menu->id);
+  	else
+! 	    menuID = (WORD)((WORD)(menu->submenu_id) | (WORD)0x8000);
+  	menuHandle = GetDlgItem(menu->parent->tearoff_handle, menuID);
+  	if (menuHandle)
+  	    EnableWindow(menuHandle, !grey);
+--- 2097,2103 ----
+  	if (menu->children == NULL)
+  	    menuID = (WORD)(menu->id);
+  	else
+! 	    menuID = (WORD)((DWORD)(menu->submenu_id) | (DWORD)0x8000);
+  	menuHandle = GetDlgItem(menu->parent->tearoff_handle, menuID);
+  	if (menuHandle)
+  	    EnableWindow(menuHandle, !grey);
+***************
+*** 3107,3113 ****
+  	else
+  	{
+  	    len += (int)STRLEN(TEAROFF_SUBMENU_LABEL);
+! 	    menuID = (WORD)((WORD)(menu->submenu_id) | (WORD)0x8000);
+  	}
+  
+  	/* Allocate menu label and fill it in */
+--- 3108,3114 ----
+  	else
+  	{
+  	    len += (int)STRLEN(TEAROFF_SUBMENU_LABEL);
+! 	    menuID = (WORD)((DWORD)(menu->submenu_id) | (DWORD)0x8000);
+  	}
+  
+  	/* Allocate menu label and fill it in */
+*** ../vim-6.2.023/src/version.c	Thu Jul 24 21:05:22 2003
+--- src/version.c	Thu Jul 24 21:07:09 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     24,
+  /**/
+
+-- 
+To keep milk from turning sour: Keep it in the cow.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
