@@ -1,0 +1,45 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.015
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.015
+Problem:    The string that winrestcmd() returns may end in garbage.
+Solution:   NUL-terminate the string. (Walter Briscoe)
+Files:	    src/eval.c
+
+
+*** ../vim-6.3.014/src/eval.c	Wed Jun  9 14:56:28 2004
+--- src/eval.c	Wed Jul 28 11:53:18 2004
+***************
+*** 7560,7565 ****
+--- 7560,7566 ----
+  # endif
+  	++winnr;
+      }
++     ga_append(&ga, NUL);
+  
+      retvar->var_val.var_string = ga.ga_data;
+  #else
+*** ../vim-6.3.014/src/version.c	Tue Jul 20 17:12:01 2004
+--- src/version.c	Wed Jul 28 11:54:13 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     15,
+  /**/
+
+-- 
+From "know your smileys":
+ :.-(	Crying
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

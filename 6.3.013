@@ -1,0 +1,403 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.013
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.013
+Problem:    Crash when editing a command line and typing CTRL-R = to evaluate
+	    a function that uses "normal :cmd". (Hari Krishna Dara)
+Solution:   Save and restore the command line when evaluating an expression
+	    for CTRL-R =.
+Files:	    src/ex_getln.c, src/ops.c, src/proto/ex_getln.pro,
+	    src/proto/ops.pro
+
+
+*** ../vim-6.3.012/src/ex_getln.c	Fri Jul  2 22:00:36 2004
+--- src/ex_getln.c	Fri Jul  9 21:44:08 2004
+***************
+*** 80,85 ****
+--- 80,86 ----
+  static void	alloc_cmdbuff __ARGS((int len));
+  static int	realloc_cmdbuff __ARGS((int len));
+  static void	draw_cmdline __ARGS((int start, int len));
++ static int	cmdline_paste __ARGS((int regname, int literally));
+  #if defined(FEAT_XIM) && defined(FEAT_GUI_GTK)
+  static void	redrawcmd_preedit __ARGS((void));
+  #endif
+***************
+*** 2534,2539 ****
+--- 2535,2636 ----
+      if (redraw)
+  	msg_check();
+      return retval;
++ }
++ 
++ /*
++  * paste a yank register into the command line.
++  * used by CTRL-R command in command-line mode
++  * insert_reg() can't be used here, because special characters from the
++  * register contents will be interpreted as commands.
++  *
++  * return FAIL for failure, OK otherwise
++  */
++     static int
++ cmdline_paste(regname, literally)
++     int regname;
++     int literally;	/* Insert text literally instead of "as typed" */
++ {
++     long		i;
++     char_u		*arg;
++     int			allocated;
++     struct cmdline_info	save_ccline;
++ 
++     /* check for valid regname; also accept special characters for CTRL-R in
++      * the command line */
++     if (regname != Ctrl_F && regname != Ctrl_P && regname != Ctrl_W
++ 	    && regname != Ctrl_A && !valid_yank_reg(regname, FALSE))
++ 	return FAIL;
++ 
++     /* A register containing CTRL-R can cause an endless loop.  Allow using
++      * CTRL-C to break the loop. */
++     line_breakcheck();
++     if (got_int)
++ 	return FAIL;
++ 
++ #ifdef FEAT_CLIPBOARD
++     regname = may_get_selection(regname);
++ #endif
++ 
++     /* Need to save and restore ccline, because obtaining the "=" register may
++      * execute "normal :cmd" and overwrite it. */
++     save_ccline = ccline;
++     ccline.cmdbuff = NULL;
++     ccline.cmdprompt = NULL;
++     i = get_spec_reg(regname, &arg, &allocated, TRUE);
++     ccline = save_ccline;
++ 
++     if (i)
++     {
++ 	/* Got the value of a special register in "arg". */
++ 	if (arg == NULL)
++ 	    return FAIL;
++ 	cmdline_paste_str(arg, literally);
++ 	if (allocated)
++ 	    vim_free(arg);
++ 	return OK;
++     }
++ 
++     return cmdline_paste_reg(regname, literally);
++ }
++ 
++ /*
++  * Put a string on the command line.
++  * When "literally" is TRUE, insert literally.
++  * When "literally" is FALSE, insert as typed, but don't leave the command
++  * line.
++  */
++     void
++ cmdline_paste_str(s, literally)
++     char_u	*s;
++     int		literally;
++ {
++     int		c, cv;
++ 
++     if (literally)
++ 	put_on_cmdline(s, -1, TRUE);
++     else
++ 	while (*s != NUL)
++ 	{
++ 	    cv = *s;
++ 	    if (cv == Ctrl_V && s[1])
++ 		++s;
++ #ifdef FEAT_MBYTE
++ 	    if (has_mbyte)
++ 	    {
++ 		c = mb_ptr2char(s);
++ 		s += mb_char2len(c);
++ 	    }
++ 	    else
++ #endif
++ 		c = *s++;
++ 	    if (cv == Ctrl_V || c == ESC || c == Ctrl_C || c == CAR || c == NL
++ #ifdef UNIX
++ 		    || c == intr_char
++ #endif
++ 		    || (c == Ctrl_BSL && *s == Ctrl_N))
++ 		stuffcharReadbuff(Ctrl_V);
++ 	    stuffcharReadbuff(c);
++ 	}
+  }
+  
+  #ifdef FEAT_WILDMENU
+*** ../vim-6.3.012/src/ops.c	Wed Jun  9 14:56:26 2004
+--- src/ops.c	Fri Jul  9 22:13:54 2004
+***************
+*** 94,106 ****
+  static void shift_block __ARGS((oparg_T *oap, int amount));
+  static void block_insert __ARGS((oparg_T *oap, char_u *s, int b_insert, struct block_def*bdp));
+  #endif
+- static void	get_yank_register __ARGS((int regname, int writing));
+  static int	stuff_yank __ARGS((int, char_u *));
+  static void	put_reedit_in_typebuf __ARGS((void));
+  static int	put_in_typebuf __ARGS((char_u *s, int colon));
+  static void	stuffescaped __ARGS((char_u *arg, int literally));
+- static int	get_spec_reg __ARGS((int regname, char_u **argp, int *allocated, int errmsg));
+- static void	cmdline_paste_str __ARGS((char_u *s, int literally));
+  #ifdef FEAT_MBYTE
+  static void	mb_adjust_opend __ARGS((oparg_T *oap));
+  #endif
+--- 94,103 ----
+***************
+*** 820,826 ****
+   * If regname is 0 and writing, use register 0
+   * If regname is 0 and reading, use previous register
+   */
+!     static void
+  get_yank_register(regname, writing)
+      int	    regname;
+      int	    writing;
+--- 817,823 ----
+   * If regname is 0 and writing, use register 0
+   * If regname is 0 and reading, use previous register
+   */
+!     void
+  get_yank_register(regname, writing)
+      int	    regname;
+      int	    writing;
+***************
+*** 864,877 ****
+  	y_previous = y_current;
+  }
+  
+! #ifdef FEAT_CLIPBOARD
+  /*
+   * When "regname" is a clipboard register, obtain the selection.  If it's not
+   * available return zero, otherwise return "regname".
+   */
+! static int may_get_selection __ARGS((int regname));
+! 
+!     static int
+  may_get_selection(regname)
+      int regname;
+  {
+--- 861,872 ----
+  	y_previous = y_current;
+  }
+  
+! #if defined(FEAT_CLIPBOARD) || defined(PROTO)
+  /*
+   * When "regname" is a clipboard register, obtain the selection.  If it's not
+   * available return zero, otherwise return "regname".
+   */
+!     int
+  may_get_selection(regname)
+      int regname;
+  {
+***************
+*** 1347,1353 ****
+  /*
+   * If "regname" is a special register, return a pointer to its value.
+   */
+!     static int
+  get_spec_reg(regname, argp, allocated, errmsg)
+      int		regname;
+      char_u	**argp;
+--- 1342,1348 ----
+  /*
+   * If "regname" is a special register, return a pointer to its value.
+   */
+!     int
+  get_spec_reg(regname, argp, allocated, errmsg)
+      int		regname;
+      char_u	**argp;
+***************
+*** 1426,1472 ****
+  }
+  
+  /*
+!  * paste a yank register into the command line.
+!  * used by CTRL-R command in command-line mode
+   * insert_reg() can't be used here, because special characters from the
+   * register contents will be interpreted as commands.
+   *
+   * return FAIL for failure, OK otherwise
+   */
+      int
+! cmdline_paste(regname, literally)
+      int regname;
+      int literally;	/* Insert text literally instead of "as typed" */
+  {
+      long	i;
+-     char_u	*arg;
+-     int		allocated;
+- 
+-     /* check for valid regname; also accept special characters for CTRL-R in
+-      * the command line */
+-     if (regname != Ctrl_F && regname != Ctrl_P && regname != Ctrl_W
+- 	    && regname != Ctrl_A && !valid_yank_reg(regname, FALSE))
+- 	return FAIL;
+- 
+-     /* A register containing CTRL-R can cause an endless loop.  Allow using
+-      * CTRL-C to break the loop. */
+-     line_breakcheck();
+-     if (got_int)
+- 	return FAIL;
+- 
+- #ifdef FEAT_CLIPBOARD
+-     regname = may_get_selection(regname);
+- #endif
+- 
+-     if (get_spec_reg(regname, &arg, &allocated, TRUE))
+-     {
+- 	if (arg == NULL)
+- 	    return FAIL;
+- 	cmdline_paste_str(arg, literally);
+- 	if (allocated)
+- 	    vim_free(arg);
+- 	return OK;
+-     }
+  
+      get_yank_register(regname, FALSE);
+      if (y_current->y_array == NULL)
+--- 1421,1440 ----
+  }
+  
+  /*
+!  * Paste a yank register into the command line.
+!  * Only for non-special registers.
+!  * Used by CTRL-R command in command-line mode
+   * insert_reg() can't be used here, because special characters from the
+   * register contents will be interpreted as commands.
+   *
+   * return FAIL for failure, OK otherwise
+   */
+      int
+! cmdline_paste_reg(regname, literally)
+      int regname;
+      int literally;	/* Insert text literally instead of "as typed" */
+  {
+      long	i;
+  
+      get_yank_register(regname, FALSE);
+      if (y_current->y_array == NULL)
+***************
+*** 1487,1532 ****
+  	    return FAIL;
+      }
+      return OK;
+- }
+- 
+- /*
+-  * Put a string on the command line.
+-  * When "literally" is TRUE, insert literally.
+-  * When "literally" is FALSE, insert as typed, but don't leave the command
+-  * line.
+-  */
+-     static void
+- cmdline_paste_str(s, literally)
+-     char_u	*s;
+-     int		literally;
+- {
+-     int		c, cv;
+- 
+-     if (literally)
+- 	put_on_cmdline(s, -1, TRUE);
+-     else
+- 	while (*s != NUL)
+- 	{
+- 	    cv = *s;
+- 	    if (cv == Ctrl_V && s[1])
+- 		++s;
+- #ifdef FEAT_MBYTE
+- 	    if (has_mbyte)
+- 	    {
+- 		c = mb_ptr2char(s);
+- 		s += mb_char2len(c);
+- 	    }
+- 	    else
+- #endif
+- 		c = *s++;
+- 	    if (cv == Ctrl_V || c == ESC || c == Ctrl_C || c == CAR || c == NL
+- #ifdef UNIX
+- 		    || c == intr_char
+- #endif
+- 		    || (c == Ctrl_BSL && *s == Ctrl_N))
+- 		stuffcharReadbuff(Ctrl_V);
+- 	    stuffcharReadbuff(c);
+- 	}
+  }
+  
+  #if defined(FEAT_CLIPBOARD) || defined(PROTO)
+--- 1455,1460 ----
+*** ../vim-6.3.012/src/proto/ex_getln.pro	Wed Jun  9 14:56:24 2004
+--- src/proto/ex_getln.pro	Fri Jul  9 21:46:20 2004
+***************
+*** 9,14 ****
+--- 9,15 ----
+  void putcmdline __ARGS((int c, int shift));
+  void unputcmdline __ARGS((void));
+  int put_on_cmdline __ARGS((char_u *str, int len, int redraw));
++ void cmdline_paste_str __ARGS((char_u *s, int literally));
+  void redrawcmdline __ARGS((void));
+  void redrawcmd __ARGS((void));
+  void compute_cmdrow __ARGS((void));
+*** ../vim-6.3.012/src/proto/ops.pro	Wed Jun  9 14:56:24 2004
+--- src/proto/ops.pro	Fri Jul  9 21:46:16 2004
+***************
+*** 10,22 ****
+  void set_expr_line __ARGS((char_u *new_line));
+  char_u *get_expr_line __ARGS((void));
+  int valid_yank_reg __ARGS((int regname, int writing));
+  void *get_register __ARGS((int name, int copy));
+  void put_register __ARGS((int name, void *reg));
+  int yank_register_mline __ARGS((int regname));
+  int do_record __ARGS((int c));
+  int do_execreg __ARGS((int regname, int colon, int addcr));
+  int insert_reg __ARGS((int regname, int literally));
+! int cmdline_paste __ARGS((int regname, int literally));
+  void adjust_clip_reg __ARGS((int *rp));
+  int op_delete __ARGS((oparg_T *oap));
+  int op_replace __ARGS((oparg_T *oap, int c));
+--- 10,25 ----
+  void set_expr_line __ARGS((char_u *new_line));
+  char_u *get_expr_line __ARGS((void));
+  int valid_yank_reg __ARGS((int regname, int writing));
++ void get_yank_register __ARGS((int regname, int writing));
++ int may_get_selection __ARGS((int regname));
+  void *get_register __ARGS((int name, int copy));
+  void put_register __ARGS((int name, void *reg));
+  int yank_register_mline __ARGS((int regname));
+  int do_record __ARGS((int c));
+  int do_execreg __ARGS((int regname, int colon, int addcr));
+  int insert_reg __ARGS((int regname, int literally));
+! int get_spec_reg __ARGS((int regname, char_u **argp, int *allocated, int errmsg));
+! int cmdline_paste_reg __ARGS((int regname, int literally));
+  void adjust_clip_reg __ARGS((int *rp));
+  int op_delete __ARGS((oparg_T *oap));
+  int op_replace __ARGS((oparg_T *oap, int c));
+*** ../vim-6.3.012/src/version.c	Tue Jul  6 14:57:26 2004
+--- src/version.c	Fri Jul  9 22:19:57 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     13,
+  /**/
+
+-- 
+CART DRIVER: Bring out your dead!
+   There are legs stick out of windows and doors.  Two MEN are fighting in the
+   mud - covered from head to foot in it.  Another MAN is on his hands in
+   knees shovelling mud into his mouth.  We just catch sight of a MAN falling
+   into a well.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

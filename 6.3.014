@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.014
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.014
+Problem:    When using Chinese or Taiwanese the default for 'helplang' is
+	    wrong. (Simon Liang)
+Solution:   Use the part of the locale name after "zh_".
+Files:	    src/option.c
+
+
+*** ../vim-6.3.013/src/option.c	Wed Jun  9 14:56:26 2004
+--- src/option.c	Tue Jul 20 16:27:03 2004
+***************
+*** 3174,3180 ****
+--- 3174,3188 ----
+  	if (p_hlg == NULL)
+  	    p_hlg = empty_option;
+  	else
++ 	{
++ 	    /* zh_CN becomes "cn", zh_TW becomes "tw". */
++ 	    if (STRNICMP(p_hlg, "zh_", 3) == 0 && STRLEN(p_hlg) >= 5)
++ 	    {
++ 		p_hlg[0] = TOLOWER_ASC(p_hlg[3]);
++ 		p_hlg[1] = TOLOWER_ASC(p_hlg[4]);
++ 	    }
+  	    p_hlg[2] = NUL;
++ 	}
+  	options[idx].flags |= P_ALLOCED;
+      }
+  }
+*** ../vim-6.3.013/src/version.c	Fri Jul  9 22:21:01 2004
+--- src/version.c	Tue Jul 20 17:11:50 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     14,
+  /**/
+
+-- 
+What a wonderfully exciting cough!  Do you mind if I join you?
+		-- Douglas Adams, "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,46 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.017
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.017
+Problem:    "8zz" may leave the cursor beyond the end of the line. (Niko
+	    Maatjes)
+Solution:   Correct the cursor column after moving to another line.
+Files:	    src/normal.c
+
+
+*** ../vim-6.3.016/src/normal.c	Wed Jun  9 14:56:27 2004
+--- src/normal.c	Fri Aug 27 21:09:31 2004
+***************
+*** 4343,4348 ****
+--- 4343,4349 ----
+  	    curwin->w_cursor.lnum = curbuf->b_ml.ml_line_count;
+  	else
+  	    curwin->w_cursor.lnum = cap->count0;
++ 	check_cursor_col();
+      }
+  
+      switch (nchar)
+*** ../vim-6.3.016/src/version.c	Thu Aug 26 16:01:15 2004
+--- src/version.c	Fri Aug 27 21:13:21 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     17,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+183. You move your coffeemaker next to your computer.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

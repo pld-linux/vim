@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.016
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.016
+Problem:    The default value for 'define' has "\s" before '#'.
+Solution:   Add a star after "\s". (Herculano de Lima Einloft Neto)
+Files:	    src/option.c
+
+
+*** ../vim-6.3.015/src/option.c	Tue Jul 20 17:12:01 2004
+--- src/option.c	Thu Aug 26 15:56:30 2004
+***************
+*** 696,702 ****
+      {"define",	    "def",  P_STRING|P_ALLOCED|P_VI_DEF,
+  #ifdef FEAT_FIND_ID
+  			    (char_u *)&p_def, OPT_BOTH(PV_DEF),
+! 			    {(char_u *)"^\\s#\\s*define", (char_u *)0L}
+  #else
+  			    (char_u *)NULL, PV_NONE,
+  			    {(char_u *)NULL, (char_u *)0L}
+--- 696,702 ----
+      {"define",	    "def",  P_STRING|P_ALLOCED|P_VI_DEF,
+  #ifdef FEAT_FIND_ID
+  			    (char_u *)&p_def, OPT_BOTH(PV_DEF),
+! 			    {(char_u *)"^\\s*#\\s*define", (char_u *)0L}
+  #else
+  			    (char_u *)NULL, PV_NONE,
+  			    {(char_u *)NULL, (char_u *)0L}
+*** ../vim-6.3.015/src/version.c	Wed Jul 28 11:55:03 2004
+--- src/version.c	Thu Aug 26 15:58:03 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     16,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+140. You'd rather catch a score on the web than watch the game as
+     it is being played on tv.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
