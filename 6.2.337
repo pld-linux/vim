@@ -1,0 +1,80 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.337
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.337 (extra, after 6.2.319)
+Problem:    Building gvimext.dll with Mingw doesn't work properly.
+Solution:   Fix white space and other details. (Alejandro Lopez-Valencia)
+Files:	    src/GvimExt/Make_ming.mak
+
+
+
+*** ../vim-6.2.336/src/GvimExt/Make_ming.mak	Sat Mar  6 21:04:29 2004
+--- src/GvimExt/Make_ming.mak	Tue Mar  9 17:21:00 2004
+***************
+*** 22,41 ****
+  all: all-before $(DLL) all-after
+  
+  $(DLL): $(OBJ) $(RES) $(DEFFILE)
+! 	$(CXX) -shared $(CXXFLAGS) -s -o $@ \ 
+  		-Wl,--enable-auto-image-base \
+! 		-Wl,--enable-auto-import \
+! 		-Wl,--whole-archive \
+! 	 		$^ \ 
+! 		-Wl,--no-whole-archive \
+  			$(LIBS)
+  
+  gvimext.o: gvimext.cpp
+! 	$(CXX) $(CXXFLAGS) -DFEAT_GETTEXT -c $? -o $@ 
+  
+  $(RES): gvimext_ming.rc
+! 	$(WINDRES) --input-format=rc --output-format=coff -DMING $? -o $@
+  
+  clean: clean-custom
+! 	${RM}  $(OBJ) $(RES) $(DLL)
+  
+--- 22,41 ----
+  all: all-before $(DLL) all-after
+  
+  $(DLL): $(OBJ) $(RES) $(DEFFILE)
+! 	$(CXX) -shared $(CXXFLAGS) -s -o $@  \
+  		-Wl,--enable-auto-image-base \
+! 		-Wl,--enable-auto-import  \
+! 		-Wl,--whole-archive  \
+! 			$^  \
+! 		-Wl,--no-whole-archive  \
+  			$(LIBS)
+  
+  gvimext.o: gvimext.cpp
+! 	$(CXX) $(CXXFLAGS) -DFEAT_GETTEXT -c $^ -o $@ 
+  
+  $(RES): gvimext_ming.rc
+! 	$(WINDRES) --input-format=rc --output-format=coff -DMING $^ -o $@
+  
+  clean: clean-custom
+! 	$(RM)  $(OBJ) $(RES) $(DLL)
+  
+*** ../vim-6.2.336/src/version.c	Tue Mar  9 17:13:10 2004
+--- src/version.c	Tue Mar  9 19:39:49 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     337,
+  /**/
+
+-- 
+Managers are like cats in a litter box.  They instinctively shuffle things
+around to conceal what they've done.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

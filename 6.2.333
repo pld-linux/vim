@@ -1,0 +1,50 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.333 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.333 (extra)
+Problem:    Win32: printing doesn't work with specified font charset.
+Solution:   Use the specified font charset. (Mike Williams)
+Files:	    src/os_mswin.c
+
+
+*** ../vim-6.2.332/src/os_mswin.c	Tue Feb  3 16:55:34 2004
+--- src/os_mswin.c	Tue Mar  9 12:17:47 2004
+***************
+*** 1942,1948 ****
+  	    for (pifUnderline = 0; pifUnderline <= 1; pifUnderline++)
+  	    {
+  		fLogFont.lfWeight =  boldface[pifBold];
+- 		fLogFont.lfCharSet = DEFAULT_CHARSET;
+  		fLogFont.lfItalic = pifItalic;
+  		fLogFont.lfUnderline = pifUnderline;
+  		prt_font_handles[pifBold][pifItalic][pifUnderline]
+--- 1942,1947 ----
+*** ../vim-6.2.332/src/version.c	Tue Mar  9 14:18:21 2004
+--- src/version.c	Tue Mar  9 14:19:47 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     333,
+  /**/
+
+-- 
+Mrs Abbott: I'm a paediatrician.
+     Basil: Feet?
+Mrs Abbott: Children.
+     Sybil: Oh, Basil!
+     Basil: Well, children have feet, don't they? That's how they move
+            around, my dear. You must take a look next time, it's most
+            interesting.                               (Fawlty Towers)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

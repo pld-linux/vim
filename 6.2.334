@@ -1,0 +1,61 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.334 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.334 (extra, after 6.2.296)
+Problem:    Win32: evaluating client expression in debug mode requires typing
+	    "cont".
+Solution:   Use eval_client_expr_to_string().
+Files:	    src/os_mswin.c
+
+
+*** ../vim-6.2.333/src/os_mswin.c	Tue Mar  9 14:20:55 2004
+--- src/os_mswin.c	Tue Mar  9 12:17:47 2004
+***************
+*** 2336,2344 ****
+  	    /* Remember who sent this, for <client> */
+  	    clientWindow = sender;
+  
+! 	    ++emsg_skip;
+! 	    res = eval_to_string(data->lpData, NULL);
+! 	    --emsg_skip;
+  	    if (res == NULL)
+  	    {
+  		res = vim_strsave(_(e_invexprmsg));
+--- 2336,2342 ----
+  	    /* Remember who sent this, for <client> */
+  	    clientWindow = sender;
+  
+! 	    res = eval_client_expr_to_string(data->lpData);
+  	    if (res == NULL)
+  	    {
+  		res = vim_strsave(_(e_invexprmsg));
+*** ../vim-6.2.333/src/version.c	Tue Mar  9 14:20:55 2004
+--- src/version.c	Tue Mar  9 14:24:05 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     334,
+  /**/
+
+-- 
+Any resemblance between the above views and those of my employer, my terminal,
+or the view out my window are purely coincidental.  Any resemblance between
+the above and my own views is non-deterministic.  The question of the
+existence of views in the absence of anyone to hold them is left as an
+exercise for the reader.  The question of the existence of the reader is left
+as an exercise for the second god coefficient.  (A discussion of
+non-orthogonal, non-integral polytheism is beyond the scope of this article.)
+						(Ralph Jennings)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

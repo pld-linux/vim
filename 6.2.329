@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.329
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.329
+Problem:    ":=" does not work Vi compatible. (Antony Scriven)
+Solution:   Print the last line number instead of the current line.  Don't
+	    print "line".
+Files:	    src/ex_cmds.h, src/ex_docmd.c
+
+
+*** ../vim-6.2.328/src/ex_cmds.h	Sun Feb 29 21:06:13 2004
+--- src/ex_cmds.h	Mon Mar  8 10:59:47 2004
+***************
+*** 887,893 ****
+  EX(CMD_lshift,		"<",		ex_operators,
+  			RANGE|WHOLEFOLD|COUNT|TRLBAR|CMDWIN|MODIFY),
+  EX(CMD_equal,		"=",		ex_equal,
+! 			RANGE|TRLBAR|CMDWIN),
+  EX(CMD_rshift,		">",		ex_operators,
+  			RANGE|WHOLEFOLD|COUNT|TRLBAR|CMDWIN|MODIFY),
+  EX(CMD_at,		"@",		ex_at,
+--- 887,893 ----
+  EX(CMD_lshift,		"<",		ex_operators,
+  			RANGE|WHOLEFOLD|COUNT|TRLBAR|CMDWIN|MODIFY),
+  EX(CMD_equal,		"=",		ex_equal,
+! 			RANGE|TRLBAR|DFLALL|CMDWIN),
+  EX(CMD_rshift,		">",		ex_operators,
+  			RANGE|WHOLEFOLD|COUNT|TRLBAR|CMDWIN|MODIFY),
+  EX(CMD_at,		"@",		ex_at,
+*** ../vim-6.2.328/src/ex_docmd.c	Sun Feb 29 20:46:43 2004
+--- src/ex_docmd.c	Mon Mar  8 11:00:34 2004
+***************
+*** 6891,6897 ****
+  ex_equal(eap)
+      exarg_T	*eap;
+  {
+!     smsg((char_u *)_("line %ld"), (long)eap->line2);
+  }
+  
+      static void
+--- 6889,6895 ----
+  ex_equal(eap)
+      exarg_T	*eap;
+  {
+!     smsg((char_u *)"%ld", (long)eap->line2);
+  }
+  
+      static void
+*** ../vim-6.2.328/src/version.c	Mon Mar  8 15:12:09 2004
+--- src/version.c	Mon Mar  8 15:19:54 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     329,
+  /**/
+
+-- 
+It might look like I'm doing nothing, but at the cellular level
+I'm really quite busy.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

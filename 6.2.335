@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.335
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.335
+Problem:    The ":sign" command cannot be followed by another command.
+Solution:   Add TRLBAR to the command flags.
+Files:	    src/ex_cmds.h
+
+
+*** ../vim-6.2.334/src/ex_cmds.h	Mon Mar  8 15:22:09 2004
+--- src/ex_cmds.h	Tue Mar  9 15:01:26 2004
+***************
+*** 707,713 ****
+  EX(CMD_simalt,		"simalt",	ex_simalt,
+  			NEEDARG|WORD1|TRLBAR|CMDWIN),
+  EX(CMD_sign,		"sign",		ex_sign,
+! 			NEEDARG|RANGE|NOTADR|EXTRA|CMDWIN),
+  EX(CMD_silent,		"silent",	ex_wrongmodifier,
+  			NEEDARG|EXTRA|BANG|NOTRLCOM|SBOXOK|CMDWIN),
+  EX(CMD_sleep,		"sleep",	ex_sleep,
+--- 707,713 ----
+  EX(CMD_simalt,		"simalt",	ex_simalt,
+  			NEEDARG|WORD1|TRLBAR|CMDWIN),
+  EX(CMD_sign,		"sign",		ex_sign,
+! 			NEEDARG|RANGE|NOTADR|EXTRA|CMDWIN|TRLBAR),
+  EX(CMD_silent,		"silent",	ex_wrongmodifier,
+  			NEEDARG|EXTRA|BANG|NOTRLCOM|SBOXOK|CMDWIN),
+  EX(CMD_sleep,		"sleep",	ex_sleep,
+*** ../vim-6.2.334/src/version.c	Tue Mar  9 14:24:17 2004
+--- src/version.c	Tue Mar  9 15:10:37 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     335,
+  /**/
+
+-- 
+   A village.  Sound of chanting of Latin canon, punctuated by short, sharp
+   cracks.  It comes nearer.  We see it is a line of MONKS ala SEVENTH SEAL
+   flagellation scene, chanting and banging themselves on the foreheads with
+   wooden boards.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
