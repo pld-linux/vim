@@ -13,7 +13,7 @@
 %bcond_with	bonobo	# with bonobo component (breaks other things)
 #
 %define		_ver		6.2
-%define		_patchlevel	307
+%define		_patchlevel	313
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -71,6 +71,12 @@ Patch404:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.304
 Patch405:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.305
 Patch406:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.306
 Patch407:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.307
+Patch408:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.308
+Patch409:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.309
+Patch410:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.310
+Patch411:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.311
+Patch412:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.312
+Patch413:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.313
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.294.diff.bz2
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
@@ -514,6 +520,12 @@ element bonobo.
 %patch405 -p0
 %patch406 -p0
 %patch407 -p0
+%patch408 -p0
+%patch409 -p0
+%patch410 -p0
+%patch411 -p0
+%patch412 -p0
+%patch413 -p0
 
 %patch999 -p1
 
