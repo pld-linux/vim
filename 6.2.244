@@ -1,0 +1,56 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.244
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.244
+Problem:    ':echo "\xf7"' displays the illegal byte as if it was a character
+	    and leaves "cho" after it.
+Solution:   When checking the length of a UTF-8 byte sequence and it's shorter
+	    than the number of bytes available, assume it's an illegal byte.
+Files:	    src/mbyte.c
+
+
+*** ../vim-6.2.243/src/mbyte.c	Sun Jan 11 12:45:02 2004
+--- src/mbyte.c	Sun Feb  8 15:12:29 2004
+***************
+*** 1442,1448 ****
+      if (*p == NUL)
+  	return 1;
+      len = utf8len_tab[*p];
+!     for (i = 1; i < len && i < size; ++i)
+  	if ((p[i] & 0xc0) != 0x80)
+  	    return 1;
+      return len;
+--- 1442,1450 ----
+      if (*p == NUL)
+  	return 1;
+      len = utf8len_tab[*p];
+!     if (len > size)
+! 	return 1;	/* Probably illegal byte sequence. */
+!     for (i = 1; i < len; ++i)
+  	if ((p[i] & 0xc0) != 0x80)
+  	    return 1;
+      return len;
+*** ../vim-6.2.243/src/version.c	Sun Feb  8 14:41:05 2004
+--- src/version.c	Sun Feb  8 15:10:55 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     244,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+84. Books in your bookcase bear the names Bongo, WinSock and Inside OLE
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.220
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.220
+Problem:    When a Vim server runs in a console a remote command isn't handled
+	    before a key is typed.  (Joshua Neuheisel)
+Solution:   Don't try reading more input when a client-server command has been
+	    received.
+Files:	    src/os_unix.c
+
+
+*** ../vim-6.2.219/src/os_unix.c	Sun Feb  1 19:56:37 2004
+--- src/os_unix.c	Sun Feb  1 20:05:07 2004
+***************
+*** 383,388 ****
+--- 383,393 ----
+  	if (do_resize)	    /* interrupted by SIGWINCH signal */
+  	    continue;
+  
++ #ifdef FEAT_CLIENTSERVER
++ 	if (received_from_client)
++ 	    return 0;	    /* Input was put directly in typeahead buffer */
++ #endif
++ 
+  	/*
+  	 * For some terminals we only get one character at a time.
+  	 * We want the get all available characters, so we could keep on
+*** ../vim-6.2.219/src/version.c	Sun Feb  1 20:02:19 2004
+--- src/version.c	Sun Feb  1 20:06:15 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     220,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+11. You find yourself typing "com" after every period when using a word
+    processor.com
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

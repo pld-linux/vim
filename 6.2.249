@@ -1,0 +1,177 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.249
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.249
+Problem:    ":cnext" moves to the error in the next file, but there is no
+	    method to go back.
+Solution:   Add ":cpfile" and ":cNfile".
+Files:	    src/ex_cmds.h, src/quickfix.c, src/vim.h, runtime/doc/quickfix.txt
+
+
+*** ../vim-6.2.248/src/ex_cmds.h	Sun Feb  8 17:07:07 2004
+--- src/ex_cmds.h	Tue Feb 10 15:18:46 2004
+***************
+*** 180,185 ****
+--- 180,187 ----
+  			BANG|WHOLEFOLD|RANGE|COUNT|TRLBAR|CMDWIN|MODIFY),
+  EX(CMD_cNext,		"cNext",	ex_cnext,
+  			RANGE|NOTADR|COUNT|TRLBAR|BANG),
++ EX(CMD_cNfile,		"cNfile",	ex_cnext,
++ 			RANGE|NOTADR|COUNT|TRLBAR|BANG),
+  EX(CMD_cabbrev,		"cabbrev",	ex_abbreviate,
+  			EXTRA|TRLBAR|NOTRLCOM|USECTRLV|CMDWIN),
+  EX(CMD_cabclear,	"cabclear",	ex_abclear,
+***************
+*** 251,256 ****
+--- 253,260 ----
+  EX(CMD_copen,		"copen",	ex_copen,
+  			RANGE|NOTADR|COUNT|TRLBAR),
+  EX(CMD_cprevious,	"cprevious",	ex_cnext,
++ 			RANGE|NOTADR|COUNT|TRLBAR|BANG),
++ EX(CMD_cpfile,		"cpfile",	ex_cnext,
+  			RANGE|NOTADR|COUNT|TRLBAR|BANG),
+  EX(CMD_cquit,		"cquit",	ex_cquit,
+  			TRLBAR|BANG),
+*** ../vim-6.2.248/src/quickfix.c	Mon Dec 29 20:21:49 2003
+--- src/quickfix.c	Tue Feb 10 15:24:52 2004
+***************
+*** 970,975 ****
+--- 970,977 ----
+   * jump to a quickfix line
+   * if dir == FORWARD go "errornr" valid entries forward
+   * if dir == BACKWARD go "errornr" valid entries backward
++  * if dir == FORWARD_FILE go "errornr" valid entries files backward
++  * if dir == BACKWARD_FILE go "errornr" valid entries files backward
+   * else if "errornr" is zero, redisplay the same line
+   * else go to entry "errornr"
+   */
+***************
+*** 1044,1055 ****
+  	    err = NULL;
+  	}
+      }
+!     else if (dir == BACKWARD)	    /* previous valid entry */
+      {
+  	while (errornr--)
+  	{
+  	    old_qf_ptr = qf_ptr;
+  	    prev_index = qf_index;
+  	    do
+  	    {
+  		if (qf_index == 1 || qf_ptr->qf_prev == NULL)
+--- 1046,1058 ----
+  	    err = NULL;
+  	}
+      }
+!     else if (dir == BACKWARD || dir == BACKWARD_FILE)  /* prev. valid entry */
+      {
+  	while (errornr--)
+  	{
+  	    old_qf_ptr = qf_ptr;
+  	    prev_index = qf_index;
++ 	    old_qf_fnum = qf_ptr->qf_fnum;
+  	    do
+  	    {
+  		if (qf_index == 1 || qf_ptr->qf_prev == NULL)
+***************
+*** 1066,1072 ****
+  		}
+  		--qf_index;
+  		qf_ptr = qf_ptr->qf_prev;
+! 	    } while (!qf_lists[qf_curlist].qf_nonevalid && !qf_ptr->qf_valid);
+  	    err = NULL;
+  	}
+      }
+--- 1069,1076 ----
+  		}
+  		--qf_index;
+  		qf_ptr = qf_ptr->qf_prev;
+! 	    } while ((!qf_lists[qf_curlist].qf_nonevalid && !qf_ptr->qf_valid)
+! 		  || (dir == BACKWARD_FILE && qf_ptr->qf_fnum == old_qf_fnum));
+  	    err = NULL;
+  	}
+      }
+***************
+*** 2106,2112 ****
+  	    ? FORWARD
+  	    : eap->cmdidx == CMD_cnfile
+  		? FORWARD_FILE
+! 		: BACKWARD,
+  	    eap->addr_count > 0 ? (int)eap->line2 : 1, eap->forceit);
+  }
+  
+--- 2110,2118 ----
+  	    ? FORWARD
+  	    : eap->cmdidx == CMD_cnfile
+  		? FORWARD_FILE
+! 		: (eap->cmdidx == CMD_cpfile || eap->cmdidx == CMD_cNfile)
+! 		    ? BACKWARD_FILE
+! 		    : BACKWARD,
+  	    eap->addr_count > 0 ? (int)eap->line2 : 1, eap->forceit);
+  }
+  
+*** ../vim-6.2.248/src/vim.h	Mon Feb  2 12:53:51 2004
+--- src/vim.h	Tue Feb 10 15:22:15 2004
+***************
+*** 530,535 ****
+--- 530,536 ----
+  #define FORWARD			1
+  #define BACKWARD		(-1)
+  #define FORWARD_FILE		3
++ #define BACKWARD_FILE		(-3)
+  
+  /* return values for functions */
+  #if !(defined(OK) && (OK == 1))
+*** ../vim-6.2.248/runtime/doc/quickfix.txt	Sun Jun  1 12:20:34 2003
+--- runtime/doc/quickfix.txt	Tue Feb 10 15:17:25 2004
+***************
+*** 1,4 ****
+! *quickfix.txt*  For Vim version 6.2.  Last change: 2003 May 30
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *quickfix.txt*  For Vim version 6.2.  Last change: 2004 Feb 10
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 70,75 ****
+--- 70,82 ----
+  			the [count] next error.  See |:cc| for [!] and
+  			'switchbuf'.
+  
++ :[count]cNf[ile][!]			*:cpf* *:cpfile* *:cNf* *:cNfile*
++ :[count]cpf[ile][!]	Display the last error in the [count] previous file in
++ 			the list that includes a file name.  If there are no
++ 			file names at all or if there is no next file, go to
++ 			the [count] previous error.  See |:cc| for [!] and
++ 			'switchbuf'.
++ 
+  							*:crewind* *:cr*
+  :cr[ewind][!] [nr]	Display error [nr].  If [nr] is omitted, the FIRST
+  			error is displayed.  See |:cc|.
+*** ../vim-6.2.248/src/version.c	Mon Feb  9 18:45:58 2004
+--- src/version.c	Tue Feb 10 19:31:39 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     249,
+  /**/
+
+-- 
+I AM THANKFUL...
+...for the taxes that I pay because it means that I am employed.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

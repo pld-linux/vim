@@ -1,0 +1,110 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.245
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.245
+Problem:    Completion doesn't work for ":keepmarks" and ":lockmarks".
+Solution:   Add the command modifiers to the table of commands. (Madoka
+	    Machitani)
+Files:	    src/ex_cmds.h, src/ex_docmd.c
+
+
+*** ../vim-6.2.244/src/ex_cmds.h	Sun Feb  1 20:08:40 2004
+--- src/ex_cmds.h	Sat Feb  7 18:10:50 2004
+***************
+*** 440,445 ****
+--- 440,447 ----
+  			TRLBAR|CMDWIN),
+  EX(CMD_k,		"k",		ex_mark,
+  			RANGE|WORD1|TRLBAR|SBOXOK|CMDWIN),
++ EX(CMD_keepmarks,	"keepmarks",	ex_wrongmodifier,
++ 			NEEDARG|EXTRA|NOTRLCOM),
+  EX(CMD_list,		"list",		ex_print,
+  			RANGE|WHOLEFOLD|COUNT|TRLBAR|CMDWIN),
+  EX(CMD_last,		"last",		ex_last,
+***************
+*** 466,471 ****
+--- 468,475 ----
+  			FILE1|TRLBAR),
+  EX(CMD_loadkeymap,	"loadkeymap",	ex_loadkeymap,
+  			CMDWIN),
++ EX(CMD_lockmarks,	"lockmarks",	ex_wrongmodifier,
++ 			NEEDARG|EXTRA|NOTRLCOM),
+  EX(CMD_lunmap,		"lunmap",	ex_unmap,
+  			EXTRA|TRLBAR|NOTRLCOM|USECTRLV|CMDWIN),
+  EX(CMD_ls,		"ls",		buflist_list,
+*** ../vim-6.2.244/src/ex_docmd.c	Thu Feb  5 16:04:26 2004
+--- src/ex_docmd.c	Sat Feb  7 18:22:26 2004
+***************
+*** 2351,2358 ****
+--- 2351,2360 ----
+  	    case CMD_ilist:
+  	    case CMD_isearch:
+  	    case CMD_isplit:
++ 	    case CMD_keepmarks:
+  	    case CMD_leftabove:
+  	    case CMD_let:
++ 	    case CMD_lockmarks:
+  	    case CMD_match:
+  	    case CMD_psearch:
+  	    case CMD_return:
+***************
+*** 2844,2853 ****
+      /*
+       * Isolate the command and search for it in the command table.
+       * Exceptions:
+!      * - the 'k' command can directly be followed by any character.
+       * - the 's' command can be followed directly by 'c', 'g', 'i', 'I' or 'r'
+       */
+!     if (*cmd == 'k')
+      {
+  	cmdidx = CMD_k;
+  	p = cmd + 1;
+--- 2846,2856 ----
+      /*
+       * Isolate the command and search for it in the command table.
+       * Exceptions:
+!      * - the 'k' command can directly be followed by any character, but
+!      *   do accept "keepmarks".
+       * - the 's' command can be followed directly by 'c', 'g', 'i', 'I' or 'r'
+       */
+!     if (*cmd == 'k' && cmd[1] != 'e')
+      {
+  	cmdidx = CMD_k;
+  	p = cmd + 1;
+***************
+*** 3184,3190 ****
+--- 3187,3195 ----
+  	case CMD_folddoclosed:
+  	case CMD_folddoopen:
+  	case CMD_hide:
++ 	case CMD_keepmarks:
+  	case CMD_leftabove:
++ 	case CMD_lockmarks:
+  	case CMD_rightbelow:
+  	case CMD_silent:
+  	case CMD_topleft:
+*** ../vim-6.2.244/src/version.c	Sun Feb  8 15:13:33 2004
+--- src/version.c	Sun Feb  8 17:06:12 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     245,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+85. Choice between paying Compuserve bill and paying for kids education
+    is a no brainer -- although a bit painful for your kids.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

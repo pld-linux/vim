@@ -1,0 +1,172 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.242
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.242
+Problem:    Gnome: "vim --help" only shows the Gnome arguments, not the Vim
+	    arguments.
+Solution:   Don't let the Gnome code remove the "--help" argument and don't
+	    exit at the end of usage().
+Files:	    src/gui_gtk_x11.c, src/main.c
+
+
+*** ../vim-6.2.241/src/gui_gtk_x11.c	Thu Feb  5 15:28:32 2004
+--- src/gui_gtk_x11.c	Fri Feb  6 16:42:40 2004
+***************
+*** 298,303 ****
+--- 298,305 ----
+  #define ARG_NEEDS_GUI	0x0200	/* need to initialize the GUI for this	  */
+  #define ARG_FOR_GTK	0x0400	/* argument is handled by GTK+ or GNOME   */
+  #define ARG_COMPAT_LONG	0x0800	/* accept -foo but substitute with --foo  */
++ #define ARG_KEEP	0x1000	/* don't remove argument from argv[] */
++ 
+  /*
+   * This table holds all the X GUI command line options allowed.  This includes
+   * the standard ones so that we can skip them when Vim is started without the
+***************
+*** 379,385 ****
+      {"--disable-sound",		ARG_FOR_GTK},
+      {"--espeaker",		ARG_FOR_GTK|ARG_HAS_VALUE},
+      {"-?",			ARG_FOR_GTK|ARG_NEEDS_GUI},
+!     {"--help",			ARG_FOR_GTK|ARG_NEEDS_GUI},
+      {"--usage",			ARG_FOR_GTK|ARG_NEEDS_GUI},
+  # if 0 /* conflicts with Vim's own --version argument */
+      {"--version",		ARG_FOR_GTK|ARG_NEEDS_GUI},
+--- 381,387 ----
+      {"--disable-sound",		ARG_FOR_GTK},
+      {"--espeaker",		ARG_FOR_GTK|ARG_HAS_VALUE},
+      {"-?",			ARG_FOR_GTK|ARG_NEEDS_GUI},
+!     {"--help",			ARG_FOR_GTK|ARG_NEEDS_GUI|ARG_KEEP},
+      {"--usage",			ARG_FOR_GTK|ARG_NEEDS_GUI},
+  # if 0 /* conflicts with Vim's own --version argument */
+      {"--version",		ARG_FOR_GTK|ARG_NEEDS_GUI},
+***************
+*** 560,586 ****
+  	if (option->flags & ARG_NEEDS_GUI)
+  	    gui.starting = TRUE;
+  
+! 	/* Now remove the flag from the argument vector. */
+! 	if (--*argc > i)
+  	{
+! 	    int n_strip = 1;
+! 
+! 	    /* Move the argument's value as well, if there is one. */
+! 	    if ((option->flags & ARG_HAS_VALUE)
+! 		    && argv[i][len] != '='
+! 		    && strcmp(argv[i + 1], "--") != 0)
+  	    {
+! 		++n_strip;
+! 		--*argc;
+! 		if (option->flags & ARG_FOR_GTK)
+! 		    gui_argv[gui_argc++] = argv[i + 1];
+! 	    }
+  
+! 	    if (*argc > i)
+! 		mch_memmove(&argv[i], &argv[i + n_strip],
+! 			    (*argc - i) * sizeof(char *));
+  	}
+- 	argv[*argc] = NULL;
+      }
+  
+      gui_argv[gui_argc] = NULL;
+--- 562,593 ----
+  	if (option->flags & ARG_NEEDS_GUI)
+  	    gui.starting = TRUE;
+  
+! 	if (option->flags & ARG_KEEP)
+! 	    ++i;
+! 	else
+  	{
+! 	    /* Remove the flag from the argument vector. */
+! 	    if (--*argc > i)
+  	    {
+! 		int n_strip = 1;
+  
+! 		/* Move the argument's value as well, if there is one. */
+! 		if ((option->flags & ARG_HAS_VALUE)
+! 			&& argv[i][len] != '='
+! 			&& strcmp(argv[i + 1], "--") != 0)
+! 		{
+! 		    ++n_strip;
+! 		    --*argc;
+! 		    if (option->flags & ARG_FOR_GTK)
+! 			gui_argv[gui_argc++] = argv[i + 1];
+! 		}
+! 
+! 		if (*argc > i)
+! 		    mch_memmove(&argv[i], &argv[i + n_strip],
+! 						(*argc - i) * sizeof(char *));
+! 	    }
+! 	    argv[*argc] = NULL;
+  	}
+      }
+  
+      gui_argv[gui_argc] = NULL;
+*** ../vim-6.2.241/src/main.c	Mon Feb  2 10:03:01 2004
+--- src/main.c	Fri Feb  6 16:57:13 2004
+***************
+*** 662,667 ****
+--- 662,671 ----
+  		break;
+  
+  	    case 'h':		/* "-h" give help message */
++ #ifdef FEAT_GUI_GNOME
++ 		/* Tell usage() to exit for "gvim". */
++ 		gui.starting = FALSE;
++ #endif
+  		usage();
+  		break;
+  
+***************
+*** 2558,2568 ****
+      main_msg(_("--role <role>\tSet a unique role to identify the main window"));
+  # endif
+      main_msg(_("--socketid <xid>\tOpen Vim inside another GTK widget"));
+- # ifdef FEAT_GUI_GNOME
+-     main_msg(_("--help\t\tShow Gnome arguments"));
+- # endif
+  #endif
+!     mch_exit(0);
+  }
+  
+  #if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+--- 2572,2586 ----
+      main_msg(_("--role <role>\tSet a unique role to identify the main window"));
+  # endif
+      main_msg(_("--socketid <xid>\tOpen Vim inside another GTK widget"));
+  #endif
+! 
+! #ifdef FEAT_GUI_GNOME
+!     /* Gnome gives extra messages for --help if we continue, but not for -h. */
+!     if (gui.starting)
+! 	mch_msg("\n");
+!     else
+! #endif
+! 	mch_exit(0);
+  }
+  
+  #if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+*** ../vim-6.2.241/src/version.c	Fri Feb  6 19:31:57 2004
+--- src/version.c	Fri Feb  6 19:33:27 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     242,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+66. You create a homepage with the impression to cure the afflicted...but
+    your hidden agenda is to receive more e-mail.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,257 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.248
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.248
+Problem:    GTK: When XIM is enabled normal "2" and keypad "2" cannot be
+	    distinguished.
+Solution:   Detect that XIM changes the keypad key to the expected ASCII
+	    character and fall back to the non-XIM code. (Neil Bird)
+Files:	    src/gui_gtk_x11.c, src/mbyte.c, src/proto/mbyte.pro
+
+
+*** ../vim-6.2.247/src/gui_gtk_x11.c	Fri Feb  6 19:35:39 2004
+--- src/gui_gtk_x11.c	Mon Feb  9 15:02:41 2004
+***************
+*** 937,943 ****
+  #endif
+  
+  #ifdef FEAT_XIM
+!     if (xim_queue_key_press_event(event))
+  	return TRUE;
+  #endif
+  
+--- 937,943 ----
+  #endif
+  
+  #ifdef FEAT_XIM
+!     if (xim_queue_key_press_event(event, TRUE))
+  	return TRUE;
+  #endif
+  
+***************
+*** 1161,1167 ****
+       * With the default IM for instance, you can enter any UCS code point
+       * by holding down CTRL-SHIFT and typing hexadecimal digits.
+       */
+!     return xim_queue_key_press_event(event);
+  }
+  #endif
+  
+--- 1161,1167 ----
+       * With the default IM for instance, you can enter any UCS code point
+       * by holding down CTRL-SHIFT and typing hexadecimal digits.
+       */
+!     return xim_queue_key_press_event(event, FALSE);
+  }
+  #endif
+  
+*** ../vim-6.2.247/src/mbyte.c	Sun Feb  8 15:13:33 2004
+--- src/mbyte.c	Mon Feb  9 18:45:03 2004
+***************
+*** 3114,3119 ****
+--- 3114,3122 ----
+  	add_to_input_buf(backkey, (int)sizeof(backkey));
+  }
+  
++ static int xim_expected_char = NUL;
++ static int xim_ignored_char = FALSE;
++ 
+  /*
+   * Callback invoked when the user finished preediting.
+   * Put the final string into the input buffer.
+***************
+*** 3122,3127 ****
+--- 3125,3133 ----
+      static void
+  im_commit_cb(GtkIMContext *context, const gchar *str, gpointer data)
+  {
++     int slen = (int)strlen(str);
++     int add_to_input = TRUE;
++ 
+      /* The imhangul module doesn't reset the preedit string before
+       * committing.  Call im_delete_preedit() to work around that. */
+      im_delete_preedit();
+***************
+*** 3129,3135 ****
+      /* Indicate that preediting has finished */
+      preedit_start_col = MAXCOL;
+  
+!     im_add_to_input((char_u *)str, (int)strlen(str));
+  
+      if (gtk_main_level() > 0)
+  	gtk_main_quit();
+--- 3135,3163 ----
+      /* Indicate that preediting has finished */
+      preedit_start_col = MAXCOL;
+  
+!     /* Is this a single character that matches a keypad key that's just
+!      * been pressed?  If so, we don't want it to be entered as such - let
+!      * us carry on processing the raw keycode so that it may be used in
+!      * mappings as <kSomething>
+!      */
+!     if (xim_expected_char != NUL)
+!     {
+!         /* We're currently processing a keypad or other special key */
+!         if (slen == 1 && str[0] == xim_expected_char)
+!         {
+!             /* It's a match - don't do it here */
+!             xim_ignored_char = TRUE;
+!             add_to_input = FALSE;
+!         }
+!         else
+!         {
+!             /* Not a match */
+!             xim_ignored_char = FALSE;
+!         }
+!     }
+! 
+!     if (add_to_input)
+!         im_add_to_input((char_u *)str, slen);
+  
+      if (gtk_main_level() > 0)
+  	gtk_main_quit();
+***************
+*** 3556,3563 ****
+  }
+  
+      int
+! xim_queue_key_press_event(GdkEventKey *event)
+  {
+      /*
+       * When typing fFtT, XIM may be activated. Thus it must pass
+       * gtk_im_context_filter_keypress() in Normal mode.
+--- 3584,3626 ----
+  }
+  
+      int
+! xim_queue_key_press_event(GdkEventKey *event, int down)
+  {
++     if (down)
++     {
++ 	/*
++ 	 * Workaround GTK2 XIM 'feature' that always converts keypad keys to
++ 	 * chars., even when not part of an IM sequence (ref. feature of
++ 	 * gdk/gdkkeyuni.c).
++ 	 * Flag any keypad keys that might represent a single char.
++ 	 * If this (on its own - i.e., not part of an IM sequence) is
++ 	 * committed while we're processing one of these keys, we can ignore
++ 	 * that commit and go ahead & process it ourselves.  That way we can
++ 	 * still distinguish keypad keys for use in mappings.
++ 	 */
++ 	switch (event->keyval)
++ 	{
++ 	    case GDK_KP_Add:      xim_expected_char = '+';  break;
++ 	    case GDK_KP_Subtract: xim_expected_char = '-';  break;
++ 	    case GDK_KP_Divide:   xim_expected_char = '/';  break;
++ 	    case GDK_KP_Multiply: xim_expected_char = '*';  break;
++ 	    case GDK_KP_Decimal:  xim_expected_char = '.';  break;
++ 	    case GDK_KP_Equal:    xim_expected_char = '=';  break;
++ 	    case GDK_KP_0:        xim_expected_char = '0';  break;
++ 	    case GDK_KP_1:        xim_expected_char = '1';  break;
++ 	    case GDK_KP_2:        xim_expected_char = '2';  break;
++ 	    case GDK_KP_3:        xim_expected_char = '3';  break;
++ 	    case GDK_KP_4:        xim_expected_char = '4';  break;
++ 	    case GDK_KP_5:        xim_expected_char = '5';  break;
++ 	    case GDK_KP_6:        xim_expected_char = '6';  break;
++ 	    case GDK_KP_7:        xim_expected_char = '7';  break;
++ 	    case GDK_KP_8:        xim_expected_char = '8';  break;
++ 	    case GDK_KP_9:        xim_expected_char = '9';  break;
++ 	    default:              xim_expected_char = NUL;
++ 	}
++ 	xim_ignored_char = FALSE;
++     }
++ 
+      /*
+       * When typing fFtT, XIM may be activated. Thus it must pass
+       * gtk_im_context_filter_keypress() in Normal mode.
+***************
+*** 3603,3609 ****
+  	 * right now.  Unlike with GTK+ 1.2 we cannot rely on the IM module
+  	 * not doing anything before the activation key was sent. */
+  	if (im_activatekey_keyval == GDK_VoidSymbol || im_is_active)
+! 	    return gtk_im_context_filter_keypress(xic, event);
+      }
+  
+      return FALSE;
+--- 3666,3683 ----
+  	 * right now.  Unlike with GTK+ 1.2 we cannot rely on the IM module
+  	 * not doing anything before the activation key was sent. */
+  	if (im_activatekey_keyval == GDK_VoidSymbol || im_is_active)
+!         {
+! 	    int imresult = gtk_im_context_filter_keypress(xic, event);
+! 
+!             /* If XIM tried to commit a keypad key as a single char.,
+!              * ignore it so we can use the keypad key 'raw', for mappings. */
+!             if (xim_expected_char != NUL && xim_ignored_char)
+!                 /* We had a keypad key, and XIM tried to thieve it */
+!                 return FALSE;
+!             else
+!                 /* Normal processing */
+!                 return imresult;
+!         }
+      }
+  
+      return FALSE;
+***************
+*** 4797,4804 ****
+      }
+  }
+  
+      int
+! xim_queue_key_press_event(GdkEventKey *event)
+  {
+      if (preedit_buf_len <= 0)
+  	return FALSE;
+--- 4871,4879 ----
+      }
+  }
+  
++ /*ARGSUSED*/
+      int
+! xim_queue_key_press_event(GdkEventKey *event, int down)
+  {
+      if (preedit_buf_len <= 0)
+  	return FALSE;
+*** ../vim-6.2.247/src/proto/mbyte.pro	Sun Jun  1 12:26:16 2003
+--- src/proto/mbyte.pro	Mon Feb  9 15:02:04 2004
+***************
+*** 73,79 ****
+  void xim_decide_input_style __ARGS((void));
+  int im_get_feedback_attr __ARGS((int col));
+  void xim_reset __ARGS((void));
+! int xim_queue_key_press_event __ARGS((GdkEventKey *event));
+  void xim_init __ARGS((void));
+  void im_shutdown __ARGS((void));
+  int xim_get_status_area_height __ARGS((void));
+--- 73,79 ----
+  void xim_decide_input_style __ARGS((void));
+  int im_get_feedback_attr __ARGS((int col));
+  void xim_reset __ARGS((void));
+! int xim_queue_key_press_event __ARGS((GdkEventKey *event, int down));
+  void xim_init __ARGS((void));
+  void im_shutdown __ARGS((void));
+  int xim_get_status_area_height __ARGS((void));
+*** ../vim-6.2.247/src/version.c	Mon Feb  9 10:33:13 2004
+--- src/version.c	Mon Feb  9 18:42:45 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     248,
+  /**/
+
+-- 
+Warning label on a superhero Halloween costume:
+"Caution: Cape does not enable user to fly."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

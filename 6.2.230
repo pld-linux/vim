@@ -1,0 +1,279 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.230 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.230 (extra)
+Problem:    Win32: a complex pattern may cause a crash.
+Solution:   Use __try and __except to catch the exception and handle it
+	    gracefully, when possible.  Add myresetstkoflw() to reset the
+	    stack overflow. (Benjamin Peterson)
+Files:	    src/Make_bc5.mak, src/os_mswin.c src/os_win32.c, src/os_win32.h,
+	    src/proto/os_win32.pro, src/regexp.c
+
+
+*** ../vim-6.2.229/src/Make_bc5.mak	Tue Feb  3 16:20:37 2004
+--- src/Make_bc5.mak	Tue Feb  3 10:47:26 2004
+***************
+*** 488,494 ****
+  CC   = $(BOR)\BIN\Bcc32
+  LFLAGS	= -OS -Tpe -c -m -L$(LIB) $(DEBUG_FLAG) $(LINK2)
+  LFLAGSDLL  = -Tpd -c -m -L$(LIB) $(DEBUG_FLAG) $(LINK2)
+! CFLAGS = -w-aus -w-par -w-pch -I$(INCLUDE) -d -x- -RT- -k- -Oi $(HEADERS) -f-
+  !endif
+  
+  CC1 = -c
+--- 488,494 ----
+  CC   = $(BOR)\BIN\Bcc32
+  LFLAGS	= -OS -Tpe -c -m -L$(LIB) $(DEBUG_FLAG) $(LINK2)
+  LFLAGSDLL  = -Tpd -c -m -L$(LIB) $(DEBUG_FLAG) $(LINK2)
+! CFLAGS = -w-aus -w-par -w-pch -I$(INCLUDE) -d -RT- -k- -Oi $(HEADERS) -f-
+  !endif
+  
+  CC1 = -c
+*** ../vim-6.2.229/src/os_mswin.c	Sun Oct 12 16:42:14 2003
+--- src/os_mswin.c	Sun Feb  1 17:18:09 2004
+***************
+*** 738,743 ****
+--- 738,747 ----
+      // If the handle is valid, try to get the function address.
+      if (hinstLib != NULL)
+      {
++ #ifdef HAVE_TRY_EXCEPT
++ 	__try
++ 	{
++ #endif
+  	if (argstring != NULL)
+  	{
+  	    /* Call with string argument */
+***************
+*** 782,787 ****
+--- 786,801 ----
+  	    if (*string_result != NULL)
+  		mch_memmove(*string_result, retval_str, len);
+  	}
++ 
++ #ifdef HAVE_TRY_EXCEPT
++ 	}
++ 	__except(EXCEPTION_EXECUTE_HANDLER)
++ 	{
++ 	    if (GetExceptionCode() == EXCEPTION_STACK_OVERFLOW)
++ 		RESETSTKOFLW();
++ 	    fRunTimeLinkSuccess = 0;
++ 	}
++ #endif
+  
+  	// Free the DLL module.
+  	(void)FreeLibrary(hinstLib);
+*** ../vim-6.2.229/src/os_win32.c	Sun Oct 26 20:15:06 2003
+--- src/os_win32.c	Sun Feb  1 17:37:49 2004
+***************
+*** 4202,4204 ****
+--- 4203,4312 ----
+  {
+      return copy_infostreams(from, to);
+  }
++ 
++ #if defined(MYRESETSTKOFLW) || defined(PROTO)
++ /*
++  * Recreate a destroyed stack guard page in win32.
++  * Written by Benjamin Peterson.
++  */
++ 
++ /* These magic numbers are from the MS header files */
++ #define MIN_STACK_WIN9X 17
++ #define MIN_STACK_WINNT 2
++ 
++ /*
++  * This function does the same thing as _resetstkoflw(), which is only
++  * available in DevStudio .net and later.
++  * Returns 0 for failure, 1 for success.
++  */
++     int
++ myresetstkoflw(void)
++ {
++     BYTE	*pStackPtr;
++     BYTE	*pGuardPage;
++     BYTE	*pStackBase;
++     BYTE	*pLowestPossiblePage;
++     MEMORY_BASIC_INFORMATION mbi;
++     SYSTEM_INFO si;
++     DWORD	nPageSize;
++     DWORD	dummy;
++ 
++     /* This code will not work on win32s. */
++     PlatformId();
++     if (g_PlatformId == VER_PLATFORM_WIN32s)
++ 	return 0;
++ 
++     /* We need to know the system page size. */
++     GetSystemInfo(&si);
++     nPageSize = si.dwPageSize;
++ 
++     /* ...and the current stack pointer */
++     pStackPtr = (BYTE*)_alloca(1);
++ 
++     /* ...and the base of the stack. */
++     if (VirtualQuery(pStackPtr, &mbi, sizeof mbi) == 0)
++         return 0;
++     pStackBase = (BYTE*)mbi.AllocationBase;
++ 
++     /* ...and the page thats min_stack_req pages away from stack base; this is
++      * the lowest page we could use. */
++     pLowestPossiblePage = pStackBase + ((g_PlatformId == VER_PLATFORM_WIN32_NT)
++ 			     ? MIN_STACK_WINNT : MIN_STACK_WIN9X) * nPageSize;
++ 
++     /* On Win95, we want the next page down from the end of the stack. */
++     if (g_PlatformId == VER_PLATFORM_WIN32_WINDOWS)
++     {
++ 	/* Find the page that's only 1 page down from the page that the stack
++ 	 * ptr is in. */
++         pGuardPage = (BYTE*)((DWORD)nPageSize * (((DWORD)pStackPtr
++ 						    / (DWORD)nPageSize) - 1));
++         if (pGuardPage < pLowestPossiblePage)
++             return 0;
++ 
++ 	/* Apply the noaccess attribute to the page -- there's no guard
++ 	 * attribute in win95-type OSes. */
++         if (!VirtualProtect(pGuardPage, nPageSize, PAGE_NOACCESS, &dummy))
++             return 0;
++     }
++     else
++     {
++ 	/* On NT, however, we want the first committed page in the stack Start
++ 	 * at the stack base and move forward through memory until we find a
++ 	 * committed block. */
++         BYTE *pBlock = pStackBase;
++ 
++         while (1)
++         {
++             if (VirtualQuery(pBlock, &mbi, sizeof mbi) == 0)
++                 return 0;
++ 
++             pBlock += mbi.RegionSize;
++ 
++             if (mbi.State & MEM_COMMIT)
++                 break;
++         }
++ 
++         /* mbi now describes the first committed block in the stack. */
++         if (mbi.Protect & PAGE_GUARD)
++             return 1;
++ 
++         /* decide where the guard page should start */
++         if ((long_u)(mbi.BaseAddress) < (long_u)pLowestPossiblePage)
++             pGuardPage = pLowestPossiblePage;
++         else
++             pGuardPage = (BYTE*)mbi.BaseAddress;
++ 
++         /* allocate the guard page */
++         if (!VirtualAlloc(pGuardPage, nPageSize, MEM_COMMIT, PAGE_READWRITE))
++             return 0;
++ 
++         /* apply the guard attribute to the page */
++         if (!VirtualProtect(pGuardPage, nPageSize, PAGE_READWRITE | PAGE_GUARD,
++ 								      &dummy))
++             return 0;
++     }
++ 
++     return 1;
++ }
++ 
++ #endif
+*** ../vim-6.2.229/src/os_win32.h	Sun Oct 12 16:42:14 2003
+--- src/os_win32.h	Sun Feb  1 17:49:34 2004
+***************
+*** 117,122 ****
+--- 117,135 ----
+  # define DFLT_MAXMEMTOT	(5*1024)    /* use up to 5 Mbyte for Vim */
+  #endif
+  
++ #if defined(_MSC_VER) || defined(__BORLANDC__)
++     /* Support for __try / __except.  All versions of MSVC and Borland C are
++      * expected to have this.  Any other compilers that support it? */
++ # define HAVE_TRY_EXCEPT 1
++ # include <malloc.h>		/* for _resetstkoflw() */
++ # if defined(_MSC_VER) && (_MSC_VER >= 1300)
++ #  define RESETSTKOFLW _resetstkoflw
++ # else
++ #  define RESETSTKOFLW myresetstkoflw
++ #  define MYRESETSTKOFLW
++ # endif
++ #endif
++ 
+  /*
+   * Some simple debugging macros that look and behave a lot like their
+   * namesakes in MFC.
+*** ../vim-6.2.229/src/proto/os_win32.pro	Sun Jun  1 12:26:30 2003
+--- src/proto/os_win32.pro	Sun Feb  1 17:32:46 2004
+***************
+*** 41,44 ****
+--- 41,45 ----
+  char *default_shell __ARGS((void));
+  int mch_access __ARGS((char *n, int p));
+  int mch_copy_file_attribute __ARGS((char_u *from, char_u *to));
++ int myresetstkoflw __ARGS((void));
+  /* vim: set ft=c : */
+*** ../vim-6.2.229/src/regexp.c	Sat Sep 27 19:36:47 2003
+--- src/regexp.c	Sun Feb  1 17:50:16 2004
+***************
+*** 2784,2789 ****
+--- 2784,2795 ----
+  #endif
+  
+      reg_tofree = NULL;
++ 
++ #ifdef HAVE_TRY_EXCEPT
++     __try
++     {
++ #endif
++ 
+  #ifdef HAVE_SETJMP_H
+      /*
+       * Matching with a regexp may cause a very deep recursive call of
+***************
+*** 2939,2944 ****
+--- 2945,2965 ----
+  
+      if (out_of_stack)
+  	EMSG(_("E363: pattern caused out-of-stack error"));
++ 
++ #ifdef HAVE_TRY_EXCEPT
++     }
++     __except(EXCEPTION_EXECUTE_HANDLER)
++     {
++ 	if (GetExceptionCode() == EXCEPTION_STACK_OVERFLOW)
++ 	{
++ 	    RESETSTKOFLW();
++ 	    EMSG(_("E363: pattern caused out-of-stack error"));
++ 	}
++ 	else
++ 	    EMSG(_("E361: Crash intercepted; regexp too complex?"));
++ 	retval = 0L;
++     }
++ #endif
+  
+  theend:
+      /* Didn't find a match. */
+*** ../vim-6.2.229/src/version.c	Tue Feb  3 16:33:22 2004
+--- src/version.c	Tue Feb  3 16:52:46 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     230,
+  /**/
+
+-- 
+What a wonderfully exciting cough!  Do you mind if I join you?
+		-- Douglas Adams, "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

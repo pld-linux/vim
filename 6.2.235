@@ -1,0 +1,45 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.235 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.235 (extra)
+Problem:    Win32: Cursor isn't removed with a 25x80 window and doing:
+	    "1830ia<Esc>400a-<Esc>0w0". (Yasuhiro Matsumoto)
+Solution:   Remove the call to gui_undraw_cursor() from gui_mch_insert_lines().
+Files:	    src/gui_w48.c
+
+
+*** ../vim-6.2.234/src/gui_w48.c	Wed Jan  1 01:32:06 2003
+--- src/gui_w48.c	Wed Feb  4 21:29:28 2004
+***************
+*** 2454,2460 ****
+      ScrollWindowEx(s_textArea, 0, num_lines * gui.char_height,
+  				    &rc, &rc, NULL, NULL, get_scroll_flags());
+  
+-     gui_undraw_cursor();	/* Is this really necessary? */
+      UpdateWindow(s_textArea);
+  
+      gui_clear_block(row, gui.scroll_region_left,
+--- 2454,2459 ----
+*** ../vim-6.2.234/src/version.c	Wed Feb  4 21:42:30 2004
+--- src/version.c	Wed Feb  4 21:43:23 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     235,
+  /**/
+
+-- 
+Nothing is fool-proof to a sufficiently talented fool.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,116 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.239
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.239
+Problem:    GTK 2: With closed folds the arrow buttons of a vertical scrollbar
+	    often doesn't scroll. (Moshe Kaminsky)
+Solution:   Hackish solution: Detect that the button was pressed from the
+	    mouse pointer position.
+Files:	    src/gui_gtk.c, src/gui.c
+
+
+*** ../vim-6.2.238/src/gui_gtk.c	Sun Jan 11 12:45:02 2004
+--- src/gui_gtk.c	Fri Feb  6 15:22:50 2004
+***************
+*** 1103,1117 ****
+       * working in later GTK versions.
+       *
+       * FIXME: Well, it doesn't work in GTK2. :)
+!      * OK, I experimented with GTK_WIDGET_HAS_GRAB() and it seemed to work
+!      * to some extent.	But simply setting dragging = TRUE all the time
+!      * seems to work better :/	We also need to #define USE_ON_FLY_SCROLL
+!      * for GTK+ 2, thus things do work substantially different.
+       */
+      if (sb != NULL)
+      {
+  #ifdef HAVE_GTK2
+  	dragging = TRUE;
+  #else
+  	dragging = (GTK_RANGE(sb->id)->scroll_type == GTK_SCROLL_NONE);
+  #endif
+--- 1108,1149 ----
+       * working in later GTK versions.
+       *
+       * FIXME: Well, it doesn't work in GTK2. :)
+!      * HACK: Get the mouse pointer position, if it appears to be on an arrow
+!      * button set "dragging" to FALSE.  This assumes square buttons!
+       */
+      if (sb != NULL)
+      {
+  #ifdef HAVE_GTK2
+  	dragging = TRUE;
++ 
++ 	if (sb->wp != NULL)
++ 	{
++ 	    int			x;
++ 	    int			y;
++ 	    GdkModifierType	state;
++ 	    int			width;
++ 	    int			height;
++ 
++ 	    /* vertical scrollbar: need to set "dragging" properly in case
++ 	     * there are closed folds. */
++ 	    gdk_window_get_pointer(sb->id->window, &x, &y, &state);
++ 	    gdk_window_get_size(sb->id->window, &width, &height);
++ 	    if (x >= 0 && x < width && y >= 0 && y < height)
++ 	    {
++ 		if (y < width)
++ 		{
++ 		    /* up arrow: move one (closed fold) line up */
++ 		    dragging = FALSE;
++ 		    value = sb->wp->w_topline - 2;
++ 		}
++ 		else if (y > height - width)
++ 		{
++ 		    /* down arrow: move one (closed fold) line down */
++ 		    dragging = FALSE;
++ 		    value = sb->wp->w_topline;
++ 		}
++ 	    }
++ 	}
+  #else
+  	dragging = (GTK_RANGE(sb->id)->scroll_type == GTK_SCROLL_NONE);
+  #endif
+*** ../vim-6.2.238/src/gui.c	Sun Jan 25 20:45:55 2004
+--- src/gui.c	Thu Feb  5 20:15:58 2004
+***************
+*** 3294,3300 ****
+--- 3294,3307 ----
+  	gui.dragged_wp = sb->wp;
+      }
+      else
++     {
+  	gui.dragged_sb = SBAR_NONE;
++ #ifdef HAVE_GTK2
++ 	/* Keep the "dragged_wp" value until after the scrolling, for when the
++ 	 * moust button is released.  GTK2 doesn't send the button-up event. */
++ 	gui.dragged_wp = NULL;
++ #endif
++     }
+  
+      /* Vertical sbar info is kept in the first sbar (the left one) */
+      if (sb->wp != NULL)
+*** ../vim-6.2.238/src/version.c	Thu Feb  5 16:04:27 2004
+--- src/version.c	Fri Feb  6 19:17:11 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     239,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+63. You start using smileys in your snail mail.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

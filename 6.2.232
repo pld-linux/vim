@@ -1,0 +1,101 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.232
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.232
+Problem:    ":python vim.command('python print 2*2')" crashes Vim.  (Eugene
+	    Minkovskii)
+Solution:   Disallow executing a Python command recursively and give an error
+	    message.
+Files:	    src/if_python.c
+
+
+*** ../vim-6.2.231/src/if_python.c	Mon Dec 29 21:14:00 2003
+--- src/if_python.c	Tue Feb  3 19:41:48 2004
+***************
+*** 451,470 ****
+      return -1;
+  }
+  
+! /* External interface
+   */
+      static void
+  DoPythonCommand(exarg_T *eap, const char *cmd)
+  {
+  #if defined(MACOS) && !defined(MACOS_X_UNIX)
+      GrafPtr oldPort;
+      GetPort (&oldPort);
+      /* Check if the Python library is available */
+      if ( (Ptr) PyMac_Initialize == (Ptr) kUnresolvedCFragSymbolAddress)
+! 	return;
+  #endif
+      if (Python_Init())
+! 	return;
+  
+      RangeStart = eap->line1;
+      RangeEnd = eap->line2;
+--- 451,480 ----
+      return -1;
+  }
+  
+! /*
+!  * External interface
+   */
+      static void
+  DoPythonCommand(exarg_T *eap, const char *cmd)
+  {
++     static int recursive = 0;
++ 
++     if (recursive)
++     {
++ 	EMSG(_("E659: Cannot invoke Python recursively"));
++ 	return;
++     }
++     ++recursive;
++ 
+  #if defined(MACOS) && !defined(MACOS_X_UNIX)
+      GrafPtr oldPort;
+      GetPort (&oldPort);
+      /* Check if the Python library is available */
+      if ( (Ptr) PyMac_Initialize == (Ptr) kUnresolvedCFragSymbolAddress)
+! 	goto theend;
+  #endif
+      if (Python_Init())
+! 	goto theend;
+  
+      RangeStart = eap->line1;
+      RangeEnd = eap->line2;
+***************
+*** 477,482 ****
+--- 487,495 ----
+  #if defined(MACOS) && !defined(MACOS_X_UNIX)
+      SetPort (oldPort);
+  #endif
++ 
++ theend:
++     --recursive;
+  }
+  
+  /*
+*** ../vim-6.2.231/src/version.c	Tue Feb  3 17:25:35 2004
+--- src/version.c	Tue Feb  3 19:58:11 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     232,
+  /**/
+
+-- 
+To define recursion, we must first define recursion.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

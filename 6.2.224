@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.224
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.224
+Problem:    Mac: Can't compile with small features. (Axel Kielhorn)
+Solution:   Also include vim_chdirfile() when compiling for the Mac.
+Files:	    src/misc2.c
+
+
+*** ../vim-6.2.223/src/misc2.c	Mon Feb  2 12:53:51 2004
+--- src/misc2.c	Sun Feb  1 15:26:21 2004
+***************
+*** 2638,2644 ****
+      return State;
+  }
+  
+! #if defined(FEAT_SESSION) || defined(MSWIN) \
+  	|| (defined(FEAT_GUI_GTK) \
+  			    && (defined(FEAT_WINDOWS) || defined(FEAT_DND))) \
+  	|| defined(FEAT_SUN_WORKSHOP) || defined(FEAT_NETBEANS_INTG) \
+--- 2638,2644 ----
+      return State;
+  }
+  
+! #if defined(FEAT_SESSION) || defined(MSWIN) || defined(FEAT_GUI_MAC) \
+  	|| (defined(FEAT_GUI_GTK) \
+  			    && (defined(FEAT_WINDOWS) || defined(FEAT_DND))) \
+  	|| defined(FEAT_SUN_WORKSHOP) || defined(FEAT_NETBEANS_INTG) \
+*** ../vim-6.2.223/src/version.c	Mon Feb  2 12:53:51 2004
+--- src/version.c	Mon Feb  2 12:59:39 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     224,
+  /**/
+
+-- 
+If all you have is a hammer, everything looks like a nail.
+When your hammer is C++, everything begins to look like a thumb.
+			-- Steve Hoflich, comp.lang.c++
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

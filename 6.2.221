@@ -1,0 +1,51 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.221
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.221
+Problem:    No file name completion for ":cscope add".
+Solution:   Add the XFILE flag to ":cscope". (Gary Johnson)
+Files:	    src/ex_cmds.h
+
+
+*** ../vim-6.2.220/src/ex_cmds.h	Sun Jan 25 19:32:46 2004
+--- src/ex_cmds.h	Fri Jan 30 11:23:53 2004
+***************
+*** 257,263 ****
+  EX(CMD_crewind,		"crewind",	ex_cc,
+  			RANGE|NOTADR|COUNT|TRLBAR|BANG),
+  EX(CMD_cscope,		"cscope",	do_cscope,
+! 			EXTRA|NOTRLCOM|SBOXOK),
+  EX(CMD_cstag,		"cstag",	do_cstag,
+  			BANG|TRLBAR|WORD1),
+  EX(CMD_cunmap,		"cunmap",	ex_unmap,
+--- 257,263 ----
+  EX(CMD_crewind,		"crewind",	ex_cc,
+  			RANGE|NOTADR|COUNT|TRLBAR|BANG),
+  EX(CMD_cscope,		"cscope",	do_cscope,
+! 			EXTRA|NOTRLCOM|SBOXOK|XFILE),
+  EX(CMD_cstag,		"cstag",	do_cstag,
+  			BANG|TRLBAR|WORD1),
+  EX(CMD_cunmap,		"cunmap",	ex_unmap,
+*** ../vim-6.2.220/src/version.c	Sun Feb  1 20:06:29 2004
+--- src/version.c	Sun Feb  1 20:08:02 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     221,
+  /**/
+
+-- 
+Me?  A skeptic?  I trust you have proof.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,69 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.218
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.218
+Problem:    Warning for function without prototype.
+Solution:   Add argument types to the msgCB field of the BalloonEval struct.
+Files:	    src/gui_beval.h
+
+
+*** ../vim-6.2.217/src/gui_beval.h	Sun Oct 12 16:42:14 2003
+--- src/gui_beval.h	Fri Jan 30 19:51:37 2004
+***************
+*** 26,32 ****
+      ShS_SHOWING				/* the balloon is being displayed */
+  } BeState;
+  
+! typedef struct
+  {
+  #ifdef FEAT_GUI_GTK
+      GtkWidget		*target;	/* widget we are monitoring */
+--- 26,32 ----
+      ShS_SHOWING				/* the balloon is being displayed */
+  } BeState;
+  
+! typedef struct BalloonEvalStruct
+  {
+  #ifdef FEAT_GUI_GTK
+      GtkWidget		*target;	/* widget we are monitoring */
+***************
+*** 60,66 ****
+  #endif
+      int			ts;		/* tabstop setting for this buffer */
+      char_u		*msg;
+!     void		(*msgCB)();
+      void		*clientData;	/* For callback */
+  #if !defined(FEAT_GUI_GTK) && !defined(FEAT_GUI_W32)
+      Dimension		screen_width;	/* screen width in pixels */
+--- 60,66 ----
+  #endif
+      int			ts;		/* tabstop setting for this buffer */
+      char_u		*msg;
+!     void		(*msgCB)__ARGS((struct BalloonEvalStruct *, int));
+      void		*clientData;	/* For callback */
+  #if !defined(FEAT_GUI_GTK) && !defined(FEAT_GUI_W32)
+      Dimension		screen_width;	/* screen width in pixels */
+*** ../vim-6.2.217/src/version.c	Sun Feb  1 19:56:37 2004
+--- src/version.c	Sun Feb  1 19:58:02 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     218,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+10. And even your night dreams are in HTML.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,611 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.231
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.231 (after 6.2.046)
+Problem:    Various problems when an error exception is raised from within a
+	    builtin function.  When it is invoked while evaluating arguments
+	    to a function following arguments are still evaluated.  When
+	    invoked with a line range it will be called for remaining lines.
+Solution:   Update "force_abort" also after calling a builtin function, so
+	    that aborting() always returns the correct value. (Servatius
+	    Brandt)
+Files:	    src/eval.c, src/ex_eval.c, src/proto/ex_eval.pro,
+	    src/testdir/test49.ok, src/testdir/test49.vim
+
+
+*** ../vim-6.2.230/src/eval.c	Tue Feb  3 16:33:22 2004
+--- src/eval.c	Mon Feb  2 16:49:46 2004
+***************
+*** 1334,1340 ****
+  	if (doesrange || eap->skip)
+  	    break;
+  	/* Stop when immediately aborting on error, or when an interrupt
+! 	 * occurred or an exception was thrown but not caught. */
+  	if (aborting())
+  	    break;
+      }
+--- 1334,1342 ----
+  	if (doesrange || eap->skip)
+  	    break;
+  	/* Stop when immediately aborting on error, or when an interrupt
+! 	 * occurred or an exception was thrown but not caught.  get_func_var()
+! 	 * returned OK, so that the check for trailing characters below is
+! 	 * executed. */
+  	if (aborting())
+  	    break;
+      }
+***************
+*** 1345,1351 ****
+--- 1347,1356 ----
+      {
+  	/* Check for trailing illegal characters and a following command. */
+  	if (!ends_excmd(*arg))
++ 	{
++ 	    emsg_severe = TRUE;
+  	    EMSG(_(e_trailing));
++ 	}
+  	else
+  	    eap->nextcmd = check_nextcmd(arg);
+      }
+***************
+*** 3009,3022 ****
+      else
+  	ret = FAIL;
+  
+!     if (!aborting())
+!     {
+! 	if (ret == OK)
+! 	    ret = call_func(name, len, retvar, argcount, argvars,
+  				    firstline, lastline, doesrange, evaluate);
+! 	else
+! 	    EMSG2(_("E116: Invalid arguments for function %s"), name);
+!     }
+  
+      while (--argcount >= 0)
+  	clear_var(&argvars[argcount]);
+--- 3014,3024 ----
+      else
+  	ret = FAIL;
+  
+!     if (ret == OK)
+! 	ret = call_func(name, len, retvar, argcount, argvars,
+  				    firstline, lastline, doesrange, evaluate);
+!     else if (!aborting())
+! 	EMSG2(_("E116: Invalid arguments for function %s"), name);
+  
+      while (--argcount >= 0)
+  	clear_var(&argvars[argcount]);
+***************
+*** 3183,3188 ****
+--- 3185,3201 ----
+  		}
+  	    }
+  	}
++ 	/*
++ 	 * The function call (or "FuncUndefined" autocommand sequence) might
++ 	 * have been aborted by an error, an interrupt, or an explicitly thrown
++ 	 * exception that has not been caught so far.  This situation can be
++ 	 * tested for by calling aborting().  For an error in an internal
++ 	 * function or for the "E132" error in call_user_func(), however, the
++ 	 * throw point at which the "force_abort" flag (temporarily reset by
++ 	 * emsg()) is normally updated has not been reached yet. We need to
++ 	 * update that flag first to make aborting() reliable.
++ 	 */
++ 	update_force_abort();
+      }
+      if (error == ERROR_NONE)
+  	ret = OK;
+*** ../vim-6.2.230/src/ex_eval.c	Fri May 30 21:45:31 2003
+--- src/ex_eval.c	Mon Feb  2 22:04:59 2004
+***************
+*** 72,81 ****
+  /*
+   * When several errors appear in a row, setting "force_abort" is delayed until
+   * the failing command returned.  "cause_abort" is set to TRUE meanwhile, in
+!  * order to indicate that situation.  This is useful for aborting expression
+!  * evaluation when a function call set "force_abort" without producing any
+!  * error messages, but giving all error messages on a parsing error during the
+!  * expression evaluation (even if a try conditional is active).
+   */
+  static int cause_abort = FALSE;
+  
+--- 72,82 ----
+  /*
+   * When several errors appear in a row, setting "force_abort" is delayed until
+   * the failing command returned.  "cause_abort" is set to TRUE meanwhile, in
+!  * order to indicate that situation.  This is useful when "force_abort" was set
+!  * during execution of a function call from an expression: the aborting of the
+!  * expression evaluation is done without producing any error messages, but all
+!  * error messages on parsing errors during the expression evaluation are given
+!  * (even if a try conditional is active).
+   */
+  static int cause_abort = FALSE;
+  
+***************
+*** 85,92 ****
+   * to check whether an aborted function that does not handle a range itself
+   * should be called again for the next line in the range.  Also used for
+   * cancelling expression evaluation after a function call caused an immediate
+!  * abort.  Note that the first emsg() call temporarily resets force_abort until
+!  * the throw point for error messages has been reached.  That is, during
+   * cancellation of an expression evaluation after an aborting function call or
+   * due to a parsing error, aborting() always returns the same value.
+   */
+--- 86,93 ----
+   * to check whether an aborted function that does not handle a range itself
+   * should be called again for the next line in the range.  Also used for
+   * cancelling expression evaluation after a function call caused an immediate
+!  * abort.  Note that the first emsg() call temporarily resets "force_abort"
+!  * until the throw point for error messages has been reached.  That is, during
+   * cancellation of an expression evaluation after an aborting function call or
+   * due to a parsing error, aborting() always returns the same value.
+   */
+***************
+*** 97,102 ****
+--- 98,116 ----
+  }
+  
+  /*
++  * The value of "force_abort" is temporarily reset by the first emsg() call
++  * during an expression evaluation, and "cause_abort" is used instead.  It might
++  * be necessary to restore "force_abort" even before the throw point for the
++  * error message has been reached.  update_force_abort() should be called then.
++  */
++     void
++ update_force_abort()
++ {
++     if (cause_abort)
++ 	force_abort = TRUE;
++ }
++ 
++ /*
+   * Return TRUE if a command with a subcommand resulting in "retcode" should
+   * abort the script processing.  Can be used to suppress an autocommand after
+   * execution of a failing subcommand as long as the error message has not been
+*** ../vim-6.2.230/src/proto/ex_eval.pro	Sun Jun  1 12:26:09 2003
+--- src/proto/ex_eval.pro	Mon Feb  2 16:05:23 2004
+***************
+*** 1,5 ****
+--- 1,6 ----
+  /* ex_eval.c */
+  int aborting __ARGS((void));
++ void update_force_abort __ARGS((void));
+  int should_abort __ARGS((int retcode));
+  int aborted_in_try __ARGS((void));
+  int cause_errthrow __ARGS((char_u *msg, int severe, int *ignore));
+*** ../vim-6.2.230/src/testdir/test49.ok	Fri May 30 21:45:31 2003
+--- src/testdir/test49.ok	Mon Feb  2 16:05:23 2004
+***************
+*** 73,90 ****
+  *** Test  71: OK (1789569365)
+  *** Test  72: OK (9032615)
+  *** Test  73: OK (224907669)
+! *** Test  74: OK (1610087935)
+! *** Test  75: OK (1388671)
+! *** Test  76: OK (134217728)
+! *** Test  77: OK (70288929)
+! *** Test  78: OK (17895765)
+! *** Test  79: OK (387)
+! *** Test  80: OK (8454401)
+! *** Test  81: OK (2835)
+! *** Test  82: OK (934782101)
+! *** Test  83: OK (198689)
+! --- Test  84: All tests were run with throwing exceptions on error.
+  	      The $VIMNOERRTHROW control is not configured.
+! --- Test  84: All tests were run with throwing exceptions on interrupt.
+  	      The $VIMNOINTTHROW control is not configured.
+! *** Test  84: OK (50443995)
+--- 73,91 ----
+  *** Test  71: OK (1789569365)
+  *** Test  72: OK (9032615)
+  *** Test  73: OK (224907669)
+! *** Test  74: OK (2000403408)
+! *** Test  75: OK (1610087935)
+! *** Test  76: OK (1388671)
+! *** Test  77: OK (134217728)
+! *** Test  78: OK (70288929)
+! *** Test  79: OK (17895765)
+! *** Test  80: OK (387)
+! *** Test  81: OK (8454401)
+! *** Test  82: OK (2835)
+! *** Test  83: OK (934782101)
+! *** Test  84: OK (198689)
+! --- Test  85: All tests were run with throwing exceptions on error.
+  	      The $VIMNOERRTHROW control is not configured.
+! --- Test  85: All tests were run with throwing exceptions on interrupt.
+  	      The $VIMNOINTTHROW control is not configured.
+! *** Test  85: OK (50443995)
+*** ../vim-6.2.230/src/testdir/test49.vim	Sun Aug 10 22:31:29 2003
+--- src/testdir/test49.vim	Mon Feb  2 16:05:23 2004
+***************
+*** 7567,7573 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 74:  Errors, interupts, :throw during expression evaluation	    {{{1
+  "
+  "	    When a function call made during expression evaluation is aborted
+  "	    due to an error inside a :try/:endtry region or due to an interrupt
+--- 7567,7754 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 74:  Errors in builtin functions.				    {{{1
+! "
+! "	    On an error in a builtin function called inside a :try/:endtry
+! "	    region, the evaluation of the expression calling that function and
+! "	    the command containing that expression are abandoned.  The error can
+! "	    be caught as an exception.
+! "
+! "	    A simple :call of the builtin function is a trivial case.  If the
+! "	    builtin function is called in the argument list of another function,
+! "	    no further arguments are evaluated, and the other function is not
+! "	    executed.  If the builtin function is called from the argument of
+! "	    a :return command, the :return command is not executed.  If the
+! "	    builtin function is called from the argument of a :throw command,
+! "	    the :throw command is not executed.  The evaluation of the
+! "	    expression calling the builtin function is abandoned.
+! "-------------------------------------------------------------------------------
+! 
+! XpathINIT
+! 
+! function! F1(arg1)
+!     Xpath 1					" X: 0
+! endfunction
+! 
+! function! F2(arg1, arg2)
+!     Xpath 2					" X: 0
+! endfunction
+! 
+! function! G()
+!     Xpath 4					" X: 0
+! endfunction
+! 
+! function! H()
+!     Xpath 8					" X: 0
+! endfunction
+! 
+! function! R()
+!     while 1
+! 	try
+! 	    let caught = 0
+! 	    let v:errmsg = ""
+! 	    Xpath 16				" X: 16
+! 	    return append(1, "s")
+! 	catch /E21/
+! 	    let caught = 1
+! 	catch /.*/
+! 	    Xpath 32				" X: 0
+! 	finally
+! 	    Xpath 64				" X: 64
+! 	    if caught || $VIMNOERRTHROW && v:errmsg =~ 'E21'
+! 		Xpath 128			" X: 128
+! 	    endif
+! 	    break		" discard error for $VIMNOERRTHROW
+! 	endtry
+!     endwhile
+!     Xpath 256					" X: 256
+! endfunction
+! 
+! try
+!     set noma	" let append() fail with "E21"
+! 
+!     while 1
+! 	try
+! 	    let caught = 0
+! 	    let v:errmsg = ""
+! 	    Xpath 512				" X: 512
+! 	    call append(1, "s")
+! 	catch /E21/
+! 	    let caught = 1
+! 	catch /.*/
+! 	    Xpath 1024				" X: 0
+! 	finally
+! 	    Xpath 2048				" X: 2048
+! 	    if caught || $VIMNOERRTHROW && v:errmsg =~ 'E21'
+! 		Xpath 4096			" X: 4096
+! 	    endif
+! 	    break		" discard error for $VIMNOERRTHROW
+! 	endtry
+!     endwhile
+! 
+!     while 1
+! 	try
+! 	    let caught = 0
+! 	    let v:errmsg = ""
+! 	    Xpath 8192				" X: 8192
+! 	    call F1('x' . append(1, "s"))
+! 	catch /E21/
+! 	    let caught = 1
+! 	catch /.*/
+! 	    Xpath 16384				" X: 0
+! 	finally
+! 	    Xpath 32768				" X: 32768
+! 	    if caught || $VIMNOERRTHROW && v:errmsg =~ 'E21'
+! 		Xpath 65536			" X: 65536
+! 	    endif
+! 	    break		" discard error for $VIMNOERRTHROW
+! 	endtry
+!     endwhile
+! 
+!     while 1
+! 	try
+! 	    let caught = 0
+! 	    let v:errmsg = ""
+! 	    Xpath 131072			" X: 131072
+! 	    call F2('x' . append(1, "s"), G())
+! 	catch /E21/
+! 	    let caught = 1
+! 	catch /.*/
+! 	    Xpath 262144			" X: 0
+! 	finally
+! 	    Xpath 524288			" X: 524288
+! 	    if caught || $VIMNOERRTHROW && v:errmsg =~ 'E21'
+! 		Xpath 1048576			" X: 1048576
+! 	    endif
+! 	    break		" discard error for $VIMNOERRTHROW
+! 	endtry
+!     endwhile
+! 
+!     call R()
+! 
+!     while 1
+! 	try
+! 	    let caught = 0
+! 	    let v:errmsg = ""
+! 	    Xpath 2097152			" X: 2097152
+! 	    throw "T" . append(1, "s")
+! 	catch /E21/
+! 	    let caught = 1
+! 	catch /^T.*/
+! 	    Xpath 4194304			" X: 0
+! 	catch /.*/
+! 	    Xpath 8388608			" X: 0
+! 	finally
+! 	    Xpath 16777216			" X: 16777216
+! 	    if caught || $VIMNOERRTHROW && v:errmsg =~ 'E21'
+! 		Xpath 33554432			" X: 33554432
+! 	    endif
+! 	    break		" discard error for $VIMNOERRTHROW
+! 	endtry
+!     endwhile
+! 
+!     while 1
+! 	try
+! 	    let caught = 0
+! 	    let v:errmsg = ""
+! 	    Xpath 67108864			" X: 67108864
+! 	    let x = "a"
+! 	    let x = x . "b" . append(1, "s") . H()
+! 	catch /E21/
+! 	    let caught = 1
+! 	catch /.*/
+! 	    Xpath 134217728			" X: 0
+! 	finally
+! 	    Xpath 268435456			" X: 268435456
+! 	    if caught || $VIMNOERRTHROW && v:errmsg =~ 'E21'
+! 		Xpath 536870912			" X: 536870912
+! 	    endif
+! 	    if x == "a"
+! 		Xpath 1073741824		" X: 1073741824
+! 	    endif
+! 	    break		" discard error for $VIMNOERRTHROW
+! 	endtry
+!     endwhile
+! catch /.*/
+!     " The Xpath command does not accept 2^31 (negative); add explicitly:
+!     let Xpath = Xpath + 2147483648		" X: 0
+!     Xout v:exception "in" v:throwpoint
+! finally
+!     set ma&
+! endtry
+! 
+! unlet! caught x
+! delfunction F1
+! delfunction F2
+! delfunction G
+! delfunction H
+! delfunction R
+! 
+! Xcheck 2000403408
+! 
+! 
+! "-------------------------------------------------------------------------------
+! " Test 75:  Errors, interupts, :throw during expression evaluation	    {{{1
+  "
+  "	    When a function call made during expression evaluation is aborted
+  "	    due to an error inside a :try/:endtry region or due to an interrupt
+***************
+*** 7853,7859 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 75:  Errors, interupts, :throw in name{brace-expression}		    {{{1
+  "
+  "	    When a function call made during evaluation of an expression in
+  "	    braces as part of a function name after ":function" is aborted due
+--- 8034,8040 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 76:  Errors, interupts, :throw in name{brace-expression}		    {{{1
+  "
+  "	    When a function call made during evaluation of an expression in
+  "	    braces as part of a function name after ":function" is aborted due
+***************
+*** 7983,7989 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 76:  Messages on parsing errors in expression evaluation		    {{{1
+  "
+  "	    When an expression evaluation detects a parsing error, an error
+  "	    message is given and converted to an exception, and the expression
+--- 8164,8170 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 77:  Messages on parsing errors in expression evaluation		    {{{1
+  "
+  "	    When an expression evaluation detects a parsing error, an error
+  "	    message is given and converted to an exception, and the expression
+***************
+*** 8172,8178 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 77:  Throwing one of several errors for the same command		    {{{1
+  "
+  "	    When several errors appear in a row (for instance during expression
+  "	    evaluation), the first as the most specific one is used when
+--- 8353,8359 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 78:  Throwing one of several errors for the same command		    {{{1
+  "
+  "	    When several errors appear in a row (for instance during expression
+  "	    evaluation), the first as the most specific one is used when
+***************
+*** 8367,8373 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 78:  Syntax error in expression for illegal :elseif		    {{{1
+  "
+  "	    If there is a syntax error in the expression after an illegal
+  "	    :elseif, an error message is given (or an error exception thrown)
+--- 8548,8554 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 79:  Syntax error in expression for illegal :elseif		    {{{1
+  "
+  "	    If there is a syntax error in the expression after an illegal
+  "	    :elseif, an error message is given (or an error exception thrown)
+***************
+*** 8552,8558 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 79:  Discarding exceptions after an error or interrupt		    {{{1
+  "
+  "	    When an exception is thrown from inside a :try conditional without
+  "	    :catch and :finally clauses and an error or interrupt occurs before
+--- 8733,8739 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 80:  Discarding exceptions after an error or interrupt		    {{{1
+  "
+  "	    When an exception is thrown from inside a :try conditional without
+  "	    :catch and :finally clauses and an error or interrupt occurs before
+***************
+*** 8598,8604 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 80:  Ignoring :catch clauses after an error or interrupt		    {{{1
+  "
+  "	    When an exception is thrown and an error or interrupt occurs before
+  "	    the matching :catch clause is reached, the exception is discarded
+--- 8779,8785 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 81:  Ignoring :catch clauses after an error or interrupt		    {{{1
+  "
+  "	    When an exception is thrown and an error or interrupt occurs before
+  "	    the matching :catch clause is reached, the exception is discarded
+***************
+*** 8706,8712 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 81:  Executing :finally clauses after an error or interrupt	    {{{1
+  "
+  "	    When an exception is thrown and an error or interrupt occurs before
+  "	    the :finally of the innermost :try is reached, the exception is
+--- 8887,8893 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 82:  Executing :finally clauses after an error or interrupt	    {{{1
+  "
+  "	    When an exception is thrown and an error or interrupt occurs before
+  "	    the :finally of the innermost :try is reached, the exception is
+***************
+*** 8756,8762 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 82:  Exceptions in autocommand sequences.			    {{{1
+  "
+  "	    When an exception occurs in a sequence of autocommands for
+  "	    a specific event, the rest of the sequence is not executed.  The
+--- 8937,8943 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 83:  Exceptions in autocommand sequences.			    {{{1
+  "
+  "	    When an exception occurs in a sequence of autocommands for
+  "	    a specific event, the rest of the sequence is not executed.  The
+***************
+*** 8931,8937 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 83:  Error exceptions in autocommands for I/O command events	    {{{1
+  "
+  "	    When an I/O command is inside :try/:endtry, autocommands to be
+  "	    executed after it should be skipped on an error (exception) in the
+--- 9112,9118 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 84:  Error exceptions in autocommands for I/O command events	    {{{1
+  "
+  "	    When an I/O command is inside :try/:endtry, autocommands to be
+  "	    executed after it should be skipped on an error (exception) in the
+***************
+*** 9178,9184 ****
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 84:  $VIMNOERRTHROW and $VIMNOINTTHROW support			    {{{1
+  "
+  "	    It is possible to configure Vim for throwing exceptions on error
+  "	    or interrupt, controlled by variables $VIMNOERRTHROW and
+--- 9359,9365 ----
+  
+  
+  "-------------------------------------------------------------------------------
+! " Test 85:  $VIMNOERRTHROW and $VIMNOINTTHROW support			    {{{1
+  "
+  "	    It is possible to configure Vim for throwing exceptions on error
+  "	    or interrupt, controlled by variables $VIMNOERRTHROW and
+*** ../vim-6.2.230/src/version.c	Tue Feb  3 16:55:34 2004
+--- src/version.c	Tue Feb  3 17:23:01 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     231,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+29. Your phone bill comes to your doorstep in a box.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

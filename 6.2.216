@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.216
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.216 (after 6.2.206)
+Problem:    Multi-byte characters stil cannot be used as hotkeys in a console
+	    dialog.  (Mattias Erkisson)
+Solution:   Make get_keystroke() handle multi-byte characters.
+Files:	    src/misc1.c
+
+
+*** ../vim-6.2.215/src/misc1.c	Sun Jan 18 20:58:01 2004
+--- src/misc1.c	Wed Jan 28 13:54:06 2004
+***************
+*** 2832,2837 ****
+--- 2832,2846 ----
+  		continue;
+  	    }
+  	}
++ #ifdef FEAT_MBYTE
++ 	if (has_mbyte)
++ 	{
++ 	    if (MB_BYTE2LEN(n) > len)
++ 		continue;	/* more bytes to get */
++ 	    buf[len >= CBUFLEN ? CBUFLEN - 1 : len] = NUL;
++ 	    n = (*mb_ptr2char)(buf);
++ 	}
++ #endif
+  #ifdef UNIX
+  	if (n == intr_char)
+  	    n = ESC;
+*** ../vim-6.2.215/src/version.c	Fri Jan 30 21:03:16 2004
+--- src/version.c	Sun Feb  1 16:37:31 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     216,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+6. You refuse to go to a vacation spot with no electricity and no phone lines.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

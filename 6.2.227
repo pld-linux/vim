@@ -1,0 +1,115 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.227 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.227 (extra)
+Problem:    The "PC" symbol is defined but not used anywhere.
+Solution:   Remove "-DPC" from the makefiles.
+Files:	    src/Make_bc3.mak, src/Make_bc5.mak, src/Make_cyg.mak,
+	    src/Make_ming.mak
+
+
+*** ../vim-6.2.226/src/Make_bc3.mak	Wed May 14 19:31:56 2003
+--- src/Make_bc3.mak	Tue Feb  3 10:46:21 2004
+***************
+*** 164,170 ****
+  -Iproto
+  -I$(INCLUDEPATH)
+  -L$(LIBPATH)
+! -DPC;MSDOS$(SPAWND)
+  | vim.cfg
+  
+  test:
+--- 164,170 ----
+  -Iproto
+  -I$(INCLUDEPATH)
+  -L$(LIBPATH)
+! -DMSDOS$(SPAWND)
+  | vim.cfg
+  
+  test:
+*** ../vim-6.2.226/src/Make_bc5.mak	Tue Jan  6 16:33:35 2004
+--- src/Make_bc5.mak	Tue Feb  3 10:47:26 2004
+***************
+*** 284,290 ****
+  # shouldn't have to change:
+  LIB = $(BOR)\lib
+  INCLUDE = $(BOR)\include;.;proto
+! DEFINES = -DFEAT_$(FEATURES) -DWIN32 -DPC -DHAVE_PATHDEF \
+  	  -DWINVER=$(WINVER) -D_WIN32_WINNT=$(WINVER)
+  
+  !ifdef PERL
+--- 284,290 ----
+  # shouldn't have to change:
+  LIB = $(BOR)\lib
+  INCLUDE = $(BOR)\include;.;proto
+! DEFINES = -DFEAT_$(FEATURES) -DWIN32 -DHAVE_PATHDEF \
+  	  -DWINVER=$(WINVER) -D_WIN32_WINNT=$(WINVER)
+  
+  !ifdef PERL
+*** ../vim-6.2.226/src/Make_cyg.mak	Tue Feb  3 16:14:03 2004
+--- src/Make_cyg.mak	Tue Feb  3 10:47:32 2004
+***************
+*** 91,97 ****
+  ### See feature.h for a list of optionals.
+  ### Any other defines can be included here.
+  
+! DEFINES = -DWIN32 -DPC -DHAVE_PATHDEF -DFEAT_$(FEATURES) \
+  	  -DWINVER=$(WINVER) -D_WIN32_WINNT=$(WINVER)
+  INCLUDES = -mcpu=$(CPUNR) -march=$(ARCH) -Iproto
+  
+--- 91,97 ----
+  ### See feature.h for a list of optionals.
+  ### Any other defines can be included here.
+  
+! DEFINES = -DWIN32 -DHAVE_PATHDEF -DFEAT_$(FEATURES) \
+  	  -DWINVER=$(WINVER) -D_WIN32_WINNT=$(WINVER)
+  INCLUDES = -mcpu=$(CPUNR) -march=$(ARCH) -Iproto
+  
+*** ../vim-6.2.226/src/Make_ming.mak	Tue Feb  3 16:14:03 2004
+--- src/Make_ming.mak	Tue Feb  3 10:47:43 2004
+***************
+*** 204,210 ****
+  # See feature.h for a list of options.
+  # Any other defines can be included here.
+  DEF_GUI=-DFEAT_GUI_W32 -DFEAT_CLIPBOARD
+! DEFINES=-DWIN32 -DPC -DWINVER=$(WINVER) -D_WIN32_WINNT=$(WINVER) \
+  	-DHAVE_PATHDEF -DFEAT_$(FEATURES)
+  ifeq ($(CROSS),yes)
+  # cross-compiler:
+--- 204,210 ----
+  # See feature.h for a list of options.
+  # Any other defines can be included here.
+  DEF_GUI=-DFEAT_GUI_W32 -DFEAT_CLIPBOARD
+! DEFINES=-DWIN32 -DWINVER=$(WINVER) -D_WIN32_WINNT=$(WINVER) \
+  	-DHAVE_PATHDEF -DFEAT_$(FEATURES)
+  ifeq ($(CROSS),yes)
+  # cross-compiler:
+*** ../vim-6.2.226/src/version.c	Tue Feb  3 16:14:03 2004
+--- src/version.c	Tue Feb  3 16:18:55 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     227,
+  /**/
+
+-- 
+This planet has -- or rather had -- a problem, which was this: most
+of the people living on it were unhappy for pretty much of the time.
+Many solutions were suggested for this problem, but most of these
+were largely concerned with the movements of small green pieces of
+paper, which is odd because on the whole it wasn't the small green
+pieces of paper that were unhappy.
+		-- Douglas Adams, "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
