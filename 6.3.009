@@ -1,0 +1,107 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.009
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.009 (after 6.3.006)
+Problem:    ":breakadd file /path/foo.vim" does not match when a symbolic link
+	    is involved.  (Servatius Brandt)
+Solution:   Do expand the pattern when it does not start with "*".
+Files:	    runtime/doc/repeat.txt, src/ex_cmds2.c
+
+
+*** ../vim-6.3.008/runtime/doc/repeat.txt	Wed Jun  9 14:56:29 2004
+--- runtime/doc/repeat.txt	Tue Jun 22 15:01:39 2004
+***************
+*** 1,4 ****
+! *repeat.txt*    For Vim version 6.3.  Last change: 2004 Apr 02
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *repeat.txt*    For Vim version 6.3.  Last change: 2004 Jun 22
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 476,488 ****
+  of characters.  'ignorecase' is not used, but "\c" can be used in the pattern
+  to ignore case |/\c|.  Don't include the () for the function name!
+  
+! The match for sourced scripts is done against the full file name.  Examples: >
+! 	breakadd file explorer
+! won't match, the path is missing. >
+  	breakadd file *explorer.vim
+! matches ".../plugin/explorer.vim" and ".../plugin/iexplorer.vim". >
+  	breakadd file */explorer.vim
+! matches ".../plugin/explorer.vim" only.
+  
+  The match for functions is done against the name as it's shown in the output
+  of ":function".  For local functions this means that something like "<SNR>99_"
+--- 476,489 ----
+  of characters.  'ignorecase' is not used, but "\c" can be used in the pattern
+  to ignore case |/\c|.  Don't include the () for the function name!
+  
+! The match for sourced scripts is done against the full file name.  If no path
+! is specified the current directory is used.  Examples: >
+! 	breakadd file explorer.vim
+! matches "explorer.vim" in the current directory. >
+  	breakadd file *explorer.vim
+! matches ".../plugin/explorer.vim", ".../plugin/iexplorer.vim", etc. >
+  	breakadd file */explorer.vim
+! matches ".../plugin/explorer.vim" and "explorer.vim" in any other directory.
+  
+  The match for functions is done against the name as it's shown in the output
+  of ":function".  For local functions this means that something like "<SNR>99_"
+*** ../vim-6.3.008/src/ex_cmds2.c	Wed Jun 16 12:34:33 2004
+--- src/ex_cmds2.c	Tue Jun 22 15:05:07 2004
+***************
+*** 431,437 ****
+  	vim_free(q);
+  	if (p == NULL)
+  	    return FAIL;
+! 	bp->dbg_name = p;
+  #ifdef MACOS_CLASSIC
+  	if (bp->dbg_name != NULL)
+  	    slash_n_colon_adjust(bp->dbg_name);
+--- 431,443 ----
+  	vim_free(q);
+  	if (p == NULL)
+  	    return FAIL;
+! 	if (*p != '*')
+! 	{
+! 	    bp->dbg_name = fix_fname(p);
+! 	    vim_free(p);
+! 	}
+! 	else
+! 	    bp->dbg_name = p;
+  #ifdef MACOS_CLASSIC
+  	if (bp->dbg_name != NULL)
+  	    slash_n_colon_adjust(bp->dbg_name);
+*** ../vim-6.3.008/src/version.c	Sun Jun 27 17:25:17 2004
+--- src/version.c	Mon Jun 28 19:36:28 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     9,
+  /**/
+
+-- 
+    [clop clop]
+MORTICIAN:  Who's that then?
+CUSTOMER:   I don't know.
+MORTICIAN:  Must be a king.
+CUSTOMER:   Why?
+MORTICIAN:  He hasn't got shit all over him.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

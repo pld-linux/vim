@@ -1,0 +1,65 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.010
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.010
+Problem:    When writing to a named pipe there is an error for fsync()
+	    failing.
+Solution:   Ignore the fsync() error for devices.
+Files:	    src/fileio.c
+
+
+*** ../vim-6.3.009/src/fileio.c	Sun Jun 20 13:56:21 2004
+--- src/fileio.c	Tue Jun 29 20:02:53 2004
+***************
+*** 3965,3972 ****
+       * original and the backup file to be lost when halting the system right
+       * after writing the file.  That's because only the meta-data is
+       * journalled.  Syncing the file slows down the system, but assures it has
+!      * been written to disk and we don't lose it. */
+!     if (fsync(fd) != 0)
+      {
+  	errmsg = (char_u *)_("E667: Fsync failed");
+  	end = 0;
+--- 3965,3974 ----
+       * original and the backup file to be lost when halting the system right
+       * after writing the file.  That's because only the meta-data is
+       * journalled.  Syncing the file slows down the system, but assures it has
+!      * been written to disk and we don't lose it.
+!      * For a device do try the fsync() but don't complain if it does not work
+!      * (could be a pipe). */
+!     if (fsync(fd) != 0 && !device)
+      {
+  	errmsg = (char_u *)_("E667: Fsync failed");
+  	end = 0;
+*** ../vim-6.3.009/src/version.c	Mon Jun 28 19:38:42 2004
+--- src/version.c	Tue Jun 29 20:06:21 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     10,
+  /**/
+
+-- 
+A poem:                read aloud:
+
+<> !*''#               Waka waka bang splat tick tick hash,
+^"`$$-                 Caret quote back-tick dollar dollar dash,
+!*=@$_                 Bang splat equal at dollar under-score,
+%*<> ~#4               Percent splat waka waka tilde number four,
+&[]../                 Ampersand bracket bracket dot dot slash,
+|{,,SYSTEM HALTED      Vertical-bar curly-bracket comma comma CRASH.
+
+Fred Bremmer and Steve Kroese (Calvin College & Seminary of Grand Rapids, MI.)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

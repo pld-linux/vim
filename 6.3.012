@@ -1,0 +1,92 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.012
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.012
+Problem:    Internal lalloc(0) error when using a complicated multi-line
+	    pattern in a substitute command. (Luc Hermitte)
+Solution:   Avoid going past the end of a line.
+Files:	    src/ex_cmds.c
+
+
+*** ../vim-6.3.011/src/ex_cmds.c	Thu Jun 10 21:08:20 2004
+--- src/ex_cmds.c	Tue Jul  6 14:47:37 2004
+***************
+*** 3727,3732 ****
+--- 3727,3733 ----
+  	    unsigned	len, needed_len;
+  	    long	nmatch_tl = 0;	/* nr of lines matched below lnum */
+  	    int		do_again;	/* do it again after joining lines */
++ 	    int		skip_match = FALSE;
+  
+  	    /*
+  	     * The new text is build up step by step, to avoid too much
+***************
+*** 3811,3817 ****
+  			&& regmatch.endpos[0].lnum == 0
+  			&& matchcol == regmatch.endpos[0].col)
+  		{
+! 		    ++matchcol; /* search for a match at next column */
+  		    goto skip;
+  		}
+  
+--- 3812,3823 ----
+  			&& regmatch.endpos[0].lnum == 0
+  			&& matchcol == regmatch.endpos[0].col)
+  		{
+! 		    if (sub_firstline[matchcol] == NUL)
+! 			/* We already were at the end of the line.  Don't look
+! 			 * for a match in this line again. */
+! 			skip_match = TRUE;
+! 		    else
+! 			++matchcol; /* search for a match at next column */
+  		    goto skip;
+  		}
+  
+***************
+*** 4103,4111 ****
+  		/* We already know that we did the last subst when we are at
+  		 * the end of the line, except that a pattern like
+  		 * "bar\|\nfoo" may match at the NUL. */
+! 		lastone = ((sub_firstline[matchcol] == NUL && nmatch <= 1
+! 					   && !re_multiline(regmatch.regprog))
+! 			     || got_int || got_quit || !(do_all || do_again));
+  		nmatch = -1;
+  
+  		/*
+--- 4109,4120 ----
+  		/* We already know that we did the last subst when we are at
+  		 * the end of the line, except that a pattern like
+  		 * "bar\|\nfoo" may match at the NUL. */
+! 		lastone = (skip_match
+! 			|| got_int
+! 			|| got_quit
+! 			|| !(do_all || do_again)
+! 			|| (sub_firstline[matchcol] == NUL && nmatch <= 1
+! 					 && !re_multiline(regmatch.regprog)));
+  		nmatch = -1;
+  
+  		/*
+*** ../vim-6.3.011/src/version.c	Fri Jul  2 22:00:36 2004
+--- src/version.c	Tue Jul  6 14:56:13 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     12,
+  /**/
+
+-- 
+Kisses may last for as much as, but no more than, five minutes.
+		[real standing law in Iowa, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.007
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.007
+Problem:    When there is a buffer with 'buftype' set to "nofile" and using a
+	    ":cd" command, the swap file is not deleted when exiting.
+Solution:   Use the full path of the swap file also for "nofile" buffers.
+Files:	    src/fileio.c
+
+
+*** ../vim-6.3.006/src/fileio.c	Wed Jun  9 14:56:28 2004
+--- src/fileio.c	Sun Jun 20 13:53:29 2004
+***************
+*** 5290,5297 ****
+  	    }
+  	    if (p == NULL || buf->b_fname == NULL)
+  		buf->b_fname = buf->b_ffname;
+- 	    mf_fullname(buf->b_ml.ml_mfp);
+  	}
+      }
+  #ifdef FEAT_WINDOWS
+      status_redraw_all();
+--- 5290,5300 ----
+  	    }
+  	    if (p == NULL || buf->b_fname == NULL)
+  		buf->b_fname = buf->b_ffname;
+  	}
++ 
++ 	/* Always make the swap file name a full path, a "nofile" buffer may
++ 	 * also have a swap file. */
++ 	mf_fullname(buf->b_ml.ml_mfp);
+      }
+  #ifdef FEAT_WINDOWS
+      status_redraw_all();
+*** ../vim-6.3.006/src/version.c	Wed Jun 16 12:34:33 2004
+--- src/version.c	Sun Jun 20 13:55:23 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     7,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+220. Your wife asks for sex and you tell her where to find you on IRC.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.008
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.008
+Problem:    Compiling fails under OS/2.
+Solution:   Include "e_screenmode" also for OS/2. (David Sanders)
+Files:	    src/globals.h
+
+
+*** ../vim-6.3.007/src/globals.h	Wed Jun  9 14:56:25 2004
+--- src/globals.h	Sun Jun 27 15:44:13 2004
+***************
+*** 1321,1327 ****
+  #endif
+  EXTERN char_u e_secure[]	INIT(=N_("E523: Not allowed here"));
+  #if defined(AMIGA) || defined(MACOS) || defined(MSWIN) || defined(RISCOS) \
+! 	|| defined(UNIX) || defined(VMS)
+  EXTERN char_u e_screenmode[]	INIT(=N_("E359: Screen mode setting not supported"));
+  #endif
+  EXTERN char_u e_scroll[]	INIT(=N_("E49: Invalid scroll size"));
+--- 1321,1327 ----
+  #endif
+  EXTERN char_u e_secure[]	INIT(=N_("E523: Not allowed here"));
+  #if defined(AMIGA) || defined(MACOS) || defined(MSWIN) || defined(RISCOS) \
+! 	|| defined(UNIX) || defined(VMS) || defined(OS2)
+  EXTERN char_u e_screenmode[]	INIT(=N_("E359: Screen mode setting not supported"));
+  #endif
+  EXTERN char_u e_scroll[]	INIT(=N_("E49: Invalid scroll size"));
+*** ../vim-6.3.007/src/version.c	Sun Jun 20 13:56:21 2004
+--- src/version.c	Sun Jun 27 17:23:45 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     8,
+  /**/
+
+-- 
+"A mouse can be just as dangerous as a bullet or a bomb."
+             (US Representative Lamar Smith, R-Texas)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

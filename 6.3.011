@@ -1,0 +1,65 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.011
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.011
+Problem:    Crash when the completion function of a user-command uses a
+	    "normal :cmd" command.  (Hari Krishna Dara)
+Solution:   Save the command line when invoking the completion function.
+Files:	    src/ex_getln.c
+
+
+*** ../vim-6.3.010/src/ex_getln.c	Wed Jun  9 14:56:25 2004
+--- src/ex_getln.c	Fri Jul  2 21:55:55 2004
+***************
+*** 3974,3979 ****
+--- 3974,3980 ----
+      char_u      num[50];
+      garray_T	ga;
+      int		save_current_SID = current_SID;
++     struct cmdline_info	    save_ccline;
+  
+      if (xp->xp_arg == NULL || xp->xp_arg[0] == '\0')
+  	return FAIL;
+***************
+*** 3987,3995 ****
+--- 3988,4004 ----
+      args[1] = ccline.cmdbuff;
+      args[2] = num;
+  
++     /* Save the cmdline, we don't know what the function may do. */
++     save_ccline = ccline;
++     ccline.cmdbuff = NULL;
++     ccline.cmdprompt = NULL;
+      current_SID = xp->xp_scriptID;
++ 
+      all = call_vim_function(xp->xp_arg, 3, args, FALSE);
++ 
++     ccline = save_ccline;
+      current_SID = save_current_SID;
++ 
+      ccline.cmdbuff[ccline.cmdlen] = keep;
+      if (all == NULL)
+  	return FAIL;
+*** ../vim-6.3.010/src/version.c	Tue Jun 29 20:07:02 2004
+--- src/version.c	Fri Jul  2 21:59:54 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     11,
+  /**/
+
+-- 
+Save the plankton - eat a whale.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
