@@ -25,12 +25,12 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	6.1
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}.tar.bz2
-Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{version}-lang.tar.gz
+Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{version}-lang.tar.bz2
 Source2:	g%{name}-athena.desktop
 Source3:	g%{name}-motif.desktop
 Source4:	g%{name}-gtk.desktop
