@@ -389,7 +389,7 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
 %{!?_without_athena:install %{SOURCE3}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 %{!?_without_motif: install %{SOURCE4}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_gtk:   install %{SOURCE5} 		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_gtk:   install %{SOURCE5}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 %{!?_without_gnome: install %{SOURCE6}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 
 %clean
