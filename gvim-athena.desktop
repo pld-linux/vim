@@ -5,6 +5,6 @@ Comment[pl]=Edytor vi dla Systemu X Window
 Exec=gvim.athena
 Terminal=0
 Icon=gnome-word.png
-Type=Applications/Editors
+Type=Application
 Type[pl]=Aplikacje/Edytory
 # vi: encoding=utf-8
