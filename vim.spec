@@ -2,7 +2,7 @@ Summary:	Vi IMproved - a Vi clone
 Summary(pl):	Vi IMproved - klon edytora Vi
 Name:		vim
 Version:	5.7
-Release:	1
+Release:	2
 Copyright:	Charityware
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
@@ -10,7 +10,9 @@ URL:		http://www.vim.org
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-src.tar.gz
 Source1:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-rt.tar.gz
 Source2:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-extra.tar.gz
-Source3:	gvim.desktop
+Source3:	gvim-athena.desktop
+Source4:	gvim-motif.desktop
+Source5:	gvim-gtk.desktop
 Patch0:		vim-fhs.patch
 Patch1:		vim-visual.patch
 BuildRequires:	ncurses-devel
@@ -205,7 +207,8 @@ cd ..
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_var}/lib/vim,%{_sysconfdir},%{_prefix}/{bin,share/{vim/{doc,tutor},man/man1}}} \
-	$RPM_BUILD_ROOT/{bin,usr/X11R6/{bin,share/applnk/Office/Editors}}
+	$RPM_BUILD_ROOT/{bin,usr/X11R6/bin} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors
+
 
 install -s src/vim.ncurses $RPM_BUILD_ROOT%{_bindir}/vim
 
@@ -250,22 +253,16 @@ ln -sf vi $RPM_BUILD_ROOT/bin/ex
 ln -sf vi $RPM_BUILD_ROOT/bin/view
 ln -sf vi $RPM_BUILD_ROOT/bin/rview
 
+ln -sf gvim.gtk $RPM_BUILD_ROOT/usr/X11R6/bin/gvim
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgvim
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/gview
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgview
  
-install %{SOURCE3} $RPM_BUILD_ROOT/usr/X11R6/share/applnk/Office/Editors
+install %{SOURCE3} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors
+install %{SOURCE4} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors
+install %{SOURCE5} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors
 
 gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man1/*
-
-%post -n gvim-athena
-ln -sf /usr/X11R6/bin/gvim.athena /usr/X11R6/bin/gvim
-
-%post -n gvim-motif
-ln -sf /usr/X11R6/bin/gvim.motif /usr/X11R6/bin/gvim
-
-%post -n gvim-gtk
-ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -288,18 +285,12 @@ rm -rf $RPM_BUILD_ROOT
 %files -n gvim-athena
 %defattr(644,root,root,755)
 %attr(755,root,root) /usr/X11R6/bin/gvim.athena
-%attr(755,root,root) /usr/X11R6/bin/rgvim
-%attr(755,root,root) /usr/X11R6/bin/rgview
-%attr(755,root,root) %verify(not link) /usr/X11R6/bin/gvim
-/usr/X11R6/share/applnk/Office/Editors/gvim.desktop
+%{_applnkdir}/Development/Editors/gvim-athena.desktop
 
 %files -n gvim-motif
 %defattr(644,root,root,755)
 %attr(755,root,root) /usr/X11R6/bin/gvim.motif
-%attr(755,root,root) /usr/X11R6/bin/rgvim
-%attr(755,root,root) /usr/X11R6/bin/rgview
-%attr(755,root,root) %verify(not link) /usr/X11R6/bin/gvim
-/usr/X11R6/share/applnk/Office/Editors/gvim.desktop
+%{_applnkdir}/Development/Editors/gvim-motif.desktop
 
 %files -n gvim-gtk
 %defattr(644,root,root,755)
@@ -307,7 +298,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 %attr(755,root,root) %verify(not link) /usr/X11R6/bin/gvim
-/usr/X11R6/share/applnk/Office/Editors/gvim.desktop
+%{_applnkdir}/Development/Editors/gvim-gtk.desktop
 
 %files rt
 %defattr(644,root,root,755)
