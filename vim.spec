@@ -429,8 +429,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/lang/README*
 %lang(af) %{_datadir}/vim/v*/lang/*af*
 %lang(cs) %{_datadir}/vim/v*/lang/*cs*
+%lang(cs) %{_datadir}/vim/v*/lang/menu_czech_czech_republic.1250.vim
 %lang(de) %{_datadir}/vim/v*/lang/*de*
-%lang(es) %{_datadir}/vim/v*/lang/es
+%lang(de) %{_datadir}/vim/v*/lang/menu_german_germany.1252.vim
+#%lang(es) %{_datadir}/vim/v*/lang/es
 %lang(es) %{_datadir}/vim/v*/lang/*es_es*
 %lang(es) %{_datadir}/vim/v*/lang/*spanish*
 %lang(fr) %{_datadir}/vim/v*/lang/*fr*
@@ -440,7 +442,16 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_datadir}/vim/v*/lang/*ja*
 %lang(ko) %{_datadir}/vim/v*/lang/*ko*
 %lang(pl) %{_datadir}/vim/v*/lang/*pl*
+%lang(pl) %{_datadir}/vim/v*/lang/menu_polish_poland.1250.vim
+%lang(sk) %{_datadir}/vim/v*/lang/menu_sk_sk.iso_8859-2.vim
 %lang(zh_TW) %{_datadir}/vim/v*/lang/*zh*
+# NOTE: Files with parenthesis in names are for Windows (Yes!) 9x/2000
+#       compatibility and one of the files simply includes the other.
+%lang(zh_TW) %{_datadir}/vim/v*/lang/menu_chinese_taiwan.950.vim
+%lang(zh_TW) %{_datadir}/vim/v*/lang/menu_chinese(taiwan)_taiwan.950.vim
+# I'm not sure if ,,_CN'' is correct.
+%lang(zh_CN) %{_datadir}/vim/v*/lang/menu_chinese_gb.936.vim
+%lang(zh_CN) %{_datadir}/vim/v*/lang/menu_chinese(gb)_gb.936.vim
 %{_datadir}/vim/v*/macros
 %{_datadir}/vim/v*/plugin
 %{_datadir}/vim/v*/syntax
@@ -450,7 +461,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/*.vim
 %{_datadir}/vim/v*/*.ps
 
-%{_mandir}/man1/vim.*
+%{_mandir}/man1/vim*
 %{_mandir}/man1/rvim.*
 
 %if %{!?_without_athena:1}%{?_without_athena:0}
