@@ -1,20 +1,21 @@
-Name:		vim
-Version:	5.4c
 Summary:	Vim static
+Summary(pl):	Vim skompilowany statycznie
+Name:		vim
+Version:	5.4d
 Release:	1d
 #######		ftp://ftp.nl.vim.org/pub/vim/unreleased/unix
-Source0:	%{name}-%{version}-src.tar.gz
+Source:		%{name}-%{version}-src.tar.gz
 Source1:	%{name}-%{version}-rt.tar.gz
 #######		ftp://ftp.nl.vim.org/pub/vim/unreleased/extra
 Source2:	%{name}-%{version}-extra.tar.gz
 Source3:	gvim.wmconfig
-Patch0:		%{name}-hold_gui_events.patch
+Patch:		%{name}-hold_gui_events.patch
+Patch1:		%{name}-clip.patch
 Copyright:	GPL
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 URL:		http://www.vim.org/
 Buildroot:	/tmp/%{name}-%{version}-root
-Summary(pl):	Vim skompilowany statycznie
 
 %description
 The classic Unix text editor. This version is build with minimal
@@ -132,6 +133,7 @@ z wykorzystaniem gtk.
 %prep
 %setup -q  -b 1 -b 2
 %patch 
+%patch1 -p1
 
 %build
 cd src
@@ -226,9 +228,7 @@ install %{SOURCE3} $RPM_BUILD_ROOT/etc/X11/wmconfig/gvim
 
 touch $RPM_BUILD_ROOT/usr/bin/vim $RPM_BUILD_ROOT/usr/X11R6/bin/gvim
 
-install -d $RPM_BUILD_ROOT/usr/share/vim/doc
-install runtime/doc/help.txt $RPM_BUILD_ROOT/usr/share/vim/doc
-install runtime/doc/tags $RPM_BUILD_ROOT/usr/share/vim/doc
+ln -sf ../../doc/%{name}-rt-%{version} $RPM_BUILD_ROOT/usr/share/vim/doc
 
 ln -sf vi $RPM_BUILD_ROOT/bin/ex
 ln -sf vi $RPM_BUILD_ROOT/bin/view
@@ -277,26 +277,26 @@ ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
 %attr(755,root,root) /usr/X11R6/bin/gvim.athena
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
-%attr(644,root,root) %config /etc/X11/wmconfig/gvim
+%attr(644,root,root) %config(missingok) /etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
 
 %files lesstif 
 %attr(755,root,root) /usr/X11R6/bin/gvim.lesstif
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
-%attr(644,root,root) %config /etc/X11/wmconfig/gvim
+%attr(644,root,root) %config(missingok) /etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
 
 %files gtk
 %attr(755,root,root) /usr/X11R6/bin/gvim.gtk
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
-%attr(644,root,root) %config /etc/X11/wmconfig/gvim
+%attr(644,root,root) %config(missingok) /etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
 
 %files rt
 %defattr(644,root,root,755)
-%doc runtime/doc/*.txt
+%doc runtime/doc/*.txt runtime/doc/tags
 %attr(644,root,man) /usr/man/man1/*
 
 %dir /usr/share/vim
@@ -311,13 +311,18 @@ ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
 /usr/share/vim/scripts.vim
 /usr/share/vim/mswin.vim
 /usr/share/vim/ftoff.vim
-/usr/share/vim/doc/help.txt
-/usr/share/vim/doc/tags
+/usr/share/vim/doc
 
 %config %verify(not size mtime md5) /usr/share/vim/menu.vim
 %config %verify(not size mtime md5) /usr/share/vim/vimrc
 
 %changelog
+* Tue Feb  2 1999 Artur Frysiak <wiget@usa.net>
+[5.4d-1d]
+- upgraded to 5.4d
+- now /usr/share/vim/doc is symlink to /usr/doc/%{name}-rt-%{version}
+- added missingok option to wmconfig files
+
 * Wed Jan 13 1999 Artur Frysiak <wiget@usa.net>
 [5.4c-1d]
 - upgraded to 5.4c
