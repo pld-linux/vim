@@ -1,0 +1,12 @@
+diff -uNr vim62-orig/runtime/syntax/spec.vim vim62/runtime/syntax/spec.vim
+--- vim62-orig/runtime/syntax/spec.vim	Sun May 11 20:20:37 2003
++++ vim62/runtime/syntax/spec.vim	Fri Jun 27 14:11:59 2003
+@@ -70,7 +70,7 @@
+ syn keyword specSpecialVariablesNames contained RPM_BUILD_ROOT RPM_BUILD_DIR RPM_SOURCE_DIR RPM_OPT_FLAGS LDFLAGS CC CC_FLAGS CPPNAME CFLAGS CXX CXXFLAGS CPPFLAGS
+ 
+ "valid macro names from /usr/lib/rpm/macros
+-syn keyword specMacroNameOther contained buildroot buildsubdir distribution disturl ix86 name nil optflags perl_sitearch release requires_eq vendor version
++syn keyword specMacroNameOther contained buildroot buildsubdir distribution disturl ix86 name nil optflags perl_sitearch release requires_eq vendor version epoch
+ syn match   specMacroNameOther contained '\<\(PATCH\|SOURCE\)\d*\>'
+ 
+ "valid _macro names from /usr/lib/rpm/macros
