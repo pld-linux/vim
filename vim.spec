@@ -1115,9 +1115,11 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_mandir}/pl/man1/view.1*
 %lang(pl) %{_mandir}/pl/man1/rview.1*
 
+%if %{with ispell}
 %files ispell
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vim.ispell
+%endif
 
 %files -n xxd
 %defattr(644,root,root,755)
