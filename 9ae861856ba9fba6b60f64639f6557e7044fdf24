@@ -1,0 +1,7 @@
+- Updated files list:
+  1. Commented out %%lang(es) %%{_datadir}/vim/v*/lang/es --- there are
+     no such files.
+  2. Added some %%{_datadir}/vim/v*/lang/menu_*.vim files.
+  3. s@%%{_mandir}/man1/vim.*@%%{_mandir}/man1/vim*@ so it catches
+     vimtutor manual.
+  NOTE: files from /usr/share/vim/vim60/tools/ aren't included.
