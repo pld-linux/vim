@@ -5,6 +5,7 @@
 %bcond_without	motif	# without Motif-based gvim
 %bcond_without	gtk	# without gtk+-based gvim support
 %bcond_without	gnome	# without gnome-based gvim support
+%bcond_without	kde	# kvim:)
 %bcond_with	perl	# with perl interp
 %bcond_with	python	# with python interp
 %bcond_with	ruby	# with ruby interp
@@ -25,7 +26,7 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	3
+Release:	4
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -37,6 +38,8 @@ Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
 # Source2-md5:	db0db37baea01874867d8d2414db104c
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
+Source5:	http://freenux.org/kvim/k%{name}-runtime-6.2.14.tar.bz2
+# Source4-md5:  6f633e79bcf5f35918bb0bff6850a971
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
@@ -46,7 +49,7 @@ Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
 Patch3:		%{name}-ispell.patch
 Patch4:		%{name}-ispell-axp.patch
-Patch5:		%{name}-vimrc.patch
+Patch5:		%{name}-%{name}rc.patch
 Patch6:		%{name}-no_libelf.patch
 Patch7:		%{name}-egrep.patch
 Patch8:		%{name}-spec-fix.patch
@@ -57,7 +60,7 @@ Patch12:	%{name}-home_etc.patch
 #Patch12:	%{name}-dynamic_python.patch
 Patch13:	%{name}-selinux.patch
 
-Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/vim-bonobo-20040115.patch
+Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001-100.gz
 Patch201:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.101-200.gz
 Patch301:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.201
@@ -74,6 +77,7 @@ Patch311:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.211
 Patch312:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.212
 Patch313:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.213
 Patch314:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.214
+Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.211.diff.bz2
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -415,6 +419,24 @@ Motif, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
 ÄÏÚ×ÏÌÑ¤ ÚÁÐÕÓËÁÔÉ VIM ÑË ÐÒÉËÌÁÄÎÕ ÐÒÏÇÒÁÍÕ X Window System - Ú
 ÐÏ×Î¦ÓÔÀ ÇÒÁÆ¦ÞÎÉÍ ¦ÎÔÅÒÆÅÊÓÏÍ ÔÁ Ð¦ÄÔÒÉÍËÏÀ ÍÉÛ¦.
 
+%package -n kvim
+Summary:	Vim for X Window built with kde
+Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki KDE
+Group:		Applications/Editors/Vim
+Requires:	%{name}-rt = %{epoch}:%{version}
+Requires:	iconv
+Obsoletes:	vim-X11
+Requires:	kdelibs
+
+%description -n kvim
+The classic Unix text editor now also under X Window System! This
+version is built with KDE.
+
+%description -n kvim -l pl
+Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
+biblioteki KDE.
+
+
 %package -n gvim-gtk
 Summary:	Vim for X Window built with gtk
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GTK
@@ -485,7 +507,7 @@ Wersja edytora Vim pracuj±ca w ¶rodowisku X Window, zbudowana jako
 element bonobo.
 
 %prep
-%setup -q -b1 -b2 -n %{name}%(echo %{_ver} | tr -d .)
+%setup -q -b1 -b2 -a5 -n %{name}%(echo %{_ver} | tr -d .)
 # official patches
 %patch101 -p0
 %patch201 -p0
@@ -503,6 +525,8 @@ element bonobo.
 %patch312 -p0
 %patch313 -p0
 %patch314 -p0
+%patch999 -p1
+
 
 %patch0 -p1
 %{?with_bonobo:%patch99 -p1}
@@ -635,6 +659,38 @@ mv -f vim bin/vim.ncurses
 %{__make} vim
 mv -f vim bin/vim.ispell
 
+%if %{with kde}
+%{__make} distclean
+%configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
+	--with-features=huge \
+	--enable-gui=kde \
+	--with-x \
+	%{!?with_perl:--disable-perlinterp} \
+	%{?with_perl:--enable-perlinterp} \
+	%{!?with_python:--disable-pythoninterp} \
+	%{?with_python:--enable-pythoninterp} \
+	%{!?with_ruby:--disable-rubyinterp} \
+	%{?with_ruby:--enable-rubyinterp} \
+	%{!?with_tcl:--disable-tclinterp} \
+	%{?with_tcl:--enable-tclinterp} \
+	%{?with_bonobo:--disable-bonobo} \
+	--enable-cscope \
+	--with-qt-dir=%{_prefix} \
+	--with-qt-includes=%{_includedir}/qt \
+	--with-qt-libs=%{_libdir} \
+	--enable-fontset \
+	--disable-gpm \
+	--without-gnome \
+	--enable-nls \
+	--with-modifiedby="PLD Linux Distribution" \
+	--enable-kde-toolbar \
+	--with-compiledby="PLD Linux Distribution"
+
+%{__make} vim
+mv -f vim bin/kvim
+%endif
+
 %if %{with athena}
 %{__make} distclean
 %configure \
@@ -662,6 +718,7 @@ mv -f vim bin/vim.ispell
 %{__make} vim
 mv -f vim bin/gvim.athena
 %endif
+
 
 %if %{with motif}
 %{__make} distclean
@@ -815,6 +872,24 @@ ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 
+%if %{with kde}
+install -m755 src/bin/kvim  $RPM_BUILD_ROOT%{_bindir}/kvim
+install -d $RPM_BUILD_ROOT%{_desktopdir}/kde
+install -d $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/{16x16,22x22}/actions
+install -d $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/{32x32,48x48,64x64}/apps
+install runtime/hi16-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/16x16/actions
+install runtime/hi22-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/22x22/actions
+install runtime/kvim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/32x32/apps/kvim.png
+install runtime/kvim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/48x48/apps/kvim.png
+install runtime/kvim64x64.png $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/64x64/apps/kvim.png
+install runtime/KVim.desktop $RPM_BUILD_ROOT%{_desktopdir}/kde
+##mv $RPM_BUILD_ROOT{%{_datadir}/applnk/Editors/KVim.desktop,%{_desktopdir}/kde}
+echo "Categories=Qt;KDE;Utility;TextEditor" >> $RPM_BUILD_ROOT%{_desktopdir}/kde/KVim.desktop
+##mv $RPM_BUILD_ROOT%{_iconsdir}/{hicolor,crystalsvg}
+%endif
+install -d $RPM_BUILD_ROOT%{_datadir}/apps/kvim
+install runtime/kde-tips $RPM_BUILD_ROOT%{_datadir}/apps/kvim/tips
+
 # Bonobo
 %if %{with bonobo}
 install -d $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
@@ -834,6 +909,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with static}
 %files static
+%defattr(644,root,root,755)
 %endif
 %defattr(644,root,root,755)
 %attr(755,root,root) /bin/*
@@ -967,6 +1043,17 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/gvim.motif
 %{_desktopdir}/gvim-motif.desktop
 %endif
+
+%if %{with kde}
+%files -n kvim
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/kvim
+%{_desktopdir}/kde/KVim.desktop
+%{_iconsdir}/crystalsvg/*/apps/kvim.png
+%{_iconsdir}/crystalsvg/*/actions/*make*.png
+%{_datadir}/apps/kvim
+%endif
+
 
 %if %{with gtk}
 %files -n gvim-gtk
