@@ -174,14 +174,13 @@ diff -Nur vim61.orig/src/ex_docmd.c vim61/src/ex_docmd.c
 diff -Nur vim61.orig/src/feature.h vim61/src/feature.h
 --- vim61.orig/src/feature.h	Sat Mar  9 16:17:30 2002
 +++ vim61/src/feature.h	Wed Mar 27 15:08:08 2002
-@@ -312,6 +312,12 @@
+@@ -312,6 +312,11 @@
  # endif
  # define FEAT_FKMAP
  #endif
 +#ifdef FEAT_BIG
 +#undef FEAT_RIGHTLEFT
 +#undef FEAT_FKMAP
-+#undef FEAT_SPELL_HL	 /*WM*/
 +#endif
 +/* # define FEAT_PRINTER */
  
