@@ -19,7 +19,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	060
+%define		_patchlevel	065
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -932,10 +932,16 @@ rm -rf $RPM_BUILD_ROOT
 %lang(id) %{_mandir}/id/man1/ex.1*
 %lang(id) %{_mandir}/id/man1/view.1*
 %lang(id) %{_mandir}/id/man1/rview.1*
+%lang(it) %{_mandir}/it*/man1/ex.1*
+%lang(it) %{_mandir}/it*/man1/view.1*
+%lang(it) %{_mandir}/it*/man1/rview.1*
 %lang(pl) %{_mandir}/pl/man1/vi.1*
 %lang(pl) %{_mandir}/pl/man1/ex.1*
 %lang(pl) %{_mandir}/pl/man1/view.1*
 %lang(pl) %{_mandir}/pl/man1/rview.1*
+%lang(ru) %{_mandir}/ru*/man1/ex.1*
+%lang(ru) %{_mandir}/ru*/man1/view.1*
+%lang(ru) %{_mandir}/ru*/man1/rview.1*
 
 %if %{with ispell}
 %files ispell
@@ -947,6 +953,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/xxd
 %{_mandir}/man1/xxd.1*
+%lang(it) %{_mandir}/it*/man1/xxd.1*
+%lang(ru) %{_mandir}/ru*/man1/xxd.1*
 
 %files rt
 %defattr(644,root,root,755)
@@ -1049,11 +1057,12 @@ rm -rf $RPM_BUILD_ROOT
 %lang(id) %{_mandir}/id/man1/rvim.*
 %lang(id) %{_mandir}/id/man1/gvi*
 %lang(id) %{_mandir}/id/man1/rgv*
-%lang(it) %{_mandir}/it/man1/vim*
+%lang(it) %{_mandir}/it*/man1/vim*
 %lang(pl) %{_mandir}/pl/man1/vim*
 %lang(pl) %{_mandir}/pl/man1/rvim.*
 %lang(pl) %{_mandir}/pl/man1/gvi*
 %lang(pl) %{_mandir}/pl/man1/rgv*
+%lang(ru) %{_mandir}/ru*/man1/vim*
 
 %if %{with athena}
 %files -n gvim-athena
