@@ -5,14 +5,13 @@
 # _without_motif	- without Motif-based gvim
 # _without_gtk		- without gtk+-based gvim support
 # _without_gnome	- without gnome-based gvim support
-# _with_gtk1		- use gtk+ 1.2 and GNOME 1.x instead of 2.x
 # _with_perl		- with perl interp
 # _with_python		- with python interp
 # _with_ruby		- with ruby interp
 # _with_tcl		- with tcl interp
 
-%define		_ver		6.1
-%define		_patchlevel	451
+%define		_ver		6.2
+#%define		_patchlevel	451
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -24,59 +23,49 @@ Summary(ru):	Visual editor IMproved - Единственно Правильный Редактор :)
 Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
-Version:	%{_ver}.%{_patchlevel}
+#Version:	%{_ver}.%{_patchlevel}
+Version:	%{_ver}
 Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
+# Source0-md5:	c49d360bbd069d00e2a57804f2a123d9
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
-# Source0-md5: d69eb60f820dd03f6ddc4321e76ab80d
+# Source1-md5:	aa0079938f636d08be71078933477d8b
 Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
-# Source1-md5: ed6742805866d11d6a28267330980ab1
+# Source2-md5:	db0db37baea01874867d8d2414db104c
 Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
-# Source2-md5: 0f0940353f98e309da9693c29bb349a7
 # packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.3*
-Source3:	%{name}-patches-%{_ver}.401-%{_patchlevel}.tar.bz2
+#Source3:	%{name}-patches-%{_ver}.401-%{_patchlevel}.tar.bz2
 # Source3-md5: 92712276457a367a56a9389e178c0c3d
+# Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
-# Source4-md5: bc4d1e115ca506ad7751b9bd2b773a7f
 Source10:	g%{name}-athena.desktop
-# Source10-md5:	181a554b04f83b5eab64cd570a40d8cd
 Source11:	g%{name}-motif.desktop
-# Source11-md5:	2f5f6b39c66cfca1f45c3fd09da982da
 Source12:	g%{name}-gtk.desktop
-# Source12-md5:	55c78c0a82d06406ec1f466a805b34a6
 Source13:	g%{name}-gnome.desktop
-# Source13-md5:	9101a834761327f22d892768cab8799e
-Patch0:		http://regexxer.sourceforge.net/vim/vim-gtk2-20030404.patch.gz
-Patch1:		%{name}-sysconfdir.patch
-Patch2:		%{name}-visual.patch
-Patch3:		%{name}-paths.patch
-Patch4:		%{name}-ispell.patch
-Patch5:		%{name}-ispell-axp.patch
-Patch6:		%{name}-ac25x.patch
-Patch7:		%{name}-vimrc.patch
-Patch8:		%{name}-no_libelf.patch
-Patch9:		%{name}-egrep.patch
-Patch10:		%{name}-ocaml.patch
+Patch0:		%{name}-sysconfdir.patch
+Patch1:		%{name}-visual.patch
+Patch2:		%{name}-paths.patch
+Patch3:		%{name}-ispell.patch
+Patch4:		%{name}-ispell-axp.patch
+Patch5:		%{name}-ac25x.patch
+Patch6:		%{name}-vimrc.patch
+Patch7:		%{name}-no_libelf.patch
+Patch8:		%{name}-egrep.patch
 Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030322.patch
-Patch100:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.1-100.gz
-Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.101-200.gz
-Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.201-300.gz
-Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.301-400.gz
+#Patch100:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.1-100.gz
+#Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.101-200.gz
+#Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.201-300.gz
+#Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.301-400.gz
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
-%if %{?_with_gtk1:1}0
-%{!?_without_gnome:BuildRequires:	gnome-libs-devel}
-%{!?_without_gtk:BuildRequires:		gtk+-devel}
-%else
 %{!?_without_gtk:BuildRequires:		gtk+2-devel >= 2.2.1}
 %{!?_without_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
-%endif
 %{!?_without_motif:BuildRequires:	motif-devel}
 %{!?_without_static:BuildRequires:	glibc-static}
 %{!?_without_static:BuildRequires:	ncurses-static}
@@ -449,32 +438,31 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 
 %prep
 ## setup -q -b1 -b2 -n %{name}%(echo %{version} | sed -e "s#\.##g")
-%setup -q -b1 -b2 -a3 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
-%patch100 -p0
-%patch101 -p0
-%patch102 -p0
-%patch103 -p0
+#%%setup -q -b1 -b2 -a3 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
+%setup -q -b1 -b2 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
+#%patch100 -p0
+#%patch101 -p0
+#%patch102 -p0
+#%patch103 -p0
 
 # skiping patches that are for "extra" package and apply the rest of official patches
-for f in patches/6.1.* ; do
-	echo "Applying official patch `basename $f` ..."
-	patch -s -p0 < $f
-done
+#for f in patches/6.1.* ; do
+#	echo "Applying official patch `basename $f` ..."
+#	patch -s -p0 < $f
+#done
 
-%patch0 -p0
+%patch0 -p1
 %{?_with_bonobo:%patch99 -p1}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 %ifarch alpha
-%patch5 -p1
+%patch4 -p1
 %endif
+#%patch5 -p1
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
-%patch9 -p1
-%patch10 -p1
 
 %build
 cd src
@@ -604,8 +592,8 @@ mv -f vim gvim.motif
 %{__make} distclean
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
-	--enable-gui=gtk%{!?_with_gtk1:2} \
-	%{!?_with_gtk1:--enable-gtk2-check} \
+	--enable-gui=gtk2 \
+	--enable-gtk2-check \
 	--with-x \
 	%{!?_with_perl:--disable-perlinterp} \
 	%{?_with_perl:--enable-perlinterp} \
@@ -618,7 +606,6 @@ mv -f vim gvim.motif
 	%{?_with_bonobo:--disable-bonobo} \
 	--disable-gpm \
 	--enable-cscope \
-	%{?_with_gtk1:--enable-fontset} \
 	--enable-nls
 %{__make} vim
 mv -f vim gvim.gtk
@@ -628,10 +615,10 @@ mv -f vim gvim.gtk
 %{__make} distclean
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
-	--enable-gui=gnome%{!?_with_gtk1:2} \
+	--enable-gui=gnome2 \
 	%{?_with_bonobo:--enable-bonobo} \
-	%{!?_with_gtk1:--enable-gtk2-check} \
-	%{!?_with_gtk1:--enable-gnome-check} \
+	--enable-gtk2-check \
+	--enable-gnome-check \
 	--with-x \
 	%{!?_with_perl:--disable-perlinterp} \
 	%{?_with_perl:--enable-perlinterp} \
@@ -643,7 +630,6 @@ mv -f vim gvim.gtk
 	%{?_with_tcl:--enable-tclinterp} \
 	--disable-gpm \
 	--enable-cscope \
-	%{?_with_gtk1:--enable-fontset} \
 	--enable-nls
 %{__make} vim
 mv -f vim gvim.gnome
@@ -805,7 +791,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/colors
 %{_datadir}/vim/v*/compiler
 %{_datadir}/vim/v*/*.vim
-%{_datadir}/vim/v*/*.ps
 
 %{_mandir}/man1/vim*
 %{_mandir}/man1/rvim.*
