@@ -1,0 +1,59 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.061
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.061
+Problem:    When editing a utf-8 file in an utf-8 xterm and there is a
+	    multi-byte character in the last column, displaying is messed up.
+	    (Joël Rio)
+Solution:   Check for a multi-byte character, not a multi-column character.
+Files:	    src/screen.c
+
+
+*** ../vim-6.3.060/src/screen.c	Tue Jan 18 10:53:53 2005
+--- src/screen.c	Wed Jan 19 11:03:00 2005
+***************
+*** 4169,4176 ****
+  #ifdef FEAT_MBYTE
+  		    /* When there is a multi-byte character, just output a
+  		     * space to keep it simple. */
+! 		    if (has_mbyte && mb_off2cells(LineOffset[screen_row - 1]
+! 						+ (unsigned)Columns - 1) != 1)
+  			out_char(' ');
+  		    else
+  #endif
+--- 4169,4176 ----
+  #ifdef FEAT_MBYTE
+  		    /* When there is a multi-byte character, just output a
+  		     * space to keep it simple. */
+! 		    if (has_mbyte && MB_BYTE2LEN(ScreenLines[LineOffset[
+! 					screen_row - 1] + (Columns - 1)]) > 1)
+  			out_char(' ');
+  		    else
+  #endif
+*** ../vim-6.3.060/src/version.c	Sat Jan 29 16:19:09 2005
+--- src/version.c	Sat Jan 29 16:25:13 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     61,
+  /**/
+
+-- 
+Article in the first Free Software Magazine: "Bram Moolenaar studied electrical
+engineering at the Technical University of Delft and graduated in 1985 on a
+multi-processor Unix architecture."
+Response by "dimator": Could the school not afford a proper stage for the
+ceremony?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

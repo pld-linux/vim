@@ -1,0 +1,80 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.059
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.059
+Problem:    Crash when expanding an ":edit" command containing several spaces
+	    with the shell. (Brian Hirt)
+Solution:   Allocate enough space for the quotes.
+Files:	    src/os_unix.c
+
+
+*** ../vim-6.3.058/src/os_unix.c	Sat Sep 18 20:28:07 2004
+--- src/os_unix.c	Sat Jan 29 15:07:53 2005
+***************
+*** 4735,4742 ****
+  
+      /* "unset nonomatch; print -N >" plus two is 29 */
+      len = STRLEN(tempname) + 29;
+!     for (i = 0; i < num_pat; ++i)	/* count the length of the patterns */
+  	len += STRLEN(pat[i]) + 3;	/* add space and two quotes */
+      command = alloc(len);
+      if (command == NULL)
+      {
+--- 4735,4766 ----
+  
+      /* "unset nonomatch; print -N >" plus two is 29 */
+      len = STRLEN(tempname) + 29;
+!     for (i = 0; i < num_pat; ++i)
+!     {
+! 	/* Count the length of the patterns in the same way as they are put in
+! 	 * "command" below. */
+! #ifdef USE_SYSTEM
+  	len += STRLEN(pat[i]) + 3;	/* add space and two quotes */
++ #else
++ 	++len;				/* add space */
++ 	for (j = 0; pat[i][j] != NUL; )
++ 	    if (vim_strchr((char_u *)" '", pat[i][j]) != NULL)
++ 	    {
++ 		len += 2;		/* add two quotes */
++ 		while (pat[i][j] != NUL
++ 			&& vim_strchr((char_u *)" '", pat[i][j]) != NULL)
++ 		{
++ 		    ++len;
++ 		    ++j;
++ 		}
++ 	    }
++ 	    else
++ 	    {
++ 		++len;
++ 		++j;
++ 	    }
++ #endif
++     }
+      command = alloc(len);
+      if (command == NULL)
+      {
+*** ../vim-6.3.058/src/version.c	Tue Jan 18 10:53:53 2005
+--- src/version.c	Sat Jan 29 16:11:00 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     59,
+  /**/
+
+-- 
+The budget process was invented by an alien race of sadistic beings who
+resemble large cats.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

@@ -1,0 +1,59 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.060
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.060
+Problem:    Using CTRL-R CTRL-O in Insert mode with an invalid register name
+	    still causes something to be inserted.
+Solution:   Check the register name for being valid.
+Files:	    src/edit.c
+
+
+*** ../vim-6.3.059/src/edit.c	Wed Jan  5 11:17:36 2005
+--- src/edit.c	Thu Jan 27 10:33:51 2005
+***************
+*** 5933,5940 ****
+  	    im_set_active(TRUE);
+  #endif
+      }
+!     if (regname == NUL)
+  	need_redraw = TRUE;	/* remove the '"' */
+      else
+      {
+  #endif
+--- 5933,5943 ----
+  	    im_set_active(TRUE);
+  #endif
+      }
+!     if (regname == NUL || !valid_yank_reg(regname, FALSE))
+!     {
+! 	vim_beep();
+  	need_redraw = TRUE;	/* remove the '"' */
++     }
+      else
+      {
+  #endif
+*** ../vim-6.3.059/src/version.c	Sat Jan 29 16:14:42 2005
+--- src/version.c	Sat Jan 29 16:18:08 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     60,
+  /**/
+
+-- 
+Engineers will go without food and hygiene for days to solve a problem.
+(Other times just because they forgot.)
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
