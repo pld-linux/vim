@@ -1,0 +1,81 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.256
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.256
+Problem:    Mac: "macroman" encoding isn't recognized, need to use
+	    "8bit-macroman.
+Solution:   Recognize "macroman" with an alias "mac". (Eckehard Berns)
+Files:	    src/mbyte.c
+
+
+*** ../vim-6.2.255/src/mbyte.c	Mon Feb  9 18:45:58 2004
+--- src/mbyte.c	Sat Feb 14 19:46:21 2004
+***************
+*** 216,222 ****
+      {"big5",		ENC_DBCS,		DBCS_CHT},
+  #define IDX_CP1251	35
+      {"cp1251",		ENC_8BIT,		1251},
+! #define IDX_COUNT	36
+  };
+  
+  /*
+--- 216,224 ----
+      {"big5",		ENC_DBCS,		DBCS_CHT},
+  #define IDX_CP1251	35
+      {"cp1251",		ENC_8BIT,		1251},
+! #define IDX_MACROMAN	36
+!     {"macroman",	ENC_8BIT,		0},
+! #define IDX_COUNT	37
+  };
+  
+  /*
+***************
+*** 290,295 ****
+--- 292,298 ----
+      {"cp950",		IDX_BIG5},
+      {"950",		IDX_BIG5},
+  #endif
++     {"mac",		IDX_MACROMAN},
+      {NULL,		0}
+  };
+  
+***************
+*** 523,529 ****
+       */
+      for (i = 0; i < 256; ++i)
+      {
+! 	/* Our own function to reliably check the lenght of UTF-8 characters,
+  	 * independent of mblen(). */
+  	if (enc_utf8)
+  	    n = utf8len_tab[i];
+--- 526,532 ----
+       */
+      for (i = 0; i < 256; ++i)
+      {
+! 	/* Our own function to reliably check the length of UTF-8 characters,
+  	 * independent of mblen(). */
+  	if (enc_utf8)
+  	    n = utf8len_tab[i];
+*** ../vim-6.2.255/src/version.c	Sun Feb 15 13:08:28 2004
+--- src/version.c	Sun Feb 15 13:10:13 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     256,
+  /**/
+
+-- 
+Drink wet cement and get really stoned.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

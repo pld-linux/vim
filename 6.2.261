@@ -1,0 +1,49 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.261
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.261
+Problem:    When 'autoindent' and 'cindent' are set and a line is recognized
+	    as a comment, starting a new line won't do 'cindent' formatting.
+Solution:   Also use 'cindent' formatting for lines that are used as a
+	    comment. (Servatius Brandt)
+Files:	    src/misc1.c
+
+
+*** ../vim-6.2.260/src/misc1.c	Sun Feb  1 16:39:09 2004
+--- src/misc1.c	Wed Feb 11 21:55:44 2004
+***************
+*** 1324,1332 ****
+       * May do indenting after opening a new line.
+       */
+      if (!p_paste
+- # ifdef FEAT_COMMENTS
+- 	    && (leader == NULL || !curbuf->b_p_ai)
+- # endif
+  	    && (curbuf->b_p_cin
+  #  ifdef FEAT_EVAL
+  		    || *curbuf->b_p_inde != NUL
+--- 1324,1329 ----
+*** ../vim-6.2.260/src/version.c	Sun Feb 15 13:42:25 2004
+--- src/version.c	Sun Feb 15 13:44:02 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     261,
+  /**/
+
+-- 
+We are the Borg of GNU GPL.  We will assimilate your source code.
+Resistance is futile.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

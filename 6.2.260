@@ -1,0 +1,199 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.260
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.260
+Problem:    GTK 2: Can't quit a dialog with <Esc>.
+	    GTK 1 and 2: <Enter> always gives a result, even when the default
+	    button has been disabled.
+Solution:   Handle these keys explicitly.  When no default button is specified
+	    use the first one (works mostly like it was before).
+Files:	    src/gui_gtk.c
+
+
+*** ../vim-6.2.259/src/gui_gtk.c	Sun Feb 15 13:08:28 2004
+--- src/gui_gtk.c	Thu Feb 12 12:46:10 2004
+***************
+*** 1512,1517 ****
+--- 1512,1518 ----
+  typedef struct _CancelData
+  {
+      int		*status;
++     int		ignore_enter;
+      GtkWidget	*dialog;
+  } CancelData;
+  
+***************
+*** 1530,1535 ****
+--- 1531,1540 ----
+      static int
+  dlg_key_press_event(GtkWidget * widget, GdkEventKey * event, CancelData *data)
+  {
++     /* Ignore hitting Enter when there is no default button. */
++     if (data->ignore_enter && event->keyval == GDK_Return)
++ 	return TRUE;
++ 
+      if (event->keyval != GDK_Escape && event->keyval != GDK_Return)
+  	return FALSE;
+  
+***************
+*** 1820,1825 ****
+--- 1825,1831 ----
+  
+      vim_free(names);
+  
++     cancel_data.ignore_enter = FALSE;
+      if (butcount > 0)
+      {
+  	--def_but;		/* 1 is first button */
+***************
+*** 1830,1835 ****
+--- 1836,1844 ----
+  	    gtk_widget_grab_focus(button[def_but]);
+  	    gtk_widget_grab_default(button[def_but]);
+  	}
++ 	else
++ 	    /* No default, ignore hitting Enter. */
++ 	    cancel_data.ignore_enter = TRUE;
+      }
+  
+      if (textfield != NULL)
+***************
+*** 2103,2118 ****
+   * GUI used to work this way, and I consider the impact on UI consistency
+   * low enough to justify implementing this as a special Vim feature.
+   */
+  /*ARGSUSED2*/
+      static gboolean
+  dialog_key_press_event_cb(GtkWidget *widget, GdkEventKey *event, gpointer data)
+  {
+!     if ((event->state & gtk_accelerator_get_default_mod_mask()) == 0)
+      {
+  	return gtk_window_mnemonic_activate(
+  		   GTK_WINDOW(widget), event->keyval,
+  		   gtk_window_get_mnemonic_modifier(GTK_WINDOW(widget)));
+      }
+      return FALSE; /* continue emission */
+  }
+  
+--- 2112,2149 ----
+   * GUI used to work this way, and I consider the impact on UI consistency
+   * low enough to justify implementing this as a special Vim feature.
+   */
++ typedef struct _DialogInfo
++ {
++     int		ignore_enter;	    /* no default button, ignore "Enter" */
++     int		noalt;		    /* accept accelerators without Alt */
++     GtkDialog	*dialog;	    /* Widget of the dialog */
++ } DialogInfo;
++ 
+  /*ARGSUSED2*/
+      static gboolean
+  dialog_key_press_event_cb(GtkWidget *widget, GdkEventKey *event, gpointer data)
+  {
+!     DialogInfo *di = (DialogInfo *)data;
+! 
+!     /* Ignore hitting "Enter" if there is no default button. */
+!     if (di->ignore_enter && event->keyval == GDK_Return)
+! 	return TRUE;
+! 
+!     /* Close the dialog when hitting "Esc". */
+!     if (event->keyval == GDK_Escape)
+!     {
+! 	gtk_dialog_response(di->dialog, GTK_RESPONSE_REJECT);
+! 	return TRUE;
+!     }
+! 
+!     if (di->noalt
+! 	      && (event->state & gtk_accelerator_get_default_mod_mask()) == 0)
+      {
+  	return gtk_window_mnemonic_activate(
+  		   GTK_WINDOW(widget), event->keyval,
+  		   gtk_window_get_mnemonic_modifier(GTK_WINDOW(widget)));
+      }
++ 
+      return FALSE; /* continue emission */
+  }
+  
+***************
+*** 2128,2135 ****
+--- 2159,2168 ----
+      GtkWidget	*entry = NULL;
+      char_u	*text;
+      int		response;
++     DialogInfo  dialoginfo;
+  
+      dialog = create_message_dialog(type, title, message);
++     dialoginfo.dialog = GTK_DIALOG(dialog);
+      dialog_add_buttons(GTK_DIALOG(dialog), buttons);
+  
+      if (textfield != NULL)
+***************
+*** 2151,2168 ****
+  
+  	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),
+  			   alignment, TRUE, FALSE, 0);
+      }
+      else
+!     {
+! 	/* Allow activation of mnemonic accelerators without pressing <Alt>.
+! 	 * For safety, connect this signal handler only if the dialog has
+! 	 * no other other interaction widgets but buttons. */
+! 	g_signal_connect(G_OBJECT(dialog), "key_press_event",
+! 			 G_CALLBACK(&dialog_key_press_event_cb), NULL);
+!     }
+  
+      if (def_but > 0)
+  	gtk_dialog_set_default_response(GTK_DIALOG(dialog), def_but);
+  
+      /* Show the mouse pointer if it's currently hidden. */
+      gui_mch_mousehide(FALSE);
+--- 2184,2207 ----
+  
+  	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),
+  			   alignment, TRUE, FALSE, 0);
++ 	dialoginfo.noalt = FALSE;
+      }
+      else
+! 	dialoginfo.noalt = TRUE;
+! 
+!     /* Allow activation of mnemonic accelerators without pressing <Alt> when
+!      * there is no textfield.  Handle pressing Enter and Esc. */
+!     g_signal_connect(G_OBJECT(dialog), "key_press_event",
+! 			 G_CALLBACK(&dialog_key_press_event_cb), &dialoginfo);
+  
+      if (def_but > 0)
++     {
+  	gtk_dialog_set_default_response(GTK_DIALOG(dialog), def_but);
++ 	dialoginfo.ignore_enter = FALSE;
++     }
++     else
++ 	/* No default button, ignore pressing Enter. */
++ 	dialoginfo.ignore_enter = TRUE;
+  
+      /* Show the mouse pointer if it's currently hidden. */
+      gui_mch_mousehide(FALSE);
+*** ../vim-6.2.259/src/version.c	Sun Feb 15 13:37:22 2004
+--- src/version.c	Sun Feb 15 13:39:01 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     260,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+146. You experience ACTUAL physical withdrawal symptoms when away
+     from your 'puter and the net.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

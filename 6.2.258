@@ -1,0 +1,84 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.258
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.258
+Problem:    GUI: can't disable (grey-out) a popup menu item.  (Ajit Thakkar)
+Solution:   Loop over the popup menus for all modes.
+Files:	    src/menu.c
+
+
+*** ../vim-6.2.257/src/menu.c	Sun Oct 12 16:42:14 2003
+--- src/menu.c	Sun Feb 15 13:32:48 2004
+***************
+*** 331,340 ****
+--- 331,356 ----
+      {
+  	/*
+  	 * Change sensitivity of the menu.
++ 	 * For the PopUp menu, remove a menu for each mode separately.
+  	 * Careful: menu_nable_recurse() changes menu_path.
+  	 */
+  	if (STRCMP(menu_path, "*") == 0)	/* meaning: do all menus */
+  	    menu_path = (char_u *)"";
++ 
++ 	if (menu_is_popup(menu_path))
++ 	{
++ 	    for (i = 0; i < MENU_INDEX_TIP; ++i)
++ 		if (modes & (1 << i))
++ 		{
++ 		    p = popup_mode_name(menu_path, i);
++ 		    if (p != NULL)
++ 		    {
++ 			menu_nable_recurse(root_menu, p, MENU_ALL_MODES,
++ 								      enable);
++ 			vim_free(p);
++ 		    }
++ 		}
++ 	}
+  	menu_nable_recurse(root_menu, menu_path, modes, enable);
+      }
+      else if (unmenu)
+***************
+*** 1629,1637 ****
+      return (STRNCMP(name, "PopUp", 5) == 0);
+  }
+  
+! #if defined(FEAT_GUI_MOTIF) || defined(PROTO)
+  /*
+!  * Return TRUE if "name" is part of a poup menu.
+   */
+      int
+  menu_is_child_of_popup(menu)
+--- 1645,1653 ----
+      return (STRNCMP(name, "PopUp", 5) == 0);
+  }
+  
+! #if (defined(FEAT_GUI_MOTIF) && (XmVersion <= 1002)) || defined(PROTO)
+  /*
+!  * Return TRUE if "name" is part of a popup menu.
+   */
+      int
+  menu_is_child_of_popup(menu)
+*** ../vim-6.2.257/src/version.c	Sun Feb 15 13:29:04 2004
+--- src/version.c	Sun Feb 15 13:31:40 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     258,
+  /**/
+
+-- 
+Fingers not found - Pound head on keyboard to continue.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
