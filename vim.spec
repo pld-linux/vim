@@ -54,7 +54,7 @@ Patch8:		%{name}-spec-fix.patch
 Patch9:		%{name}-specsyntax.patch
 Patch10:	%{name}-specsyntax-pld.patch
 Patch11:	%{name}-bonobo.patch
-#Patch12:	%{name}-python_ts.patch
+Patch12:	%{name}-python_ts.patch
 Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030726.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.002
@@ -576,7 +576,7 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch9 -p1
 %patch10 -p1
 %{?_with_bonobo:%patch11 -p1}
-#%patch12 -p1
+%patch12 -p1
 
 %build
 cd src
