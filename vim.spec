@@ -874,13 +874,13 @@ install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %if %{with kde}
 install -m755 src/bin/kvim  $RPM_BUILD_ROOT%{_bindir}/kvim
 install -d $RPM_BUILD_ROOT%{_desktopdir}/kde
-install -d $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/{16x16,22x22}/actions
-install -d $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/{32x32,48x48,64x64}/apps
-install runtime/hi16-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/16x16/actions
-install runtime/hi22-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/22x22/actions
-install runtime/kvim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/32x32/apps/kvim.png
-install runtime/kvim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/48x48/apps/kvim.png
-install runtime/kvim64x64.png $RPM_BUILD_ROOT%{_iconsdir}/crystalsvg/64x64/apps/kvim.png
+install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,22x22}/actions
+install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{32x32,48x48,64x64}/apps
+install runtime/hi16-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/16x16/actions
+install runtime/hi22-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/22x22/actions
+install runtime/kvim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/kvim.png
+install runtime/kvim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/kvim.png
+install runtime/kvim64x64.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/64x64/apps/kvim.png
 install runtime/KVim.desktop $RPM_BUILD_ROOT%{_desktopdir}/kde
 ##mv $RPM_BUILD_ROOT{%{_datadir}/applnk/Editors/KVim.desktop,%{_desktopdir}/kde}
 echo "Categories=Qt;KDE;Utility;TextEditor" >> $RPM_BUILD_ROOT%{_desktopdir}/kde/KVim.desktop
@@ -1048,8 +1048,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/kvim
 %{_desktopdir}/kde/KVim.desktop
-%{_iconsdir}/crystalsvg/*/apps/kvim.png
-%{_iconsdir}/crystalsvg/*/actions/*make*.png
+%{_iconsdir}/hicolor/*/apps/kvim.png
+%{_iconsdir}/hicolor/*/actions/*make*.png
 %{_datadir}/apps/kvim
 %endif
 
