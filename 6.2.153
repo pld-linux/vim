@@ -1,0 +1,85 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.153
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.153
+Problem:    Win32: ":lang german" doesn't use German messages.
+Solution:   Add a table to translate the Win32 language names to two-letter
+	    language codes.
+Files:	    src/ex_cmds2.c
+
+
+*** ../vim-6.2.152/src/ex_cmds2.c	Sun Nov  9 20:35:08 2003
+--- src/ex_cmds2.c	Mon Nov 10 10:25:20 2003
+***************
+*** 5477,5483 ****
+--- 5477,5521 ----
+  		if (what == LC_ALL)
+  		    vim_setenv((char_u *)"LANG", name);
+  		if (what != LC_CTYPE)
++ 		{
++ #ifdef WIN32
++ 		    char_u	*mname = name;
++ 		    int		i;
++ 		    static char *(mtable[]) = {
++ 					"afrikaans",	"af",
++ 					"czech",	"cs",
++ 					"german",	"de",
++ 					"english_united kingdom", "en_gb",
++ 					"spanish",	"es",
++ 					"french",	"fr",
++ 					"italian",	"it",
++ 					"japanese",	"ja",
++ 					"korean",	"ko",
++ 					"norwegian",	"no",
++ 					"polish",	"pl",
++ 					"russian",	"ru",
++ 					"slovak",	"sk",
++ 					"swedish",	"sv",
++ 					"ukrainian",	"uk",
++ 					"chinese_china", "zh_cn",
++ 					"chinese_taiwan", "zh_tw",
++ 					NULL};
++ 
++ 		    /* On MS-Windows locale names are strings like
++ 		     * "German_Germany.1252", but gettext expects "de".  Try
++ 		     * to translate one into another here for a few supported
++ 		     * languages. */
++ 		    for (i = 0; mtable[i] != NULL; i += 2)
++ 			if (STRNICMP(mtable[i], name, STRLEN(mtable[i])) == 0)
++ 			{
++ 			    mname = mtable[i + 1];
++ 			    break;
++ 			}
++ 		    vim_setenv((char_u *)"LC_MESSAGES", mname);
++ #else
+  		    vim_setenv((char_u *)"LC_MESSAGES", name);
++ #endif
++ 		}
+  
+  		/* Set $LC_CTYPE, because it overrules $LANG, and
+  		 * gtk_set_locale() calls setlocale() again.  gnome_init()
+*** ../vim-6.2.152/src/version.c	Wed Nov 12 20:47:29 2003
+--- src/version.c	Wed Nov 12 20:49:12 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     153,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+8. You spend half of the plane trip with your laptop on your lap...and your
+   child in the overhead compartment.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

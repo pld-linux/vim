@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.151
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.151
+Problem:    When doing "vim --remote +startinsert file" some commands are
+	    inserted as text. (Klaus Bosau)
+Solution:   Put all the init commands in one Ex line, not using a <CR>, so
+	    that Insert mode isn't started too early.
+Files:	    src/main.c
+
+
+*** ../vim-6.2.150/src/main.c	Thu Sep 11 21:25:43 2003
+--- src/main.c	Mon Nov 10 10:47:31 2003
+***************
+*** 3014,3027 ****
+      ga_concat(&ga, (char_u *)"<C-\\><C-N>:cd -");
+      if (sendReply)
+  	ga_concat(&ga, (char_u *)"<CR>:call SetupRemoteReplies()");
+      if (inicmd != NULL)
+      {
+! 	ga_concat(&ga, (char_u *)"<CR>:");
+  	ga_concat(&ga, inicmd);
+      }
+      /* Bring the window to the foreground, goto Insert mode when 'im' set and
+!      * clear command line */
+!     ga_concat(&ga, (char_u *)"<CR>:call foreground()<CR>:if &im|starti|endif|echo<CR>");
+      ga_append(&ga, NUL);
+      return ga.ga_data;
+  }
+--- 3022,3039 ----
+      ga_concat(&ga, (char_u *)"<C-\\><C-N>:cd -");
+      if (sendReply)
+  	ga_concat(&ga, (char_u *)"<CR>:call SetupRemoteReplies()");
++     ga_concat(&ga, (char_u *)"<CR>:");
+      if (inicmd != NULL)
+      {
+! 	/* Can't use <CR> after "inicmd", because an "startinsert" would cause
+! 	 * the following commands to be inserted as text.  Use a "|",
+! 	 * hopefully "inicmd" does allow this... */
+  	ga_concat(&ga, inicmd);
++ 	ga_concat(&ga, (char_u *)"|");
+      }
+      /* Bring the window to the foreground, goto Insert mode when 'im' set and
+!      * clear command line. */
+!     ga_concat(&ga, (char_u *)"cal foreground()|if &im|star|en|ec<CR>");
+      ga_append(&ga, NUL);
+      return ga.ga_data;
+  }
+*** ../vim-6.2.150/src/version.c	Wed Nov 12 20:41:45 2003
+--- src/version.c	Wed Nov 12 20:43:34 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     151,
+  /**/
+
+-- 
+The goal of science is to build better mousetraps.
+The goal of nature is to build better mice.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.128
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.128 (after 6.2.118)
+Problem:    src/auto/configure is not consistent with src/configure.in.
+Solution:   Use the newly generated configure script.
+Files:      src/auto/configure
+
+
+*** ../vim-6.2.127/src/auto/configure	Fri Oct 17 12:01:21 2003
+--- src/auto/configure	Thu Oct 16 10:32:05 2003
+***************
+*** 3601,3608 ****
+  
+    case "$enable_gui_canon" in
+      no|none)	echo "$ac_t""no GUI support" 1>&6 ;;
+!     yes|"")	echo "$ac_t""yes - automatic GUI support" 1>&6 ;;
+!     auto)	echo "$ac_t""auto - automatic GUI support" 1>&6
+  		SKIP_GTK=
+  		SKIP_GTK2=
+  		SKIP_GNOME=
+--- 3601,3607 ----
+  
+    case "$enable_gui_canon" in
+      no|none)	echo "$ac_t""no GUI support" 1>&6 ;;
+!     yes|""|auto)	echo "$ac_t""yes/auto - automatic GUI support" 1>&6
+  		SKIP_GTK=
+  		SKIP_GTK2=
+  		SKIP_GNOME=
+*** ../vim-6.2.127/src/version.c	Fri Oct 17 12:20:50 2003
+--- src/version.c	Thu Oct 23 14:09:08 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     128,
+  /**/
+
+-- 
+    [clop clop]
+GUARD #1:  Halt!  Who goes there?
+ARTHUR:    It is I, Arthur, son of Uther Pendragon, from the castle of
+           Camelot.  King of the Britons, defeator of the Saxons, sovereign of
+           all England!
+GUARD #1:  Pull the other one!
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.136
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.136
+Problem:    ":e ++enc=latin1 newfile" doesn't set 'fenc' when the file doesn't
+	    exist.  (Miroslaw Dobrzanski-Neumann)
+Solution:   Set 'fileencoding' to the specified encoding when editing a file
+	    that does not exist.
+Files:	    src/fileio.c
+
+
+*** ../vim-6.2.135/src/fileio.c	Sun Oct 12 17:25:14 2003
+--- src/fileio.c	Tue Oct 28 20:52:40 2003
+***************
+*** 543,548 ****
+--- 543,559 ----
+  		     * edited before and deleted.  Get the old marks. */
+  		    check_marks_read();
+  #endif
++ #ifdef FEAT_MBYTE
++ 		    if (eap != NULL && eap->force_enc != 0)
++ 		    {
++ 			/* set forced 'fileencoding' */
++ 			fenc = enc_canonize(eap->cmd + eap->force_enc);
++ 			if (fenc != NULL)
++ 			    set_string_option_direct((char_u *)"fenc", -1,
++ 						    fenc, OPT_FREE|OPT_LOCAL);
++ 			vim_free(fenc);
++ 		    }
++ #endif
+  #ifdef FEAT_AUTOCMD
+  		    apply_autocmds_exarg(EVENT_BUFNEWFILE, sfname, sfname,
+  							  FALSE, curbuf, eap);
+*** ../vim-6.2.135/src/version.c	Sun Oct 26 20:12:53 2003
+--- src/version.c	Wed Oct 29 14:27:36 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     136,
+  /**/
+
+-- 
+Vi beats Emacs to death, and then again!
+			http://linuxtoday.com/stories/5764.html
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

@@ -1,0 +1,109 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.148
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.148
+Problem:    Can't break an Insert into several undoable parts.
+Solution:   Add the CTRL-G u command.
+Files:	    runtime/doc/insert.txt, src/edit.c
+
+
+*** ../vim-6.2.147/runtime/doc/insert.txt	Mon Jun  2 21:31:14 2003
+--- runtime/doc/insert.txt	Thu Oct 30 15:31:54 2003
+***************
+*** 1,4 ****
+! *insert.txt*    For Vim version 6.2.  Last change: 2003 Jun 02
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *insert.txt*    For Vim version 6.2.  Last change: 2003 Oct 30
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 350,363 ****
+  <MouseUp>	scroll three lines up			     *i_<MouseUp>*
+  <S-MouseUp>	scroll a full page up			     *i_<S-MouseUp>*
+  CTRL-O		execute one command, return to Insert mode   *i_CTRL-O*
+  -----------------------------------------------------------------------
+  
+  Note: If the cursor keys take you out of Insert mode, check the 'noesckeys'
+  option.
+  
+! The CTRL-O command sometimes has one side effect: If the cursor was beyond the
+  end of the line, it will be put on the last character in the line.
+  The shifted cursor keys are not available on all terminals.
+  
+  When the 'whichwrap' option is set appropriately, the <Left> and <Right>
+  keys on the first/last character in the line make the cursor wrap to the
+--- 350,376 ----
+  <MouseUp>	scroll three lines up			     *i_<MouseUp>*
+  <S-MouseUp>	scroll a full page up			     *i_<S-MouseUp>*
+  CTRL-O		execute one command, return to Insert mode   *i_CTRL-O*
++ CTRL-G u	break undo sequence, start new change	     *i_CTRL-G_u*
+  -----------------------------------------------------------------------
+  
+  Note: If the cursor keys take you out of Insert mode, check the 'noesckeys'
+  option.
+  
+! The CTRL-O command sometimes has a side effect: If the cursor was beyond the
+  end of the line, it will be put on the last character in the line.
+  The shifted cursor keys are not available on all terminals.
++ 
++ Another side effect is that a count specified before the "i" or "a" command is
++ ignored.  That is because repeating the effect of the command after CTRL-O is
++ too complicated.
++ 
++ An example for using CTRL-G u: >
++ 
++ 	:inoremap <C-H> <C-G>u<C-H>
++ 
++ This redefines the backspace key to start a new undo sequence.  You can now
++ undo the effect of the backspace key, without changing what you typed before
++ that, with CTRL-O u.
+  
+  When the 'whichwrap' option is set appropriately, the <Left> and <Right>
+  keys on the first/last character in the line make the cursor wrap to the
+*** ../vim-6.2.147/src/edit.c	Sun Oct 26 19:57:02 2003
+--- src/edit.c	Thu Oct 30 15:17:50 2003
+***************
+*** 5916,5921 ****
+--- 5916,5926 ----
+  	case K_DOWN:
+  	case Ctrl_J:
+  	case 'j': ins_down(TRUE);
++ 		  break;
++ 
++         /* CTRL-G u: start new undoable edit */
++ 	case 'u': u_sync();
++ 		  ins_need_undo = TRUE;
+  		  break;
+  
+  	/* Unknown CTRL-G command, reserved for future expansion. */
+*** ../vim-6.2.147/src/version.c	Sun Nov  9 20:23:26 2003
+--- src/version.c	Sun Nov  9 20:25:52 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     148,
+  /**/
+
+-- 
+Team-building exercises come in many forms but they all trace their roots back
+to the prison system.  In your typical team-building exercise the employees
+are subjected to a variety of unpleasant situations until they become either a
+cohesive team or a ring of car jackers.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

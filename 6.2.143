@@ -1,0 +1,76 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.143
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.143
+Problem:    Using "K" on Visually selected text doesn't work if it ends in
+            a multi-byte character.
+Solution:   Include all the bytes of the last character. (Taro Muraoka)
+Files:      src/normal.c
+
+
+*** ../vim-6.2.142/src/normal.c	Wed Oct 29 14:37:09 2003
+--- src/normal.c	Fri Oct 31 15:49:58 2003
+***************
+*** 4952,4966 ****
+  	*pp = ml_get_curline();
+  	*lenp = (int)STRLEN(*pp);
+      }
+-     else if (lt(curwin->w_cursor, VIsual))
+-     {
+- 	*pp = ml_get_pos(&curwin->w_cursor);
+- 	*lenp = VIsual.col - curwin->w_cursor.col + 1;
+-     }
+      else
+      {
+! 	*pp = ml_get_pos(&VIsual);
+! 	*lenp = curwin->w_cursor.col - VIsual.col + 1;
+      }
+      reset_VIsual_and_resel();
+      return OK;
+--- 4952,4974 ----
+  	*pp = ml_get_curline();
+  	*lenp = (int)STRLEN(*pp);
+      }
+      else
+      {
+! 	if (lt(curwin->w_cursor, VIsual))
+! 	{
+! 	    *pp = ml_get_pos(&curwin->w_cursor);
+! 	    *lenp = VIsual.col - curwin->w_cursor.col + 1;
+! 	}
+! 	else
+! 	{
+! 	    *pp = ml_get_pos(&VIsual);
+! 	    *lenp = curwin->w_cursor.col - VIsual.col + 1;
+! 	}
+! #ifdef FEAT_MBYTE
+! 	if (has_mbyte)
+! 	    /* Correct the length to include the whole last character. */
+! 	    *lenp += (*mb_ptr2len_check)(*pp + (*lenp - 1)) - 1;
+! #endif
+      }
+      reset_VIsual_and_resel();
+      return OK;
+*** ../vim-6.2.142/src/version.c	Sun Nov  2 15:37:11 2003
+--- src/version.c	Sun Nov  2 15:48:21 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     143,
+  /**/
+
+-- 
+Zen Microsystems: we're the om in .commmmmmmmm
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

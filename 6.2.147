@@ -1,0 +1,73 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.147
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.147
+Problem:    ":s/pat/\=col('.')" always replaces with "1".
+Solution:   Set the cursor to the start of the match before substituting.
+	    (Helmut Stiegler)
+Files:	    src/ex_cmds.c
+
+
+*** ../vim-6.2.146/src/ex_cmds.c	Sat Sep 27 19:36:46 2003
+--- src/ex_cmds.c	Fri Nov  7 16:12:26 2003
+***************
+*** 3896,3904 ****
+  			break;
+  		}
+  
+! 		/* Move the cursor to the start of the line, to avoid that it
+! 		 * is beyond the end of the line after the substitution. */
+! 		curwin->w_cursor.col = 0;
+  
+  		/*
+  		 * 3. substitute the string.
+--- 3896,3904 ----
+  			break;
+  		}
+  
+! 		/* Move the cursor to the start of the match, so that we can
+! 		 * use "\=col("."). */
+! 		curwin->w_cursor.col = regmatch.startpos[0].col;
+  
+  		/*
+  		 * 3. substitute the string.
+***************
+*** 3970,3975 ****
+--- 3970,3979 ----
+  					   sub, new_end, TRUE, p_magic, TRUE);
+  		sub_nsubs++;
+  		did_sub = TRUE;
++ 
++ 		/* Move the cursor to the start of the line, to avoid that it
++ 		 * is beyond the end of the line after the substitution. */
++ 		curwin->w_cursor.col = 0;
+  
+  		/* For a multi-line match, make a copy of the last matched
+  		 * line and continue in that one. */
+*** ../vim-6.2.146/src/version.c	Sun Nov  9 20:20:26 2003
+--- src/version.c	Sun Nov  9 20:22:20 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     147,
+  /**/
+
+-- 
+I once paid $12 to peer at the box that held King Tutankhamen's little
+bandage-covered midget corpse at the De Young Museum in San Francisco.  I
+remember thinking how pleased he'd be about the way things turned out in his
+afterlife.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

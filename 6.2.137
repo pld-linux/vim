@@ -1,0 +1,137 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.137
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.137
+Problem:    "d:cmd<CR>" cannot be repeated with ".".  Breaks repeating "d%"
+	    when using the matchit plugin.
+Solution:   Store the command to be repeated.  This is restricted to
+	    single-line commands.
+Files:	    src/ex_docmd.c, src/globals.h, src/normal.c, src/vim.h
+
+
+*** ../vim-6.2.136/src/ex_docmd.c	Sun Oct 26 20:12:53 2003
+--- src/ex_docmd.c	Tue Oct 28 19:50:06 2003
+***************
+*** 570,575 ****
+--- 570,576 ----
+   * DOCMD_REPEAT   - Repeat execution until getline() returns NULL.
+   * DOCMD_KEYTYPED - Don't reset KeyTyped.
+   * DOCMD_EXCRESET - Reset the exception environment (used for debugging).
++  * DOCMD_KEEPLINE - Store first typed line (for repeating with ".").
+   *
+   * return FAIL if cmdline could not be executed, OK otherwise
+   */
+***************
+*** 817,822 ****
+--- 818,835 ----
+  		retval = FAIL;
+  		break;
+  	    }
++ 
++ 	    /*
++ 	     * Keep the first typed line.  Clear it when more lines are typed.
++ 	     */
++ 	    if (flags & DOCMD_KEEPLINE)
++ 	    {
++ 		vim_free(repeat_cmdline);
++ 		if (count == 0)
++ 		    repeat_cmdline = vim_strsave(next_cmdline);
++ 		else
++ 		    repeat_cmdline = NULL;
++ 	    }
+  	}
+  
+  	/* 3. Make a copy of the command so we can mess with it. */
+*** ../vim-6.2.136/src/globals.h	Tue Sep 16 14:15:52 2003
+--- src/globals.h	Tue Oct 28 19:49:48 2003
+***************
+*** 872,877 ****
+--- 872,878 ----
+  EXTERN int	need_start_insertmode INIT(= FALSE);
+  					    /* start insert mode soon */
+  EXTERN char_u	*last_cmdline INIT(= NULL); /* last command line (for ":) */
++ EXTERN char_u	*repeat_cmdline INIT(= NULL); /* command line for "." */
+  #ifdef FEAT_CMDHIST
+  EXTERN char_u	*new_last_cmdline INIT(= NULL);	/* new value for last_cmdline */
+  #endif
+*** ../vim-6.2.136/src/normal.c	Sat Sep 27 19:36:47 2003
+--- src/normal.c	Tue Oct 28 20:03:49 2003
+***************
+*** 1355,1360 ****
+--- 1355,1375 ----
+  		    AppendToRedobuffLit(cap->searchbuf);
+  		AppendToRedobuff(NL_STR);
+  	    }
++ 	    else if (cap->cmdchar == ':')
++ 	    {
++ 		/* do_cmdline() has stored the first typed line in
++ 		 * "repeat_cmdline".  When several lines are typed repeating
++ 		 * won't be possible. */
++ 		if (repeat_cmdline == NULL)
++ 		    ResetRedobuff();
++ 		else
++ 		{
++ 		    AppendToRedobuffLit(repeat_cmdline);
++ 		    AppendToRedobuff(NL_STR);
++ 		    vim_free(repeat_cmdline);
++ 		    repeat_cmdline = NULL;
++ 		}
++ 	    }
+  	}
+  
+  #ifdef FEAT_VISUAL
+***************
+*** 4559,4565 ****
+  	old_p_im = p_im;
+  
+  	/* get a command line and execute it */
+! 	do_cmdline(NULL, getexline, NULL, 0);
+  
+  	/* If 'insertmode' changed, enter or exit Insert mode */
+  	if (p_im != old_p_im)
+--- 4574,4581 ----
+  	old_p_im = p_im;
+  
+  	/* get a command line and execute it */
+! 	do_cmdline(NULL, getexline, NULL,
+! 			    cap->oap->op_type != OP_NOP ? DOCMD_KEEPLINE : 0);
+  
+  	/* If 'insertmode' changed, enter or exit Insert mode */
+  	if (p_im != old_p_im)
+*** ../vim-6.2.136/src/vim.h	Mon Oct 13 22:21:06 2003
+--- src/vim.h	Wed Oct 29 12:51:00 2003
+***************
+*** 811,816 ****
+--- 811,817 ----
+  #define DOCMD_REPEAT	0x04	/* repeat exec. until getline() returns NULL */
+  #define DOCMD_KEYTYPED	0x08	/* don't reset KeyTyped */
+  #define DOCMD_EXCRESET	0x10	/* reset exception environment (for debugging)*/
++ #define DOCMD_KEEPLINE  0x20	/* keep typed line for repeating with "." */
+  
+  /* flags for beginline() */
+  #define BL_WHITE	1	/* cursor on first non-white in the line */
+*** ../vim-6.2.136/src/version.c	Wed Oct 29 14:29:15 2003
+--- src/version.c	Wed Oct 29 14:31:43 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     137,
+  /**/
+
+-- 
+TALL KNIGHT: When you have found the shrubbery, then you must cut down the
+             mightiest tree in the forest ... with a herring.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

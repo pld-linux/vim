@@ -1,0 +1,140 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.149
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.149
+Problem:    When the cursor is on a line past 21,474,748 the indicated
+	    percentage of the position is invalid.  With that many lines
+	    "100%" causes a negative cursor line number, resulting in a crash.
+	    (Daniel Goujot)
+Solution:   Divide by 100 instead of multiplying.  Avoid overflow when
+	    computing the line number for "100%".
+Files:	    src/buffer.c, src/ex_cmds2.c, src/normal.c
+
+
+*** ../vim-6.2.148/src/buffer.c	Sat Sep 27 19:36:46 2003
+--- src/buffer.c	Sat Nov  8 13:21:58 2003
+***************
+*** 2719,2725 ****
+  	    (curbufIsChanged() || (curbuf->b_flags & BF_WRITE_MASK)
+  							  || curbuf->b_p_ro) ?
+  								    " " : "");
+!     n = (int)(((long)curwin->w_cursor.lnum * 100L) /
+  					    (long)curbuf->b_ml.ml_line_count);
+      if (curbuf->b_ml.ml_flags & ML_EMPTY)
+      {
+--- 2719,2731 ----
+  	    (curbufIsChanged() || (curbuf->b_flags & BF_WRITE_MASK)
+  							  || curbuf->b_p_ro) ?
+  								    " " : "");
+!     /* With 32 bit longs and more than 21,474,836 lines multiplying by 100
+!      * causes an overflow, thus for large numbers divide instead. */
+!     if (curwin->w_cursor.lnum > 1000000L)
+! 	n = (int)(((long)curwin->w_cursor.lnum) /
+! 				   ((long)curbuf->b_ml.ml_line_count / 100L));
+!     else
+! 	n = (int)(((long)curwin->w_cursor.lnum * 100L) /
+  					    (long)curbuf->b_ml.ml_line_count);
+      if (curbuf->b_ml.ml_flags & ML_EMPTY)
+      {
+***************
+*** 3755,3762 ****
+      else if (above <= 0)
+  	STRCPY(str, _("Top"));
+      else
+! 	sprintf((char *)str, "%2d%%",
+! 		(int)(above * 100 / (above + below)));
+  }
+  #endif
+  
+--- 3761,3769 ----
+      else if (above <= 0)
+  	STRCPY(str, _("Top"));
+      else
+! 	sprintf((char *)str, "%2d%%", above > 1000000L
+! 				    ? (int)(above / ((above + below) / 100L))
+! 				    : (int)(above * 100L / (above + below)));
+  }
+  #endif
+  
+*** ../vim-6.2.148/src/ex_cmds2.c	Sun Oct 12 20:20:38 2003
+--- src/ex_cmds2.c	Sun Nov  9 16:44:15 2003
+***************
+*** 3401,3407 ****
+  
+  		    sprintf((char *)IObuff, _("Printing page %d (%d%%)"),
+  			    page_count + 1 + side,
+! 			    (int)((prtpos.bytes_printed * 100)
+  							   / bytes_to_print));
+  		    if (!mch_print_begin_page(IObuff))
+  			goto print_fail;
+--- 3401,3410 ----
+  
+  		    sprintf((char *)IObuff, _("Printing page %d (%d%%)"),
+  			    page_count + 1 + side,
+! 			    prtpos.bytes_printed > 1000000
+! 				? (int)(prtpos.bytes_printed /
+! 						       (bytes_to_print / 100))
+! 				: (int)((prtpos.bytes_printed * 100)
+  							   / bytes_to_print));
+  		    if (!mch_print_begin_page(IObuff))
+  			goto print_fail;
+*** ../vim-6.2.148/src/normal.c	Sun Nov  2 15:49:56 2003
+--- src/normal.c	Sun Nov  9 13:35:44 2003
+***************
+*** 5814,5822 ****
+  	{
+  	    cap->oap->motion_type = MLINE;
+  	    setpcmark();
+! 			    /* round up, so CTRL-G will give same value */
+! 	    curwin->w_cursor.lnum = (curbuf->b_ml.ml_line_count *
+  						    cap->count0 + 99L) / 100L;
+  	    beginline(BL_SOL | BL_FIX);
+  	}
+      }
+--- 5814,5829 ----
+  	{
+  	    cap->oap->motion_type = MLINE;
+  	    setpcmark();
+! 	    /* Round up, so CTRL-G will give same value.  Watch out for a
+! 	     * large line count, the line number must not go negative! */
+! 	    if (curbuf->b_ml.ml_line_count > 1000000)
+! 		curwin->w_cursor.lnum = (curbuf->b_ml.ml_line_count + 99L)
+! 							 / 100L * cap->count0;
+! 	    else
+! 		curwin->w_cursor.lnum = (curbuf->b_ml.ml_line_count *
+  						    cap->count0 + 99L) / 100L;
++ 	    if (curwin->w_cursor.lnum > curbuf->b_ml.ml_line_count)
++ 		curwin->w_cursor.lnum = curbuf->b_ml.ml_line_count;
+  	    beginline(BL_SOL | BL_FIX);
+  	}
+      }
+*** ../vim-6.2.148/src/version.c	Sun Nov  9 20:26:53 2003
+--- src/version.c	Sun Nov  9 20:29:14 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     149,
+  /**/
+
+-- 
+The acknowledged parents of reengineering are Michael Hammer and James Champy.
+When I say they're the "parents" I don't mean they had sex - and I apologize
+for making you think about it.  I mean they wrote the best-selling business
+book _Reengineering the Corporation_, which was published in 1993.
+   Businesses flocked to reengineering like frat boys to a drunken
+cheerleader.  (This analogy wasn't necessary, but I'm trying to get my mind
+off that Hammer and Champy thing.)
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

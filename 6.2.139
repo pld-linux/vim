@@ -1,0 +1,219 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.139
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.139
+Problem:    Code is repeated in the two Perl files.
+Solution:   Move common code from if_perl.xs and if_perlsfio.c to vim.h.
+	    Also fix a problem with generating prototypes.
+Files:	    src/if_perl.xs, src/if_perlsfio.c, src/vim.h
+
+
+*** ../vim-6.2.138/src/if_perl.xs	Mon May 19 23:02:45 2003
+--- src/if_perl.xs	Wed Oct 29 12:26:30 2003
+***************
+*** 15,59 ****
+  
+  #include "vim.h"
+  
+- /*
+-  * Avoid clashes between Perl and Vim namespace.
+-  */
+- #undef NORMAL
+- #undef STRLEN
+- #undef FF
+- #undef OP_DELETE
+- #undef OP_JOIN
+- #ifdef __BORLANDC__
+- # define NOPROTO 1
+- #endif
+- /* remove MAX and MIN, included by glib.h, redefined by sys/param.h */
+- #ifdef MAX
+- # undef MAX
+- #endif
+- #ifdef MIN
+- # undef MIN
+- #endif
+- /* We use _() for gettext(), Perl uses it for function prototypes... */
+- #ifdef _
+- # undef _
+- #endif
+- #ifdef DEBUG
+- # undef DEBUG
+- #endif
+- #ifdef _DEBUG
+- # undef _DEBUG
+- #endif
+- 
+- #ifdef __BORLANDC__
+- /* Borland has the structure stati64 but not _stati64 */
+- # define _stati64 stati64
+- #endif
+- 
+- /* OK, nasty namespace hacking over... */
+- 
+- #include <EXTERN.h>
+- #include <perl.h>
+- #include <XSUB.h>
+  
+  /*
+   * Work around clashes between Perl and Vim namespace.	proto.h doesn't
+--- 15,20 ----
+***************
+*** 110,116 ****
+  # define perl_free dll_perl_free
+  # define Perl_get_context dll_Perl_get_context
+  # define Perl_croak dll_Perl_croak
+! # define Perl_croak_nocontext dll_Perl_croak_nocontext
+  # define Perl_dowantarray dll_Perl_dowantarray
+  # define Perl_free_tmps dll_Perl_free_tmps
+  # define Perl_gv_stashpv dll_Perl_gv_stashpv
+--- 71,85 ----
+  # define perl_free dll_perl_free
+  # define Perl_get_context dll_Perl_get_context
+  # define Perl_croak dll_Perl_croak
+! # ifndef PROTO
+! #  define Perl_croak_nocontext dll_Perl_croak_nocontext
+! #  define Perl_call_argv dll_Perl_call_argv
+! #  define Perl_call_pv dll_Perl_call_pv
+! #  define Perl_eval_sv dll_Perl_eval_sv
+! #  define Perl_get_sv dll_Perl_get_sv
+! #  define Perl_eval_pv dll_Perl_eval_pv
+! #  define Perl_call_method dll_Perl_call_method
+! # endif
+  # define Perl_dowantarray dll_Perl_dowantarray
+  # define Perl_free_tmps dll_Perl_free_tmps
+  # define Perl_gv_stashpv dll_Perl_gv_stashpv
+***************
+*** 120,131 ****
+  # define Perl_newSV dll_Perl_newSV
+  # define Perl_newSViv dll_Perl_newSViv
+  # define Perl_newSVpv dll_Perl_newSVpv
+- # define Perl_call_argv dll_Perl_call_argv
+- # define Perl_call_pv dll_Perl_call_pv
+- # define Perl_eval_sv dll_Perl_eval_sv
+- # define Perl_get_sv dll_Perl_get_sv
+- # define Perl_eval_pv dll_Perl_eval_pv
+- # define Perl_call_method dll_Perl_call_method
+  # define Perl_pop_scope dll_Perl_pop_scope
+  # define Perl_push_scope dll_Perl_push_scope
+  # define Perl_save_int dll_Perl_save_int
+--- 89,94 ----
+*** ../vim-6.2.138/src/if_perlsfio.c	Tue Feb 13 15:02:49 2001
+--- src/if_perlsfio.c	Wed Oct 29 12:27:43 2003
+***************
+*** 15,47 ****
+  
+  #include "vim.h"
+  
+- /*
+-  * Avoid clashes between Perl and Vim namespace.
+-  */
+- #undef NORMAL
+- #undef STRLEN
+- #undef FF
+- #undef OP_DELETE
+- #undef OP_JOIN
+- /* remove MAX and MIN, included by glib.h, redefined by sys/param.h */
+- #ifdef MAX
+- # undef MAX
+- #endif
+- #ifdef MIN
+- # undef MIN
+- #endif
+- /* We use _() for gettext(), Perl uses it for function prototypes... */
+- #ifdef _
+- # undef _
+- #endif
+- #ifdef DEBUG
+- # undef DEBUG
+- #endif
+- 
+- #include <EXTERN.h>
+- #include <perl.h>
+- #include <XSUB.h>
+- 
+  #if defined(USE_SFIO) || defined(PROTO)
+  
+  #ifndef USE_SFIO	/* just generating prototypes */
+--- 15,20 ----
+*** ../vim-6.2.138/src/vim.h	Wed Oct 29 14:37:09 2003
+--- src/vim.h	Wed Oct 29 12:51:00 2003
+***************
+*** 1714,1717 ****
+--- 1714,1763 ----
+  # define nbdebug(a)
+  #endif
+  
++ #ifdef IN_PERL_FILE
++   /*
++    * Avoid clashes between Perl and Vim namespace.
++    */
++ # undef NORMAL
++ # undef STRLEN
++ # undef FF
++ # undef OP_DELETE
++ # undef OP_JOIN
++ # ifdef __BORLANDC__
++ #  define NOPROTO 1
++ # endif
++   /* remove MAX and MIN, included by glib.h, redefined by sys/param.h */
++ # ifdef MAX
++ #  undef MAX
++ # endif
++ # ifdef MIN
++ #  undef MIN
++ # endif
++   /* We use _() for gettext(), Perl uses it for function prototypes... */
++ # ifdef _
++ #  undef _
++ # endif
++ # ifdef DEBUG
++ #  undef DEBUG
++ # endif
++ # ifdef _DEBUG
++ #  undef _DEBUG
++ # endif
++ # ifdef instr
++ #  undef instr
++ # endif
++ # ifdef bool
++ #  undef bool
++ # endif
++ 
++ # ifdef __BORLANDC__
++   /* Borland has the structure stati64 but not _stati64 */
++ #  define _stati64 stati64
++ # endif
++ 
++ # include <EXTERN.h>
++ # include <perl.h>
++ # include <XSUB.h>
++ #endif
++ 
+  #endif /* VIM__H */
+*** ../vim-6.2.138/src/version.c	Wed Oct 29 14:40:27 2003
+--- src/version.c	Wed Oct 29 14:42:42 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     139,
+  /**/
+
+-- 
+       [Autumn changed into Winter ... Winter changed into Spring ...  Spring
+       changed back into Autumn and Autumn gave Winter and Spring a miss and
+       went straight on into Summer ...  Until one day ...]
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

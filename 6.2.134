@@ -1,0 +1,114 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.134 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.134 (extra)
+Problem:    Win32: When scrolling parts of the window are redrawn when this
+	    isn't necessary.
+Solution:   Only invalidate parts of the window when they are obscured by
+	    other windows. (Michael Wookey)
+Files:	    src/gui_w48.c
+
+
+
+*** ../vim-6.2.133/src/gui_w48.c	Sun Oct 26 20:11:34 2003
+--- src/gui_w48.c	Sun Oct 26 20:56:48 2003
+***************
+*** 2382,2387 ****
+--- 2382,2409 ----
+  }
+  
+  /*
++  * Return flags used for scrolling.
++  * The SW_INVALIDATE is required when part of the window is covered or
++  * off-screen. Refer to MS KB Q75236.
++  */
++     static int
++ get_scroll_flags(void)
++ {
++     HWND	hwnd;
++     RECT	rcVim, rcOther, rcDest;
++ 
++     GetWindowRect(s_hwnd, &rcVim);
++     for (hwnd = s_hwnd; (hwnd = GetWindow(hwnd, GW_HWNDPREV)) != (HWND)0; )
++ 	if (IsWindowVisible(hwnd))
++ 	{
++ 	    GetWindowRect(hwnd, &rcOther);
++ 	    if (IntersectRect(&rcDest, &rcVim, &rcOther))
++ 		return SW_INVALIDATE;
++ 	}
++     return 0;
++ }
++ 
++ /*
+   * Delete the given number of lines from the given row, scrolling up any
+   * text further down within the scroll region.
+   */
+***************
+*** 2396,2405 ****
+      rc.right = FILL_X(gui.scroll_region_right + 1);
+      rc.top = FILL_Y(row);
+      rc.bottom = FILL_Y(gui.scroll_region_bot + 1);
+!     /* The SW_INVALIDATE is required when part of the window is covered or
+!      * off-screen.  How do we avoid it when it's not needed? */
+      ScrollWindowEx(s_textArea, 0, -num_lines * gui.char_height,
+! 	    &rc, &rc, NULL, NULL, SW_INVALIDATE);
+  
+      UpdateWindow(s_textArea);
+      /* This seems to be required to avoid the cursor disappearing when
+--- 2418,2426 ----
+      rc.right = FILL_X(gui.scroll_region_right + 1);
+      rc.top = FILL_Y(row);
+      rc.bottom = FILL_Y(gui.scroll_region_bot + 1);
+! 
+      ScrollWindowEx(s_textArea, 0, -num_lines * gui.char_height,
+! 				    &rc, &rc, NULL, NULL, get_scroll_flags());
+  
+      UpdateWindow(s_textArea);
+      /* This seems to be required to avoid the cursor disappearing when
+***************
+*** 2431,2437 ****
+      /* The SW_INVALIDATE is required when part of the window is covered or
+       * off-screen.  How do we avoid it when it's not needed? */
+      ScrollWindowEx(s_textArea, 0, num_lines * gui.char_height,
+! 	    &rc, &rc, NULL, NULL, SW_INVALIDATE);
+  
+      gui_undraw_cursor();	/* Is this really necessary? */
+      UpdateWindow(s_textArea);
+--- 2452,2458 ----
+      /* The SW_INVALIDATE is required when part of the window is covered or
+       * off-screen.  How do we avoid it when it's not needed? */
+      ScrollWindowEx(s_textArea, 0, num_lines * gui.char_height,
+! 				    &rc, &rc, NULL, NULL, get_scroll_flags());
+  
+      gui_undraw_cursor();	/* Is this really necessary? */
+      UpdateWindow(s_textArea);
+*** ../vim-6.2.133/src/version.c	Sun Oct 26 20:19:23 2003
+--- src/version.c	Sun Oct 26 20:59:01 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     134,
+  /**/
+
+-- 
+ARTHUR:  You fight with the strength of many men, Sir knight.
+         I am Arthur, King of the Britons.  [pause]
+         I seek the finest and the bravest knights in the land to join me
+         in my Court of Camelot.  [pause]
+         You have proved yourself worthy; will you join me?  [pause]
+         You make me sad.  So be it.  Come, Patsy.
+BLACK KNIGHT:  None shall pass.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

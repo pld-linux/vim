@@ -1,0 +1,56 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.131 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.131 (extra)
+Problem:    Win32: Font handles are leaked.
+Solution:   Free italic, bold and bold-italic handles before overwriting them.
+	    (Michael Wookey)
+Files:	    src/gui_w48.c
+
+
+*** ../vim-6.2.130/src/gui_w48.c	Sun Oct 12 17:28:22 2003
+--- src/gui_w48.c	Sun Oct 26 20:09:09 2003
+***************
+*** 2534,2539 ****
+--- 2550,2562 ----
+      }
+  
+  #ifndef MSWIN16_FASTTEXT
++     gui_mch_free_font(gui.ital_font);
++     gui.ital_font = NOFONT;
++     gui_mch_free_font(gui.bold_font);
++     gui.bold_font = NOFONT;
++     gui_mch_free_font(gui.boldital_font);
++     gui.boldital_font = NOFONT;
++ 
+      if (!lf.lfItalic)
+      {
+  	lf.lfItalic = TRUE;
+*** ../vim-6.2.130/src/version.c	Sun Oct 26 20:00:32 2003
+--- src/version.c	Sun Oct 26 20:02:13 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     131,
+  /**/
+
+-- 
+ARTHUR:  Shut up!  Will you shut up!
+DENNIS:  Ah, now we see the violence inherent in the system.
+ARTHUR:  Shut up!
+DENNIS:  Oh!  Come and see the violence inherent in the system!
+         HELP! HELP!  I'm being repressed!
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

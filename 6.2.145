@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.145
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.145 (after 6.2.139)
+Problem:    Undefining "bool" doesn't work for older systems. (Wojtek Pilorz)
+Solution:   Only undefine "bool" on Mac OS.
+Files:	    src/vim.h
+
+
+*** ../vim-6.2.144/src/vim.h	Sun Nov  2 15:37:11 2003
+--- src/vim.h	Wed Nov  5 10:26:15 2003
+***************
+*** 1743,1749 ****
+  # ifdef instr
+  #  undef instr
+  # endif
+! # ifdef bool
+  #  undef bool
+  # endif
+  
+--- 1743,1750 ----
+  # ifdef instr
+  #  undef instr
+  # endif
+!   /* bool causes trouble on MACOS but is required on a few other systems */
+! # if defined(bool) && defined(MACOS)
+  #  undef bool
+  # endif
+  
+*** ../vim-6.2.144/src/version.c	Sun Nov  2 17:50:31 2003
+--- src/version.c	Wed Nov  5 10:31:30 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     145,
+  /**/
+
+-- 
+This message contains 78% recycled characters.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

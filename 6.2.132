@@ -1,0 +1,68 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.132 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.132 (extra)
+Problem:    Win32: console version doesn't work on latest Windows Server 2003.
+Solution:   Copy 12000 instead of 15000 cells at a time to avoid running out
+	    of memory.
+Files:	    src/os_win32.c
+
+
+*** ../vim-6.2.131/src/os_win32.c	Sun Oct 26 20:00:32 2003
+--- src/os_win32.c	Sat Oct 25 13:14:26 2003
+***************
+*** 1679,1693 ****
+       * We will now copy the console screen buffer into our buffer.
+       * ReadConsoleOutput() seems to be limited as far as how much you
+       * can read at a time.  Empirically, this number seems to be about
+!      * 15000 cells (rows * columns).  Start at position (0, 0) and copy
+       * in chunks until it is all copied.  The chunks will all have the
+       * same horizontal characteristics, so initialize them now.  The
+!      * height of each chunk will be (15000 / width).
+       */
+      BufferCoord.X = 0;
+      ReadRegion.Left = 0;
+      ReadRegion.Right = cb->Info.dwSize.X - 1;
+!     Y_incr = 15000 / cb->Info.dwSize.X;
+      for (Y = 0; Y < cb->BufferSize.Y; Y += Y_incr)
+      {
+  	/*
+--- 1679,1693 ----
+       * We will now copy the console screen buffer into our buffer.
+       * ReadConsoleOutput() seems to be limited as far as how much you
+       * can read at a time.  Empirically, this number seems to be about
+!      * 12000 cells (rows * columns).  Start at position (0, 0) and copy
+       * in chunks until it is all copied.  The chunks will all have the
+       * same horizontal characteristics, so initialize them now.  The
+!      * height of each chunk will be (12000 / width).
+       */
+      BufferCoord.X = 0;
+      ReadRegion.Left = 0;
+      ReadRegion.Right = cb->Info.dwSize.X - 1;
+!     Y_incr = 12000 / cb->Info.dwSize.X;
+      for (Y = 0; Y < cb->BufferSize.Y; Y += Y_incr)
+      {
+  	/*
+*** ../vim-6.2.131/src/version.c	Sun Oct 26 20:11:34 2003
+--- src/version.c	Sun Oct 26 20:13:44 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     132,
+  /**/
+
+-- 
+Seen on the back of a biker's vest: If you can read this, my wife fell off.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

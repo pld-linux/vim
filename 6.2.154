@@ -1,0 +1,89 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.154
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.154
+Problem:    Python bails out when giving a warning message. (Eugene
+	    Minkovskii)
+Solution:   Set sys.argv[] to an empty string.
+Files:	    src/if_python.c
+
+
+*** ../vim-6.2.153/src/if_python.c	Tue Sep  9 22:38:27 2003
+--- src/if_python.c	Wed Nov 12 10:00:44 2003
+***************
+*** 100,105 ****
+--- 100,106 ----
+  # define PyString_Size dll_PyString_Size
+  # define PyString_Type (*dll_PyString_Type)
+  # define PySys_SetObject dll_PySys_SetObject
++ # define PySys_SetArgv dll_PySys_SetArgv
+  # define PyType_Type (*dll_PyType_Type)
+  # define Py_BuildValue dll_Py_BuildValue
+  # define Py_FindMethod dll_Py_FindMethod
+***************
+*** 149,154 ****
+--- 150,156 ----
+  static int(*dll_PyString_Size)(PyObject *);
+  static PyTypeObject* dll_PyString_Type;
+  static int(*dll_PySys_SetObject)(char *, PyObject *);
++ static int(*dll_PySys_SetArgv)(int, char **);
+  static PyTypeObject* dll_PyType_Type;
+  static PyObject*(*dll_Py_BuildValue)(char *, ...);
+  static PyObject*(*dll_Py_FindMethod)(struct PyMethodDef[], PyObject *, char *);
+***************
+*** 220,225 ****
+--- 222,228 ----
+      {"PyString_Size", (PYTHON_PROC*)&dll_PyString_Size},
+      {"PyString_Type", (PYTHON_PROC*)&dll_PyString_Type},
+      {"PySys_SetObject", (PYTHON_PROC*)&dll_PySys_SetObject},
++     {"PySys_SetArgv", (PYTHON_PROC*)&dll_PySys_SetArgv},
+      {"PyType_Type", (PYTHON_PROC*)&dll_PyType_Type},
+      {"Py_BuildValue", (PYTHON_PROC*)&dll_Py_BuildValue},
+      {"Py_FindMethod", (PYTHON_PROC*)&dll_Py_FindMethod},
+***************
+*** 2073,2078 ****
+--- 2076,2082 ----
+  {
+      PyObject *mod;
+      PyObject *dict;
++     static char *(argv[2]) = {"", NULL};
+  
+      /* Fixups... */
+      BufferType.ob_type = &PyType_Type;
+***************
+*** 2081,2086 ****
+--- 2085,2093 ----
+      BufListType.ob_type = &PyType_Type;
+      WinListType.ob_type = &PyType_Type;
+      CurrentType.ob_type = &PyType_Type;
++ 
++     /* Set sys.argv[] to avoid a crash in warn(). */
++     PySys_SetArgv(1, argv);
+  
+      mod = Py_InitModule("vim", VimMethods);
+      dict = PyModule_GetDict(mod);
+*** ../vim-6.2.153/src/version.c	Wed Nov 12 20:50:01 2003
+--- src/version.c	Wed Nov 12 20:51:18 2003
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     154,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+9. All your daydreaming is preoccupied with getting a faster connection to the
+   net: 28.8...ISDN...cable modem...T1...T3.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
