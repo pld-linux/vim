@@ -429,31 +429,36 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/keymap
 %dir %{_datadir}/vim/v*/lang
 %{_datadir}/vim/v*/lang/README*
-%lang(af) %{_datadir}/vim/v*/lang/*af*
-%lang(cs) %{_datadir}/vim/v*/lang/*cs*
-%lang(cs) %{_datadir}/vim/v*/lang/menu_czech_czech_republic.1250.vim
-%lang(de) %{_datadir}/vim/v*/lang/*de*
-%lang(de) %{_datadir}/vim/v*/lang/menu_german_germany.1252.vim
-#%lang(es) %{_datadir}/vim/v*/lang/es
-%lang(es) %{_datadir}/vim/v*/lang/*es_es*
-%lang(es) %{_datadir}/vim/v*/lang/*spanish*
-%lang(fr) %{_datadir}/vim/v*/lang/*fr*
-%lang(hu) %{_datadir}/vim/v*/lang/*hu*
-%lang(nl) %{_datadir}/vim/v*/lang/*nl*
-%lang(it) %{_datadir}/vim/v*/lang/*it*
-%lang(ja) %{_datadir}/vim/v*/lang/*ja*
-%lang(ko) %{_datadir}/vim/v*/lang/*ko*
-%lang(pl) %{_datadir}/vim/v*/lang/*pl*
-%lang(pl) %{_datadir}/vim/v*/lang/menu_polish_poland.1250.vim
-%lang(sk) %{_datadir}/vim/v*/lang/menu_sk_sk.iso_8859-2.vim
-%lang(zh_TW) %{_datadir}/vim/v*/lang/*zh*
-# NOTE: Files with parenthesis in names are for Windows (Yes!) 9x/2000
-#       compatibility and one of the files simply includes the other.
-%lang(zh_TW) %{_datadir}/vim/v*/lang/menu_chinese_taiwan.950.vim
-%lang(zh_TW) %{_datadir}/vim/v*/lang/menu_chinese(taiwan)_taiwan.950.vim
-# I'm not sure if ,,_CN'' is correct.
-%lang(zh_CN) %{_datadir}/vim/v*/lang/menu_chinese_gb.936.vim
-%lang(zh_CN) %{_datadir}/vim/v*/lang/menu_chinese(gb)_gb.936.vim
+
+%lang(af) %{_datadir}/vim/v*/lang/af
+%lang(de) %{_datadir}/vim/v*/lang/de
+%lang(es) %{_datadir}/vim/v*/lang/es
+%lang(fr) %{_datadir}/vim/v*/lang/fr
+%lang(it) %{_datadir}/vim/v*/lang/it
+%lang(ja) %{_datadir}/vim/v*/lang/ja*
+%lang(ko) %{_datadir}/vim/v*/lang/ko
+%lang(pl) %{_datadir}/vim/v*/lang/pl
+%lang(sk) %{_datadir}/vim/v*/lang/sk
+%lang(tr) %{_datadir}/vim/v*/lang/tr
+%lang(uk) %{_datadir}/vim/v*/lang/uk
+%lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN*
+%lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW
+
+%lang(af) %{_datadir}/vim/v*/lang/menu_af_af*
+%lang(cs) %{_datadir}/vim/v*/lang/menu_cs_cz*
+%lang(de) %{_datadir}/vim/v*/lang/menu_de_de*
+%lang(es) %{_datadir}/vim/v*/lang/menu_es_es*
+%lang(fr) %{_datadir}/vim/v*/lang/menu_fr_fr*
+%lang(hu) %{_datadir}/vim/v*/lang/menu_hu_hu*
+%lang(it) %{_datadir}/vim/v*/lang/menu_it_it*
+%lang(jp) %{_datadir}/vim/v*/lang/menu_ja_jp*
+%lang(ko) %{_datadir}/vim/v*/lang/menu_ko_kr*
+%lang(nl) %{_datadir}/vim/v*/lang/menu_nl_nl*
+%lang(pl) %{_datadir}/vim/v*/lang/menu_pl_pl*
+%lang(sk) %{_datadir}/vim/v*/lang/menu_sk_sk*
+%lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
+%lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
+
 %{_datadir}/vim/v*/macros
 %{_datadir}/vim/v*/plugin
 %{_datadir}/vim/v*/syntax
