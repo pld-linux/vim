@@ -1,15 +1,15 @@
 #
 # Conditional build:
-%bcond_without static # without static version
-%bcond_without athena # without Athena Widgets-based gvim
-%bcond_without motif  # without Motif-based gvim
-%bcond_without gtk    # without gtk+-based gvim support
-%bcond_without gnome  # without gnome-based gvim support
-%bcond_with    perl   # with perl interp
-%bcond_with    python # with python interp
-%bcond_with    ruby   # with ruby interp
-%bcond_with    tcl    # with tcl interp
-%bcond_without bonobo # without bonobo component
+%bcond_without	static	# without static version
+%bcond_without	athena	# without Athena Widgets-based gvim
+%bcond_without	motif	# without Motif-based gvim
+%bcond_without	gtk	# without gtk+-based gvim support
+%bcond_without	gnome	# without gnome-based gvim support
+%bcond_with	perl	# with perl interp
+%bcond_with	python	# with python interp
+%bcond_with	ruby	# with ruby interp
+%bcond_with	tcl	# with tcl interp
+%bcond_without	bonobo	# without bonobo component
 #
 %define		_ver		6.2
 %define		_patchlevel	211
@@ -467,7 +467,7 @@ GNOME, ﬁ‘œ –œ⁄◊œÃ—≈‘ ⁄¡–’”À¡‘ÿ VIM À¡À –“…Ãœ÷≈Œ…≈ X Window System - ”
 
 %package -n gvim-bonobo
 Summary:	Vim for X Window built as bonobo component
-Summary(pl):	Vim dla X Window korzystaj±cy z element bonobo
+Summary(pl):	Vim dla X Window zbudowany jako element bonobo
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}
 Requires:	iconv
@@ -476,6 +476,10 @@ Obsoletes:	vim-X11
 %description -n gvim-bonobo
 The classic Unix text editor now also under X Window System! This
 version is build as bonobo component.
+
+%description -n gvim-bonobo -l pl
+Wersja edytora Vim pracuj±ca w ∂rodowisku X Window, zbudowana jako
+element bonobo.
 
 %prep
 %setup -q -b1 -b2 -n %{name}%(echo %{_ver} | tr -d .)
@@ -518,7 +522,7 @@ cd src
 # needed to prevent deconfiguring
 cp -f configure auto
 
-mkdir bin
+install -d bin
 
 %if %{with bonobo}
 %{__make} distclean
@@ -809,7 +813,7 @@ install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %if %{with bonobo}
 install -d $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
 install src/bin/Vim_Control.server $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
-install -m755 src/bin/vim-{component,factory}	$RPM_BUILD_ROOT%{_bindir}/
+install -m755 src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 %endif
 
 bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
