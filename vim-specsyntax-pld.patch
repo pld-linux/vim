@@ -1,5 +1,5 @@
---- vim62/runtime/syntax/spec.vim.orig	2003-07-08 00:31:22.000000000 +0200
-+++ vim62/runtime/syntax/spec.vim	2003-07-08 00:40:04.000000000 +0200
+--- vim62/runtime/syntax/spec.vim.orig	Tue Jul 15 13:16:17 2003
++++ vim62/runtime/syntax/spec.vim	Tue Jul 15 13:17:28 2003
 @@ -70,11 +70,11 @@
  syn keyword specSpecialVariablesNames contained RPM_BUILD_ROOT RPM_BUILD_DIR RPM_SOURCE_DIR RPM_OPT_FLAGS LDFLAGS CC CC_FLAGS CPPNAME CFLAGS CXX CXXFLAGS CPPFLAGS
  
@@ -14,15 +14,26 @@
  
  
  "------------------------------------------------------------------------------
-@@ -83,7 +83,7 @@
+@@ -83,8 +83,8 @@
  
  "One line macros - valid in all ScriptAreas
  "tip: remember do include new itens on specScriptArea's skip section
 -syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(define\|patch\d*\|setup\|configure\|GNUconfigure\|find_lang\|makeinstall\)\>' end='$' contains=specCommandOpts,specMacroIdentifier
+-syn region specSectionMacroBracketArea oneline matchgroup=specSectionMacro start='^%{\(configure\|GNUconfigure\|find_lang\|makeinstall\)}' end='$' contains=specCommandOpts,specMacroIdentifier
 +syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(define\|patch\d*\|setup\|configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\)\>' end='$' contains=specCommandOpts,specMacroIdentifier
- syn region specSectionMacroBracketArea oneline matchgroup=specSectionMacro start='^%{\(configure\|GNUconfigure\|find_lang\|makeinstall\)}' end='$' contains=specCommandOpts,specMacroIdentifier
++syn region specSectionMacroBracketArea oneline matchgroup=specSectionMacro start='^%{\(configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\)}' end='$' contains=specCommandOpts,specMacroIdentifier
  
  "%% Files Section %%
+ "TODO %config valid parameters: missingok\|noreplace
+@@ -114,7 +114,7 @@
+ syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e-1 contains=specPackageOpts,specPreAmble,specComment
+ 
+ "%% Scripts Section %%
+-syn region specScriptArea matchgroup=specSection start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\)\>' skip='^%{\|^%\(define\|patch\d*\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\)\>' end='^%'me=e-1 contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2
++syn region specScriptArea matchgroup=specSection start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\)\>' skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\)\>' end='^%'me=e-1 contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2
+ 
+ "%% Changelog Section %%
+ syn region specChangelogArea matchgroup=specSection start='^%changelog' end='^%'me=e-1 contains=specEmail,specURL,specWeekday,specMonth,specNumber,specComment,specLicense
 @@ -137,7 +137,7 @@
  syn match shOperator contained '[><|!&;]\|[!=]='
  syn region shDo transparent matchgroup=specBlock start="\<do\>" end="\<done\>" contains=ALLBUT,shFunction,shDoError,shCase,specPreAmble,@specListedFiles
