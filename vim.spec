@@ -13,7 +13,7 @@
 %bcond_with	bonobo	# with bonobo component (breaks other things)
 #
 %define		_ver		6.2
-%define		_patchlevel	214
+%define		_patchlevel	253
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -26,7 +26,7 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	5
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -77,7 +77,46 @@ Patch311:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.211
 Patch312:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.212
 Patch313:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.213
 Patch314:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.214
-Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.211.diff.bz2
+Patch315:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.215
+Patch316:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.216
+Patch317:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.217
+Patch318:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.218
+Patch319:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.219
+Patch320:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.220
+Patch321:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.221
+Patch322:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.222
+Patch323:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.223
+Patch324:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.224
+Patch325:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.225
+Patch326:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.226
+Patch327:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.227
+Patch328:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.228
+Patch329:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.229
+Patch330:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.230
+Patch331:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.231
+Patch332:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.232
+Patch333:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.233
+Patch334:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.234
+Patch335:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.235
+Patch336:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.236
+Patch337:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.237
+Patch338:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.238
+Patch339:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.239
+Patch340:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.240
+Patch341:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.241
+Patch342:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.242
+Patch343:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.243
+Patch344:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.244
+Patch345:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.245
+Patch346:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.246
+Patch347:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.247
+Patch348:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.248
+Patch349:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.249
+Patch350:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.250
+Patch351:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.251
+Patch352:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.252
+Patch353:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.253
+Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.246.diff.bz2
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -525,6 +564,45 @@ element bonobo.
 %patch312 -p0
 %patch313 -p0
 %patch314 -p0
+%patch315 -p0
+%patch316 -p0
+%patch317 -p0
+%patch318 -p0
+%patch319 -p0
+%patch320 -p0
+%patch321 -p0
+%patch322 -p0
+%patch323 -p0
+%patch324 -p0
+%patch325 -p0
+%patch326 -p0
+%patch327 -p0
+%patch328 -p0
+%patch329 -p0
+%patch330 -p0
+%patch331 -p0
+%patch332 -p0
+%patch333 -p0
+%patch334 -p0
+%patch335 -p0
+%patch336 -p0
+%patch337 -p0
+%patch338 -p0
+%patch339 -p0
+%patch340 -p0
+%patch341 -p0
+%patch342 -p0
+%patch343 -p0
+%patch344 -p0
+%patch345 -p0
+%patch346 -p0
+%patch347 -p0
+%patch348 -p0
+%patch349 -p0
+%patch350 -p0
+%patch351 -p0
+%patch352 -p0
+%patch353 -p0
 %patch999 -p1
 
 
