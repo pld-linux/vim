@@ -12,7 +12,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.1
-%define		_patchlevel	390
+%define		_patchlevel	408
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -33,13 +33,13 @@ Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
 Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
 Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
 # packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.3*
-Source3:	%{name}-patches-%{_ver}.301-%{_patchlevel}.tar.bz2
+Source3:	%{name}-patches-%{_ver}.401-%{_patchlevel}.tar.bz2
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
-Patch0:		http://regexxer.sourceforge.net/vim/vim-gtk2-20030312.patch.gz
+Patch0:		http://regexxer.sourceforge.net/vim/vim-gtk2-20030316.patch.gz
 Patch1:		%{name}-sysconfdir.patch
 Patch2:		%{name}-visual.patch
 Patch3:		%{name}-paths.patch
@@ -53,6 +53,7 @@ Patch10:		%{name}-ocaml.patch
 Patch100:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.1-100.gz
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.101-200.gz
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.201-300.gz
+Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.301-400.gz
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -441,6 +442,7 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch100 -p0
 %patch101 -p0
 %patch102 -p0
+%patch103 -p0
 
 # skiping patches that are for "extra" package and apply the rest of official patches
 for f in patches/6.1.* ; do
