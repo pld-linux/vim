@@ -115,7 +115,7 @@ and is installed in /bin as a rescue tool. The installation of this
 package is STRONGLY recommended.
 
 %description static -l pl
-Edytor tekstu podobny do Vi. Ta wersja zosta³a skompilowana statycznie
+Edytor tekstu podobny do Vi. Ta wersja zosta³a zlinkowana statycznie
 i posiada minimaln± ilo¶æ dodatków. Jest instalowana w /bin jako
 narzêdzie dla administratora. Instalacja tego pakietu jest MOCNO
 zalecana, mo¿e on pomóc Ci uratowaæ system w czasie awarii.
@@ -132,13 +132,13 @@ Obsoletes:	vim-common
 
 %description rt
 This package contains macros, documentation, syntax configuration and
-manual pages for vim. If you want to take advantage of vim more
+manual pages for Vim. If you want to take advantage of Vim more
 powerful features, you should install this package.
 
 %description rt -l pl
 W tym pakiecie znajdziesz dokumentacjê, makra, pliki konfiguracyjne i
-strony podrêcznika dla edytora vim. Je¿eli chcesz korzystaæ z
-zaawansowanych mo¿liwo¶ci vim-a, powiniene¶ zainstalowaæ ten pakiet.
+strony podrêcznika dla edytora Vim. Je¿eli chcesz korzystaæ z
+zaawansowanych mo¿liwo¶ci Vima, powiniene¶ zainstalowaæ ten pakiet.
 
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
@@ -191,7 +191,7 @@ The classic Unix text editor now also under X Window System! This
 version is build with GTK.
 
 %description -n gvim-gtk -l pl
-Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
+Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 biblioteki GTK.
 
 %package -n gvim-gnome
@@ -209,7 +209,7 @@ The classic Unix text editor now also under X Window System! This
 version is build with GNOME.
 
 %description -n gvim-gnome -l pl
-Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
+Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 bibliotek GNOME.
 
 %prep
