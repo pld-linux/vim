@@ -712,7 +712,7 @@ mv -f vim gvim.athena
 	--enable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
-	
+
 %{__make} vim
 mv -f vim gvim.motif
 %endif
