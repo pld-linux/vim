@@ -1,0 +1,4 @@
+- separate desktop file for each gvim package
+- gvim-gtk becomes main gvim package (it contains links: gvim, rgview, rgview)
+- use of %%{_applnkdir} macro
+- desktop files moved to %%{_applnkdir}/Development/Editors
