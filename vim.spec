@@ -231,21 +231,21 @@ install -s src/vim.gtk     $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.gtk
 
 install    src/vimtutor	   $RPM_BUILD_ROOT/usr/bin/vimtutor
 
-rm -f $RPM_BUILD_ROOT/usr/man/man1/*.1
+rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
 
-install runtime/doc/vim.1 $RPM_BUILD_ROOT/usr/man/man1
-install runtime/doc/xxd.1 $RPM_BUILD_ROOT/usr/man/man1
-install runtime/doc/vimtutor.1 $RPM_BUILD_ROOT/usr/man/man1
+install runtime/doc/vim.1 $RPM_BUILD_ROOT%{_mandir}/man1
+install runtime/doc/xxd.1 $RPM_BUILD_ROOT%{_mandir}/man1
+install runtime/doc/vimtutor.1 $RPM_BUILD_ROOT%{_mandir}/man1
 
-echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/vi.1
-echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/ex.1
-echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/view.1
-echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/gvim.1
-echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/gview.1
-echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/rvim.1
-echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/rview.1
-echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/rgvim.1
-echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/rgview.1
+echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
+echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/ex.1
+echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
+echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/gvim.1
+echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/gview.1
+echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rvim.1
+echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rview.1
+echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rgvim.1
+echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rgview.1
 
 cp -a runtime/macros $RPM_BUILD_ROOT/usr/share/vim/macros
 cp -a runtime/syntax $RPM_BUILD_ROOT/usr/share/vim/syntax
@@ -270,7 +270,7 @@ ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgvim
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/gview
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgview
 
-gzip -9nf $RPM_BUILD_ROOT/usr/man/man1/*
+gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man1/*
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -333,7 +333,7 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 
 %attr(755,root,root) /usr/bin/vimtutor
 
-/usr/man/man1/*
+%{_mandir}/man1/*
 
 %dir /usr/share/vim
 /usr/share/vim/macros
