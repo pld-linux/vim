@@ -13,6 +13,7 @@
 %bcond_with	bonobo	# with bonobo component (breaks other things)
 %bcond_without  selinux # without selinux
 %bcond_without	ispell	# disable vim.ispell
+%bcond_without	home_etc # don't use home_etc
 #
 %define		_ver		6.2
 %define		_patchlevel	532
@@ -593,7 +594,7 @@ element bonobo.
 %patch9 -p1
 %patch10 -p1
 %{?with_bonobo:%patch11 -p1}
-%patch12 -p1
+%{?with_home_etc:%patch12 -p1}
 %{?with_selinux:%patch13 -p1}
 %patch14 -p1
 %patch15 -p1
