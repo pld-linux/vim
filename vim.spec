@@ -114,7 +114,7 @@ BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
-%{?with_gtk:BuildRequires:	gtk+2-devel >= 2.2.1}
+%{?with_gtk:BuildRequires:	gtk+2-devel >= 2:2.2.1}
 %{?with_kde:BuildRequires:	kdelibs-devel >= 9:3.0.0}
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %{?with_selinux:BuildRequires:	libselinux-devel}
