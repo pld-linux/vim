@@ -7,5 +7,5 @@ Exec=gvim.gtk
 Terminal=false
 Icon=gnome-word.png
 Type=Application
-Categories=TextEditor
+Categories=Utilitiy;TextEditor;
 # vi: encoding=utf-8
