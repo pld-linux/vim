@@ -1,0 +1,8 @@
+- release 7,
+- merged some old BeroLinux de, fr, tr translations,
+- added official vim 5.7 patches,
+- added sysconfig patch (default [g]vimrc file in /etc/vim and default vim
+  menu file is now /etc/vim/menu),
+- now vim can be built without athena, motif or gtk subpackages,
+- merged docpath and speed_t RH patches (slightly modified),
+- some simplifications and cosmetics.
