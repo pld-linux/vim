@@ -28,11 +28,11 @@ Summary(ru):	Visual editor IMproved - Единственно Правильный Редактор :)
 Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
-%if %{_patchlevel}
+#%%if %{_patchlevel}
 Version:	%{_ver}.%{_patchlevel}
-%else
-Version:        %{_ver}
-%endif
+#%%else
+#Version:        %{_ver}
+#%%endif
 Release:	0.1
 Epoch:		4
 License:	Charityware
