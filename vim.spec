@@ -12,7 +12,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.1
-%define		_patchlevel	422
+%define		_patchlevel	451
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -39,7 +39,7 @@ Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
-Patch0:		http://regexxer.sourceforge.net/vim/vim-gtk2-20030327.patch.gz
+Patch0:		http://regexxer.sourceforge.net/vim/vim-gtk2-20030404.patch.gz
 Patch1:		%{name}-sysconfdir.patch
 Patch2:		%{name}-visual.patch
 Patch3:		%{name}-paths.patch
