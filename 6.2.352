@@ -1,0 +1,74 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.352
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.352 (after 6.2.335)
+Problem:    ":sign texthl=||" does not work.
+Solution:   Remove the check for a following command.  Give an error for extra
+	    arguments after "buffer=1".
+Files:	    src/ex_cmds.c, src/ex_cmds.h
+
+
+*** ../vim-6.2.351/src/ex_cmds.c	Sun Feb 29 21:06:13 2004
+--- src/ex_cmds.c	Sat Mar 13 14:26:18 2004
+***************
+*** 5777,5783 ****
+  	    else if (STRNCMP(arg, "buffer=", 7) == 0)
+  	    {
+  		arg += 7;
+! 		buf = buflist_findnr(atoi((char *)arg));
+  		break;
+  	    }
+  	    else
+--- 5777,5785 ----
+  	    else if (STRNCMP(arg, "buffer=", 7) == 0)
+  	    {
+  		arg += 7;
+! 		buf = buflist_findnr(getdigits(&arg));
+! 		if (*skipwhite(arg) != NUL)
+! 		    EMSG(_(e_trailing));
+  		break;
+  	    }
+  	    else
+*** ../vim-6.2.351/src/ex_cmds.h	Tue Mar  9 15:10:47 2004
+--- src/ex_cmds.h	Sat Mar 13 12:47:09 2004
+***************
+*** 707,713 ****
+  EX(CMD_simalt,		"simalt",	ex_simalt,
+  			NEEDARG|WORD1|TRLBAR|CMDWIN),
+  EX(CMD_sign,		"sign",		ex_sign,
+! 			NEEDARG|RANGE|NOTADR|EXTRA|CMDWIN|TRLBAR),
+  EX(CMD_silent,		"silent",	ex_wrongmodifier,
+  			NEEDARG|EXTRA|BANG|NOTRLCOM|SBOXOK|CMDWIN),
+  EX(CMD_sleep,		"sleep",	ex_sleep,
+--- 707,713 ----
+  EX(CMD_simalt,		"simalt",	ex_simalt,
+  			NEEDARG|WORD1|TRLBAR|CMDWIN),
+  EX(CMD_sign,		"sign",		ex_sign,
+! 			NEEDARG|RANGE|NOTADR|EXTRA|CMDWIN),
+  EX(CMD_silent,		"silent",	ex_wrongmodifier,
+  			NEEDARG|EXTRA|BANG|NOTRLCOM|SBOXOK|CMDWIN),
+  EX(CMD_sleep,		"sleep",	ex_sleep,
+*** ../vim-6.2.351/src/version.c	Fri Mar 12 21:58:35 2004
+--- src/version.c	Sat Mar 13 14:23:14 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     352,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+27. You refer to your age as 3.x.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

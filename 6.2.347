@@ -1,0 +1,96 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.347 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.347 (extra)
+Problem:    Win32: XP theme support is missing.
+Solution:   Add a manifest and refer to it from the resource file.  (Michael
+	    Wookey)
+Files:	    Makefile, src/gvim.exe.mnf, src/vim.rc
+
+
+*** ../vim-6.2.346/Makefile	Sun Nov  2 15:37:11 2003
+--- Makefile	Fri Mar 12 15:22:57 2004
+***************
+*** 431,436 ****
+--- 433,439 ----
+  		src/uninstal.c \
+  		src/vim.def \
+  		src/vim.rc \
++ 		src/gvim.exe.mnf \
+  		src/vim16.def \
+  		src/vim16.rc \
+  		src/vimrun.c \
+*** ../vim-6.2.346/src/gvim.exe.mnf	Fri Mar 12 15:24:30 2004
+--- src/gvim.exe.mnf	Wed Mar 10 17:25:22 2004
+***************
+*** 0 ****
+--- 1,22 ----
++ <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
++ <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
++   <assemblyIdentity
++     processorArchitecture="x86"
++     version="6.2.0.0"
++     type="win32"
++     name="Vim"
++   />
++   <description>Vi Improved - A Text Editor</description>
++   <dependency>
++     <dependentAssembly>
++       <assemblyIdentity
++         type="win32"
++         name="Microsoft.Windows.Common-Controls"
++         version="6.0.0.0"
++         publicKeyToken="6595b64144ccf1df"
++         language="*"
++         processorArchitecture="x86"
++       />
++     </dependentAssembly>
++   </dependency>
++ </assembly>
+*** ../vim-6.2.346/src/vim.rc	Wed May 14 20:35:14 2003
+--- src/vim.rc	Fri Mar 12 15:22:40 2004
+***************
+*** 46,51 ****
+--- 46,63 ----
+  //
+  IDB_TEAROFF	BITMAP  DISCARDABLE  "tearoff.bmp"
+  IDR_TOOLBAR1	BITMAP  DISCARDABLE  "tools.bmp"
++ 
++ //
++ // WinXP theme support
++ //
++ #ifndef CREATEPROCESS_MANIFEST_RESOURCE_ID
++ # define CREATEPROCESS_MANIFEST_RESOURCE_ID 1
++ #endif
++ #ifndef RT_MANIFEST
++ # define RT_MANIFEST 24
++ #endif
++ 
++ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "gvim.exe.mnf"
+  #endif // FEAT_GUI_W32
+  
+  //
+*** ../vim-6.2.346/src/version.c	Thu Mar 11 21:08:44 2004
+--- src/version.c	Fri Mar 12 15:23:33 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     347,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+14. You start introducing yourself as "Jim at I-I-Net dot net dot au"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

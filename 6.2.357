@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.357
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.357 (after 6.2.321)
+Problem:    Memory leak when resizing the Vim window.
+Solution:   Free the LineWraps array.
+Files:	    src/screen.c
+
+
+*** ../vim-6.2.356/src/screen.c	Sat Mar  6 21:13:14 2004
+--- src/screen.c	Mon Mar 15 10:38:09 2004
+***************
+*** 6574,6579 ****
+--- 6574,6580 ----
+  #endif
+      vim_free(ScreenAttrs);
+      vim_free(LineOffset);
++     vim_free(LineWraps);
+      ScreenLines = new_ScreenLines;
+  #ifdef FEAT_MBYTE
+      ScreenLinesUC = new_ScreenLinesUC;
+*** ../vim-6.2.356/src/version.c	Sun Mar 14 20:16:56 2004
+--- src/version.c	Mon Mar 15 12:25:53 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     357,
+  /**/
+
+-- 
+Now it is such a bizarrely improbable coincidence that anything as
+mind-bogglingly useful as the Babel fish could have evolved purely by chance
+that some thinkers have chosen to see it as a final and clinching proof of the
+NON-existence of God.
+The argument goes something like this: 'I refuse to prove that I exist,' says
+God, 'for proof denies faith, and without faith I am nothing.'
+'But,' says Man, 'the Babel fish is a dead giveaway, isn't it?  It could not
+have evolved by chance.  It proves you exist, and so therefore, by your own
+arguments, you don't.  QED.'
+'Oh dear,' says God, 'I hadn't thought of that,' and promptly vanishes in a
+puff of logic.
+'Oh, that was easy,' says Man, and for an encore goes on to prove that black
+is white and gets himself killed on the next pedestrian crossing.
+		-- Douglas Adams, "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,49 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.354 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.354 (extra)
+Problem:    Win32: When the mouse pointer is on a tear-off menu it is hidden
+	    when typing but is not redisplayed when moved. (Markx Hackmann)
+Solution:   Handle the pointer move event for the tear-off menu window.
+Files:	    src/gui_w32.c
+
+
+*** ../vim-6.2.353/src/gui_w32.c	Tue Mar  9 10:48:23 2004
+--- src/gui_w32.c	Sun Mar 14 14:33:29 2004
+***************
+*** 2829,2834 ****
+--- 2830,2838 ----
+  {
+      if (message == WM_INITDIALOG)
+  	return (TRUE);
++ 
++     /* May show the mouse pointer again. */
++     HandleMouseHide(message, lParam);
+  
+      if (message == WM_COMMAND)
+      {
+*** ../vim-6.2.353/src/version.c	Sat Mar 13 16:13:48 2004
+--- src/version.c	Sun Mar 14 14:36:28 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     354,
+  /**/
+
+-- 
+How To Keep A Healthy Level Of Insanity:
+5. Put decaf in the coffee maker for 3 weeks. Once everyone has gotten
+   over their caffeine addictions, switch to expresso.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

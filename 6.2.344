@@ -1,0 +1,127 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.344 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.344 (extra, after 6.2.337)
+Problem:    Cannot build gvimext.dll with MingW on Linux.
+Solution:   Add support for cross compiling. (Ronald Hoellwarth)
+Files:	    src/GvimExt/Make_ming.mak
+
+
+*** ../vim-6.2.343/src/GvimExt/Make_ming.mak	Tue Mar  9 19:41:00 2004
+--- src/GvimExt/Make_ming.mak	Wed Mar 10 21:26:36 2004
+***************
+*** 7,19 ****
+  # already loaded in memory. The binary image contains as well information
+  # for automatic pseudo-rebasing, if needed by the system. ALV 2004-02-29 
+  
+! CXX := g++
+  CXXFLAGS := -O2 -mno-cygwin
+! LIBS :=  -luuid
+  WINDRES := windres.exe
+  RES  := gvimext.res
+  DEFFILE = gvimext_ming.def
+! OBJ  := gvimext.o 
+  
+  DLL  := gvimext.dll
+  
+--- 7,41 ----
+  # already loaded in memory. The binary image contains as well information
+  # for automatic pseudo-rebasing, if needed by the system. ALV 2004-02-29 
+  
+! # If cross-compiling set this to yes, else set it to no
+! CROSS = no
+! #CROSS = yes
+! # For the old MinGW 2.95 (the one you get e.g. with debian woody) 
+! # set the following variable to yes and check if the executables are
+! # really named that way.
+! # If you have a newer MinGW or you are using cygwin set it to no and
+! # check also the executables
+! MINGWOLD = no
+! 
+! ifeq ($(CROSS),yes)
+! ifeq ($(MINGWOLD),yes)
+! CXX = i586-mingw32msvc-g++
+! CXXFLAGS := -O2 -mno-cygwin -fvtable-thunks
+! WINDRES = i586-mingw32msvc-windres
+! else
+! CXX = i386-mingw32msvc-g++
+  CXXFLAGS := -O2 -mno-cygwin
+! WINDRES = i386-mingw32msvc-windres
+! endif
+! else
+! CXX := g++.exe
+  WINDRES := windres.exe
++ CXXFLAGS := -O2 -mno-cygwin
++ endif
++ LIBS :=  -luuid
+  RES  := gvimext.res
+  DEFFILE = gvimext_ming.def
+! OBJ  := gvimext.o
+  
+  DLL  := gvimext.dll
+  
+***************
+*** 22,40 ****
+  all: all-before $(DLL) all-after
+  
+  $(DLL): $(OBJ) $(RES) $(DEFFILE)
+! 	$(CXX) -shared $(CXXFLAGS) -s -o $@  \
+  		-Wl,--enable-auto-image-base \
+! 		-Wl,--enable-auto-import  \
+! 		-Wl,--whole-archive  \
+! 			$^  \
+! 		-Wl,--no-whole-archive  \
+  			$(LIBS)
+  
+  gvimext.o: gvimext.cpp
+! 	$(CXX) $(CXXFLAGS) -DFEAT_GETTEXT -c $^ -o $@ 
+  
+  $(RES): gvimext_ming.rc
+! 	$(WINDRES) --input-format=rc --output-format=coff -DMING $^ -o $@
+  
+  clean: clean-custom
+  	$(RM)  $(OBJ) $(RES) $(DLL)
+--- 44,62 ----
+  all: all-before $(DLL) all-after
+  
+  $(DLL): $(OBJ) $(RES) $(DEFFILE)
+! 	$(CXX) -shared $(CXXFLAGS) -s -o $@ \
+  		-Wl,--enable-auto-image-base \
+! 		-Wl,--enable-auto-import \
+! 		-Wl,--whole-archive \
+! 			$^ \
+! 		-Wl,--no-whole-archive \
+  			$(LIBS)
+  
+  gvimext.o: gvimext.cpp
+! 	$(CXX) $(CXXFLAGS) -DFEAT_GETTEXT -c $? -o $@
+  
+  $(RES): gvimext_ming.rc
+! 	$(WINDRES) --input-format=rc --output-format=coff -DMING $? -o $@
+  
+  clean: clean-custom
+  	$(RM)  $(OBJ) $(RES) $(DLL)
+*** ../vim-6.2.343/src/version.c	Thu Mar 11 20:55:09 2004
+--- src/version.c	Thu Mar 11 20:58:09 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     344,
+  /**/
+
+-- 
+The goal of science is to build better mousetraps.
+The goal of nature is to build better mice.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

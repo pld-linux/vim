@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.360
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.360
+Problem:    "100|" in an empty line results in a ruler "1,0-100". (Pavol
+	    Juhas)
+Solution:   Recompute w_virtcol if the target column was not reached.
+Files:	    src/misc2.c
+
+
+*** ../vim-6.2.359/src/misc2.c	Mon Feb  2 13:00:19 2004
+--- src/misc2.c	Sun Mar 14 11:45:50 2004
+***************
+*** 105,111 ****
+  {
+      int rc = getvpos(&curwin->w_cursor, wcol);
+  
+!     if (wcol == MAXCOL)
+  	curwin->w_valid &= ~VALID_VIRTCOL;
+      else
+      {
+--- 105,111 ----
+  {
+      int rc = getvpos(&curwin->w_cursor, wcol);
+  
+!     if (wcol == MAXCOL || rc == FAIL)
+  	curwin->w_valid &= ~VALID_VIRTCOL;
+      else
+      {
+*** ../vim-6.2.359/src/version.c	Mon Mar 15 12:33:19 2004
+--- src/version.c	Mon Mar 15 12:43:08 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     360,
+  /**/
+
+-- 
+I'm not familiar with this proof, but I'm aware of a significant
+following of toddlers who believe that peanut butter is the solution
+to all of life's problems... 		-- Tim Hammerquist
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.359
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.359 (after 6.2.352)
+Problem:    Compiler warning for long to int type cast.
+Solution:   Add explicit type cast.
+Files:	    src/ex_cmds.c
+
+
+*** ../vim-6.2.358/src/ex_cmds.c	Mon Mar 15 12:28:44 2004
+--- src/ex_cmds.c	Mon Mar 15 10:51:09 2004
+***************
+*** 5779,5785 ****
+  	    else if (STRNCMP(arg, "buffer=", 7) == 0)
+  	    {
+  		arg += 7;
+! 		buf = buflist_findnr(getdigits(&arg));
+  		if (*skipwhite(arg) != NUL)
+  		    EMSG(_(e_trailing));
+  		break;
+--- 5779,5785 ----
+  	    else if (STRNCMP(arg, "buffer=", 7) == 0)
+  	    {
+  		arg += 7;
+! 		buf = buflist_findnr((int)getdigits(&arg));
+  		if (*skipwhite(arg) != NUL)
+  		    EMSG(_(e_trailing));
+  		break;
+*** ../vim-6.2.358/src/version.c	Mon Mar 15 12:28:44 2004
+--- src/version.c	Mon Mar 15 12:32:42 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     359,
+  /**/
+
+-- 
+I am also told that there is a logical proof out there somewhere
+that demonstrates that there is no task which duct tape cannot handle.
+					-- Paul Brannan
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.351 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.351
+Problem:    Win32: $HOME may be set to %USERPROFILE%.
+Solution:   Expand %VAR% at the start of $HOME.
+Files:	    src/misc1.c
+
+
+*** ../vim-6.2.350/src/misc1.c	Fri Mar 12 21:13:03 2004
+--- src/misc1.c	Fri Mar 12 21:54:05 2004
+***************
+*** 3107,3112 ****
+--- 3107,3139 ----
+  
+  #ifdef WIN3264
+      /*
++      * Weird but true: $HOME may contain an indirect reference to another
++      * variable, esp. "%USERPROFILE%".  Happens when $USERPROFILE isn't set
++      * when $HOME is being set.
++      */
++     if (var != NULL && *var == '%')
++     {
++ 	char_u	*p;
++ 	char_u	*exp;
++ 
++ 	p = vim_strchr(var + 1, '%');
++ 	if (p != NULL)
++ 	{
++ 	    STRNCPY(NameBuff, var + 1, p - (var + 1));
++ 	    NameBuff[p - (var + 1)] = NUL;
++ 	    exp = mch_getenv(NameBuff);
++ 	    if (exp != NULL && *exp != NUL
++ 					&& STRLEN(exp) + STRLEN(p) < MAXPATHL)
++ 	    {
++ 		sprintf((char *)NameBuff, "%s%s", exp, p + 1);
++ 		var = NameBuff;
++ 		/* Also set $HOME, it's needed for _viminfo. */
++ 		vim_setenv((char_u *)"HOME", NameBuff);
++ 	    }
++ 	}
++     }
++ 
++     /*
+       * Typically, $HOME is not defined on Windows, unless the user has
+       * specifically defined it for Vim's sake.  However, on Windows NT
+       * platforms, $HOMEDRIVE and $HOMEPATH are automatically defined for
+*** ../vim-6.2.350/src/version.c	Fri Mar 12 21:16:48 2004
+--- src/version.c	Fri Mar 12 21:56:38 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     351,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+25. You believe nothing looks sexier than a man in boxer shorts illuminated
+    only by a 17" inch svga monitor.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
