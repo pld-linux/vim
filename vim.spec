@@ -13,16 +13,16 @@ Summary(fr):	editeur VIM : VIsual editor iMproved
 Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
-Version:	6.0at
-Release:	3
-Epoch:		3
+Version:	6.0
+Release:	1
+Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Source0:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}.tar.bz2
-Source1:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-lang.tar.gz
-#Source2:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
+Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}.tar.bz2
+Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{version}-lang.tar.gz
+#Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{version}-extra.tar.gz
 Source3:	g%{name}-athena.desktop
 Source4:	g%{name}-motif.desktop
 Source5:	g%{name}-gtk.desktop
