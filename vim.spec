@@ -217,26 +217,27 @@ BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
+%{?with_gtk:BuildRequires:	gtk+2-devel >= 2.2.1}
 BuildRequires:	ncurses-devel
-BuildRequires:	libselinux-devel
-%{?with_bonobo:BuildRequires:	libbonoboui-devel >= 2.2.0}
-%{?with_bonobo:BuildRequires:	ORBit2-devel}
-%{?with_bonobo:BuildRequires:	nautilus-devel >= 2.2.0}
-%{?with_gtk:BuildRequires:		gtk+2-devel >= 2.2.1}
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
+BuildRequires:	libselinux-devel
 %{?with_motif:BuildRequires:	motif-devel}
-%{?with_static:BuildRequires:	glibc-static}
-%{?with_static:BuildRequires:	ncurses-static}
 %{?with_perl:BuildRequires:	perl-devel}
 %{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby}
 %{?with_tcl:BuildRequires:	tcl-devel}
+%if %{with bonobo}
+BuildRequires:	ORBit2-devel
+BuildRequires:	libbonoboui-devel >= 2.2.0
+BuildRequires:	nautilus-devel >= 2.2.0
+%endif
 %if %{with static}
 BuildRequires:	acl-static
+BuildRequires:	attr-static
+BuildRequires:	glibc-static
 BuildRequires:	libselinux-static
+BuildRequires:	ncurses-static
 %else
-BuildRequires:	acl-devel
-BuildRequires:	libselinux-devel
 Provides:       %{name}-static = %{epoch}:%{version}-%{release}
 Obsoletes:      %{name}-static
 %endif
