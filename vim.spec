@@ -2,14 +2,14 @@ Summary:	Vim static
 Summary(pl):	Vim skompilowany statycznie
 Name:		vim
 Version:	5.4d
-Release:	1d
+Release:	2d
 #######		ftp://ftp.nl.vim.org/pub/vim/unreleased/unix
-Source:		%{name}-%{version}-src.tar.gz
+Source0:	%{name}-%{version}-src.tar.gz
 Source1:	%{name}-%{version}-rt.tar.gz
 #######		ftp://ftp.nl.vim.org/pub/vim/unreleased/extra
 Source2:	%{name}-%{version}-extra.tar.gz
 Source3:	gvim.wmconfig
-Patch:		%{name}-hold_gui_events.patch
+Patch0:		%{name}-hold_gui_events.patch
 Patch1:		%{name}-clip.patch
 Copyright:	GPL
 Group:		Applications/Editors/Vim
@@ -189,7 +189,7 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/etc/X11/wmconfig
 install -d $RPM_BUILD_ROOT/bin
-install -d $RPM_BUILD_ROOT/usr/{bin,X11R6/bin,share/vim,man/man1}
+install -d $RPM_BUILD_ROOT/usr/{bin,X11R6/bin,share/vim/doc,man/man1}
 
 # make prefix=$RPM_BUILD_ROOT/usr install
 
@@ -228,12 +228,13 @@ install %{SOURCE3} $RPM_BUILD_ROOT/etc/X11/wmconfig/gvim
 
 touch $RPM_BUILD_ROOT/usr/bin/vim $RPM_BUILD_ROOT/usr/X11R6/bin/gvim
 
-ln -sf ../../doc/%{name}-rt-%{version} $RPM_BUILD_ROOT/usr/share/vim/doc
+install runtime/doc/*.txt $RPM_BUILD_ROOT/usr/share/vim/doc
+install runtime/doc/tags  $RPM_BUILD_ROOT/usr/share/vim/doc
 
 ln -sf vi $RPM_BUILD_ROOT/bin/ex
 ln -sf vi $RPM_BUILD_ROOT/bin/view
 ln -sf vi $RPM_BUILD_ROOT/bin/rview
-
+ln -sf /bin/vi $RPM_BUILD_ROOT/usr/bin/vi
 ln -sf vim $RPM_BUILD_ROOT/usr/bin/rvim
 
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgvim
@@ -262,6 +263,7 @@ ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
 
 %files
 %attr(755,root,root) /bin/*
+%attr(755,root,root) /usr/bin/vi
 
 #%files slang
 #%attr(711,root,root) /usr/bin/vim.slang
@@ -296,7 +298,7 @@ ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
 
 %files rt
 %defattr(644,root,root,755)
-%doc runtime/doc/*.txt runtime/doc/tags
+
 %attr(644,root,man) /usr/man/man1/*
 
 %dir /usr/share/vim
@@ -317,14 +319,19 @@ ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
 %config %verify(not size mtime md5) /usr/share/vim/vimrc
 
 %changelog
+* Thu Feb 04 1999 Wojtek ¦lusarczyk <wojtek@shadow.eu.org>
+  [5.4d-2d]
+- symlink /usr/bin/vi -> /bin/vi
+- doc package moved to /usr/share/vim/doc (crazy cpio .. ;)
+
 * Tue Feb  2 1999 Artur Frysiak <wiget@usa.net>
-[5.4d-1d]
+  [5.4d-1d]
 - upgraded to 5.4d
 - now /usr/share/vim/doc is symlink to /usr/doc/%{name}-rt-%{version}
 - added missingok option to wmconfig files
 
 * Wed Jan 13 1999 Artur Frysiak <wiget@usa.net>
-[5.4c-1d]
+  [5.4c-1d]
 - upgraded to 5.4c
 - added gtk subpackage
 - using %%{version} makro in Summary tags
@@ -332,21 +339,21 @@ ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
 - changed Group to Applications/Editors/Vim
 
 * Sun Dec 27 1998 Wojtek ¦lusarczyk <wojtek@shadow.eu.org>
-[5.3-4d]
+  [5.3-4d]
 - fixed some errors in rt subpackage. 
   by Ziemek Borowski <ziembor@mail.ceu.edu.pl>
 - fixed etcdir in vim-ststic subpackage.
 
 * Thu Nov 12 1998 Arkadiusz Mi¶kiewicz <misiek@misiek.eu.org>
-[5.3-2d]
+  [5.3-2d]
 - added /usr/share/vim/doc/{help.txt,tags} to rt subpackage (was missing)
 
 * Sun Oct 04 1998 Marcin Korzonek <mkorz@shadow.eu.org>
-[5.3-1]
+  [5.3-1]
 - completely rewritten spec, added 4 subpackages
 
 * Thu Aug 13 1998 Wojtek ¦lusarczyk <wojtek@shadow.eu.org>
-[5.0-1d]
+  [5.0-1d]
 - build against glibc-2.1,
 - translation modified for pl,
 - added build-root support,
