@@ -11,7 +11,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.1
-%define		_patchlevel	320
+%define		_patchlevel	357
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -48,7 +48,7 @@ Patch6:		%{name}-vimrc.patch
 Patch7:		%{name}-no_libelf.patch
 Patch8:		%{name}-egrep.patch
 Patch9:		%{name}-ocaml.patch
-Patch10:	http://regexxer.sourceforge.net/vim/vim-gtk2-20030207.patch
+Patch10:	http://regexxer.sourceforge.net/vim/vim-gtk2-20030223-2.patch.gz
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -578,7 +578,7 @@ mv -f vim gvim.motif
 %{__make} distclean
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
-	--enable-gui=gtk \
+	--enable-gui=gtk%{!?_with_gtk1:2} \
 	%{!?_with_gtk1:--enable-gtk2-check} \
 	--with-x \
 	%{!?_with_perl:--disable-perlinterp} \
@@ -601,7 +601,7 @@ mv -f vim gvim.gtk
 %{__make} distclean
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
-	--enable-gui=gnome \
+	--enable-gui=gnome%{!?_with_gtk1:2} \
 	%{!?_with_gtk1:--enable-gtk2-check} \
 	%{!?_with_gtk1:--enable-gnome-check} \
 	--with-x \
