@@ -29,6 +29,10 @@ Source6:	g%{name}-gtk.desktop
 Source7:	g%{name}-gnome.desktop
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
+Patch2:		%{name}-lilo.patch
+Patch3:		%{name}-phphighlight.patch
+Patch4:		%{name}-paths.patch
+Patch5:		%{name}-speed_t.patch
 URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
 %{!?bcond_off_static:BuildRequires:	ncurses-static}
@@ -189,6 +193,10 @@ biblioteki GNOME.
 %setup -q -b 1 -b 2 -b 3 -n %{name}%(echo %{version} | sed -e "s#\.##g")
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 cd src
