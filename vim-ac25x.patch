@@ -1,6 +1,18 @@
---- vim61/src/configure.in.orig	Sat Mar  9 18:29:18 2002
-+++ vim61/src/configure.in	Wed Mar 27 23:14:12 2002
-@@ -2035,7 +2035,7 @@
+--- vim61/src/configure.in.wiget	Wed Oct  9 11:57:36 2002
++++ vim61/src/configure.in	Wed Oct  9 12:00:05 2002
+@@ -1632,9 +1632,9 @@
+   pdir='/dev'
+ fi
+ dnl SCO uses ptyp%d
+-AC_EGREP_CPP(yes,
++AC_EGREP_CPP(YES,
+ [#ifdef M_UNIX
+-   yes;
++   YES
+ #endif
+ 	], ptys=`echo /dev/ptyp??`, ptys=`echo $pdir/pty??`)
+ dnl if test -c /dev/ptyp19; then
+@@ -2075,7 +2075,7 @@
  fi
  
  dnl Check for dynamic linking loader
