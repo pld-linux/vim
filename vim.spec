@@ -1,6 +1,5 @@
 # TODO:
 # - some nice icon
-# - SECURITY: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=289560
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -19,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		6.3
-%define		_patchlevel	064
+%define		_patchlevel	067
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -78,6 +77,7 @@ Patch16:	%{name}-filetype_vim-perl_tests.patch
 Patch17:	%{name}-pl.po.patch
 Patch18:	%{name}-po-syntax.patch
 Patch19:	%{name}-modprobe.patch
+Patch20:	%{name}-CAN-2005-0069.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.001
@@ -144,6 +144,9 @@ Patch161:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.061
 Patch162:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.062
 Patch163:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.063
 Patch164:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.064
+Patch165:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.065
+Patch166:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.066
+Patch167:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.067
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
@@ -642,6 +645,9 @@ element bonobo.
 %patch162 -p0
 %patch163 -p0
 %patch164 -p0
+%patch165 -p0
+%patch166 -p0
+%patch167 -p0
 
 # kvim
 %patch999 -p1
@@ -669,6 +675,7 @@ element bonobo.
 %patch17 -p1
 %patch18 -p1
 %patch19 -p0 -b .modprobe
+%patch20 -p1
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
