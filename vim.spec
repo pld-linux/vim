@@ -34,6 +34,7 @@ Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
 # packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.*
 Source3:	%{name}-patches-%{_ver}.%{_patchlevel}.tar.bz2
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
+Source5:	vimrc.pld
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
@@ -630,7 +631,8 @@ echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rvim.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 
-mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
+
+install %{SOURCE5} $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
 
 ln -sf vim $RPM_BUILD_ROOT%{_bindir}/rvim
