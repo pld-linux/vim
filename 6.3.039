@@ -1,0 +1,86 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.039
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.039
+Problem:    When 'number' is set and inserting lines just above the first
+	    displayed line (in another window on the same buffer), the line
+	    numbers are not updated.  (Hitier Sylvain)
+Solution:   When 'number' is set and lines are inserted/deleted redraw all
+	    lines below the change.
+Files:	    src/screen.c
+
+
+*** ../vim-6.3.038/src/screen.c	Thu Oct  7 20:07:59 2004
+--- src/screen.c	Sun Dec  5 14:52:15 2004
+***************
+*** 927,933 ****
+  	/* When a change starts above w_topline and the end is below
+  	 * w_topline, start redrawing at w_topline.
+  	 * If the end of the change is above w_topline: do like no changes was
+! 	 * maded, but redraw the first line to find changes in syntax. */
+  	if (mod_top != 0 && mod_top < wp->w_topline)
+  	{
+  	    if (mod_bot > wp->w_topline)
+--- 927,933 ----
+  	/* When a change starts above w_topline and the end is below
+  	 * w_topline, start redrawing at w_topline.
+  	 * If the end of the change is above w_topline: do like no change was
+! 	 * made, but redraw the first line to find changes in syntax. */
+  	if (mod_top != 0 && mod_top < wp->w_topline)
+  	{
+  	    if (mod_bot > wp->w_topline)
+***************
+*** 937,942 ****
+--- 937,947 ----
+  		top_end = 1;
+  #endif
+  	}
++ 
++ 	/* When line numbers are displayed need to redraw all lines below
++ 	 * inserted/deleted lines. */
++ 	if (mod_top != 0 && buf->b_mod_xlines != 0 && wp->w_p_nu)
++ 	    mod_bot = MAXLNUM;
+      }
+  
+      /*
+***************
+*** 1607,1618 ****
+  			}
+  		    }
+  		}
+- 
+- 		/* When inserting or deleting lines and 'number' is set:
+- 		 * Redraw all lines below the change to update the line
+- 		 * numbers. */
+- 		if (buf->b_mod_xlines != 0 && wp->w_p_nu)
+- 		    bot_start = 0;
+  	    }
+  
+  #ifdef FEAT_FOLDING
+--- 1612,1617 ----
+*** ../vim-6.3.038/src/version.c	Sat Dec  4 17:23:22 2004
+--- src/version.c	Sun Dec  5 14:54:46 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     39,
+  /**/
+
+-- 
+Our job was to build a computer information system for the branch banks.  We
+were the perfect people for the job: Dean had seen a computer once, and I had
+heard Dean talk about it.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

@@ -1,0 +1,105 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.037
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.037 (after 6.3.032)
+Problem:    Warning for unused variable.
+Solution:   Change the #ifdefs for the saved thread stuff.
+Files:	    src/if_python.c
+
+
+*** ../vim-6.3.036/src/if_python.c	Thu Nov 18 10:24:49 2004
+--- src/if_python.c	Sat Dec  4 15:23:15 2004
+***************
+*** 380,402 ****
+  typedef PyObject PyThreadState;
+  #endif /* Python 1.4 */
+  
+! static PyThreadState* saved_python_thread = NULL;
+  
+  /*
+   * Suspend a thread of the Python interpreter, other threads are allowed to
+   * run.
+   */
+! static void Python_SaveThread(void)
+  {
+      saved_python_thread = PyEval_SaveThread();
+  }
+  
+- #ifndef PY_CAN_RECURSE
+  /*
+   * Restore a thread of the Python interpreter, waits for other threads to
+   * block.
+   */
+! static void Python_RestoreThread(void)
+  {
+      PyEval_RestoreThread(saved_python_thread);
+      saved_python_thread = NULL;
+--- 380,404 ----
+  typedef PyObject PyThreadState;
+  #endif /* Python 1.4 */
+  
+! #ifndef PY_CAN_RECURSE
+! static PyThreadState *saved_python_thread = NULL;
+  
+  /*
+   * Suspend a thread of the Python interpreter, other threads are allowed to
+   * run.
+   */
+!     static void
+! Python_SaveThread(void)
+  {
+      saved_python_thread = PyEval_SaveThread();
+  }
+  
+  /*
+   * Restore a thread of the Python interpreter, waits for other threads to
+   * block.
+   */
+!     static void
+! Python_RestoreThread(void)
+  {
+      PyEval_RestoreThread(saved_python_thread);
+      saved_python_thread = NULL;
+***************
+*** 457,463 ****
+--- 459,469 ----
+  	    goto fail;
+  
+  	/* the first python thread is vim's, release the lock */
++ #ifdef PY_CAN_RECURSE
++ 	PyEval_SaveThread();
++ #else
+  	Python_SaveThread();
++ #endif
+  
+  	initialised = 1;
+      }
+*** ../vim-6.3.036/src/version.c	Sat Dec  4 14:55:39 2004
+--- src/version.c	Sat Dec  4 15:25:14 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     37,
+  /**/
+
+-- 
+Scientists decoded the first message from an alien civilization:
+        SIMPLY SEND 6 TIMES 10 TO THE 50 ATOMS OF HYDROGEN TO THE STAR
+SYSTEM AT THE TOP OF THE LIST, CROSS OFF THAT STAR SYSTEM, THEN PUT
+YOUR STAR SYSTEM AT THE BOTTOM OF THE LIST AND SEND IT TO 100 OTHER
+STAR SYSTEMS.  WITHIN ONE TENTH GALACTIC ROTATION YOU WILL RECEIVE
+ENOUGH HYDROGREN TO POWER YOUR CIVILIZATION UNTIL ENTROPY REACHES ITS
+MAXIMUM!  IT REALLY WORKS!
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

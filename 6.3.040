@@ -1,0 +1,545 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.040
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.040
+Problem:    Error handling does not always work properly and may cause a
+	    buffer to be marked as if it's viewed in a window while it isn't.
+	    Also when selecting "Abort" at the attention prompt.
+Solution:   Add enter_cleanup() and leave_cleanup() functions to move
+	    saving/restoring things for error handling to one place.
+	    Clear a buffer read error when it's unloaded.
+Files:	    src/buffer.c, src/ex_docmd.c, src/ex_eval.c,
+	    src/proto/ex_eval.pro, src/structs.h, src/vim.h
+
+
+*** ../vim-6.3.039/src/buffer.c	Wed Jun  9 14:56:27 2004
+--- src/buffer.c	Sun Dec  5 16:15:05 2004
+***************
+*** 408,415 ****
+      if (!buf_valid(buf))
+  	return;
+  # ifdef FEAT_EVAL
+!     /* Autocommands may abort script processing. */
+!     if (aborting())
+  	return;
+  # endif
+  
+--- 408,414 ----
+      if (!buf_valid(buf))
+  	return;
+  # ifdef FEAT_EVAL
+!     if (aborting())	    /* autocmds may abort script processing */
+  	return;
+  # endif
+  
+***************
+*** 564,569 ****
+--- 563,569 ----
+  #ifdef FEAT_SYN_HL
+      syntax_clear(buf);		    /* reset syntax info */
+  #endif
++     buf->b_flags &= ~BF_READERR;    /* a read error is no longer relevant */
+  }
+  
+  /*
+***************
+*** 666,674 ****
+--- 666,688 ----
+  		&& (defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG))
+      if (swap_exists_action == SEA_QUIT && *eap->cmd == 's')
+      {
++ #  if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++ 	cleanup_T   cs;
++ 
++ 	/* Reset the error/interrupt/exception state here so that
++ 	 * aborting() returns FALSE when closing a window. */
++ 	enter_cleanup(&cs);
++ #  endif
++ 
+  	/* Quitting means closing the split window, nothing else. */
+  	win_close(curwin, TRUE);
+  	swap_exists_action = SEA_NONE;
++ 
++ #  if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++ 	/* Restore the error/interrupt/exception state if not discarded by a
++ 	 * new aborting error, interrupt, or uncaught exception. */
++ 	leave_cleanup(&cs);
++ #  endif
+      }
+      else
+  	handle_swap_exists(old_curbuf);
+***************
+*** 685,712 ****
+  handle_swap_exists(old_curbuf)
+      buf_T	*old_curbuf;
+  {
+      if (swap_exists_action == SEA_QUIT)
+      {
+  	/* User selected Quit at ATTENTION prompt.  Go back to previous
+  	 * buffer.  If that buffer is gone or the same as the current one,
+  	 * open a new, empty buffer. */
+  	swap_exists_action = SEA_NONE;	/* don't want it again */
+  	close_buffer(curwin, curbuf, DOBUF_UNLOAD);
+  	if (!buf_valid(old_curbuf) || old_curbuf == curbuf)
+! 	    old_curbuf = buflist_new(NULL, NULL, 1L,
+! 					 BLN_CURBUF | BLN_LISTED | BLN_FORCE);
+  	if (old_curbuf != NULL)
+  	    enter_buffer(old_curbuf);
+  	/* If "old_curbuf" is NULL we are in big trouble here... */
+      }
+      else if (swap_exists_action == SEA_RECOVER)
+      {
+  	/* User selected Recover at ATTENTION prompt. */
+  	msg_scroll = TRUE;
+  	ml_recover();
+  	MSG_PUTS("\n");	/* don't overwrite the last message */
+  	cmdline_row = msg_row;
+  	do_modelines();
+      }
+      swap_exists_action = SEA_NONE;
+  }
+--- 699,753 ----
+  handle_swap_exists(old_curbuf)
+      buf_T	*old_curbuf;
+  {
++ # if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++     cleanup_T	cs;
++ # endif
++ 
+      if (swap_exists_action == SEA_QUIT)
+      {
++ # if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++ 	/* Reset the error/interrupt/exception state here so that
++ 	 * aborting() returns FALSE when closing a buffer. */
++ 	enter_cleanup(&cs);
++ # endif
++ 
+  	/* User selected Quit at ATTENTION prompt.  Go back to previous
+  	 * buffer.  If that buffer is gone or the same as the current one,
+  	 * open a new, empty buffer. */
+  	swap_exists_action = SEA_NONE;	/* don't want it again */
+  	close_buffer(curwin, curbuf, DOBUF_UNLOAD);
+  	if (!buf_valid(old_curbuf) || old_curbuf == curbuf)
+! 	    old_curbuf = buflist_new(NULL, NULL, 1L, BLN_CURBUF | BLN_LISTED);
+  	if (old_curbuf != NULL)
+  	    enter_buffer(old_curbuf);
+  	/* If "old_curbuf" is NULL we are in big trouble here... */
++ 
++ # if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++ 	/* Restore the error/interrupt/exception state if not discarded by a
++ 	 * new aborting error, interrupt, or uncaught exception. */
++ 	leave_cleanup(&cs);
++ # endif
+      }
+      else if (swap_exists_action == SEA_RECOVER)
+      {
++ # if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++ 	/* Reset the error/interrupt/exception state here so that
++ 	 * aborting() returns FALSE when closing a buffer. */
++ 	enter_cleanup(&cs);
++ # endif
++ 
+  	/* User selected Recover at ATTENTION prompt. */
+  	msg_scroll = TRUE;
+  	ml_recover();
+  	MSG_PUTS("\n");	/* don't overwrite the last message */
+  	cmdline_row = msg_row;
+  	do_modelines();
++ 
++ # if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++ 	/* Restore the error/interrupt/exception state if not discarded by a
++ 	 * new aborting error, interrupt, or uncaught exception. */
++ 	leave_cleanup(&cs);
++ # endif
+      }
+      swap_exists_action = SEA_NONE;
+  }
+***************
+*** 1380,1386 ****
+   * If (flags & BLN_CURBUF) is TRUE, may use current buffer.
+   * If (flags & BLN_LISTED) is TRUE, add new buffer to buffer list.
+   * If (flags & BLN_DUMMY) is TRUE, don't count it as a real buffer.
+-  * If (flags & BLN_FORCE) is TRUE, don't abort on an error.
+   * This is the ONLY way to create a new buffer.
+   */
+  static int  top_file_num = 1;		/* highest file number */
+--- 1421,1426 ----
+***************
+*** 1455,1462 ****
+  	if (buf == curbuf)
+  	    apply_autocmds(EVENT_BUFWIPEOUT, NULL, NULL, FALSE, curbuf);
+  # ifdef FEAT_EVAL
+! 	/* autocmds may abort script processing */
+! 	if (!(flags & BLN_FORCE) && aborting())
+  	    return NULL;
+  # endif
+  #endif
+--- 1495,1501 ----
+  	if (buf == curbuf)
+  	    apply_autocmds(EVENT_BUFWIPEOUT, NULL, NULL, FALSE, curbuf);
+  # ifdef FEAT_EVAL
+! 	if (aborting())		/* autocmds may abort script processing */
+  	    return NULL;
+  # endif
+  #endif
+***************
+*** 1509,1516 ****
+  	if (buf != curbuf)	 /* autocommands deleted the buffer! */
+  	    return NULL;
+  #if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
+! 	/* autocmds may abort script processing */
+! 	if (!(flags & BLN_FORCE) && aborting())
+  	    return NULL;
+  #endif
+  	/* buf->b_nwindows = 0; why was this here? */
+--- 1548,1554 ----
+  	if (buf != curbuf)	 /* autocommands deleted the buffer! */
+  	    return NULL;
+  #if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
+! 	if (aborting())		/* autocmds may abort script processing */
+  	    return NULL;
+  #endif
+  	/* buf->b_nwindows = 0; why was this here? */
+***************
+*** 1586,1593 ****
+  	if (flags & BLN_LISTED)
+  	    apply_autocmds(EVENT_BUFADD, NULL, NULL, FALSE, buf);
+  # ifdef FEAT_EVAL
+! 	/* autocmds may abort script processing */
+! 	if (!(flags & BLN_FORCE) && aborting())
+  	    return NULL;
+  # endif
+      }
+--- 1624,1630 ----
+  	if (flags & BLN_LISTED)
+  	    apply_autocmds(EVENT_BUFADD, NULL, NULL, FALSE, buf);
+  # ifdef FEAT_EVAL
+! 	if (aborting())		/* autocmds may abort script processing */
+  	    return NULL;
+  # endif
+      }
+***************
+*** 4217,4229 ****
+  #endif
+  	    set_curbuf(buf, DOBUF_GOTO);
+  #ifdef FEAT_AUTOCMD
+- # ifdef FEAT_EVAL
+- 	    /* Autocommands deleted the buffer or aborted script
+- 	     * processing!!! */
+- 	    if (!buf_valid(buf) || aborting())
+- # else
+  	    if (!buf_valid(buf))	/* autocommands deleted the buffer!!! */
+- # endif
+  	    {
+  #if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+  		swap_exists_action = SEA_NONE;
+--- 4254,4260 ----
+***************
+*** 4234,4243 ****
+--- 4265,4289 ----
+  #if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+  	    if (swap_exists_action == SEA_QUIT)
+  	    {
++ # if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++ 		cleanup_T   cs;
++ 
++ 		/* Reset the error/interrupt/exception state here so that
++ 		 * aborting() returns FALSE when closing a window. */
++ 		enter_cleanup(&cs);
++ # endif
++ 
+  		/* User selected Quit at ATTENTION prompt; close this window. */
+  		win_close(curwin, TRUE);
+  		--open_wins;
+  		swap_exists_action = SEA_NONE;
++ 
++ # if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++ 		/* Restore the error/interrupt/exception state if not
++ 		 * discarded by a new aborting error, interrupt, or uncaught
++ 		 * exception. */
++ 		leave_cleanup(&cs);
++ # endif
+  	    }
+  	    else
+  		handle_swap_exists(NULL);
+***************
+*** 4250,4255 ****
+--- 4296,4306 ----
+  	    (void)vgetc();	/* only break the file loading, not the rest */
+  	    break;
+  	}
++ #ifdef FEAT_EVAL
++ 	/* Autocommands deleted the buffer or aborted script processing!!! */
++ 	if (aborting())
++ 	    break;
++ #endif
+      }
+  #ifdef FEAT_AUTOCMD
+      --autocmd_no_enter;
+*** ../vim-6.3.039/src/ex_docmd.c	Wed Jun  9 14:59:11 2004
+--- src/ex_docmd.c	Sun Dec  5 15:24:08 2004
+***************
+*** 6610,6619 ****
+--- 6610,6633 ----
+  		need_hide = (curbufIsChanged() && curbuf->b_nwindows <= 1);
+  		if (!need_hide || P_HID(curbuf))
+  		{
++ # if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++ 		    cleanup_T   cs;
++ 
++ 		    /* Reset the error/interrupt/exception state here so that
++ 		     * aborting() returns FALSE when closing a window. */
++ 		    enter_cleanup(&cs);
++ # endif
+  # ifdef FEAT_GUI
+  		    need_mouse_correct = TRUE;
+  # endif
+  		    win_close(curwin, !need_hide && !P_HID(curbuf));
++ 
++ # if defined(FEAT_AUTOCMD) && defined(FEAT_EVAL)
++ 		    /* Restore the error/interrupt/exception state if not
++ 		     * discarded by a new aborting error, interrupt, or
++ 		     * uncaught exception. */
++ 		    leave_cleanup(&cs);
++ # endif
+  		}
+  	    }
+  #endif
+*** ../vim-6.3.039/src/ex_eval.c	Wed Jun  9 14:56:26 2004
+--- src/ex_eval.c	Sun Dec  5 15:25:04 2004
+***************
+*** 1820,1825 ****
+--- 1820,1979 ----
+  }
+  
+  /*
++  * enter_cleanup() and leave_cleanup()
++  *
++  * Functions to be called before/after invoking a sequence of autocommands for
++  * cleanup for a failed command.  (Failure means here that a call to emsg()
++  * has been made, an interrupt occurred, or there is an uncaught exception
++  * from a previous autocommand execution of the same command.)
++  *
++  * Call enter_cleanup() with a pointer to a cleanup_T and pass the same
++  * pointer to leave_cleanup().  The cleanup_T structure stores the pending
++  * error/interrupt/exception state.
++  */
++ 
++ /*
++  * This function works a bit like ex_finally() except that there was not
++  * actually an extra try block around the part that failed and an error or
++  * interrupt has not (yet) been converted to an exception.  This function
++  * saves the error/interrupt/ exception state and prepares for the call to
++  * do_cmdline() that is going to be made for the cleanup autocommand
++  * execution.
++  */
++     void
++ enter_cleanup(csp)
++     cleanup_T	*csp;
++ {
++     int		pending = CSTP_NONE;
++ 
++     /*
++      * Postpone did_emsg, got_int, did_throw.  The pending values will be
++      * restored by leave_cleanup() except if there was an aborting error,
++      * interrupt, or uncaught exception after this function ends.
++      */
++     if (did_emsg || got_int || did_throw || need_rethrow)
++     {
++ 	csp->pending = (did_emsg     ? CSTP_ERROR     : 0)
++ 		     | (got_int      ? CSTP_INTERRUPT : 0)
++ 		     | (did_throw    ? CSTP_THROW     : 0)
++ 		     | (need_rethrow ? CSTP_THROW     : 0);
++ 
++ 	/* If we are currently throwing an exception (did_throw), save it as
++ 	 * well.  On an error not yet converted to an exception, update
++ 	 * "force_abort" and reset "cause_abort" (as do_errthrow() would do).
++ 	 * This is needed for the do_cmdline() call that is going to be made
++ 	 * for autocommand execution.  We need not save *msg_list because
++ 	 * there is an extra instance for every call of do_cmdline(), anyway.
++ 	 */
++ 	if (did_throw || need_rethrow)
++ 	    csp->exception = current_exception;
++ 	else
++ 	{
++ 	    csp->exception = NULL;
++ 	    if (did_emsg)
++ 	    {
++ 		force_abort |= cause_abort;
++ 		cause_abort = FALSE;
++ 	    }
++ 	}
++ 	did_emsg = got_int = did_throw = need_rethrow = FALSE;
++ 
++ 	/* Report if required by the 'verbose' option or when debugging.  */
++ 	report_make_pending(pending, csp->exception);
++     }
++     else
++     {
++ 	csp->pending = CSTP_NONE;
++ 	csp->exception = NULL;
++     }
++ }
++ 
++ /*
++  * See comment above enter_cleanup() for how this function is used.
++  *
++  * This function is a bit like ex_endtry() except that there was not actually
++  * an extra try block around the part that failed and an error or interrupt
++  * had not (yet) been converted to an exception when the cleanup autocommand
++  * sequence was invoked.
++  *
++  * This function has to be called with the address of the cleanup_T structure
++  * filled by enter_cleanup() as an argument; it restores the error/interrupt/
++  * exception state saved by that function - except there was an aborting
++  * error, an interrupt or an uncaught exception during execution of the
++  * cleanup autocommands.  In the latter case, the saved error/interrupt/
++  * exception state is discarded.
++  */
++     void
++ leave_cleanup(csp)
++     cleanup_T	*csp;
++ {
++     int		pending = csp->pending;
++ 
++     if (pending == CSTP_NONE)	/* nothing to do */
++ 	return;
++ 
++     /* If there was an aborting error, an interrupt, or an uncaught exception
++      * after the corresponding call to enter_cleanup(), discard what has been
++      * made pending by it.  Report this to the user if required by the
++      * 'verbose' option or when debugging. */
++     if (aborting() || need_rethrow)
++     {
++ 	if (pending & CSTP_THROW)
++ 	    /* Cancel the pending exception (includes report). */
++ 	    discard_exception((except_T *)csp->exception, FALSE);
++ 	else
++ 	    report_discard_pending(pending, NULL);
++ 
++ 	/* If an error was about to be converted to an exception when
++ 	 * enter_cleanup() was called, free the message list. */
++ 	free_msglist(*msg_list);
++ 	*msg_list = NULL;
++     }
++ 
++     /*
++      * If there was no new error, interrupt, or throw between the calls
++      * to enter_cleanup() and leave_cleanup(), restore the pending
++      * error/interrupt/exception state.
++      */
++     else
++     {
++ 	/*
++ 	 * If there was an exception being thrown when enter_cleanup() was
++ 	 * called, we need to rethrow it.  Make it the exception currently
++ 	 * being thrown.
++ 	 */
++ 	if (pending & CSTP_THROW)
++ 	    current_exception = csp->exception;
++ 
++ 	/*
++ 	 * If an error was about to be converted to an exception when
++ 	 * enter_cleanup() was called, let "cause_abort" take the part of
++ 	 * "force_abort" (as done by cause_errthrow()).
++ 	 */
++ 	else if (pending & CSTP_ERROR)
++ 	{
++ 	    cause_abort = force_abort;
++ 	    force_abort = FALSE;
++ 	}
++ 
++ 	/*
++ 	 * Restore the pending values of did_emsg, got_int, and did_throw.
++ 	 */
++ 	if (pending & CSTP_ERROR)
++ 	    did_emsg = TRUE;
++ 	if (pending & CSTP_INTERRUPT)
++ 	    got_int = TRUE;
++ 	if (pending & CSTP_THROW)
++ 	    need_rethrow = TRUE;    /* did_throw will be set by do_one_cmd() */
++ 
++ 	/* Report if required by the 'verbose' option or when debugging. */
++ 	report_resume_pending(pending,
++ 		   (pending & CSTP_THROW) ? (void *)current_exception : NULL);
++     }
++ }
++ 
++ 
++ /*
+   * Make conditionals inactive and discard what's pending in finally clauses
+   * until the conditional type searched for or a try conditional not in its
+   * finally clause is reached.  If this is in an active catch clause, finish the
+*** ../vim-6.3.039/src/proto/ex_eval.pro	Wed Jun  9 14:56:24 2004
+--- src/proto/ex_eval.pro	Sun Dec  5 15:25:27 2004
+***************
+*** 23,28 ****
+--- 23,30 ----
+  void ex_catch __ARGS((exarg_T *eap));
+  void ex_finally __ARGS((exarg_T *eap));
+  void ex_endtry __ARGS((exarg_T *eap));
++ void enter_cleanup __ARGS((cleanup_T *csp));
++ void leave_cleanup __ARGS((cleanup_T *csp));
+  int cleanup_conditionals __ARGS((struct condstack *cstack, int searched_cond, int inclusive));
+  void ex_endfunction __ARGS((exarg_T *eap));
+  int has_while_cmd __ARGS((char_u *p));
+*** ../vim-6.3.039/src/structs.h	Sat Sep 18 20:28:07 2004
+--- src/structs.h	Sun Dec  5 15:26:11 2004
+***************
+*** 665,670 ****
+--- 665,681 ----
+  #define ET_ERROR	1	/* error exception */
+  #define ET_INTERRUPT	2	/* interrupt exception triggered by Ctrl-C */
+  
++ /*
++  * Structure to save the error/interrupt/exception state between calls to
++  * enter_cleanup() and leave_cleanup().  Must be allocated as an automatic
++  * variable by the (common) caller of these functions.
++  */
++ typedef struct cleanup_stuff cleanup_T;
++ struct cleanup_stuff
++ {
++     int pending;		/* error/interrupt/exception state */
++     except_T *exception;	/* exception value */
++ };
+  
+  #ifdef FEAT_SYN_HL
+  /* struct passed to in_id_list() */
+*** ../vim-6.3.039/src/vim.h	Sat Sep  4 19:43:59 2004
+--- src/vim.h	Sun Dec  5 15:26:56 2004
+***************
+*** 714,720 ****
+  #define BLN_CURBUF	1	/* May re-use curbuf for new buffer */
+  #define BLN_LISTED	2	/* Put new buffer in buffer list */
+  #define BLN_DUMMY	4	/* Allocating dummy buffer */
+- #define BLN_FORCE	8	/* Don't abort on error */
+  
+  /* Values for in_cinkeys() */
+  #define KEY_OPEN_FORW	0x101
+--- 714,719 ----
+*** ../vim-6.3.039/src/version.c	Sun Dec  5 14:57:15 2004
+--- src/version.c	Sun Dec  5 16:16:22 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     40,
+  /**/
+
+-- 
+If your company is not involved in something called "ISO 9000" you probably
+have no idea what it is.  If your company _is_ involved in ISO 9000 then you
+definitely have no idea what it is.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.034
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.034
+Problem:    VMS: crash when using ":help". 
+Solution:   Avoid using "tags-??", some Open VMS systems can't handle the "?"
+	    wildcard.  (Zoltan Arpadffy)
+Files:	    src/tag.c
+
+
+*** ../vim-6.3.033/src/tag.c	Wed Jun  9 14:56:26 2004
+--- src/tag.c	Sat Nov 20 14:50:43 2004
+***************
+*** 2382,2388 ****
+--- 2382,2396 ----
+  	    ga_init2(&tag_fnames, (int)sizeof(char_u *), 10);
+  	    do_in_runtimepath((char_u *)
+  #ifdef FEAT_MULTI_LANG
++ # ifdef VMS
++ 		    /* Functions decc$to_vms() and decc$translate_vms() crash
++ 		     * on some VMS systems with wildcards "??".  Seems ECO
++ 		     * patches do fix the problem in C RTL, but we can't use
++ 		     * an #ifdef for that. */
++ 		    "doc/tags doc/tags-*"
++ # else
+  		    "doc/tags doc/tags-??"
++ # endif
+  #else
+  		    "doc/tags"
+  #endif
+*** ../vim-6.3.033/src/version.c	Thu Nov 18 10:47:49 2004
+--- src/version.c	Mon Nov 22 10:03:20 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     34,
+  /**/
+
+-- 
+There can't be a crisis today, my schedule is already full.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

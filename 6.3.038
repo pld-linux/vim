@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.038 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.038 (extra)
+Problem:    Win32: When the "file changed" dialog pops up after a click that
+	    gives gvim focus and not moving the mouse after that, the effect
+	    of the click may occur when moving the mouse later. (Ken Clark)
+	    Happened because the release event was missed.
+Solution:   Clear the s_button_pending variable when any input is received.
+Files:	    src/gui_w48.c
+
+
+*** ../vim-6.3.037/src/gui_w48.c	Sat Sep  4 16:28:02 2004
+--- src/gui_w48.c	Sat Dec  4 17:15:35 2004
+***************
+*** 1829,1834 ****
+--- 1829,1839 ----
+  		s_wait_timer = 0;
+  	    }
+  	    allow_scrollbar = FALSE;
++ 
++ 	    /* Clear pending mouse button, the release event may have been
++ 	     * taken by the dialog window. */
++ 	    s_button_pending = -1;
++ 
+  	    return OK;
+  	}
+      }
+*** ../vim-6.3.037/src/version.c	Sat Dec  4 15:27:07 2004
+--- src/version.c	Sat Dec  4 17:19:21 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     38,
+  /**/
+
+-- 
+Are leaders born or made?  And if they're made, can we return them under
+warranty?
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

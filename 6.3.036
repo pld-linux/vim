@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.036
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.036
+Problem:    ml_get errors when the whole file is a fold, switching
+	    'foldmethod' and doing "zj". (Christian J. Robinson) Was not
+	    deleting the fold but creating a fold with zero lines.
+Solution:   Delete the fold properly.
+Files:	    src/fold.c
+
+
+*** ../vim-6.3.035/src/fold.c	Wed Jun  9 14:56:26 2004
+--- src/fold.c	Sat Dec  4 14:54:30 2004
+***************
+*** 2795,2801 ****
+  	{
+  	    /* Found an entry below top. */
+  	    fold_changed = TRUE;
+! 	    if (fp->fd_top + fp->fd_len > bot)
+  	    {
+  		/* 5: Make fold that includes bot start below bot. */
+  		foldMarkAdjustRecurse(&fp->fd_nested,
+--- 2795,2801 ----
+  	{
+  	    /* Found an entry below top. */
+  	    fold_changed = TRUE;
+! 	    if (fp->fd_top + fp->fd_len - 1 > bot)
+  	    {
+  		/* 5: Make fold that includes bot start below bot. */
+  		foldMarkAdjustRecurse(&fp->fd_nested,
+*** ../vim-6.3.035/src/version.c	Mon Nov 22 10:44:14 2004
+--- src/version.c	Sat Dec  4 14:55:28 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     36,
+  /**/
+
+-- 
+If you had to identify, in one word, the reason why the
+human race has not achieved, and never will achieve, its
+full potential, that word would be "meetings."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
