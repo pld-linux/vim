@@ -33,6 +33,7 @@ Patch2:		%{name}-phphighlight.patch
 Patch3:		%{name}-paths.patch
 Patch4:		%{name}-ispell.patch
 Patch5:		%{name}-pl.patch
+Patch6:		%{name}-shsyntax.patch
 URL:		http://www.vim.org/
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
@@ -217,6 +218,7 @@ bibliotek GNOME.
 %patch3 -p1
 %{?_with_ispell:%patch4 -p1}
 %patch5 -p1
+%patch6 -p1
 
 %build
 cd src
