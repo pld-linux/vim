@@ -16,7 +16,6 @@ BuildPrereq:	lesstif-devel
 BuildPrereq:	gtk+-devel
 BuildPrereq:	glib-devel
 BuildPrereq:	gpm-devel
-Requires:       ncurses >= 4.2-12
 Obsoletes:	vim-gtk
 Obsoletes:	vim-lesstif
 Obsoletes:	vim-athena
@@ -34,7 +33,7 @@ edytorem vi, ta wersja oferuje dodatkowo pracê z wieloma plikami,
 wielopoziomowe operacje cofnij, bloki, pod¶wietlanie sk³adni i wiele
 innych usprawnieñ.
 
-%package	rt 
+%package rt 
 Summary:	Vim runtime files
 Summary(pl):	Pliki przydatne edytorowi vim 
 Group:		Applications/Editors/Vim
@@ -50,13 +49,13 @@ W tym pakiecie znajdziesz dokumentacjê, makra, pliki konfiguracyjne i strony
 podrêcznika edytora vim. Je¿eli zamierzasz korzystaæ z vim-a, powiniene¶
 zainstalowaæ ten pakiet.
 
-%package	static
+%package static
 Summary:	Vim static
 Summary(pl):	Vim skompilowany statycznie
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Provides:	vi
 Requires:	ncurses >= 4.2-12
-
 %description static
 The classic Unix text editor. This version is build with minimal
 feature and is installed in /bin as a rescue tool. The installation of
@@ -67,12 +66,11 @@ Pakiet zawiera vim - klasyczny (unixowy) edytor tekstowy skompilowany
 statycznie. Instalacja tego pakietu jest MOCNO zalecana, mo¿e on pomóc
 Tobie uratowaæ system w czasie awarii.
 
-%package	athena
+%package athena
 Summary:	Vim built with X11 and athena support
 Summary(pl):	Vim pod X-Window korzystaj±cy z Athena Widget Set
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Requires:       ncurses >= 4.2-12
 Obsoletes:	vim-lesstif
 Obsoletes:	vim-gtk
 Obsoletes:	vim-ncurses
@@ -109,9 +107,6 @@ Summary:	Vim built with X11 and gtk support
 Summary(pl):	Vim pod X-Window korzystaj±cy z bibliotek gtk
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Requires:       ncurses >= 4.2-12
-Requires:	gtk+ >= 1.2.0
-Requires:	glib >= 1.2.0
 Obsoletes:	vim-athena
 Obsoletes:	vim-lesstif
 Obsoletes:      vim-ncurses
@@ -126,12 +121,12 @@ Wersja edytora vim pracuj±ca w graficznym ¶rodowisku X Window
 z wykorzystaniem gtk.
 
 %prep
-%setup  -q  -b 1 -b 2
+%setup -q -b 1 -b 2
 
 %build
 cd src
 
-LDFLAGS="-static -s" CFLAGS="-O" \
+CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-static -s" \
 ./configure \
 	--disable-gui \
 	--without-x \
@@ -309,7 +304,7 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 %attr(755,root,root) /usr/X11R6/bin/gvim.athena
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
-%attr(644,root,root) %config(missingok) /etc/X11/wmconfig/gvim
+/etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
 %attr(755,root,root) %ghost /usr/bin/vim
 
@@ -318,7 +313,7 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 %attr(755,root,root) /usr/X11R6/bin/gvim.lesstif
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
-%attr(644,root,root) %config(missingok) /etc/X11/wmconfig/gvim
+/etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
 %attr(755,root,root) %ghost /usr/bin/vim
 
@@ -327,7 +322,7 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 %attr(755,root,root) /usr/X11R6/bin/gvim.gtk
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
-%attr(644,root,root) %config(missingok) /etc/X11/wmconfig/gvim
+/etc/X11/wmconfig/gvim
 %attr(755,root,root) %ghost /usr/X11R6/bin/gvim
 %attr(755,root,root) %ghost /usr/bin/vim
 
