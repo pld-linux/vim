@@ -72,6 +72,7 @@ Patch15:	%{name}-po.patch
 Patch16:	%{name}-filetype_vim-perl_tests.patch
 Patch17:	%{name}-pl.po.patch
 Patch18:	%{name}-po-syntax.patch
+Patch19:	%{name}-modprobe.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.001
@@ -628,6 +629,7 @@ element bonobo.
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p0 -b .modprobe
 
 %build
 cd src
