@@ -23,7 +23,7 @@ Summary(ru):	Visual editor IMproved - Единственно Правильный Редактор :)
 Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
-Version:	6.0.%{_patchlevel}
+Version:	%{_ver}.%{_patchlevel}
 Release:	2
 Epoch:		4
 License:	Charityware
@@ -648,22 +648,22 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/ex.1*
 %{_mandir}/man1/view.1*
 %{_mandir}/man1/rview.1*
-%lang(fi) %{_mandir}/man1/vi.1*
-%lang(fi) %{_mandir}/man1/ex.1*
-%lang(fi) %{_mandir}/man1/view.1*
-%lang(fi) %{_mandir}/man1/rview.1*
-%lang(fr) %{_mandir}/man1/vi.1*
-%lang(fr) %{_mandir}/man1/ex.1*
-%lang(fr) %{_mandir}/man1/view.1*
-%lang(fr) %{_mandir}/man1/rview.1*
-%lang(id) %{_mandir}/man1/vi.1*
-%lang(id) %{_mandir}/man1/ex.1*
-%lang(id) %{_mandir}/man1/view.1*
-%lang(id) %{_mandir}/man1/rview.1*
-%lang(pl) %{_mandir}/man1/vi.1*
-%lang(pl) %{_mandir}/man1/ex.1*
-%lang(pl) %{_mandir}/man1/view.1*
-%lang(pl) %{_mandir}/man1/rview.1*
+%lang(fi) %{_mandir}/fi/man1/vi.1*
+%lang(fi) %{_mandir}/fi/man1/ex.1*
+%lang(fi) %{_mandir}/fi/man1/view.1*
+%lang(fi) %{_mandir}/fi/man1/rview.1*
+%lang(fr) %{_mandir}/fr/man1/vi.1*
+%lang(fr) %{_mandir}/fr/man1/ex.1*
+%lang(fr) %{_mandir}/fr/man1/view.1*
+%lang(fr) %{_mandir}/fr/man1/rview.1*
+%lang(id) %{_mandir}/id/man1/vi.1*
+%lang(id) %{_mandir}/id/man1/ex.1*
+%lang(id) %{_mandir}/id/man1/view.1*
+%lang(id) %{_mandir}/id/man1/rview.1*
+%lang(pl) %{_mandir}/pl/man1/vi.1*
+%lang(pl) %{_mandir}/pl/man1/ex.1*
+%lang(pl) %{_mandir}/pl/man1/view.1*
+%lang(pl) %{_mandir}/pl/man1/rview.1*
 
 %files rt
 %defattr(644,root,root,755)
@@ -721,15 +721,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_mandir}/man1/vim*
 %{_mandir}/man1/rvim.*
-%lang(fi) %{_mandir}/man1/vim*
-%lang(fi) %{_mandir}/man1/rvim.*
-%lang(fr) %{_mandir}/man1/vim*
-%lang(fr) %{_mandir}/man1/rvim.*
-%lang(id) %{_mandir}/man1/vim*
-%lang(id) %{_mandir}/man1/rvim.*
-%lang(it) %{_mandir}/man1/vim*
-%lang(pl) %{_mandir}/man1/vim*
-%lang(pl) %{_mandir}/man1/rvim.*
+%lang(fi) %{_mandir}/fi/man1/vim*
+%lang(fi) %{_mandir}/fi/man1/rvim.*
+%lang(fr) %{_mandir}/fr/man1/vim*
+%lang(fr) %{_mandir}/fr/man1/rvim.*
+%lang(id) %{_mandir}/id/man1/vim*
+%lang(id) %{_mandir}/id/man1/rvim.*
+%lang(it) %{_mandir}/it/man1/vim*
+%lang(pl) %{_mandir}/pl/man1/vim*
+%lang(pl) %{_mandir}/pl/man1/rvim.*
 
 %if %{!?_without_athena:1}%{?_without_athena:0}
 %files -n gvim-athena
