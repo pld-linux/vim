@@ -2,7 +2,7 @@ Summary:	Vi IMproved - a Vi clone
 Summary(pl):	Vi IMproved - klon edytora Vi
 Name:		vim
 Version:	5.6
-Release:	4
+Release:	5
 Copyright:	Charityware
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
@@ -11,12 +11,13 @@ Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-src.tar.gz
 Source1:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-rt.tar.gz
 Source2:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-extra.tar.gz
 Source3:	gvim.desktop
-Patch:		vim-fhs.patch
+Patch0:		vim-fhs.patch
+Patch1:		vim-visual.patch
 BuildRequires:	ncurses-devel
 BuildRequires:	ncurses-static
 BuildRequires:	gpm-devel
 BuildRequires:	Xaw3d-devel
-BuildRequires:	lesstif-devel
+BuildRequires:	motif-devel
 BuildRequires:	gtk+-devel
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-enhanced
@@ -68,8 +69,8 @@ strony podrêcznika dla edytora vim. Je¿eli chcesz korzystaæ z
 zaawansowanych mo¿liwo¶ci vim-a, powiniene¶ zainstalowaæ ten pakiet.   
 
 %package -n gvim-athena
-Summary:	Vim for X Window built with LessTif
-Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki LessTif
+Summary:	Vim for X Window built with arena
+Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Arena
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 Requires:	%{name}-rt = %{version}
@@ -83,21 +84,21 @@ is build with Athena Widget Set.
 Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem 
 biblioteki Athena Widget Set.   
 
-%package -n gvim-lesstif
-Summary:	Vim for X Window built with LessTif
-Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki LessTif
+%package -n gvim-motif
+Summary:	Vim for X Window built with Motif
+Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Motif
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-X11
 
-%description -n gvim-lesstif
+%description -n gvim-motif
 The classic Unix text editor now also under X Window System! This version 
-is build with LessTif.   
+is build with Motif.
 
-%description -n gvim-lesstif -l pl
+%description -n gvim-motif -l pl
 Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem 
-biblioteki LessTif.   
+biblioteki Motif.
 
 %package -n gvim-gtk
 Summary:	Vim for X Window built with gtk
@@ -117,7 +118,8 @@ biblioteki GTK.
 
 %prep
 %setup -q -b 1 -b 2
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 
 %build
 cd src
@@ -181,7 +183,7 @@ LDFLAGS="-s"; export LDFLAGS
         --disable-cscope \
         --disable-gpm
 %{__make} vim
-mv vim gvim.lesstif
+mv vim gvim.motif
  
 %{__make} distclean
 LDFLAGS="-s"; export LDFLAGS
@@ -210,7 +212,7 @@ install -s src/vim.static  $RPM_BUILD_ROOT/bin/vi
 install -s src/xxd.static  $RPM_BUILD_ROOT/bin/xxd
 
 install -s src/gvim.athena  $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.athena
-install -s src/gvim.lesstif $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.lesstif
+install -s src/gvim.motif   $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.motif
 install -s src/gvim.gtk     $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.gtk
  
 install    src/vimtutor	   $RPM_BUILD_ROOT%{_bindir}/vimtutor
@@ -258,8 +260,8 @@ gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man1/*
 %post -n gvim-athena
 ln -sf /usr/X11R6/bin/gvim.athena /usr/X11R6/bin/gvim
 
-%post -n gvim-lesstif
-ln -sf /usr/X11R6/bin/gvim.lesstif /usr/X11R6/bin/gvim
+%post -n gvim-motif
+ln -sf /usr/X11R6/bin/gvim.motif /usr/X11R6/bin/gvim
 
 %post -n gvim-gtk
 ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
@@ -290,9 +292,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %verify(not link) /usr/X11R6/bin/gvim
 /usr/X11R6/share/applnk/Office/Editors/gvim.desktop
 
-%files -n gvim-lesstif
+%files -n gvim-motif
 %defattr(644,root,root,755)
-%attr(755,root,root) /usr/X11R6/bin/gvim.lesstif
+%attr(755,root,root) /usr/X11R6/bin/gvim.motif
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 %attr(755,root,root) %verify(not link) /usr/X11R6/bin/gvim
