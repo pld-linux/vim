@@ -73,6 +73,7 @@ Summary:	Vim built with X11 and athena support
 Summary(pl):	Vim pod X-Window korzystaj±cy z Athena Widget Set
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-lesstif
 Obsoletes:	vim-gtk
 Obsoletes:	vim-ncurses
@@ -91,6 +92,7 @@ Summary:	Vim built with X11 and LessTif support
 Summary(pl):	Vim pod X-Window korzystaj±cy z bibliotek LessTif
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-athena
 Obsoletes:	vim-gtk
 Obsoletes:	vim-ncurses
@@ -109,6 +111,7 @@ Summary:	Vim built with X11 and gtk support
 Summary(pl):	Vim pod X-Window korzystaj±cy z bibliotek gtk
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-athena
 Obsoletes:	vim-lesstif
 Obsoletes:      vim-ncurses
@@ -128,8 +131,8 @@ z wykorzystaniem gtk.
 %build
 cd src
 
-CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-static -s" \
-./configure %{_target} \
+LDFLAGS="-static -s"; export LDFLAGS
+%configure \
 	--disable-gui \
 	--without-x \
 	--disable-perlinterp \
@@ -139,16 +142,15 @@ CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-static -s" \
 	--disable-gpm \
 	--enable-min-features \
 	--datadir=/etc \
-	--with-tlib=ncurses \
-	--prefix=/usr
+	--with-tlib=ncurses 
 make vim
 make xxd/xxd
 mv vim vim.static
 mv xxd/xxd xxd.static
 
 make distclean
-LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
-./configure %{_target} \
+LDFLAGS="-static -s"; export LDFLAGS
+%configure \
 	--enable-max-features \
 	--disable-gui \
 	--without-x \
@@ -157,14 +159,13 @@ LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
 	--disable-tclinterp \
 	--disable-cscope \
 	--enable-gmp \
-	--with-tlib=ncurses \
-	--prefix=/usr
+	--with-tlib=ncurses 
 make vim
 mv vim vim.ncurses
 
 make distclean
-LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
-./configure %{_target} \
+LDFLAGS="-static -s"; export LDFLAGS
+%configure \
         --enable-max-features \
 	--enable-gui=athena \
 	--with-x \
@@ -173,14 +174,13 @@ LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
 	--disable-tclinterp \
 	--disable-cscope \
 	--enable-gmp \
-	--with-tlib=ncurses \
-	--prefix=/usr
+	--with-tlib=ncurses 
 make vim
 mv vim vim.athena
 
 make distclean
-LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
-./configure %{_target} \
+LDFLAGS="-static -s"; export LDFLAGS
+%configure \
         --enable-max-features \
 	--enable-gui=motif \
 	--with-x \
@@ -189,14 +189,13 @@ LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
 	--disable-tclinterp \
 	--disable-cscope \
 	--enable-gmp \
-	--with-tlib=ncurses \
-	--prefix=/usr
+	--with-tlib=ncurses 
 make vim
 mv vim vim.lesstif
 
 make distclean
-LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
-./configure %{_target} \
+LDFLAGS="-static -s"; export LDFLAGS
+%configure \
         --enable-max-features \
 	--enable-gui=gtk \
 	--with-x \
@@ -205,8 +204,7 @@ LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
 	--disable-tclinterp \
 	--disable-cscope \
 	--enable-gmp \
-	--with-tlib=ncurses \
-	--prefix=/usr
+	--with-tlib=ncurses 
 make vim
 mv vim vim.gtk
 
@@ -234,16 +232,17 @@ install    src/vimtutor	   $RPM_BUILD_ROOT%{_bindir}/vimtutor
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
 
 install runtime/doc/vim.1 $RPM_BUILD_ROOT%{_mandir}/man1
+install runtime/doc/vim.1 $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
 install runtime/doc/xxd.1 $RPM_BUILD_ROOT%{_mandir}/man1
 install runtime/doc/vimtutor.1 $RPM_BUILD_ROOT%{_mandir}/man1
 
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/ex.1
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
+echo ".so vi.1" > $RPM_BUILD_ROOT%{_mandir}/man1/ex.1
+echo ".so vi.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
+echo ".so vi.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rview.1
+
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/gvim.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/gview.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rvim.1
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rview.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rgvim.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rgview.1
 
@@ -264,6 +263,7 @@ ln -sf vi $RPM_BUILD_ROOT/bin/ex
 ln -sf vi $RPM_BUILD_ROOT/bin/view
 ln -sf vi $RPM_BUILD_ROOT/bin/rview
 ln -sf /bin/vi $RPM_BUILD_ROOT%{_bindir}/vi
+
 ln -sf vim $RPM_BUILD_ROOT%{_bindir}/rvim
 
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgvim
@@ -300,6 +300,11 @@ ln -sf /usr/X11R6/bin/gvim %{_bindir}/vim
 %defattr(644,root,root,755)
 %attr(755,root,root) /bin/*
 %attr(755,root,root) %{_bindir}/vi
+%{_mandir}/man1/vi.1*
+%{_mandir}/man1/ex.1*
+%{_mandir}/man1/xxd.1*
+%{_mandir}/man1/view.1*
+%{_mandir}/man1/rview.1*
 
 %files athena
 %defattr(644,root,root,755)
