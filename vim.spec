@@ -19,15 +19,30 @@ Summary(es):	Editor visual incrementado
 Summary(fr):	editeur VIM : VIsual editor iMproved
 Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(pt_BR):	Editor visual incrementado
+Summary(ru):	Visual editor IMproved - Единственно Правильный Редактор :)
 Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
+Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	6.0.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
-Group(de):	Applikationen/Editors/Vim
+Group(cs):	Aplikace/Editory/Vim
+Group(da):	Programmer/Tekstbehandlere/Vim
+Group(de):	Applikationen/Editoren/Vim
+Group(es):	Aplicaciones/Editores/Vim
+Group(fr):	Applications/Editeurs/Vim
+Group(is):	Forrit/Ritlar/Vim
+Group(it):	Applicazioni/Editor/Vim
+Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
+Group(no):	Applikasjoner/Editorer/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(pt):	AplicaГУes/Editores/Vim
+Group(ru):	Приложения/Редакторы/Vim
+Group(sl):	Programi/Urejevalniki/Vim
+Group(sv):	TillДmpningar/Editorer/Vim
+Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
 Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
 Source2:	g%{name}-athena.desktop
@@ -36,6 +51,7 @@ Source4:	g%{name}-gtk.desktop
 Source5:	g%{name}-gnome.desktop
 #packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.0.*
 Source6:	%{name}-patches-%{_ver}.%{_patchlevel}.tar.bz2
+Source7:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-phphighlight.patch
@@ -100,16 +116,41 @@ todos os sistemas UN*X. Ele possibilita trabalhar com mЗltiplas
 janelas, vАrios nМveis de desfazer, blocos enfatizados, e muitas
 outras caracterМsticas do 'vi'.
 
+%description -l ru
+VIsual editor iMproved - это обновленный и значительно улучшенный клон
+редактора vi, который поставляется практически со всеми
+UN*X-системами. В этой версии есть многоуровневый откат, выделение
+блоков, синтаксическая подсветка и много другого...
+
 %description -l tr
 Standart vi metin dЭzenleyicisinin geliЧmiЧ hali; daha fazla komut,
 birden fazla pencere desteПi ve blok iЧaretleme yetenekleri iГerir.
+
+%description -l uk
+VIsual editor iMproved - це оновлений та значно пол╕пшений клон
+редактора vi, який поставля╓ться практично з╕ вс╕ма UN*X-системами. В
+ц╕й верс╕╖ ╓ багатор╕вневий в╕дкат, вид╕лення блок╕в, синтаксична
+п╕дсв╕тка та багато ╕ншого...
 
 %package -n xxd
 Summary:	Utility to convert files to hexdump or do the reverse
 Summary(pl):	NarzЙdzie do zamiany plikСw na postaФ szesnastkow╠ i odwrotnie
 Group:		Applications/Editors/Vim
-Group(de):	Applikationen/Editors/Vim
+Group(cs):	Aplikace/Editory/Vim
+Group(da):	Programmer/Tekstbehandlere/Vim
+Group(de):	Applikationen/Editoren/Vim
+Group(es):	Aplicaciones/Editores/Vim
+Group(fr):	Applications/Editeurs/Vim
+Group(is):	Forrit/Ritlar/Vim
+Group(it):	Applicazioni/Editor/Vim
+Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
+Group(no):	Applikasjoner/Editorer/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(pt):	AplicaГУes/Editores/Vim
+Group(ru):	Приложения/Редакторы/Vim
+Group(sl):	Programi/Urejevalniki/Vim
+Group(sv):	TillДmpningar/Editorer/Vim
+Group(uk):	Прикладн╕ Програми/Редактори/Vim
 
 %description -n xxd
 xxd creates a hex dump of a given file or standard input. It can also
@@ -129,8 +170,21 @@ wyj╤cie. Co wiЙcej, mo©e byФ u©yty do modyfikowania plikСw binarnych.
 Summary:	Statically linked Vim
 Summary(pl):	Statycznie zlinkowany Vim
 Group:		Applications/Editors/Vim
-Group(de):	Applikationen/Editors/Vim
+Group(cs):	Aplikace/Editory/Vim
+Group(da):	Programmer/Tekstbehandlere/Vim
+Group(de):	Applikationen/Editoren/Vim
+Group(es):	Aplicaciones/Editores/Vim
+Group(fr):	Applications/Editeurs/Vim
+Group(is):	Forrit/Ritlar/Vim
+Group(it):	Applicazioni/Editor/Vim
+Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
+Group(no):	Applikasjoner/Editorer/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(pt):	AplicaГУes/Editores/Vim
+Group(ru):	Приложения/Редакторы/Vim
+Group(sl):	Programi/Urejevalniki/Vim
+Group(sv):	TillДmpningar/Editorer/Vim
+Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Provides:	vi
 Obsoletes:	vi
 Obsoletes:	vim-minimal
@@ -146,12 +200,34 @@ posiada minimaln╠ ilo╤Ф dodatkСw. Jest instalowana w /bin jako
 narzЙdzie dla administratora. Instalacja tego pakietu jest MOCNO
 zalecana, mo©e on pomСc Ci uratowaФ system w czasie awarii.
 
+%description static -l ru
+Пакет vim-static устанавливает разновидность vim как /bin/vi, что
+удобно для запуска даже когда смонтирована только корневая файловая
+система.
+
+%description static -l uk
+Пакет vim-static встановлю╓ р╕зновид vim як /bin/vi, що зручно для
+запуску нав╕ть тод╕, коли змонтована т╕льки корньова файлова система.
+
 %package rt
 Summary:	Vim runtime files
 Summary(pl):	Pliki przydatne edytorowi Vim
 Group:		Applications/Editors/Vim
-Group(de):	Applikationen/Editors/Vim
+Group(cs):	Aplikace/Editory/Vim
+Group(da):	Programmer/Tekstbehandlere/Vim
+Group(de):	Applikationen/Editoren/Vim
+Group(es):	Aplicaciones/Editores/Vim
+Group(fr):	Applications/Editeurs/Vim
+Group(is):	Forrit/Ritlar/Vim
+Group(it):	Applicazioni/Editor/Vim
+Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
+Group(no):	Applikasjoner/Editorer/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(pt):	AplicaГУes/Editores/Vim
+Group(ru):	Приложения/Редакторы/Vim
+Group(sl):	Programi/Urejevalniki/Vim
+Group(sv):	TillДmpningar/Editorer/Vim
+Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Requires:	mktemp
 Requires:	which
 Obsoletes:	vim-common
@@ -166,12 +242,33 @@ W tym pakiecie znajdziesz dokumentacjЙ, makra, pliki konfiguracyjne i
 strony podrЙcznika dla edytora Vim. Je©eli chcesz korzystaФ z
 zaawansowanych mo©liwo╤ci Vima, powiniene╤ zainstalowaФ ten pakiet.
 
+%description rt -l ru
+Пакет vim-rt содержит файлы (например, файлы справки), которые нужны
+для работы любой программы vim.
+
+%description rt -l uk
+Пакет vim-rt м╕стить файли (наприклад, файли дов╕дки), котр╕ потр╕бн╕
+для роботи будь-яко╖ програми vim.
+
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki Athena
 Group:		Applications/Editors/Vim
-Group(de):	Applikationen/Editors/Vim
+Group(cs):	Aplikace/Editory/Vim
+Group(da):	Programmer/Tekstbehandlere/Vim
+Group(de):	Applikationen/Editoren/Vim
+Group(es):	Aplicaciones/Editores/Vim
+Group(fr):	Applications/Editeurs/Vim
+Group(is):	Forrit/Ritlar/Vim
+Group(it):	Applicazioni/Editor/Vim
+Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
+Group(no):	Applikasjoner/Editorer/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(pt):	AplicaГУes/Editores/Vim
+Group(ru):	Приложения/Редакторы/Vim
+Group(sl):	Programi/Urejevalniki/Vim
+Group(sv):	TillДmpningar/Editorer/Vim
+Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Requires:	%{name}-rt = %{version}
 Requires:	iconv
 Obsoletes:	vim-X11
@@ -184,12 +281,35 @@ version is built with Athena Widget Set.
 Wersja edytora Vim pracuj╠ca w ╤rodowisku X Window z wykorzystaniem
 biblioteki Athena Widget Set.
 
+%description -n gvim-athena -l ru
+Этот пакет представляет собой версию VIM, собранную с библиотеками
+Athena Widget Set, что позволяет запускать VIM как приложение X Window
+System - с полностью графическим интерфейсом и поддержкой мыши.
+
+%description -n gvim-athena -l uk
+Цей пакет м╕стить верс╕ю VIM, з╕брану з б╕бл╕отеками Athena Widget
+Set, що дозволя╓ запускати VIM як прикладну програму X Window System -
+з повн╕стю граф╕чним ╕нтерфейсом та п╕дтримкою миш╕.
+
 %package -n gvim-motif
 Summary:	Vim for X Window built with Motif
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki Motif
 Group:		Applications/Editors/Vim
-Group(de):	Applikationen/Editors/Vim
+Group(cs):	Aplikace/Editory/Vim
+Group(da):	Programmer/Tekstbehandlere/Vim
+Group(de):	Applikationen/Editoren/Vim
+Group(es):	Aplicaciones/Editores/Vim
+Group(fr):	Applications/Editeurs/Vim
+Group(is):	Forrit/Ritlar/Vim
+Group(it):	Applicazioni/Editor/Vim
+Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
+Group(no):	Applikasjoner/Editorer/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(pt):	AplicaГУes/Editores/Vim
+Group(ru):	Приложения/Редакторы/Vim
+Group(sl):	Programi/Urejevalniki/Vim
+Group(sv):	TillДmpningar/Editorer/Vim
+Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Requires:	%{name}-rt = %{version}
 Requires:	iconv
 Obsoletes:	vim-X11
@@ -202,12 +322,35 @@ version is built with Motif.
 Wersja edytora Vim pracuj╠ca w ╤rodowisku X Window z wykorzystaniem
 biblioteki Motif.
 
+%description -n gvim-motif -l ru
+Этот пакет представляет собой версию VIM, собранную с библиотеками
+Motif, что позволяет запускать VIM как приложение X Window System - с
+полностью графическим интерфейсом и поддержкой мыши.
+
+%description -n gvim-motif -l uk
+Цей пакет м╕стить верс╕ю VIM, з╕брану з б╕бл╕отеками Motif, що
+дозволя╓ запускати VIM як прикладну програму X Window System - з
+повн╕стю граф╕чним ╕нтерфейсом та п╕дтримкою миш╕.
+
 %package -n gvim-gtk
 Summary:	Vim for X Window built with gtk
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki GTK
 Group:		Applications/Editors/Vim
-Group(de):	Applikationen/Editors/Vim
+Group(cs):	Aplikace/Editory/Vim
+Group(da):	Programmer/Tekstbehandlere/Vim
+Group(de):	Applikationen/Editoren/Vim
+Group(es):	Aplicaciones/Editores/Vim
+Group(fr):	Applications/Editeurs/Vim
+Group(is):	Forrit/Ritlar/Vim
+Group(it):	Applicazioni/Editor/Vim
+Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
+Group(no):	Applikasjoner/Editorer/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(pt):	AplicaГУes/Editores/Vim
+Group(ru):	Приложения/Редакторы/Vim
+Group(sl):	Programi/Urejevalniki/Vim
+Group(sv):	TillДmpningar/Editorer/Vim
+Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Requires:	%{name}-rt = %{version}
 Requires:	iconv
 Obsoletes:	vim-X11
@@ -220,12 +363,36 @@ version is built with GTK.
 Wersja edytora Vim pracuj╠ca w ╤rodowisku X Window z wykorzystaniem
 biblioteki GTK.
 
+%description -n gvim-gtk -l ru
+Этот пакет представляет собой версию VIM, собранную с библиотеками
+GTK, что позволяет запускать VIM как приложение X Window System - с
+полностью графическим интерфейсом и поддержкой мыши. Просто скажите
+'gvim'...
+
+%description -n gvim-gtk -l uk
+Цей пакет м╕стить верс╕ю VIM, з╕брану з б╕бл╕отеками GTK, що дозволя╓
+запускати VIM як прикладну програму X Window System - з повн╕стю
+граф╕чним ╕нтерфейсом та п╕дтримкою миш╕. Просто скаж╕ть 'gvim'...
+
 %package -n gvim-gnome
 Summary:	Vim for X Window built with gnome
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki GNOME
 Group:		Applications/Editors/Vim
-Group(de):	Applikationen/Editors/Vim
+Group(cs):	Aplikace/Editory/Vim
+Group(da):	Programmer/Tekstbehandlere/Vim
+Group(de):	Applikationen/Editoren/Vim
+Group(es):	Aplicaciones/Editores/Vim
+Group(fr):	Applications/Editeurs/Vim
+Group(is):	Forrit/Ritlar/Vim
+Group(it):	Applicazioni/Editor/Vim
+Group(ja):	╔╒╔в╔Й╔╠║╪╔╥╔Г╔С/╔╗╔г╔ё╔©/Vim
+Group(no):	Applikasjoner/Editorer/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(pt):	AplicaГУes/Editores/Vim
+Group(ru):	Приложения/Редакторы/Vim
+Group(sl):	Programi/Urejevalniki/Vim
+Group(sv):	TillДmpningar/Editorer/Vim
+Group(uk):	Прикладн╕ Програми/Редактори/Vim
 Requires:	%{name}-rt = %{version}
 Requires:	iconv
 Obsoletes:	vim-X11
@@ -237,6 +404,16 @@ version is build with GNOME.
 %description -n gvim-gnome -l pl
 Wersja edytora Vim pracuj╠ca w ╤rodowisku X Window z wykorzystaniem
 bibliotek GNOME.
+
+%description -n gvim-gnome -l ru
+Этот пакет представляет собой версию VIM, собранную с библиотеками
+GNOME, что позволяет запускать VIM как приложение X Window System - с
+полностью графическим интерфейсом и поддержкой мыши.
+
+%description -n gvim-gnome -l uk
+Цей пакет м╕стить верс╕ю VIM, з╕брану з б╕бл╕отеками GNOME, що
+дозволя╓ запускати VIM як прикладну програму X Window System - з
+повн╕стю граф╕чним ╕нтерфейсом та п╕дтримкою миш╕.
 
 %prep
 %setup -q -b1 -a6 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
@@ -448,6 +625,8 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 %{!?_without_gtk:   install %{SOURCE4}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 %{!?_without_gnome: install %{SOURCE5}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 
+bzip2 -dc %{SOURCE7} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -469,6 +648,22 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/ex.1*
 %{_mandir}/man1/view.1*
 %{_mandir}/man1/rview.1*
+%lang(fi) %{_mandir}/man1/vi.1*
+%lang(fi) %{_mandir}/man1/ex.1*
+%lang(fi) %{_mandir}/man1/view.1*
+%lang(fi) %{_mandir}/man1/rview.1*
+%lang(fr) %{_mandir}/man1/vi.1*
+%lang(fr) %{_mandir}/man1/ex.1*
+%lang(fr) %{_mandir}/man1/view.1*
+%lang(fr) %{_mandir}/man1/rview.1*
+%lang(id) %{_mandir}/man1/vi.1*
+%lang(id) %{_mandir}/man1/ex.1*
+%lang(id) %{_mandir}/man1/view.1*
+%lang(id) %{_mandir}/man1/rview.1*
+%lang(pl) %{_mandir}/man1/vi.1*
+%lang(pl) %{_mandir}/man1/ex.1*
+%lang(pl) %{_mandir}/man1/view.1*
+%lang(pl) %{_mandir}/man1/rview.1*
 
 %files rt
 %defattr(644,root,root,755)
@@ -526,6 +721,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_mandir}/man1/vim*
 %{_mandir}/man1/rvim.*
+%lang(fi) %{_mandir}/man1/vim*
+%lang(fi) %{_mandir}/man1/rvim.*
+%lang(fr) %{_mandir}/man1/vim*
+%lang(fr) %{_mandir}/man1/rvim.*
+%lang(id) %{_mandir}/man1/vim*
+%lang(id) %{_mandir}/man1/rvim.*
+%lang(it) %{_mandir}/man1/vim*
+%lang(pl) %{_mandir}/man1/vim*
+%lang(pl) %{_mandir}/man1/rvim.*
 
 %if %{!?_without_athena:1}%{?_without_athena:0}
 %files -n gvim-athena
