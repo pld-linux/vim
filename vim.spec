@@ -26,7 +26,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	0.1
+Release:	0.2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -164,7 +164,7 @@ BuildRequires:	ncurses-static
 Provides:	%{name}-static = %{epoch}:%{version}-%{release}
 Obsoletes:	%{name}-static
 %endif
-Requires:	%{name}-rt = %{epoch}:%{version}
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -325,7 +325,7 @@ zalecana, mo©e on pomСc Ci uratowaФ system w czasie awarii.
 Summary:	Vim with ispell support
 Summary(pl):	Vim z wsparciem dla ispella
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Conflicts:	ispell < 3.2.06
 Conflicts:	ispell-pl < 20021127-2
 
@@ -427,7 +427,7 @@ kЖra.
 Summary:	Vim for X Window built with Athena
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki Athena
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Obsoletes:	vim-X11
 
@@ -453,7 +453,7 @@ Set, що дозволя╓ запускати VIM як прикладну програму X Window System -
 Summary:	Vim for X Window built with Motif
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki Motif
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Obsoletes:	vim-X11
 
@@ -479,7 +479,7 @@ Motif, что позволяет запускать VIM как приложение X Window System - с
 Summary:	Vim for X Window built with KDE
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki KDE
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Obsoletes:	vim-X11
 Requires:	kdelibs
@@ -497,7 +497,7 @@ biblioteki KDE.
 Summary:	Vim for X Window built with gtk
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki GTK
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Obsoletes:	vim-X11
 
@@ -524,7 +524,7 @@ GTK, что позволяет запускать VIM как приложение X Window System - с
 Summary:	Vim for X Window built with gnome
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki GNOME
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Obsoletes:	vim-X11
 
@@ -550,7 +550,7 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 Summary:	Vim for X Window built as bonobo component
 Summary(pl):	Vim dla X Window zbudowany jako element bonobo
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Obsoletes:	vim-X11
 
