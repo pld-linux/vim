@@ -25,7 +25,6 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-#Version:	%{_ver}
 Release:	2
 Epoch:		4
 License:	Charityware
@@ -232,9 +231,16 @@ BuildRequires:	libselinux-devel
 %{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{!?with_static:Provides:	%{name}-static = %{epoch}:%{version}-%{release}}
+%if %{with static}
+BuildRequires:	acl-static
+BuildRequires:	libselinux-static
+%else
+BuildRequires:	acl-devel
+BuildRequires:	libselinux-devel
+Provides:       %{name}-static = %{epoch}:%{version}-%{release}
+Obsoletes:      %{name}-static
+%endif
 Requires:	%{name}-rt = %{epoch}:%{version}
-%{!?with_static:Obsoletes:	%{name}-static}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
