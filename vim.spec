@@ -5,7 +5,7 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	5.7
-Release:	10
+Release:	11
 Epoch:		1
 License:	Charityware
 Group:		Applications/Editors/Vim
