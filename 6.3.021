@@ -1,0 +1,82 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.021
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.021
+Problem:    When the last character of a file name is a multi-byte character
+	    and the last byte is a path separator, the file cannot be edited.
+Solution:   Check for the last byte to be part of a multi-byte character.
+	    (Taro Muraoka)
+Files:	    src/fileio.c
+
+
+*** ../vim-6.3.020/src/fileio.c	Tue Jun 29 20:07:02 2004
+--- src/fileio.c	Sat Sep  4 15:55:15 2004
+***************
+*** 370,384 ****
+       * file may destroy it!  Reported on MS-DOS and Win 95.
+       * If the name is too long we might crash further on, quit here.
+       */
+!     if (fname != NULL
+! 	    && *fname != NUL
+! 	    && (vim_ispathsep(*(fname + STRLEN(fname) - 1))
+! 		|| STRLEN(fname) >= MAXPATHL))
+      {
+! 	filemess(curbuf, fname, (char_u *)_("Illegal file name"), 0);
+! 	msg_end();
+! 	msg_scroll = msg_save;
+! 	return FAIL;
+      }
+  
+  #ifdef UNIX
+--- 370,390 ----
+       * file may destroy it!  Reported on MS-DOS and Win 95.
+       * If the name is too long we might crash further on, quit here.
+       */
+!     if (fname != NULL && *fname != NUL)
+      {
+! 	p = fname + STRLEN(fname) - 1;
+! 	if ((vim_ispathsep(*p)
+! #ifdef FEAT_MBYTE
+! 		    /* Do not use a multi-byte char as path separator. */
+! 		    && (!has_mbyte || (*mb_head_off)(fname, p) == 0)
+! #endif
+! 	    ) || STRLEN(fname) >= MAXPATHL)
+! 	{
+! 	    filemess(curbuf, fname, (char_u *)_("Illegal file name"), 0);
+! 	    msg_end();
+! 	    msg_scroll = msg_save;
+! 	    return FAIL;
+! 	}
+      }
+  
+  #ifdef UNIX
+*** ../vim-6.3.020/src/version.c	Tue Aug 31 20:06:01 2004
+--- src/version.c	Sat Sep  4 16:04:00 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     21,
+  /**/
+
+-- 
+   An extraordinary TALL KNIGHT in all black (possibly John with Mike on his
+   shoulders) walks out from the dark trees.  He is extremely fierce and
+   gruesome countenance.  He walks towards KING ARTHUR and PATSY, who are
+   wazzing like mad.  (Salopian slang, meaning very scared.  almost to the
+   point of wetting oneself, e.g. before an important football match or
+   prior to a postering.  Salopian slang meaning a beating by the school
+   praeposters.  Sorry about the Salopian slant to this stage direction - Ed.)
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,77 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.029
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.029
+Problem:    Crash when inserting a line break. (Walter Briscoe)
+Solution:   In the syntax highlighting code, don't use an old state after a
+	    change was made, current_col may be past the end of the line.
+Files:	    src/syntax.c
+
+
+*** ../vim-6.3.028/src/syntax.c	Mon Sep 13 16:36:12 2004
+--- src/syntax.c	Tue Oct  5 16:57:58 2004
+***************
+*** 437,453 ****
+      linenr_T	parsed_lnum;
+      linenr_T	first_stored;
+      int		dist;
+  
+      reg_syn = TRUE;	/* let vim_regexec() know we're using syntax */
+  
+      /*
+       * After switching buffers, invalidate current_state.
+       */
+!     if (syn_buf != wp->w_buffer)
+      {
+  	invalidate_current_state();
+  	syn_buf = wp->w_buffer;
+      }
+      syn_win = wp;
+  
+      /*
+--- 437,457 ----
+      linenr_T	parsed_lnum;
+      linenr_T	first_stored;
+      int		dist;
++     static int	changedtick = 0;	/* remember the last change ID */
+  
+      reg_syn = TRUE;	/* let vim_regexec() know we're using syntax */
+  
+      /*
+       * After switching buffers, invalidate current_state.
++      * Also do this when a change was made, the current state may be invalid
++      * then.
+       */
+!     if (syn_buf != wp->w_buffer || changedtick != syn_buf->b_changedtick)
+      {
+  	invalidate_current_state();
+  	syn_buf = wp->w_buffer;
+      }
++     changedtick = syn_buf->b_changedtick;
+      syn_win = wp;
+  
+      /*
+*** ../vim-6.3.028/src/version.c	Sat Sep 18 21:13:25 2004
+--- src/version.c	Tue Oct  5 17:01:10 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     29,
+  /**/
+
+-- 
+From "know your smileys":
+ :-H	Is missing teeth
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

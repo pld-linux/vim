@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.018
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.018
+Problem:    ":0argadd zero" added the argument after the first one, instead of
+	    before it. (Adri Verhoef)
+Solution:   Accept a zero range for ":argadd".
+Files:	    src/ex_cmds.h
+
+
+*** ../vim-6.3.017/src/ex_cmds.h	Wed Jun  9 14:56:25 2004
+--- src/ex_cmds.h	Mon Aug 30 14:58:51 2004
+***************
+*** 109,115 ****
+  EX(CMD_args,		"args",		ex_args,
+  			BANG|FILES|EDITCMD|ARGOPT|TRLBAR),
+  EX(CMD_argadd,		"argadd",	ex_argadd,
+! 			BANG|NEEDARG|RANGE|NOTADR|COUNT|FILES|TRLBAR),
+  EX(CMD_argdelete,	"argdelete",	ex_argdelete,
+  			BANG|RANGE|NOTADR|COUNT|FILES|TRLBAR),
+  EX(CMD_argdo,		"argdo",	ex_listdo,
+--- 109,115 ----
+  EX(CMD_args,		"args",		ex_args,
+  			BANG|FILES|EDITCMD|ARGOPT|TRLBAR),
+  EX(CMD_argadd,		"argadd",	ex_argadd,
+! 			BANG|NEEDARG|RANGE|NOTADR|ZEROR|COUNT|FILES|TRLBAR),
+  EX(CMD_argdelete,	"argdelete",	ex_argdelete,
+  			BANG|RANGE|NOTADR|COUNT|FILES|TRLBAR),
+  EX(CMD_argdo,		"argdo",	ex_listdo,
+*** ../vim-6.3.017/src/version.c	Fri Aug 27 21:14:50 2004
+--- src/version.c	Mon Aug 30 13:47:03 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     18,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+234. You started college as a chemistry major, and walk out four years
+     later as an Internet provider.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

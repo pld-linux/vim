@@ -1,0 +1,81 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.024
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.024
+Problem:    In a few places a string in allocated memory is not terminated
+	    with a NUL.
+Solution:   Add ga_append(NUL) in script_get(), gui_do_findrepl() and
+	    serverGetVimNames().
+Files:	    src/ex_getln.c, src/gui.c, src/if_xcmdsrv.c
+
+
+*** ../vim-6.3.023/src/ex_getln.c	Fri Jul  9 22:21:01 2004
+--- src/ex_getln.c	Sun Sep  5 20:29:52 2004
+***************
+*** 5472,5477 ****
+--- 5472,5478 ----
+  	ga_append(&ga, '\n');
+  	vim_free(theline);
+      }
++     ga_append(&ga, NUL);
+  
+      return (char_u *)ga.ga_data;
+  }
+*** ../vim-6.3.023/src/gui.c	Wed Jun  9 14:56:25 2004
+--- src/gui.c	Sun Sep  5 20:33:02 2004
+***************
+*** 4583,4594 ****
+--- 4583,4596 ----
+  	ga_concat(&ga, (char_u *)"/");
+  	concat_esc(&ga, repl_text, '/');	/* escape slashes */
+  	ga_concat(&ga, (char_u *)"/g");
++ 	ga_append(&ga, NUL);
+  	do_cmdline_cmd(ga.ga_data);
+      }
+      else
+      {
+  	/* Search for the next match. */
+  	i = msg_scroll;
++ 	ga_append(&ga, NUL);
+  	do_search(NULL, down ? '/' : '?', ga.ga_data, 1L,
+  						    SEARCH_MSG + SEARCH_MARK);
+  	msg_scroll = i;	    /* don't let an error message set msg_scroll */
+*** ../vim-6.3.023/src/if_xcmdsrv.c	Wed Jun  9 14:56:26 2004
+--- src/if_xcmdsrv.c	Sun Sep  5 20:33:48 2004
+***************
+*** 683,688 ****
+--- 683,689 ----
+      }
+      if (regProp != empty_prop)
+  	XFree(regProp);
++     ga_append(&ga, NUL);
+      return ga.ga_data;
+  }
+  
+*** ../vim-6.3.023/src/version.c	Sat Sep  4 19:43:59 2004
+--- src/version.c	Sun Sep  5 20:47:49 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     24,
+  /**/
+
+-- 
+LAUNCELOT: At last!   A call!  A cry of distress ...
+           (he draws his sword, and turns to CONCORDE)
+           Concorde!  Brave, Concorde ... you shall not have died in vain!
+CONCORDE:  I'm not quite dead, sir ...
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

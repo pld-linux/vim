@@ -1,0 +1,46 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.025 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.025 (extra)
+Problem:    Missing NUL for list of server names.
+Solution:   Add ga_append(NUL) in serverGetVimNames().
+Files:	    src/os_mswin.c
+
+
+*** ../vim-6.3.024/src/os_mswin.c	Sat Sep  4 16:28:02 2004
+--- src/os_mswin.c	Sun Sep  5 20:35:30 2004
+***************
+*** 2672,2677 ****
+--- 2672,2678 ----
+      ga_init2(&ga, 1, 100);
+  
+      EnumWindows(enumWindowsGetNames, (LPARAM)(&ga));
++     ga_append(&ga, NUL);
+  
+      return ga.ga_data;
+  }
+*** ../vim-6.3.024/src/version.c	Sun Sep  5 20:48:38 2004
+--- src/version.c	Sun Sep  5 20:51:54 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     25,
+  /**/
+
+-- 
+Apologies for taking up the bandwidth with the apology.  Anything else I
+can apologise for ...... er no can't think of anything, sorry about that.
+		Andy Hunt (Member of British Olympic Apology Squad)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

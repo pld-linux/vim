@@ -1,0 +1,213 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.027
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.027
+Problem:    VMS: Writing a file may insert extra CR characters.  Not all
+	    terminals are recognized correctly.  Vt320 doesn't support colors.
+	    Environment variables are not expanded correctly.
+Solution:   Use another method to write files.  Add vt320 termcap codes for
+	    colors.  (Zoltan Arpadffy)
+Files:	    src/fileio.c, src/misc1.c, src/os_unix.c, src/structs.h,
+	    src/term.c
+
+
+*** ../vim-6.3.026/src/fileio.c	Sat Sep  4 16:05:51 2004
+--- src/fileio.c	Sat Sep  4 15:55:15 2004
+***************
+*** 479,484 ****
+--- 479,486 ----
+  #endif
+  #ifdef VMS
+  	    curbuf->b_fab_rfm = st.st_fab_rfm;
++ 	    curbuf->b_fab_rat = st.st_fab_rat;
++ 	    curbuf->b_fab_mrs = st.st_fab_mrs;
+  #endif
+  	}
+  	else
+***************
+*** 2543,2548 ****
+--- 2545,2555 ----
+  }
+  #endif /* UNIX */
+  
++ #if defined(VMS) && !defined(MIN)
++ /* Older DECC compiler for VAX doesn't define MIN() */
++ # define MIN(a, b) ((a) < (b) ? (a) : (b))
++ #endif
++ 
+  /*
+   * buf_write() - write to file 'fname' lines 'start' through 'end'
+   *
+***************
+*** 3936,3955 ****
+  	 * On VMS there is a problem: newlines get added when writing blocks
+  	 * at a time. Fix it by writing a line at a time.
+  	 * This is much slower!
+! 	 * Explanation: Vim can not handle, so far, variable record format.
+! 	 * With $analize/rms filename you can get the rms file structure, and
+! 	 * if the Record format filed is variable, CR will be added after
+! 	 * every written buffer.  In other cases it works without this fix.
+! 	 * From other side read is about 5 times slower for "variable record
+! 	 * format" files.
+  	 */
+! 	if (buf->b_fab_rfm == FAB$C_VAR)
+  	{
+! 	    write_info.bw_len = len;
+! 	    if (buf_write_bytes(&write_info) == FAIL)
+  	    {
+! 		end = 0;		/* write error: break loop */
+! 		break;
+  	    }
+  	    write_info.bw_len = bufsize;
+  	    nchars += len;
+--- 3943,3971 ----
+  	 * On VMS there is a problem: newlines get added when writing blocks
+  	 * at a time. Fix it by writing a line at a time.
+  	 * This is much slower!
+! 	 * Explanation: VAX/DECC RTL insists that records in some RMS
+! 	 * structures end with a newline (carriage return) character, and if
+! 	 * they don't it adds one.
+! 	 * With other RMS structures it works perfect without this fix.
+  	 */
+! 	if ((buf->b_fab_rat & (FAB$M_FTN | FAB$M_CR)) != 0)
+  	{
+! 	    int b2write;
+! 
+! 	    buf->b_fab_mrs = (buf->b_fab_mrs == 0
+! 		    ? MIN(4096, bufsize)
+! 		    : MIN(buf->b_fab_mrs, bufsize));
+! 
+! 	    b2write = len;
+! 	    while (b2write > 0)
+  	    {
+! 		write_info.bw_len = MIN(b2write, buf->b_fab_mrs);
+! 		if (buf_write_bytes(&write_info) == FAIL)
+! 		{
+! 		    end = 0;
+! 		    break;
+! 		}
+! 		b2write -= MIN(b2write, buf->b_fab_mrs);
+  	    }
+  	    write_info.bw_len = bufsize;
+  	    nchars += len;
+*** ../vim-6.3.026/src/misc1.c	Tue Aug 31 20:06:01 2004
+--- src/misc1.c	Tue Aug 31 20:02:22 2004
+***************
+*** 3233,3239 ****
+      while (*src && dstlen > 0)
+      {
+  	copy_char = TRUE;
+! 	if (*src == '$'
+  #if defined(MSDOS) || defined(MSWIN) || defined(OS2)
+  		|| *src == '%'
+  #endif
+--- 3233,3243 ----
+      while (*src && dstlen > 0)
+      {
+  	copy_char = TRUE;
+! 	if ((*src == '$'
+! #ifdef VMS
+! 		    && at_start
+! #endif
+! 	   )
+  #if defined(MSDOS) || defined(MSWIN) || defined(OS2)
+  		|| *src == '%'
+  #endif
+*** ../vim-6.3.026/src/os_unix.c	Wed Jun  9 14:56:26 2004
+--- src/os_unix.c	Mon Aug 30 12:07:11 2004
+***************
+*** 1921,1929 ****
+  {
+      if (name == NULL)
+  	return FALSE;	       /* actually all ANSI comp. terminals should be here  */
+!     return (STRNICMP(name, "vt3", 3) == 0     /* it will cover all from VT100-VT300 */
+! 	    || STRNICMP(name, "vt2", 3) == 0  /* TODO: from VT340 can hanle colors  */
+! 	    || STRNICMP(name, "vt1", 3) == 0
+  	    || STRCMP(name, "builtin_vt320") == 0);
+  }
+  
+--- 1921,1929 ----
+  {
+      if (name == NULL)
+  	return FALSE;	       /* actually all ANSI comp. terminals should be here  */
+!     /* catch VT100 - VT5xx */
+!     return ((STRNICMP(name, "vt", 2) == 0
+! 		&& vim_strchr((char_u *)"12345", name[2]) != NULL)
+  	    || STRCMP(name, "builtin_vt320") == 0);
+  }
+  
+*** ../vim-6.3.026/src/structs.h	Wed Jun  9 14:56:26 2004
+--- src/structs.h	Mon Aug 30 12:09:57 2004
+***************
+*** 918,924 ****
+      FSSpec	b_FSSpec;	/* MacOS File Identification */
+  #endif
+  #ifdef VMS
+!     char	b_fab_rfm;	/* Record format */
+  #endif
+  #ifdef FEAT_SNIFF
+      int		b_sniff;	/* file was loaded through Sniff */
+--- 918,926 ----
+      FSSpec	b_FSSpec;	/* MacOS File Identification */
+  #endif
+  #ifdef VMS
+!     char	 b_fab_rfm;	/* Record format    */
+!     char	 b_fab_rat;	/* Record attribute */
+!     unsigned int b_fab_mrs;	/* Max record size  */
+  #endif
+  #ifdef FEAT_SNIFF
+      int		b_sniff;	/* file was loaded through Sniff */
+*** ../vim-6.3.026/src/term.c	Wed Jun  9 14:56:26 2004
+--- src/term.c	Mon Aug 30 12:02:37 2004
+***************
+*** 808,815 ****
+--- 808,827 ----
+      {(int)KS_CDL,	IF_EB("\033[%dM", ESC_STR "[%dM")},
+  #  endif
+      {(int)KS_CL,	IF_EB("\033[H\033[2J", ESC_STR "[H" ESC_STR_nc "[2J")},
++     {(int)KS_CD,	IF_EB("\033[J", ESC_STR "[J")},
++     {(int)KS_CCO,	"8"},			/* allow 8 colors */
+      {(int)KS_ME,	IF_EB("\033[0m", ESC_STR "[0m")},
+      {(int)KS_MR,	IF_EB("\033[7m", ESC_STR "[7m")},
++     {(int)KS_MD,        IF_EB("\033[1m", ESC_STR "[1m")},  /* bold mode */
++     {(int)KS_SE,        IF_EB("\033[22m", ESC_STR "[22m")},/* normal mode */
++     {(int)KS_UE,        IF_EB("\033[24m", ESC_STR "[24m")},/* exit underscore mode */
++     {(int)KS_US,        IF_EB("\033[4m", ESC_STR "[4m")},  /* underscore mode */
++     {(int)KS_CZH,       IF_EB("\033[34;43m", ESC_STR "[34;43m" )},  /* italic mode: blue text on yellow */
++     {(int)KS_CZR,       IF_EB("\033[0m", ESC_STR "[0m")},           /* italic mode end */
++     {(int)KS_CAB,       IF_EB("\033[4%dm", ESC_STR "[4%dm" )},      /* set background color (ANSI) */
++     {(int)KS_CAF,       IF_EB("\033[3%dm", ESC_STR "[3%dm" )},      /* set foreground color (ANSI) */
++     {(int)KS_CSB,       IF_EB("\033[102;%dm", ESC_STR "[102;%dm" )},    /* set screen background color */
++     {(int)KS_CSF,       IF_EB("\033[101;%dm", ESC_STR "[101;%dm" )},    /* set screen foreground color */
+      {(int)KS_MS,	"y"},
+      {(int)KS_UT,	"y"},
+      {(int)KS_LE,	"\b"},
+*** ../vim-6.3.026/src/version.c	Mon Sep 13 16:36:12 2004
+--- src/version.c	Sat Sep 18 20:25:07 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     27,
+  /**/
+
+-- 
+Scientists decoded the first message from an alien civilization:
+        SIMPLY SEND 6 TIMES 10 TO THE 50 ATOMS OF HYDROGEN TO THE STAR
+SYSTEM AT THE TOP OF THE LIST, CROSS OFF THAT STAR SYSTEM, THEN PUT
+YOUR STAR SYSTEM AT THE BOTTOM OF THE LIST AND SEND IT TO 100 OTHER
+STAR SYSTEMS.  WITHIN ONE TENTH GALACTIC ROTATION YOU WILL RECEIVE
+ENOUGH HYDROGREN TO POWER YOUR CIVILIZATION UNTIL ENTROPY REACHES ITS
+MAXIMUM!  IT REALLY WORKS!
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

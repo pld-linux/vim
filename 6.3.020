@@ -1,0 +1,56 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.020
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.020
+Problem:    When 'encoding' is "utf-8" and 'delcombine' is set, "dw" does not
+	    delete a word but only a combining character of the first
+	    character, if there is one. (Raphael Finkel)
+Solution:   Correctly check that one character is being deleted.
+Files:	    src/misc1.c
+
+
+*** ../vim-6.3.019/src/misc1.c	Wed Jun  9 14:56:25 2004
+--- src/misc1.c	Tue Aug 31 20:02:22 2004
+***************
+*** 2081,2087 ****
+  #ifdef FEAT_MBYTE
+      /* If 'delcombine' is set and deleting (less than) one character, only
+       * delete the last combining character. */
+!     if (p_deco && enc_utf8 && (*mb_ptr2len_check)(oldp + col) <= count)
+      {
+  	int	c1, c2;
+  	int	n;
+--- 2081,2087 ----
+  #ifdef FEAT_MBYTE
+      /* If 'delcombine' is set and deleting (less than) one character, only
+       * delete the last combining character. */
+!     if (p_deco && enc_utf8 && utfc_ptr2len_check(oldp + col) >= count)
+      {
+  	int	c1, c2;
+  	int	n;
+*** ../vim-6.3.019/src/version.c	Mon Aug 30 19:46:07 2004
+--- src/version.c	Tue Aug 31 20:03:57 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     20,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+257. Your "hundred-and-one" lists include well over 101 items, since you
+     automatically interpret all numbers in hexadecimal notation.
+     (hex 101 = decimal 257)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

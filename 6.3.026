@@ -1,0 +1,99 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.026
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.026
+Problem:    When ~/.vim/after/syntax/syncolor.vim contains a command that
+            reloads the colors an enless loop and/or a crash may occur.
+Solution:   Only free the old value of an option when it was originally
+            allocated.  Limit recursiveness of init_highlight() to 5 levels.
+Files:      src/option.c, src/syntax.c
+
+
+*** ../vim-6.3.025/src/option.c	Thu Aug 26 16:01:15 2004
+--- src/option.c	Mon Sep 13 15:42:46 2004
+***************
+*** 4597,4602 ****
+--- 4597,4603 ----
+      char_u	*s, *p;
+      int		did_chartab = FALSE;
+      char_u	**gvarp;
++     int		free_oldval = (options[opt_idx].flags & P_ALLOCED);
+  
+      /* Get the global option to compare with, otherwise we would have to check
+       * two values for all local options. */
+***************
+*** 5729,5736 ****
+  #endif
+  	/*
+  	 * Free string options that are in allocated memory.
+  	 */
+! 	if (options[opt_idx].flags & P_ALLOCED)
+  	    free_string_option(oldval);
+  	if (new_value_alloced)
+  	    options[opt_idx].flags |= P_ALLOCED;
+--- 5730,5739 ----
+  #endif
+  	/*
+  	 * Free string options that are in allocated memory.
++ 	 * Use "free_oldval", because recursiveness may change the flags under
++ 	 * our fingers (esp. init_highlight()).
+  	 */
+! 	if (free_oldval)
+  	    free_string_option(oldval);
+  	if (new_value_alloced)
+  	    options[opt_idx].flags |= P_ALLOCED;
+*** ../vim-6.3.025/src/syntax.c	Wed Jun  9 14:56:25 2004
+--- src/syntax.c	Mon Sep 13 15:44:04 2004
+***************
+*** 6016,6022 ****
+       * If syntax highlighting is enabled load the highlighting for it.
+       */
+      if (get_var_value((char_u *)"g:syntax_on") != NULL)
+! 	(void)cmd_runtime((char_u *)"syntax/syncolor.vim", TRUE);
+  #endif
+  }
+  
+--- 6016,6033 ----
+       * If syntax highlighting is enabled load the highlighting for it.
+       */
+      if (get_var_value((char_u *)"g:syntax_on") != NULL)
+!     {
+! 	static int	recursive = 0;
+! 
+! 	if (recursive >= 5)
+! 	    EMSG(_("E679: recursive loop loading syncolor.vim"));
+! 	else
+! 	{
+! 	    ++recursive;
+! 	    (void)cmd_runtime((char_u *)"syntax/syncolor.vim", TRUE);
+! 	    --recursive;
+! 	}
+!     }
+  #endif
+  }
+  
+*** ../vim-6.3.025/src/version.c	Sun Sep  5 20:53:04 2004
+--- src/version.c	Mon Sep 13 16:33:19 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     26,
+  /**/
+
+-- 
+A special law prohibits unmarried women from parachuting on Sunday or she
+shall risk arrest, fine, and/or jailing.
+		[real standing law in Florida, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

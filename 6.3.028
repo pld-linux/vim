@@ -1,0 +1,62 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.028
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.028
+Problem:    When appending to a file the BOM marker may be written.  (Alex
+	    Jakushev)
+Solution:   Do not write the BOM marker when appending.
+Files:	    src/fileio.c
+
+
+*** ../vim-6.3.027/src/fileio.c	Sat Sep 18 20:28:07 2004
+--- src/fileio.c	Sat Sep 18 20:51:58 2004
+***************
+*** 3838,3845 ****
+  #ifdef FEAT_MBYTE
+      /*
+       * The BOM is written just after the encryption magic number.
+       */
+!     if (buf->b_p_bomb && !write_bin)
+      {
+  	write_info.bw_len = make_bom(buffer, fenc);
+  	if (write_info.bw_len > 0)
+--- 3838,3847 ----
+  #ifdef FEAT_MBYTE
+      /*
+       * The BOM is written just after the encryption magic number.
++      * Skip it when appending and the file already existed, the BOM only makes
++      * sense at the start of the file.
+       */
+!     if (buf->b_p_bomb && !write_bin && (!append || perm < 0))
+      {
+  	write_info.bw_len = make_bom(buffer, fenc);
+  	if (write_info.bw_len > 0)
+*** ../vim-6.3.027/src/version.c	Sat Sep 18 20:28:07 2004
+--- src/version.c	Sat Sep 18 21:12:43 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     28,
+  /**/
+
+-- 
+The word "leader" is derived from the word "lead", as in the material that
+bullets are made out of.  The term "leader" was popularized at about the same
+time as the invention of firearms.  It grew out of the observation that the
+person in charge of every organization was the person whom everyone wanted to
+fill with hot lead.
+   I don't recomment this; it's just a point of historical interest.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

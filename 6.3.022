@@ -1,0 +1,73 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.022 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.022 (extra)
+Problem:    Win32: When the last character of a file name is a multi-byte
+	    character and the last byte is a path separator, the file cannot
+	    be written.  A trail byte that is a space makes that a file cannot
+	    be opened from the command line.
+Solution:   Recognize double-byte characters when parsing the command line.
+	    In mch_stat() check for the last byte to be part of a multi-byte
+	    character.  (Taro Muraoka)
+Files:	    src/gui_w48.c, src/os_mswin.c
+
+
+*** ../vim-6.3.021/src/gui_w48.c	Wed Jun  9 14:56:26 2004
+--- src/gui_w48.c	Sat Sep  4 16:18:32 2004
+***************
+*** 3376,3381 ****
+--- 3376,3391 ----
+  		{
+  		    if (pnew != NULL)
+  			*pnew++ = *p;
++ #ifdef FEAT_MBYTE
++ 		    /* Can't use mb_* functions, because 'encoding' is not
++ 		     * initialized yet here. */
++ 		    if (IsDBCSLeadByte(*p))
++ 		    {
++ 			++p;
++ 			if (pnew != NULL)
++ 			    *pnew++ = *p;
++ 		    }
++ #endif
+  		    ++p;
+  		}
+  	    }
+*** ../vim-6.3.021/src/os_mswin.c	Wed Jun  9 14:56:26 2004
+--- src/os_mswin.c	Sat Sep  4 16:10:16 2004
+***************
+*** 448,453 ****
+--- 448,457 ----
+      p = buf + strlen(buf);
+      if (p > buf)
+  	--p;
++ #ifdef FEAT_MBYTE
++     if (p > buf && has_mbyte)
++ 	p -= (*mb_head_off)(buf, p);
++ #endif
+      if (p > buf && (*p == '\\' || *p == '/') && p[-1] != ':')
+  	*p = NUL;
+  #ifdef FEAT_MBYTE
+*** ../vim-6.3.021/src/version.c	Sat Sep  4 16:05:51 2004
+--- src/version.c	Sat Sep  4 16:19:36 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     22,
+  /**/
+
+-- 
+Back up my hard drive?  I can't find the reverse switch!
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
