@@ -3,7 +3,8 @@
 # bcond_off_static	- without static version
 # bcond_off_athena	- without Athena Widgets-based gvim
 # bcond_off_motif	- without Motif-based gvim
-# bcond_off_gtk		- without gtk+-based gvim
+# bcond_off_gtk		- without gtk+-based gvim support
+# bcond_off_gnome	- without gnome-based gvim support
 #
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -11,49 +12,22 @@ Summary(fr):	editeur VIM : VIsual editor iMproved
 Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
-Version:	5.7
-Release:	13
+Version:	6.0z
+Release:	1
 Epoch:		1
 License:	Charityware
 Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-src.tar.gz
-Source1:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-rt.tar.gz
-Source2:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-extra.tar.gz
-Source3:	g%{name}-athena.desktop
-Source4:	g%{name}-motif.desktop
-Source5:	g%{name}-gtk.desktop
-Patch0:		%{name}-fhs.patch
-Patch1:		%{name}-visual.patch
-Patch2:		%{name}-sysconfdir.patch
-Patch3:		%{name}-docpath.patch
-Patch4:		%{name}-speed_t.patch
-Patch5:		ftp://ftp.home.vim.org/pub/vim/patches/5.7.001
-Patch6:		ftp://ftp.home.vim.org/pub/vim/patches/5.7.002
-Patch7:		ftp://ftp.home.vim.org/pub/vim/patches/5.7.003
-Patch8:		ftp://ftp.home.vim.org/pub/vim/patches/5.7.004
-Patch9:		ftp://ftp.home.vim.org/pub/vim/patches/5.7.005
-Patch10:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.006
-Patch11:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.007
-Patch12:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.008
-Patch13:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.009
-Patch14:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.010
-Patch15:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.011
-Patch16:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.012
-Patch17:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.013
-Patch18:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.014
-Patch19:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.015
-Patch20:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.016
-Patch21:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.017
-Patch22:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.018
-Patch23:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.019
-Patch24:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.020
-Patch25:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.021
-Patch26:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.022
-Patch27:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.023
-Patch28:	%{name}-mktemp.patch
-Patch29:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.024
+Source0:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-src.tar.gz
+Source1:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-rt.tar.gz
+Source2:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
+Source3:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-lang.tar.gz
+Source4:	g%{name}-athena.desktop
+Source5:	g%{name}-motif.desktop
+Source6:	g%{name}-gtk.desktop
+Source7:	g%{name}-gnome.desktop
+Patch0:		%{name}-sysconfdir.patch
 URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
 %{!?bcond_off_static:BuildRequires:	ncurses-static}
@@ -62,7 +36,11 @@ BuildRequires:	gpm-devel
 %{!?bcond_off_athena:BuildRequires:	Xaw3d-devel}
 %{!?bcond_off_motif:BuildRequires:	motif-devel}
 %{!?bcond_off_gtk:BuildRequires:	gtk+-devel}
+%{!?bcond_off_gnome:BuildRequires:	gnome-libs-devel}
+%{!?bcond_off_gnome:BuildRequires:	esound-devel}
+BuildRequires:	iconv
 Requires:	%{name}-rt = %{version}
+Requires:	iconv
 %{?bcond_off_static:Requires:	%{name}-static = %{version}}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -141,6 +119,7 @@ Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 Requires:	%{name}-rt = %{version}
+Requires:	iconv
 Obsoletes:	vim-X11
 
 %description -n gvim-athena
@@ -158,6 +137,7 @@ Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 Requires:	%{name}-rt = %{version}
+Requires:	iconv
 Obsoletes:	vim-X11
 
 %description -n gvim-motif
@@ -175,48 +155,38 @@ Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 Requires:	%{name}-rt = %{version}
+Requires:	iconv
 Obsoletes:	vim-X11
 
 %description -n gvim-gtk
 The classic Unix text editor now also under X Window System! This
-version is build with GTK.
+version is build with GTK and GNOME.
 
 %description -n gvim-gtk -l pl
 Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
-biblioteki GTK.
+biblioteki GTK oraz GNOME.
+
+%package -n gvim-gnome
+Summary:	Vim for X Window built with gnome
+Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GNOME
+Group:		Applications/Editors/Vim
+Group(de):	Applikationen/Editors/Vim
+Group(pl):	Aplikacje/Edytory/Vim
+Requires:	%{name}-rt = %{version}
+Requires:	iconv
+Obsoletes:	vim-X11
+
+%description -n gvim-gnome
+The classic Unix text editor now also under X Window System! This
+version is build with GNOME.
+
+%description -n gvim-gnome -l pl
+Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
+biblioteki GNOME.
 
 %prep
-%setup -q -b 1 -b 2
+%setup -q -b 1 -b 2 -b 3 -n %{name}%(echo %{version} | sed -e "s#\.##g")
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p2
-%patch6 -p2
-%patch7 -p2
-%patch8 -p2
-%patch9 -p2
-%patch10 -p2
-%patch11 -p2
-%patch12 -p2
-%patch13 -p2
-%patch14 -p2
-%patch15 -p2
-%patch16 -p2
-%patch17 -p2
-%patch18 -p2
-%patch19 -p2
-%patch20 -p2
-%patch21 -p2
-%patch22 -p2
-%patch23 -p2
-%patch24 -p2
-%patch25 -p2
-%patch26 -p2
-%patch27 -p2
-%patch28 -p1
-%patch29 -p2
 
 %build
 cd src
@@ -226,10 +196,14 @@ cd src
 	--disable-perlinterp \
 	--disable-pythoninterp \
 	--disable-tclinterp \
-	--disable-cscope \
+	--disable-rubyinterp \
+	--enable-cscope \
 	--enable-gmp \
 	--enable-max-features \
-	--with-tlib=ncurses 
+	--enable-multibyte \
+	--with-tlib=ncurses \
+	--enable-nls
+
 %{__make} vim
 mv -f vim vim.ncurses
 
@@ -244,7 +218,8 @@ mv -f vim vim.ncurses
 	--disable-gpm \
 	--disable-multibyte \
 	--enable-min-features \
-	--with-tlib=tinfo
+	--with-tlib=tinfo \
+	--disable-nls
 
 %{?bcond_off_static:#}%{__make} vim
 %{__make} xxd/xxd
@@ -259,8 +234,12 @@ mv -f xxd/xxd xxd.static
 	--disable-perlinterp \
 	--disable-pythoninterp \
 	--disable-tclinterp \
-	--disable-cscope \
-	--disable-gpm
+	--disable-rubyinterp \
+	--enable-cscope \
+	--enable-fontset \
+	--disable-gpm \
+	--without-gnome \
+	--enable-nls
 %{?bcond_off_athena:#}%{__make} vim
 %{?bcond_off_athena:#}mv -f vim gvim.athena
 
@@ -272,8 +251,13 @@ mv -f xxd/xxd xxd.static
 	--disable-perlinterp \
 	--disable-pythoninterp \
 	--disable-tclinterp \
-	--disable-cscope \
-	--disable-gpm
+	--disable-rubyinterp \
+	--enable-multibyte \
+	--enable-cscope \
+	--enable-fontset \
+	--disable-gpm \
+	--without-gnome \
+	--enable-nls
 %{?bcond_off_motif:#}%{__make} vim
 %{?bcond_off_motif:#}mv -f vim gvim.motif
 
@@ -285,25 +269,45 @@ mv -f xxd/xxd xxd.static
 	--disable-perlinterp \
 	--disable-pythoninterp \
 	--disable-tclinterp \
-	--disable-cscope \
-	--disable-gpm
+	--disable-rubyinterp \
+	--disable-gpm \
+	--enable-cscope \
+	--enable-fontset \
+	--enable-nls
 %{?bcond_off_gtk:#}%{__make} vim
 %{?bcond_off_gtk:#}mv -f vim gvim.gtk
+
+%{?bcond_off_gnome:#}%{__make} distclean
+%{?bcond_off_gnome:#}%configure \
+	--enable-max-features \
+	--enable-gui=gnome \
+	--with-x \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-tclinterp \
+	--disable-rubyinterp \
+	--disable-gpm \
+	--enable-cscope \
+	--enable-fontset \
+	--enable-nls
+%{?bcond_off_gnome:#}%{__make} vim
+%{?bcond_off_gnome:#}mv -f vim gvim.gnome
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_var}/lib/vim,%{_sysconfdir}/vim,%{_bindir}} \
-	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim/{doc,tutor}} \
+	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
 	$RPM_BUILD_ROOT{%{_prefix}/X11R6/bin,%{_applnkdir}/Development/Editors}
 
-%{!?bcond_off_static:install src/vim.ncurses $RPM_BUILD_ROOT%{_bindir}/vim}
-%{?bcond_off_static:install src/vim.ncurses $RPM_BUILD_ROOT/bin/vi}
+%{__make} install DESTDIR=$RPM_BUILD_ROOT
+rm $RPM_BUILD_ROOT%{_bindir}/*
 
-%{!?bcond_off_static:install src/vim.static $RPM_BUILD_ROOT/bin/vi}
-%{?bcond_off_static:ln -sf /bin/vi $RPM_BUILD_ROOT%{_bindir}/vim}
-install src/xxd.static $RPM_BUILD_ROOT/bin/xxd
-
-install src/vimtutor $RPM_BUILD_ROOT%{_bindir}/vimtutor
+%{!?bcond_off_static:install src/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim}
+%{?bcond_off_static:install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi}
+%{!?bcond_off_static:install src/vim.static	$RPM_BUILD_ROOT/bin/vi}
+%{?bcond_off_static:ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim}
+install src/xxd.static				$RPM_BUILD_ROOT/bin/xxd
+install src/vimtutor				$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
 
@@ -318,35 +322,28 @@ echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rvim.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 
-cp -a runtime/macros $RPM_BUILD_ROOT%{_datadir}/vim/macros
-cp -a runtime/syntax $RPM_BUILD_ROOT%{_datadir}/vim/syntax
-cp -a runtime/tutor/tutor  $RPM_BUILD_ROOT%{_datadir}/vim/tutor/tutor
-
-install runtime/*.vim $RPM_BUILD_ROOT%{_datadir}/vim
-mv -f $RPM_BUILD_ROOT%{_datadir}/vim/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
-mv -f $RPM_BUILD_ROOT%{_datadir}/vim/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
-
-install runtime/doc/*.txt $RPM_BUILD_ROOT%{_datadir}/vim/doc
-install runtime/doc/tags  $RPM_BUILD_ROOT%{_datadir}/vim/doc
+mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
+mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
 
 ln -sf vim $RPM_BUILD_ROOT%{_bindir}/rvim
+ln -sf vi  $RPM_BUILD_ROOT/bin/ex
+ln -sf vi  $RPM_BUILD_ROOT/bin/view
+ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
-ln -sf vi $RPM_BUILD_ROOT/bin/ex
-ln -sf vi $RPM_BUILD_ROOT/bin/view
-ln -sf vi $RPM_BUILD_ROOT/bin/rview
+%{!?bcond_off_athena:install src/gvim.athena	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.athena}
+%{!?bcond_off_motif: install src/gvim.motif	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.motif}
+%{!?bcond_off_gtk:   install src/gvim.gtk	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gtk}
+%{!?bcond_off_gnome: install src/gvim.gnome	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gnome}
 
-%{!?bcond_off_athena:install src/gvim.athena $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.athena}
-%{!?bcond_off_motif: install src/gvim.motif $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.motif}
-%{!?bcond_off_gtk:   install src/gvim.gtk $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gtk}
+%{!?bcond_off_gtk:ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim}
+%{!?bcond_off_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgvim}
+%{!?bcond_off_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
+%{!?bcond_off_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
 
-%{!?bcond_off_gtk:ln -sf gvim.gtk $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim}
-%{!?bcond_off_gtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgvim}
-%{!?bcond_off_gtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
-%{!?bcond_off_gtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
-
-%{!?bcond_off_athena:install %{SOURCE3} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?bcond_off_motif: install %{SOURCE4} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?bcond_off_gtk:   install %{SOURCE5} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?bcond_off_athena:install %{SOURCE4}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?bcond_off_motif: install %{SOURCE5}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?bcond_off_gtk:   install %{SOURCE6} 	$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?bcond_off_gnome: install %{SOURCE7}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -376,12 +373,32 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_var}/lib/vim
 
 %dir %{_datadir}/vim
-%{_datadir}/vim/doc
-%{_datadir}/vim/macros
-%{_datadir}/vim/syntax
-%{_datadir}/vim/tutor
-
-%{_datadir}/vim/*.vim
+%dir %{_datadir}/vim/v*
+%{_datadir}/vim/v*/doc
+%{_datadir}/vim/v*/ftplugin
+%{_datadir}/vim/v*/indent
+%{_datadir}/vim/v*/keymap
+%dir %{_datadir}/vim/v*/lang
+%{_datadir}/vim/v*/lang/README*
+%lang(af) %{_datadir}/vim/v*/lang/*af*
+%lang(cs) %{_datadir}/vim/v*/lang/*cs*
+%lang(de) %{_datadir}/vim/v*/lang/*de*
+%lang(es) %{_datadir}/vim/v*/lang/es
+%lang(es) %{_datadir}/vim/v*/lang/*es_es*
+%lang(es) %{_datadir}/vim/v*/lang/*spanish*
+%lang(fr) %{_datadir}/vim/v*/lang/*fr*
+%lang(hu) %{_datadir}/vim/v*/lang/*hu*
+%lang(nl) %{_datadir}/vim/v*/lang/*nl*
+%lang(it) %{_datadir}/vim/v*/lang/*it*
+%lang(ja) %{_datadir}/vim/v*/lang/*ja*
+%lang(ko) %{_datadir}/vim/v*/lang/*ko*
+%lang(pl) %{_datadir}/vim/v*/lang/*pl*
+%lang(zh_TW) %{_datadir}/vim/v*/lang/*zh*
+%{_datadir}/vim/v*/macros
+%{_datadir}/vim/v*/plugin
+%{_datadir}/vim/v*/syntax
+%{_datadir}/vim/v*/tutor
+%{_datadir}/vim/v*/*.vim
 
 %{_mandir}/man1/vim.*
 %{_mandir}/man1/rvim.*
@@ -403,3 +420,8 @@ rm -rf $RPM_BUILD_ROOT
 %{!?bcond_off_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgview}
 %{!?bcond_off_gtk:%attr(755,root,root) %verify(not link) %{_prefix}/X11R6/bin/gvim}
 %{!?bcond_off_gtk:%{_applnkdir}/Development/Editors/gvim-gtk.desktop}
+
+%{!?bcond_off_gnome:%files -n gvim-gnome}
+%{!?bcond_off_gnome:%defattr(644,root,root,755)}
+%{!?bcond_off_gnome:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gnome}
+%{!?bcond_off_gnome:%{_applnkdir}/Development/Editors/gvim-gnome.desktop}
