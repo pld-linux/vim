@@ -15,6 +15,7 @@ Patch0:		vim-fhs.patch
 Patch1:		vim-visual.patch
 BuildRequires:	ncurses-devel
 BuildRequires:	ncurses-static
+BuildRequires:	glibc-static
 BuildRequires:	gpm-devel
 BuildRequires:	Xaw3d-devel
 BuildRequires:	motif-devel
