@@ -7025,3 +7025,15 @@ diff -Nur vim61.orig/src/vim.h vim61/src/vim.h
  
  /*
   * Boolean constants
+--- vim61/src/eval.c.ispell	Tue Oct  8 14:57:16 2002
++++ vim61/src/eval.c	Tue Oct  8 14:58:49 2002
+@@ -4334,6 +4334,9 @@
+ #ifdef FEAT_SNIFF
+ 	"sniff",
+ #endif
++#ifdef FEAT_SPELL_HL
++	"spell",
++#endif
+ #ifdef FEAT_STL_OPT
+ 	"statusline",
+ #endif
