@@ -1,0 +1,13 @@
+diff -ru vim-5.4e.old/src/ex_docmd.c vim-5.4e/src/ex_docmd.c
+--- vim-5.4e.old/src/ex_docmd.c	Tue Feb 16 21:25:54 1999
++++ vim-5.4e/src/ex_docmd.c	Tue Feb 23 17:13:57 1999
+@@ -5902,9 +5902,7 @@
+ {
+     int	    mode;
+     char_u  *cmdp;
+-#ifdef CMDLINE_COMPL
+     char_u  *ambigstr;
+-#endif
+ 
+     cmdp = eap->cmd;
+     mode = get_map_mode(&cmdp, eap->forceit || isabbrev);
