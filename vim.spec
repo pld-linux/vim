@@ -12,7 +12,7 @@
 %bcond_with    bonobo # with bonobo patch (doesn't work at the moment)
 
 %define		_ver		6.2
-%define		_patchlevel	127
+%define		_patchlevel	154
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -26,7 +26,7 @@ Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
 #Version:	%{_ver}
-Release:	3
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -184,6 +184,33 @@ Patch224:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.124
 Patch225:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.125
 Patch226:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.126
 Patch227:       ftp://ftp.vim.org/pub/editors/vim/patches/6.2.127
+Patch228:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.128
+Patch229:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.129
+Patch230:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.130
+Patch231:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.131
+Patch232:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.132
+Patch233:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.133
+Patch234:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.134
+Patch235:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.135
+Patch236:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.136
+Patch237:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.137
+Patch238:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.138
+Patch239:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.139
+Patch240:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.140
+Patch241:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.141
+Patch242:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.142
+Patch243:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.143
+Patch244:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.144
+Patch245:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.145
+Patch246:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.146
+Patch247:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.147
+Patch248:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.148
+Patch249:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.149
+Patch250:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.150
+Patch251:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.151
+Patch252:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.152
+Patch253:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.153
+Patch254:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.154
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -698,6 +725,33 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch225 -p0
 %patch226 -p0
 %patch227 -p0
+%patch228 -p0
+%patch229 -p0
+%patch230 -p0
+%patch231 -p0
+%patch232 -p0
+%patch233 -p0
+%patch234 -p0
+%patch235 -p0
+%patch236 -p0
+%patch237 -p0
+%patch238 -p0
+%patch239 -p0
+%patch240 -p0
+%patch241 -p0
+%patch242 -p0
+%patch243 -p0
+%patch244 -p0
+%patch245 -p0
+%patch246 -p0
+%patch247 -p0
+%patch248 -p0
+%patch249 -p0
+%patch250 -p0
+%patch251 -p0
+%patch252 -p0
+%patch253 -p0
+%patch254 -p0
 
 %patch0 -p1
 %{?with_bonobo:%patch99 -p1}
