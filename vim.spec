@@ -347,7 +347,7 @@ Summary(id):	File umum yang dibutuhkan oleh semua versi editor VIM
 Summary(is):	Grunnskrár sem allar útgáfur VIM ritilsins şurfa á ağ halda
 Summary(it):	File comuni necessari per tutte le versioni dell'editor VIM
 Summary(ja):	¤¹¤Ù¤Æ¤Î¥Ğ¡¼¥¸¥ç¥ó¤Î VIM ¥¨¥Ç¥£¥¿¤ÇÉ¬Í×¤È¤µ¤ì¤ë¶¦ÄÌ¥Õ¥¡¥¤¥ë
-Summary(no):	Felles filer som er nødvendige for enhver versjon av VIM editoren
+Summary(nb):	Felles filer som er nødvendige for enhver versjon av VIM editoren
 Summary(pl):	Pliki przydatne edytorowi Vim
 Summary(pt):	Os ficheiros comuns necessários para qualquer versão do editor VIM
 Summary(ru):	æÁÊÌÙ, ÔÒÅÂÕÅÍÙÅ ÄÌÑ ÌÀÂÏÊ ×ÅÒÓÉÉ ÒÅÄÁËÔÏÒÁ vim
