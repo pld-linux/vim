@@ -625,7 +625,7 @@ mv -f vim gvim.gnome
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
-	$RPM_BUILD_ROOT{%{_prefix}/X11R6/bin,%{_applnkdir}/Editors}
+	$RPM_BUILD_ROOT%{_applnkdir}/Editors
 
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
@@ -660,15 +660,15 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
-%{!?_without_athena:install src/gvim.athena	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.athena}
-%{!?_without_motif: install src/gvim.motif	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.motif}
-%{!?_without_gtk:   install src/gvim.gtk	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gtk}
-%{!?_without_gnome: install src/gvim.gnome	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gnome}
+%{!?_without_athena:install src/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena}
+%{!?_without_motif: install src/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif}
+%{!?_without_gtk:   install src/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk}
+%{!?_without_gnome: install src/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome}
 
-%{!?_without_gtk:ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim}
-%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgvim}
-%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
-%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
+%{!?_without_gtk:ln -sf gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim}
+%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/rgvim}
+%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/gview}
+%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_bindir}/rgview}
 
 %{!?_without_athena:install %{SOURCE10}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
 %{!?_without_motif: install %{SOURCE11}		$RPM_BUILD_ROOT%{_applnkdir}/Editors}
@@ -799,30 +799,30 @@ rm -rf $RPM_BUILD_ROOT
 %if %{!?_without_athena:1}%{?_without_athena:0}
 %files -n gvim-athena
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.athena
+%attr(755,root,root) %{_bindir}/gvim.athena
 %{_applnkdir}/Editors/gvim-athena.desktop
 %endif
 
 %if %{!?_without_motif:1}%{?_without_motif:0}
 %files -n gvim-motif
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.motif
+%attr(755,root,root) %{_bindir}/gvim.motif
 %{_applnkdir}/Editors/gvim-motif.desktop
 %endif
 
 %if %{!?_without_gtk:1}%{?_without_gtk:0}
 %files -n gvim-gtk
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gtk
-%attr(755,root,root) %{_prefix}/X11R6/bin/rgvim
-%attr(755,root,root) %{_prefix}/X11R6/bin/rgview
-%attr(755,root,root) %verify(not link) %{_prefix}/X11R6/bin/gvim
+%attr(755,root,root) %{_bindir}/gvim.gtk
+%attr(755,root,root) %{_bindir}/rgvim
+%attr(755,root,root) %{_bindir}/rgview
+%attr(755,root,root) %verify(not link) %{_bindir}/gvim
 %{_applnkdir}/Editors/gvim-gtk.desktop
 %endif
 
 %if %{!?_without_gnome:1}%{?_without_gnome:0}
 %files -n gvim-gnome
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gnome
+%attr(755,root,root) %{_bindir}/gvim.gnome
 %{_applnkdir}/Editors/gvim-gnome.desktop
 %endif
