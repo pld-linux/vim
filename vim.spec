@@ -26,7 +26,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	4
+Release:	5
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -608,6 +608,7 @@ mv -f vim bin/vim.static
 LDFLAGS="%{rpmldflags}"
 %endif
 
+%{__make} distclean
 %configure \
 	--disable-gui \
 	--without-x \
