@@ -1,0 +1,74 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.212
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.212 (after 6.2.199)
+Problem:    NetBeans: Replacing with a count is not handled correctly.
+Solution:   Move reporting the change outside of the loop for the count.
+	    (Gordon Prieur)
+Files:	    src/normal.c
+
+
+*** ../vim-6.2.211/src/normal.c	Sun Jan 25 19:40:26 2004
+--- src/normal.c	Tue Jan 27 17:06:04 2004
+***************
+*** 6134,6149 ****
+  			    || cap->nchar == ']'))
+  		    showmatch();
+  		++curwin->w_cursor.col;
+  #ifdef FEAT_NETBEANS_INTG
+! 		if (usingNetbeans)
+! 		{
+! 		    colnr_T start = (colnr_T)(curwin->w_cursor.col
+! 							       - cap->count1);
+! 		    netbeans_inserted(curbuf, curwin->w_cursor.lnum, start,
+! 			     (int)cap->count1, &ptr[start], (int)cap->count1);
+! 		}
+! #endif
+  	    }
+  
+  	    /* mark the buffer as changed and prepare for displaying */
+  	    changed_bytes(curwin->w_cursor.lnum,
+--- 6134,6149 ----
+  			    || cap->nchar == ']'))
+  		    showmatch();
+  		++curwin->w_cursor.col;
++ 	    }
+  #ifdef FEAT_NETBEANS_INTG
+! 	    if (usingNetbeans)
+! 	    {
+! 		colnr_T start = (colnr_T)(curwin->w_cursor.col - cap->count1);
+! 
+! 		netbeans_inserted(curbuf, curwin->w_cursor.lnum, start,
+! 			(int)cap->count1, &ptr[start], (int)cap->count1);
+  	    }
++ #endif
+  
+  	    /* mark the buffer as changed and prepare for displaying */
+  	    changed_bytes(curwin->w_cursor.lnum,
+*** ../vim-6.2.211/src/version.c	Sun Jan 25 20:45:55 2004
+--- src/version.c	Tue Jan 27 17:08:48 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     212,
+  /**/
+
+-- 
+DENNIS: Oh, very nice. King, eh!  I expect you've got a palace and fine
+        clothes and courtiers and plenty of food.  And how d'you get that?  By
+        exploiting the workers! By hanging on to outdated imperialist dogma
+        which perpetuates the social and economic differences in our society!
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

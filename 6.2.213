@@ -1,0 +1,59 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.213
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.213 (after 6.2.208)
+Problem:    Using marker folding, "{{{1" doesn't start a new fold when already
+	    at fold level 1. (Servatius Brandt)
+Solution:   Correctly compute the number of folds that start at "{{{1".
+Files:	    src/fold.c
+
+
+*** ../vim-6.2.212/src/fold.c	Sun Jan 25 20:33:47 2004
+--- src/fold.c	Mon Jan 26 16:08:12 2004
+***************
+*** 3005,3012 ****
+  		{
+  		    flp->lvl = n;
+  		    flp->lvl_next = n;
+! 		    if (n < start_lvl)
+! 			flp->start = 0;
+  		    else
+  			flp->start = n - start_lvl;
+  		}
+--- 3005,3012 ----
+  		{
+  		    flp->lvl = n;
+  		    flp->lvl_next = n;
+! 		    if (n <= start_lvl)
+! 			flp->start = 1;
+  		    else
+  			flp->start = n - start_lvl;
+  		}
+*** ../vim-6.2.212/src/version.c	Tue Jan 27 17:09:16 2004
+--- src/version.c	Tue Jan 27 17:54:13 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     213,
+  /**/
+
+-- 
+OLD WOMAN: Well, how did you become king, then?
+ARTHUR: The Lady of the Lake, her arm clad in the purest shimmering samite,
+        held Excalibur aloft from the bosom of the water to signify by Divine
+        Providence ...  that I, Arthur, was to carry Excalibur ...  That is
+        why I am your king!
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
