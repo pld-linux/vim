@@ -181,7 +181,7 @@ diff -Nur vim61.orig/src/feature.h vim61/src/feature.h
 +#ifdef FEAT_BIG
 +#undef FEAT_RIGHTLEFT
 +#undef FEAT_FKMAP
-+#define FEAT_SPELL_HL	 /*WM*/
++#undef FEAT_SPELL_HL	 /*WM*/
 +#endif
 +/* # define FEAT_PRINTER */
  
