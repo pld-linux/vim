@@ -1,0 +1,217 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.006
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.006
+Problem:    The Netbeans code contains an obsolete function that uses "vim61"
+	    and sets the fall-back value for $VIMRUNTIME.
+Solution:   Delete the obsolete function.
+Files:	    src/main.c, src/netbeans.c, src/proto/netbeans.pro
+
+
+*** ../vim-6.2.005/src/main.c	Thu May 29 11:20:15 2003
+--- src/main.c	Mon Jun  2 22:10:01 2003
+***************
+*** 316,324 ****
+  #ifdef FEAT_SUN_WORKSHOP
+      findYourself(argv[0]);
+  #endif
+- #ifdef FEAT_NETBEANS_INTG
+-     netbeans_setRunDir(argv[0]);
+- #endif
+  #if defined(FEAT_GUI) && !defined(MAC_OS_CLASSIC)
+      gui_prepare(&argc, argv);	/* Prepare for possibly starting GUI sometime */
+      TIME_MSG("GUI prepared");
+--- 316,321 ----
+*** ../vim-6.2.005/src/netbeans.c	Sun Jun  1 16:03:39 2003
+--- src/netbeans.c	Mon Jun  2 22:12:16 2003
+***************
+*** 1943,2093 ****
+      gui_mch_flush();
+  }
+  
+- #ifdef HAVE_READLINK
+- 
+- /*
+-  * Check symlinks for infinite recursion.
+-  * "level" is for recursion control.
+-  */
+-     static void
+- resolve_symlinks(char *filename, int level)
+- {
+-     struct stat sbuf;
+- 
+-     if ((level > 0) && (lstat(filename, &sbuf) == 0) && (S_ISLNK(sbuf.st_mode)))
+-     {
+- 	char buf[MAXPATHLEN+1];
+- 	int len = readlink(filename, buf, MAXPATHLEN);
+- 
+- 	if (len < 0 || len == MAXPATHLEN)
+- 	{
+- 	    EMSGN("E652: readlink() failed, errno = %ld\n", errno);
+- 	}
+- 	else
+- 	{
+- 	    buf[len] = '\0';
+- 
+- 	    if (buf[0] == '/')
+- 	    {
+- 		/* link value is absolute */
+- 		strcpy(filename, buf);
+- 	    }
+- 	    else
+- 	    {
+- 		/* link is relative */
+- 		char *p = strrchr(filename, '/');
+- 
+- 		if (p == 0)
+- 		    EMSG("E653: missing slash!?!");
+- 		else
+- 		    if ((p - filename) + strlen(buf) > MAXPATHLEN)
+- 			EMSG("E654: buffer overflow in resolve_symlinks()");
+- 		    else
+- 			strcpy(p+1, buf);
+- 	    }
+- 
+- 	    /* check for symlinks in resulting path */
+- 	    resolve_symlinks(filename, level-1);
+- 	}
+-     }
+- }
+- 
+- #endif /* HAVE_READLINK */
+- 
+- static char *rundir = "";
+- 
+- /*
+-  * Set rundir -- Dynamically find VIMRUNTIME dir
+-  */
+-     void
+- netbeans_setRunDir(char *argv0)
+- {
+-     char	fullpath[MAXPATHLEN];
+-     char	*p;
+-     static char buf[MAXPATHLEN];
+- 
+-     if (*argv0 == '/')
+- 	strcpy(fullpath, argv0);
+-     else if (strchr(argv0, '/'))
+-     {
+- 	getcwd(fullpath, MAXPATHLEN);
+- 	strcat(fullpath, "/");
+- 	strcat(fullpath, argv0);
+-     }
+-     else /* no slash, have to search path */
+-     {
+- 	char *path = getenv("PATH");
+- 	if (path)
+- 	{
+- 	    char *pathbuf = (char *)vim_strsave((char_u *)path);
+- 	    path = strtok(pathbuf, ":");
+- 	    do
+- 	    {
+- 		strcpy(fullpath, path);
+- 		strcat(fullpath, "/");
+- 		strcat(fullpath, argv0);
+- 		if (access(fullpath, X_OK) == 0)
+- 		    break;
+- 		else
+- 		    fullpath[0] = NUL;
+- 	    } while ((path=strtok(NULL, ":")) != NULL);
+- 	    vim_free(pathbuf);
+- 	}
+-     }
+- 
+- #ifdef HAVE_READLINK
+-     /* resolve symlinks to get "real" base dir */
+-     resolve_symlinks(fullpath, 1000);
+- #endif /* HAVE_READLINK */
+- 
+-     /* search backwards for "bin" or "src" dir in fullpath */
+- 
+-     if (fullpath[0] != NUL)
+-     {
+- 	p = strrchr(fullpath, '/');
+- 	while (p)
+- 	{
+- 	    if (strncmp(p, "/bin", 4) == 0 || strncmp(p, "/src", 4) == 0)
+- 	    {
+- 		/* vim is in /.../bin  or /.../src */
+- 		rundir = (char *)vim_strsave((char_u *)fullpath);
+- 		break;
+- 	    }
+- 	    *p = NUL;
+- 	    p = strrchr(fullpath, '/');
+- 	}
+-     }
+- 
+-     /* now find "doc" dir from the rundir (if $VIMRUNTIME is not set) */
+- 
+-     if ((p = getenv("VIMRUNTIME")) != NULL && *p != NUL)
+- 	return;
+- 
+-     strcpy(buf, rundir);
+-     strcat(buf, "/../share/vim/");
+-     strcat(buf, "vim61/doc");
+-     if (access(buf, R_OK) < 0)
+-     {
+- 	strcpy(buf, rundir);
+- 	strcat(buf, "/../runtime/doc");
+- 	if (access(buf, R_OK) < 0)
+- 	{
+- 	    /* not found! */
+- 	    return;
+- 	}
+- 	else
+- 	{
+- 	    strcpy(buf, rundir);
+- 	    strcat(buf, "/../runtime");
+- 	}
+-     }
+-     else
+-     {
+- 	strcpy(buf, rundir);
+- 	strcat(buf, "/../share/vim/vim61");
+-     }
+-     default_vimruntime_dir = (char_u *)buf;
+- }
+  
+  /*
+   * Initialize highlights and signs for use by netbeans  (mostly obsolete)
+--- 1943,1948 ----
+*** ../vim-6.2.005/src/proto/netbeans.pro	Sun Jun  1 12:26:24 2003
+--- src/proto/netbeans.pro	Mon Jun  2 22:11:13 2003
+***************
+*** 2,8 ****
+  void netbeans_Xt_connect __ARGS((void *context));
+  void netbeans_gtk_connect __ARGS((void));
+  void netbeans_end __ARGS((void));
+- void netbeans_setRunDir __ARGS((char *argv0));
+  void netbeans_startup_done __ARGS((void));
+  void netbeans_frame_moved __ARGS((int new_x, int new_y));
+  void netbeans_file_opened __ARGS((char *filename));
+--- 2,7 ----
+*** ../vim-6.2.005/src/version.c	Mon Jun  2 22:22:50 2003
+--- src/version.c	Mon Jun  2 22:25:28 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     6,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+60. As your car crashes through the guardrail on a mountain road, your first
+    instinct is to search for the "back" button.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Help AIDS victims, buy at Amazon -- http://ICCF.nl/click1.html ///

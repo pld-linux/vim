@@ -1,0 +1,79 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.003
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.003
+Problem:    GTK 2: double-wide characters below 256 are not displayed
+	    correctly.
+Solution:   Check the cell width for characters above 127. (Yasuhiro
+	    Matsumoto)
+Files:	    src/gui_gtk_x11.c
+
+
+*** ../vim-6.2.002/src/gui_gtk_x11.c	Sat May 31 17:21:37 2003
+--- src/gui_gtk_x11.c	Mon Jun  2 20:31:54 2003
+***************
+*** 4905,4914 ****
+  
+  	if (start == NULL)
+  	{
+! 	    if (uc >= 0x100 && utf_char2cells(uc) == 2)
+  		start = p;
+  	}
+! 	else if (uc < 0x100 /* optimization shortcut */
+  		 || (utf_char2cells(uc) != 2 && !utf_iscomposing(uc)))
+  	{
+  	    INSERT_PANGO_ATTR(pango_attr_font_desc_new(gui.wide_font),
+--- 4905,4914 ----
+  
+  	if (start == NULL)
+  	{
+! 	    if (uc >= 0x80 && utf_char2cells(uc) == 2)
+  		start = p;
+  	}
+! 	else if (uc < 0x80 /* optimization shortcut */
+  		 || (utf_char2cells(uc) != 2 && !utf_iscomposing(uc)))
+  	{
+  	    INSERT_PANGO_ATTR(pango_attr_font_desc_new(gui.wide_font),
+***************
+*** 4952,4958 ****
+      for (p = s + start; p < s + end; p += utf_byte2len(*p))
+      {
+  	uc = utf_ptr2char(p);
+! 	if (uc < 0x100)
+  	    ++cellcount;
+  	else if (!utf_iscomposing(uc))
+  	    cellcount += utf_char2cells(uc);
+--- 4952,4958 ----
+      for (p = s + start; p < s + end; p += utf_byte2len(*p))
+      {
+  	uc = utf_ptr2char(p);
+! 	if (uc < 0x80)
+  	    ++cellcount;
+  	else if (!utf_iscomposing(uc))
+  	    cellcount += utf_char2cells(uc);
+*** ../vim-6.2.002/src/version.c	Mon Jun  2 22:01:43 2003
+--- src/version.c	Mon Jun  2 22:15:19 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     3,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+59. Your wife says communication is important in a marriage...so you buy
+    another computer and install a second phone line so the two of you can
+    chat.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Help AIDS victims, buy at Amazon -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,48 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.008
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.008
+Problem:    XIM with GTK 2: After backspacing preedit characters are wrong.
+Solution:   Reset the cursor position. (Yasuhiro Matsumoto)
+Files:	    src/mbyte.c
+
+
+*** ../vim-6.2.007/src/mbyte.c	Sat May 31 18:12:56 2003
+--- src/mbyte.c	Tue Jun  3 20:49:02 2003
+***************
+*** 3199,3204 ****
+--- 3199,3209 ----
+  
+      g_return_if_fail(preedit_string != NULL); /* just in case */
+  
++     /* If at the start position (after typing backspace) preedit_start_col
++      * must be reset. */
++     if (cursor_index == 0)
++ 	preedit_start_col = MAXCOL;
++ 
+      if (preedit_start_col == MAXCOL && preedit_string[0] != '\0')
+      {
+  	/* Urgh, this breaks if the input buffer isn't empty now */
+*** ../vim-6.2.007/src/version.c	Tue Jun  3 20:40:22 2003
+--- src/version.c	Tue Jun  3 20:49:57 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     8,
+  /**/
+
+-- 
+Ed's Radiator Shop: The Best Place in Town to Take a Leak.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Help AIDS victims, buy at Amazon -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,45 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.005
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.005
+Problem:    GTK: the "Find" and "Find and Replace" tools don't work. (Aschwin
+	    Marsman)
+Solution:   Show the dialog after creating it.  (David Necas)
+Files:	    src/gui_gtk.c
+
+
+*** ../vim-6.2.004/src/gui_gtk.c	Wed May 21 10:18:20 2003
+--- src/gui_gtk.c	Mon Jun  2 20:43:33 2003
+***************
+*** 2659,2664 ****
+--- 2659,2665 ----
+      gui_gtk_position_in_parent(GTK_WIDGET(gui.mainwin),
+  				      GTK_WIDGET(frdp->dialog), VW_POS_MOUSE);
+      gui_gtk_synch_fonts();
++     gtk_widget_show_all(frdp->dialog);
+  #endif
+  
+  #ifdef HAVE_GTK2
+*** ../vim-6.2.004/src/version.c	Mon Jun  2 22:20:28 2003
+--- src/version.c	Mon Jun  2 22:22:30 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     5,
+  /**/
+
+-- 
+Time is money.  Especially if you make clocks.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Help AIDS victims, buy at Amazon -- http://ICCF.nl/click1.html ///

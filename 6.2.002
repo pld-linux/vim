@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.002
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.002
+Problem:    When compiled with the +multi_byte feature but without +eval,
+	    displaying UTF-8 characters may cause a crash. (Karsten Hopp)
+Solution:   Also set the default for 'ambiwidth' when compiled without the
+	    +eval feature.
+Files:	    src/option.c
+
+
+*** ../vim-6.2.001/src/option.c	Thu May 29 17:13:38 2003
+--- src/option.c	Mon Jun  2 20:18:48 2003
+***************
+*** 349,355 ****
+  #endif
+  			    {(char_u *)FALSE, (char_u *)0L}},
+      {"ambiwidth",  "ambw",  P_STRING|P_VI_DEF|P_RCLR,
+! #if defined(FEAT_MBYTE) && defined(FEAT_EVAL)
+  			    (char_u *)&p_ambw, PV_NONE,
+  			    {(char_u *)"single", (char_u *)0L}
+  #else
+--- 349,355 ----
+  #endif
+  			    {(char_u *)FALSE, (char_u *)0L}},
+      {"ambiwidth",  "ambw",  P_STRING|P_VI_DEF|P_RCLR,
+! #if defined(FEAT_MBYTE)
+  			    (char_u *)&p_ambw, PV_NONE,
+  			    {(char_u *)"single", (char_u *)0L}
+  #else
+*** ../vim-6.2.001/src/version.c	Mon Jun  2 21:31:14 2003
+--- src/version.c	Mon Jun  2 22:01:01 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     2,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+57. You begin to wonder how on earth your service provider is allowed to call
+    200 hours per month "unlimited."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Help AIDS victims, buy at Amazon -- http://ICCF.nl/click1.html ///
