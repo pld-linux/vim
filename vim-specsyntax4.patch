@@ -1,5 +1,5 @@
 --- vim62/runtime/syntax/spec.vim.orig	2004-04-09 17:04:52.516737648 +0200
-+++ vim62/runtime/syntax/spec.vim	2004-04-09 19:59:55.937974912 +0200
++++ vim62/runtime/syntax/spec.vim	2004-04-10 00:30:42.532117184 +0200
 @@ -15,7 +15,7 @@
  
  syn sync minlines=1000
@@ -9,28 +9,29 @@
  syn match specColon       contained ':'
  syn match specPercent     contained '%'
  
-@@ -23,7 +23,8 @@
+@@ -23,7 +23,9 @@
  syn match specVariables   contained '\${\w*}' contains=specSpecialVariablesNames,specSpecialChar
  
  syn match specMacroIdentifier contained '%\h\w*' contains=specMacroNameLocal,specMacroNameOther,specPercent
 -syn match specMacroIdentifier contained '%{\w*}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
 +"syn match specMacroIdentifier contained '%{\w*}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
 +syn region specMacroIdentifier oneline matchgroup=Special start='%{' skip='\\}' end='}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
++syn match specBcond contained '%{with\(out\)\?\s\+[a-zA-Z_-]\+}'
  
  syn match specSpecialVariables contained '\$[0-9]\|\${[0-9]}'
  syn match specCommandOpts      contained '\s\(-\w\+\|--\w[a-zA-Z_-]\+\)'ms=s+1
-@@ -83,8 +84,9 @@
+@@ -83,8 +85,9 @@
  
  "One line macros - valid in all ScriptAreas
  "tip: remember do include new itens on specScriptArea's skip section
 -syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(define\|patch\d*\|setup\|configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\)\>' end='$' contains=specCommandOpts,specMacroIdentifier
-+syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(define\|patch\d*\|setup\|configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\|bcond_with\(out\)\?\|include\)\>' end='$' contains=specCommandOpts,specMacroIdentifier,specSectionMacroBcondArea
++syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(\(un\)\?define\|patch\d*\|setup\|configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\|bcond_with\(out\)\?\|include\)\>' end='$' contains=specCommandOpts,specMacroIdentifier,specSectionMacroBcondArea
  syn region specSectionMacroBracketArea oneline matchgroup=specSectionMacro start='^%{\(configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\)}' end='$' contains=specCommandOpts,specMacroIdentifier
-+syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??with\(out\)\?_[a-zA-Z_]\+:' skip='\\}' end='}' contains=ALLBUT,shCase
++syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??\(with\(out\)\?_[a-zA-Z_]\+\|debug\):' skip='\\}' end='}' contains=ALLBUT,shCase
  
  "%% Files Section %%
  "TODO %config valid parameters: missingok\|noreplace
-@@ -105,7 +107,7 @@
+@@ -105,7 +108,7 @@
  "%% PreAmble Section %%
  "Copyright and Serial were deprecated by License and Epoch
  syn region specPreAmbleDeprecated oneline matchgroup=specError start='^\(Copyright\|Serial\)' end='$' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier
@@ -39,7 +40,7 @@
  
  "%% Description Section %%
  syn region specDescriptionArea matchgroup=specSection start='^%description' end='^%'me=e-1 contains=specDescriptionOpts,specEmail,specURL,specNumber,specMacroIdentifier,specComment
-@@ -114,7 +116,7 @@
+@@ -114,7 +117,7 @@
  syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e-1 contains=specPackageOpts,specPreAmble,specComment
  
  "%% Scripts Section %%
@@ -48,7 +49,7 @@
  
  "%% Changelog Section %%
  syn region specChangelogArea matchgroup=specSection start='^%changelog' end='^%'me=e-1 contains=specEmail,specURL,specWeekday,specMonth,specNumber,specComment,specLicense
-@@ -132,7 +134,7 @@
+@@ -132,7 +135,7 @@
  syn match shComment contained '#.*$'
  
  syn region shQuote1 contained matchgroup=shQuoteDelim start=+'+ skip=+\\'+ end=+'+ contains=specMacroIdentifier
@@ -57,3 +58,11 @@
  
  syn match shOperator contained '[><|!&;]\|[!=]='
  syn region shDo transparent matchgroup=specBlock start="\<do\>" end="\<done\>" contains=ALLBUT,shFunction,shDoError,shCase,specPreAmble,@specListedFiles
+@@ -192,6 +195,7 @@
+ 
+   "spec colors
+   HiLink specBlock			Function
++  HiLink specBcond			Function
+   HiLink specColon			Special
+   HiLink specCommand			Statement
+   HiLink specCommandOpts		specOpts
