@@ -133,10 +133,10 @@ LDFLAGS="-s"; export LDFLAGS
 	--enable-gmp \
 	--enable-max-features \
 	--with-tlib=ncurses 
-make vim
+%{__make} vim
 mv vim vim.ncurses
 
-make distclean
+%{__make} distclean
 LDFLAGS="-static -s"; export LDFLAGS
 %configure \
 	--disable-gui \
@@ -150,12 +150,12 @@ LDFLAGS="-static -s"; export LDFLAGS
 	--enable-min-features \
 	--datadir=/etc \
 	--with-tlib=tinfo
-make vim
-make xxd/xxd
+%{__make} vim
+%{__make} xxd/xxd
 mv vim vim.static
 mv xxd/xxd xxd.static
 
-make distclean
+%{__make} distclean
 LDFLAGS="-s"; export LDFLAGS
 %configure \
         --enable-max-features \
@@ -166,10 +166,10 @@ LDFLAGS="-s"; export LDFLAGS
         --disable-tclinterp \
         --disable-cscope \
         --disable-gpm
-make vim
+%{__make} vim
 mv vim gvim.athena
 
-make distclean
+%{__make} distclean
 LDFLAGS="-s"; export LDFLAGS
 %configure \
         --enable-max-features \
@@ -180,10 +180,10 @@ LDFLAGS="-s"; export LDFLAGS
         --disable-tclinterp \
         --disable-cscope \
         --disable-gpm
-make vim
+%{__make} vim
 mv vim gvim.lesstif
  
-make distclean
+%{__make} distclean
 LDFLAGS="-s"; export LDFLAGS
 %configure \
         --enable-max-features \
@@ -194,7 +194,7 @@ LDFLAGS="-s"; export LDFLAGS
         --disable-tclinterp \
         --disable-cscope \
         --disable-gpm
-make vim
+%{__make} vim
 mv vim gvim.gtk
 
 cd ..
