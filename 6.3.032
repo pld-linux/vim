@@ -1,0 +1,81 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.032
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.032
+Problem:    Using Python 2.3 with threads doesn't work properly.
+Solution:   Release the lock after initialization.
+Files:      src/if_python.c
+
+
+*** ../vim-6.3.031/src/if_python.c	Wed Jun  9 14:56:26 2004
+--- src/if_python.c	Thu Nov 18 10:01:02 2004
+***************
+*** 380,386 ****
+  typedef PyObject PyThreadState;
+  #endif /* Python 1.4 */
+  
+- #ifndef PY_CAN_RECURSE
+  static PyThreadState* saved_python_thread = NULL;
+  
+  /*
+--- 380,385 ----
+***************
+*** 392,397 ****
+--- 391,397 ----
+      saved_python_thread = PyEval_SaveThread();
+  }
+  
++ #ifndef PY_CAN_RECURSE
+  /*
+   * Restore a thread of the Python interpreter, waits for other threads to
+   * block.
+***************
+*** 456,465 ****
+  	if (PythonMod_Init())
+  	    goto fail;
+  
+! #ifndef PY_CAN_RECURSE
+! 	/* the first python thread is vim's */
+  	Python_SaveThread();
+- #endif
+  
+  	initialised = 1;
+      }
+--- 456,463 ----
+  	if (PythonMod_Init())
+  	    goto fail;
+  
+! 	/* the first python thread is vim's, release the lock */
+  	Python_SaveThread();
+  
+  	initialised = 1;
+      }
+*** ../vim-6.3.032/src/version.c	Fri Oct 22 11:45:17 2004
+--- src/version.c	Thu Nov 18 10:43:17 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     32,
+  /**/
+
+
+-- 
+GUARD #1:  Where'd you get the coconut?
+ARTHUR:    We found them.
+GUARD #1:  Found them?  In Mercea?  The coconut's tropical!
+ARTHUR:    What do you mean?
+GUARD #1:  Well, this is a temperate zone.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

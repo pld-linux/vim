@@ -1,0 +1,144 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.030
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.030
+Problem:    GTK 2: Crash when sourcing a script that deletes the menus, sets
+	    'encoding' to "utf-8" and loads the menus again.  GTK error
+	    message when tooltip text is in a wrong encoding.
+Solution:   Don't copy characters from the old screen to the new screen when
+	    switching 'encoding' to utf-8, they may be invalid.  Only set the
+	    tooltip when it is valid utf-8.
+Files:	    src/gui_gtk.c, src/mbyte.c, src/proto/mbyte.pro, src/screen.c
+
+
+*** ../vim-6.3.029/src/gui_gtk.c	Wed Jun  9 14:56:25 2004
+--- src/gui_gtk.c	Thu Oct  7 16:27:43 2004
+***************
+*** 749,754 ****
+--- 749,758 ----
+  
+  	    text    = CONVERT_TO_UTF8(menu->dname);
+  	    tooltip = CONVERT_TO_UTF8(menu->strings[MENU_INDEX_TIP]);
++ 	    if (tooltip != NULL && !utf_valid_string(tooltip, NULL))
++ 		/* Invalid text, can happen when 'encoding' is changed.  Avoid
++ 		 * a nasty GTK error message, skip the tooltip. */
++ 		CONVERT_TO_UTF8_FREE(tooltip);
+  
+  	    menu->id = gtk_toolbar_insert_item(
+  		    toolbar,
+***************
+*** 993,998 ****
+--- 997,1004 ----
+  
+  # ifdef HAVE_GTK2
+  	tooltip = CONVERT_TO_UTF8(menu->strings[MENU_INDEX_TIP]);
++ 	if (tooltip == NULL || utf_valid_string(tooltip, NULL))
++ 	    /* Only set the tooltip when it's valid utf-8. */
+  # else
+  	tooltip = menu->strings[MENU_INDEX_TIP];
+  # endif
+*** ../vim-6.3.029/src/mbyte.c	Wed Jun  9 14:56:27 2004
+--- src/mbyte.c	Thu Oct  7 19:27:45 2004
+***************
+*** 2467,2472 ****
+--- 2467,2502 ----
+      return 1 - dbcs_head_off(base, p);
+  }
+  
++ #if (defined(HAVE_GTK2) && defined(FEAT_TOOLBAR)) || defined(PROTO)
++ /*
++  * Return TRUE if string "s" is a valid utf-8 string.
++  * When "end" is NULL stop at the first NUL.
++  * When "end" is positive stop there.
++  */
++     int
++ utf_valid_string(s, end)
++     char_u	*s;
++     char_u	*end;
++ {
++     int		l;
++     char_u	*p = s;
++ 
++     while (end == NULL ? *p != NUL : p < end)
++     {
++ 	if ((*p & 0xc0) == 0x80)
++ 	    return FALSE;	/* invalid lead byte */
++ 	l = utf8len_tab[*p];
++ 	if (end != NULL && p + l > end)
++ 	    return FALSE;	/* incomplete byte sequence */
++ 	++p;
++ 	while (--l > 0)
++ 	    if ((*p++ & 0xc0) != 0x80)
++ 		return FALSE;	/* invalid trail byte */
++     }
++     return TRUE;
++ }
++ #endif
++ 
+  #if defined(FEAT_GUI) || defined(PROTO)
+  /*
+   * Special version of mb_tail_off() for use in ScreenLines[].
+*** ../vim-6.3.029/src/proto/mbyte.pro	Wed Jun  9 14:56:24 2004
+--- src/proto/mbyte.pro	Thu Oct  7 16:36:38 2004
+***************
+*** 47,52 ****
+--- 47,53 ----
+  int utf_head_off __ARGS((char_u *base, char_u *p));
+  int mb_off_next __ARGS((char_u *base, char_u *p));
+  int mb_tail_off __ARGS((char_u *base, char_u *p));
++ int utf_valid_string __ARGS((char_u *s, char_u *end));
+  int dbcs_screen_tail_off __ARGS((char_u *base, char_u *p));
+  void mb_adjust_cursor __ARGS((void));
+  void mb_adjustpos __ARGS((pos_T *lp));
+*** ../vim-6.3.029/src/screen.c	Wed Jun  9 14:56:26 2004
+--- src/screen.c	Thu Oct  7 15:40:54 2004
+***************
+*** 6608,6616 ****
+  			len = screen_Columns;
+  		    else
+  			len = Columns;
+! 		    mch_memmove(new_ScreenLines + new_LineOffset[new_row],
+! 			    ScreenLines + LineOffset[old_row],
+! 			    (size_t)len * sizeof(schar_T));
+  #ifdef FEAT_MBYTE
+  		    if (enc_utf8 && ScreenLinesUC != NULL)
+  		    {
+--- 6608,6621 ----
+  			len = screen_Columns;
+  		    else
+  			len = Columns;
+! #ifdef FEAT_MBYTE
+! 		    /* When switching to utf-8 don't copy characters, they
+! 		     * may be invalid now. */
+! 		    if (!(enc_utf8 && ScreenLinesUC == NULL))
+! #endif
+! 			mch_memmove(new_ScreenLines + new_LineOffset[new_row],
+! 				ScreenLines + LineOffset[old_row],
+! 				(size_t)len * sizeof(schar_T));
+  #ifdef FEAT_MBYTE
+  		    if (enc_utf8 && ScreenLinesUC != NULL)
+  		    {
+*** ../vim-6.3.029/src/version.c	Tue Oct  5 17:02:41 2004
+--- src/version.c	Thu Oct  7 20:05:58 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     30,
+  /**/
+
+-- 
+From "know your smileys":
+ :-E	Has major dental problems
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,51 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.033
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.033
+Problem:    When a mapping ends in a Normal mode command of more than one
+	    character Vim doesn't return to Insert mode.
+Solution:   Check that the mapping has ended after obtaining all characters of
+	    the Normal mode command.
+Files:	    src/normal.c
+
+
+*** ../vim-6.3.032/src/normal.c	Fri Aug 27 21:14:50 2004
+--- src/normal.c	Thu Nov 18 10:34:43 2004
+***************
+*** 1124,1129 ****
+--- 1124,1134 ----
+  #endif
+      }
+  
++     /* get the length of mapped chars again after typing a count, second
++      * character or "z333<cr>". */
++     if (old_mapped_len > 0)
++ 	old_mapped_len = typebuf_maplen();
++ 
+      /*
+       * If an operation is pending, handle it...
+       */
+*** ../vim-6.3.032/src/version.c	Thu Nov 18 10:47:38 2004
+--- src/version.c	Thu Nov 18 10:45:02 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     33,
+  /**/
+
+-- 
+"A mouse can be just as dangerous as a bullet or a bomb."
+             (US Representative Lamar Smith, R-Texas)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,47 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.031
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.031
+Problem:    When entering a mapping and pressing Tab halfway the command line
+	    isn't redrawn properly. (Adri Verhoef)
+Solution:   Reposition the cursor after drawing over the "..." of the
+	    completion attempt.
+Files:	    src/ex_getln.c
+
+
+*** ../vim-6.3.030/src/ex_getln.c	Sun Sep  5 20:48:38 2004
+--- src/ex_getln.c	Tue Oct 19 19:37:30 2004
+***************
+*** 2892,2897 ****
+--- 2892,2898 ----
+      vim_free(p2);
+  
+      redrawcmd();
++     cursorcmd();
+  
+      /* When expanding a ":map" command and no matches are found, assume that
+       * the key is supposed to be inserted literally */
+*** ../vim-6.3.030/src/version.c	Thu Oct  7 20:07:59 2004
+--- src/version.c	Fri Oct 22 11:44:35 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     31,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+225. You sign up for free subscriptions for all the computer magazines
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
