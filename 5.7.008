@@ -1,0 +1,44 @@
+To: vim-dev@vim.org
+Subject: Patch 5.7.008
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+------------
+
+Patch 5.7.008
+Problem:    In Ex mode, backspacing over the first TAB doesn't work properly.
+	    (Wichert Akkerman)
+Solution:   Switch the cursor on before printing the newline.
+Files:	    src/ex_getln.c
+
+
+*** ../vim-5.7.7/src/ex_getln.c	Mon Jun  5 12:35:31 2000
+--- src/ex_getln.c	Sat Aug  5 16:48:39 2000
+***************
+*** 1408,1413 ****
+--- 1408,1417 ----
+      int			vcol = 0;
+  #endif
+  
++     /* Switch cursor on now.  This avoids that it happens after the "\n", which
++      * confuses the system function that computes tabstops. */
++     cursor_on();
++ 
+      /* always start in column 0; write a newline if necessary */
+      compute_cmdrow();
+      if (msg_col)
+*** ../vim-5.7.7/src/version.c	Sat Aug  5 16:22:38 2000
+--- src/version.c	Sat Aug  5 16:52:29 2000
+***************
+*** 439,440 ****
+--- 439,442 ----
+  {   /* Add new patch number below this line */
++ /**/
++     8,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+128. You can access the Net -- via your portable and cellular phone.
+
+///  Bram Moolenaar     Bram@moolenaar.net     http://www.moolenaar.net  \\\
+\\\  Vim: http://www.vim.org      ICCF Holland: http://iccf-holland.org  ///

@@ -1,0 +1,154 @@
+To: vim-dev@vim.org
+Subject: Patch 5.7.006
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+------------
+
+Patch 5.7.006
+Problem:    GUI: redrawing the non-Visual selection is wrong when the window
+            is unobscured. (Jean-Pierre Etienne)
+Solution:   Redraw the selection properly and don't clear it.  Added "len"
+            argument to clip_may_redraw_selection().
+Files:      src/gui.c, src/ui.c, src/proto/ui.pro
+
+
+*** ../vim-5.7.5/src/gui.c	Sun Jun 18 13:56:27 2000
+--- src/gui.c	Sat Aug  5 15:45:18 2000
+***************
+*** 1542,1550 ****
+      /* Draw the text */
+      gui_mch_draw_string(gui.row, col, s, len, draw_flags);
+  
+!     /* May need to invert it when it's part of the selection (assumes len==1) */
+      if (flags & GUI_MON_NOCLEAR)
+! 	clip_may_redraw_selection(gui.row, col);
+  
+      if (!(flags & (GUI_MON_IS_CURSOR | GUI_MON_TRS_CURSOR)))
+      {
+--- 1542,1550 ----
+      /* Draw the text */
+      gui_mch_draw_string(gui.row, col, s, len, draw_flags);
+  
+!     /* May need to invert it when it's part of the selection. */
+      if (flags & GUI_MON_NOCLEAR)
+! 	clip_may_redraw_selection(gui.row, col, len);
+  
+      if (!(flags & (GUI_MON_IS_CURSOR | GUI_MON_TRS_CURSOR)))
+      {
+***************
+*** 1609,1615 ****
+      row2 = Y_2_ROW(y + h - 1);
+      col2 = X_2_COL(x + w - 1);
+  
+!     (void)gui_redraw_block(row1, col1, row2, col2, 0);
+  
+      /*
+       * We may need to redraw the cursor, but don't take it upon us to change
+--- 1609,1615 ----
+      row2 = Y_2_ROW(y + h - 1);
+      col2 = X_2_COL(x + w - 1);
+  
+!     (void)gui_redraw_block(row1, col1, row2, col2, GUI_MON_NOCLEAR);
+  
+      /*
+       * We may need to redraw the cursor, but don't take it upon us to change
+***************
+*** 1620,1628 ****
+       */
+      if (gui.row == gui.cursor_row)
+  	gui_update_cursor(FALSE, TRUE);
+- 
+-     if (clipboard.state != SELECT_CLEARED)
+- 	clip_redraw_selection(x, y, w, h);
+  }
+  
+  /*
+--- 1620,1625 ----
+*** ../vim-5.7.5/src/ui.c	Sat Aug  5 15:43:46 2000
+--- src/ui.c	Sat Aug  5 15:33:18 2000
+***************
+*** 742,761 ****
+  }
+  
+  /*
+!  * Redraw the selection if character at "row,col" is inside of it.
+   */
+      void
+! clip_may_redraw_selection(row, col)
+!     int	row, col;
+  {
+      if (clipboard.state != SELECT_CLEARED
+! 	    && ((row == clipboard.start.lnum
+! 		    && col >= (int)clipboard.start.col)
+! 		|| row > clipboard.start.lnum)
+! 	    && ((row == clipboard.end.lnum
+! 		    && col < (int)clipboard.end.col)
+! 		|| row < clipboard.end.lnum))
+! 	clip_invert_area(row, col, row, col + 1);
+  }
+  
+  /*
+--- 742,768 ----
+  }
+  
+  /*
+!  * Redraw part of the selection if character at "row,col" is inside of it.
+   */
+      void
+! clip_may_redraw_selection(row, col, len)
+!     int		row, col;
+!     int		len;
+  {
++     int		start = col;
++     int		end = col + len;
++ 
+      if (clipboard.state != SELECT_CLEARED
+! 	    && row >= clipboard.start.lnum
+! 	    && row <= clipboard.end.lnum)
+!     {
+! 	if (row == clipboard.start.lnum && start < (int)clipboard.start.col)
+! 	    start = clipboard.start.col;
+! 	if (row == clipboard.end.lnum && end > (int)clipboard.end.col)
+! 	    end = clipboard.end.col;
+! 	if (end > start)
+! 	    clip_invert_area(row, start, row, end);
+!     }
+  }
+  
+  /*
+*** ../vim-5.7.5/src/proto/ui.pro	Sat Jun 24 11:19:16 2000
+--- src/proto/ui.pro	Sat Aug  5 15:33:41 2000
+***************
+*** 19,25 ****
+  void clip_start_selection __ARGS((int button, int x, int y, int repeated_click, int_u modifiers));
+  void clip_process_selection __ARGS((int button, int x, int y, int repeated_click, int_u modifiers));
+  void clip_redraw_selection __ARGS((int x, int y, int w, int h));
+! void clip_may_redraw_selection __ARGS((int row, int col));
+  void clip_clear_selection __ARGS((void));
+  void clip_may_clear_selection __ARGS((int row1, int row2));
+  void clip_scroll_selection __ARGS((int rows));
+--- 19,25 ----
+  void clip_start_selection __ARGS((int button, int x, int y, int repeated_click, int_u modifiers));
+  void clip_process_selection __ARGS((int button, int x, int y, int repeated_click, int_u modifiers));
+  void clip_redraw_selection __ARGS((int x, int y, int w, int h));
+! void clip_may_redraw_selection __ARGS((int row, int col, int len));
+  void clip_clear_selection __ARGS((void));
+  void clip_may_clear_selection __ARGS((int row1, int row2));
+  void clip_scroll_selection __ARGS((int rows));
+*** ../vim-5.7.5/src/version.c	Sat Aug  5 15:43:46 2000
+--- src/version.c	Sat Aug  5 15:42:30 2000
+***************
+*** 439,440 ****
+--- 439,442 ----
+  {   /* Add new patch number below this line */
++ /**/
++     6,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+126. You brag to all of your friends about your date Saturday night...but
+     you don't tell them it was only in a chat room.
+
+///  Bram Moolenaar     Bram@moolenaar.net     http://www.moolenaar.net  \\\
+\\\  Vim: http://www.vim.org      ICCF Holland: http://iccf-holland.org  ///
