@@ -1,6 +1,25 @@
 --- vim62/runtime/syntax/spec.vim.orig	2004-04-09 17:04:52.516737648 +0200
-+++ vim62/runtime/syntax/spec.vim	2004-04-09 19:06:54.492628120 +0200
-@@ -83,8 +83,9 @@
++++ vim62/runtime/syntax/spec.vim	2004-04-09 19:59:55.937974912 +0200
+@@ -15,7 +15,7 @@
+ 
+ syn sync minlines=1000
+ 
+-syn match specSpecialChar contained '[][!$()\\|>^;:{}]'
++syn match specSpecialChar contained '[][!$()\\|>^;:]'
+ syn match specColon       contained ':'
+ syn match specPercent     contained '%'
+ 
+@@ -23,7 +23,8 @@
+ syn match specVariables   contained '\${\w*}' contains=specSpecialVariablesNames,specSpecialChar
+ 
+ syn match specMacroIdentifier contained '%\h\w*' contains=specMacroNameLocal,specMacroNameOther,specPercent
+-syn match specMacroIdentifier contained '%{\w*}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
++"syn match specMacroIdentifier contained '%{\w*}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
++syn region specMacroIdentifier oneline matchgroup=Special start='%{' skip='\\}' end='}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
+ 
+ syn match specSpecialVariables contained '\$[0-9]\|\${[0-9]}'
+ syn match specCommandOpts      contained '\s\(-\w\+\|--\w[a-zA-Z_-]\+\)'ms=s+1
+@@ -83,8 +84,9 @@
  
  "One line macros - valid in all ScriptAreas
  "tip: remember do include new itens on specScriptArea's skip section
@@ -11,13 +30,12 @@
  
  "%% Files Section %%
  "TODO %config valid parameters: missingok\|noreplace
-@@ -105,7 +106,8 @@
+@@ -105,7 +107,7 @@
  "%% PreAmble Section %%
  "Copyright and Serial were deprecated by License and Epoch
  syn region specPreAmbleDeprecated oneline matchgroup=specError start='^\(Copyright\|Serial\)' end='$' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier
 -syn region specPreAmble oneline matchgroup=specCommand start='^\(Prereq\|Summary\|Name\|Version\|Packager\|Requires\|Icon\|URL\|Source\d*\|Patch\d*\|Prefix\|Packager\|Group\|License\|Release\|BuildRoot\|Distribution\|Vendor\|Provides\|ExclusiveArch\|ExcludeArch\|ExclusiveOS\|Obsoletes\|BuildArch\|BuildArchitectures\|BuildRequires\|BuildConflicts\|BuildPreReq\|Conflicts\|AutoRequires\|AutoReqProv\|AutoReq\|AutoProv\|Epoch\|NoSource\)' end='$' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier
-+" TODO: if starts with bcond macro, ends with "}". specSpecialChar messes here.
-+syn region specPreAmble oneline matchgroup=specCommand start='\(^\|\(^%{!\??with\(out\)\?_[a-zA-Z_]\+:\)\@<=\)\(Prereq\|Summary\|Name\|Version\|Packager\|Requires\|Icon\|URL\|Source\d*\|Patch\d*\|Prefix\|Packager\|Group\|License\|Release\|BuildRoot\|Distribution\|Vendor\|Provides\|ExclusiveArch\|ExcludeArch\|ExclusiveOS\|Obsoletes\|BuildArch\|BuildArchitectures\|BuildRequires\|BuildConflicts\|BuildPreReq\|Conflicts\|AutoRequires\|AutoReqProv\|AutoReq\|AutoProv\|Epoch\|NoSource\)' end='$' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
++syn region specPreAmble oneline matchgroup=specCommand start='\(^\|\(^%{!\??with\(out\)\?_[a-zA-Z_]\+:\)\@<=\)\(Prereq\|Summary\|Name\|Version\|Packager\|Requires\|Icon\|URL\|Source\d*\|Patch\d*\|Prefix\|Packager\|Group\|License\|Release\|BuildRoot\|Distribution\|Vendor\|Provides\|ExclusiveArch\|ExcludeArch\|ExclusiveOS\|Obsoletes\|BuildArch\|BuildArchitectures\|BuildRequires\|BuildConflicts\|BuildPreReq\|Conflicts\|AutoRequires\|AutoReqProv\|AutoReq\|AutoProv\|Epoch\|NoSource\)' end='$\|}\@=' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
  
  "%% Description Section %%
  syn region specDescriptionArea matchgroup=specSection start='^%description' end='^%'me=e-1 contains=specDescriptionOpts,specEmail,specURL,specNumber,specMacroIdentifier,specComment
@@ -30,3 +48,12 @@
  
  "%% Changelog Section %%
  syn region specChangelogArea matchgroup=specSection start='^%changelog' end='^%'me=e-1 contains=specEmail,specURL,specWeekday,specMonth,specNumber,specComment,specLicense
+@@ -132,7 +134,7 @@
+ syn match shComment contained '#.*$'
+ 
+ syn region shQuote1 contained matchgroup=shQuoteDelim start=+'+ skip=+\\'+ end=+'+ contains=specMacroIdentifier
+-syn region shQuote2 contained matchgroup=shQuoteDelim start=+"+ skip=+\\"+ end=+"+ contains=specVariables,specMacroIdentifier
++syn region shQuote2 contained matchgroup=shQuoteDelim start=+"+ skip=+\\"+ end=+"+ contains=specVariables,specMacroIdentifier,specSectionMacroBcondArea
+ 
+ syn match shOperator contained '[><|!&;]\|[!=]='
+ syn region shDo transparent matchgroup=specBlock start="\<do\>" end="\<done\>" contains=ALLBUT,shFunction,shDoError,shCase,specPreAmble,@specListedFiles
