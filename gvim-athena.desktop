@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=gvim
+Comment="The vi editor for X Windows"
+Comment[pl]="Edytor vi dla X Windows"
+Exec=gvim.athena
+Terminal=0
+Icon=gnome-word.png
+Type=Applications/Editors
+Type[pl]=Aplikacje/Edytory
