@@ -13,7 +13,7 @@
 # - add --with-modifiedby and --with-compiledby
 
 %define		_ver		6.2
-%define		_patchlevel	014
+%define		_patchlevel	021
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -68,6 +68,13 @@ Patch111:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.011
 Patch112:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.012
 Patch113:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.013
 Patch114:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.014
+Patch115:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.015
+Patch116:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.016
+Patch117:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.017
+Patch118:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.018
+Patch119:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.019
+Patch120:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.020
+Patch121:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.021
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -463,6 +470,13 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch112 -p0
 %patch113 -p0
 %patch114 -p0
+%patch115 -p0
+%patch116 -p0
+%patch117 -p0
+%patch118 -p0
+%patch119 -p0
+%patch120 -p0
+%patch121 -p0
 
 %patch0 -p1
 %{?_with_bonobo:%patch99 -p1}
