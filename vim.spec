@@ -43,9 +43,7 @@ BuildRequires:	gpm-devel
 %{!?_without_gtk:BuildRequires:	gtk+-devel}
 %{!?_without_gnome:BuildRequires:	gnome-libs-devel}
 %{!?_without_gnome:BuildRequires:	esound-devel}
-BuildRequires:	iconv
 Requires:	%{name}-rt = %{version}
-Requires:	iconv
 %{?_without_static:Requires:	%{name}-static = %{version}}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
