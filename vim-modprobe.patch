@@ -1,0 +1,11 @@
+--- runtime/filetype.vim~	2004-12-04 00:57:07.000000000 +0200
++++ runtime/filetype.vim	2004-12-15 17:35:10.000000000 +0200
+@@ -846,7 +846,7 @@
+ au BufNewFile,BufRead *.moo			setf moo
+ 
+ " Modconf
+-au BufNewFile,BufRead /etc/modules.conf,/etc/conf.modules	setf modconf
++au BufNewFile,BufRead /etc/modules.conf,/etc/conf.modules,/etc/modprobe.conf	setf modconf
+ au BufNewFile,BufRead /etc/modutils/*
+ 	\ if executable(expand("<afile>")) != 1 | setf modconf | endif
+ 
