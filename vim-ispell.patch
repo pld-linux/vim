@@ -1,7 +1,7 @@
-diff -burN vim62.orig/src/edit.c vim62/src/edit.c
---- vim62.orig/src/edit.c	2004-03-01 22:36:43.648638472 +0100
-+++ vim62/src/edit.c	2004-03-01 22:43:14.048288704 +0100
-@@ -654,7 +654,11 @@
+diff -burN -x '*.orig' vim-6.2.532.orig/src/edit.c vim-6.2.532/src/edit.c
+--- vim-6.2.532.orig/src/edit.c	2004-05-08 08:55:12.000000000 +0200
++++ vim-6.2.532/src/edit.c	2004-05-08 09:25:12.218962464 +0200
+@@ -659,7 +659,11 @@
  	if ((c == Ctrl_V || c == Ctrl_Q) && ctrl_x_mode == CTRL_X_CMDLINE)
  	    goto docomplete;
  #endif
@@ -14,7 +14,7 @@ diff -burN vim62.orig/src/edit.c vim62/src/edit.c
  	{
  	    ins_ctrl_v();
  	    c = Ctrl_V;	/* pretend CTRL-V is last typed character */
-@@ -1220,6 +1224,20 @@
+@@ -1229,6 +1233,20 @@
  		continue_status = 0;
  	    break;
  #endif /* FEAT_INS_EXPAND */
@@ -35,10 +35,10 @@ diff -burN vim62.orig/src/edit.c vim62/src/edit.c
  
  	case Ctrl_Y:		/* copy from previous line or scroll down */
  	case Ctrl_E:		/* copy from next line	   or scroll up */
-diff -burN vim62.orig/src/eval.c vim62/src/eval.c
---- vim62.orig/src/eval.c	2004-03-01 22:36:43.651638016 +0100
-+++ vim62/src/eval.c	2004-03-01 22:43:14.085283080 +0100
-@@ -4942,6 +4942,9 @@
+diff -burN -x '*.orig' vim-6.2.532.orig/src/eval.c vim-6.2.532/src/eval.c
+--- vim-6.2.532.orig/src/eval.c	2004-05-08 08:55:12.000000000 +0200
++++ vim-6.2.532/src/eval.c	2004-05-08 09:25:12.235959880 +0200
+@@ -4998,6 +4998,9 @@
  #ifdef FEAT_SNIFF
  	"sniff",
  #endif
@@ -48,9 +48,9 @@ diff -burN vim62.orig/src/eval.c vim62/src/eval.c
  #ifdef FEAT_STL_OPT
  	"statusline",
  #endif
-diff -burN vim62.orig/src/ex_cmds.h vim62/src/ex_cmds.h
---- vim62.orig/src/ex_cmds.h	2004-03-01 22:36:43.680633608 +0100
-+++ vim62/src/ex_cmds.h	2004-03-01 22:43:14.109279432 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/ex_cmds.h vim-6.2.532/src/ex_cmds.h
+--- vim-6.2.532.orig/src/ex_cmds.h	2004-05-08 08:55:12.000000000 +0200
++++ vim-6.2.532/src/ex_cmds.h	2004-05-08 09:25:12.241958968 +0200
 @@ -726,6 +726,8 @@
  			BANG|FILE1|TRLBAR|SBOXOK|CMDWIN),
  EX(CMD_split,		"split",	ex_splitview,
@@ -60,10 +60,10 @@ diff -burN vim62.orig/src/ex_cmds.h vim62/src/ex_cmds.h
  EX(CMD_sprevious,	"sprevious",	ex_previous,
  			EXTRA|RANGE|NOTADR|COUNT|BANG|EDITCMD|ARGOPT|TRLBAR),
  EX(CMD_srewind,		"srewind",	ex_rewind,
-diff -burN vim62.orig/src/ex_docmd.c vim62/src/ex_docmd.c
---- vim62.orig/src/ex_docmd.c	2004-03-01 22:36:43.717627984 +0100
-+++ vim62/src/ex_docmd.c	2004-03-01 22:43:14.144274112 +0100
-@@ -214,6 +214,9 @@
+diff -burN -x '*.orig' vim-6.2.532.orig/src/ex_docmd.c vim-6.2.532/src/ex_docmd.c
+--- vim-6.2.532.orig/src/ex_docmd.c	2004-05-08 08:55:13.000000000 +0200
++++ vim-6.2.532/src/ex_docmd.c	2004-05-08 09:25:12.266955168 +0200
+@@ -220,6 +220,9 @@
  #ifndef FEAT_SYN_HL
  # define ex_syntax		ex_ni
  #endif
@@ -71,9 +71,9 @@ diff -burN vim62.orig/src/ex_docmd.c vim62/src/ex_docmd.c
 +# define ex_spell		ex_ni
 +#endif
  #ifndef FEAT_PERL
- # define ex_perl		ex_ni
+ # define ex_perl		ex_script_ni
  # define ex_perldo		ex_ni
-@@ -3389,6 +3392,12 @@
+@@ -3404,6 +3407,12 @@
  	    set_context_in_syntax_cmd(xp, arg);
  	    break;
  #endif
@@ -86,9 +86,9 @@ diff -burN vim62.orig/src/ex_docmd.c vim62/src/ex_docmd.c
  #ifdef FEAT_EVAL
  	case CMD_let:
  	case CMD_if:
-diff -burN vim62.orig/src/feature.h vim62/src/feature.h
---- vim62.orig/src/feature.h	2004-03-01 22:36:43.377679664 +0100
-+++ vim62/src/feature.h	2004-03-01 22:43:14.169270312 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/feature.h vim-6.2.532/src/feature.h
+--- vim-6.2.532.orig/src/feature.h	2004-05-08 08:55:11.000000000 +0200
++++ vim-6.2.532/src/feature.h	2004-05-08 09:25:12.271954408 +0200
 @@ -314,6 +314,11 @@
  #   define FEAT_RIGHTLEFT
  # endif
@@ -101,10 +101,10 @@ diff -burN vim62.orig/src/feature.h vim62/src/feature.h
  
  /*
   * +arabic		Arabic keymap and shaping support.
-diff -burN vim62.orig/src/globals.h vim62/src/globals.h
---- vim62.orig/src/globals.h	2004-03-01 22:36:43.705629808 +0100
-+++ vim62/src/globals.h	2004-03-01 22:43:14.172269856 +0100
-@@ -846,6 +846,9 @@
+diff -burN -x '*.orig' vim-6.2.532.orig/src/globals.h vim-6.2.532/src/globals.h
+--- vim-6.2.532.orig/src/globals.h	2004-05-08 08:55:13.000000000 +0200
++++ vim-6.2.532/src/globals.h	2004-05-08 09:25:12.274953952 +0200
+@@ -872,6 +872,9 @@
  #ifdef USE_TERM_CONSOLE
  EXTERN int	term_console INIT(= FALSE); /* set to TRUE when console used */
  #endif
@@ -114,10 +114,10 @@ diff -burN vim62.orig/src/globals.h vim62/src/globals.h
  EXTERN int	termcap_active INIT(= FALSE);	/* set by starttermcap() */
  EXTERN int	cur_tmode INIT(= TMODE_COOK);	/* input terminal mode */
  EXTERN int	bangredo INIT(= FALSE);	    /* set to TRUE whith ! command */
-diff -burN vim62.orig/src/main.c vim62/src/main.c
---- vim62.orig/src/main.c	2004-03-01 22:36:43.668635432 +0100
-+++ vim62/src/main.c	2004-03-01 22:57:05.472892952 +0100
-@@ -2222,6 +2222,10 @@
+diff -burN -x '*.orig' vim-6.2.532.orig/src/main.c vim-6.2.532/src/main.c
+--- vim-6.2.532.orig/src/main.c	2004-05-08 08:55:12.000000000 +0200
++++ vim-6.2.532/src/main.c	2004-05-08 09:25:12.279953192 +0200
+@@ -2245,6 +2245,10 @@
  	write_viminfo(NULL, FALSE);
  #endif
  
@@ -128,10 +128,10 @@ diff -burN vim62.orig/src/main.c vim62/src/main.c
  #ifdef FEAT_AUTOCMD
      apply_autocmds(EVENT_VIMLEAVE, NULL, NULL, FALSE, curbuf);
  #endif
-diff -burN vim62.orig/src/Makefile vim62/src/Makefile
---- vim62.orig/src/Makefile	2004-03-01 22:36:43.325687568 +0100
-+++ vim62/src/Makefile	2004-03-01 22:43:16.557907184 +0100
-@@ -1188,6 +1188,22 @@
+diff -burN -x '*.orig' vim-6.2.532.orig/src/Makefile vim-6.2.532/src/Makefile
+--- vim-6.2.532.orig/src/Makefile	2004-05-08 08:55:11.000000000 +0200
++++ vim-6.2.532/src/Makefile	2004-05-08 09:25:12.286952128 +0200
+@@ -1234,6 +1234,22 @@
  # Use this for cproto 3 patchlevel 7 or above (use "cproto -V" to check):
  PROTO_FLAGS = -m -M__ARGS -d -E"$(CPP)" $(NO_ATTR)
  
@@ -154,7 +154,7 @@ diff -burN vim62.orig/src/Makefile vim62/src/Makefile
  
  ################################################
  ##   no changes required below this line      ##
-@@ -1198,7 +1214,7 @@
+@@ -1244,7 +1260,7 @@
  .SUFFIXES:
  .SUFFIXES: .cc .c .o .pro
  
@@ -163,7 +163,7 @@ diff -burN vim62.orig/src/Makefile vim62/src/Makefile
  POST_DEFS = $(X_CFLAGS) $(PERL_CFLAGS) $(PYTHON_CFLAGS) $(TCL_CFLAGS) $(RUBY_CFLAGS) $(EXTRA_DEFS)
  
  ALL_CFLAGS = $(PRE_DEFS) $(CFLAGS) $(PROFILE_CFLAGS) $(POST_DEFS)
-@@ -1280,6 +1296,7 @@
+@@ -1326,6 +1342,7 @@
  	screen.c \
  	search.c \
  	syntax.c \
@@ -171,7 +171,7 @@ diff -burN vim62.orig/src/Makefile vim62/src/Makefile
  	tag.c \
  	term.c \
  	ui.c \
-@@ -1346,6 +1363,7 @@
+@@ -1392,6 +1409,7 @@
  	objects/screen.o \
  	objects/search.o \
  	objects/syntax.o \
@@ -179,7 +179,7 @@ diff -burN vim62.orig/src/Makefile vim62/src/Makefile
  	$(SNIFF_OBJ) \
  	objects/tag.o \
  	objects/term.o \
-@@ -2300,6 +2318,9 @@
+@@ -2392,6 +2410,9 @@
  objects/undo.o: undo.c
  	$(CCC) -o $@ undo.c
  
@@ -189,7 +189,7 @@ diff -burN vim62.orig/src/Makefile vim62/src/Makefile
  objects/window.o: window.c
  	$(CCC) -o $@ window.c
  
-@@ -2533,6 +2554,9 @@
+@@ -2649,6 +2670,9 @@
   auto/osdef.h ascii.h keymap.h term.h macros.h structs.h regexp.h \
   gui.h gui_beval.h proto/gui_beval.pro option.h ex_cmds.h proto.h \
   globals.h farsi.h arabic.h
@@ -199,7 +199,7 @@ diff -burN vim62.orig/src/Makefile vim62/src/Makefile
  objects/syntax.o: syntax.c vim.h auto/config.h feature.h os_unix.h \
   auto/osdef.h ascii.h keymap.h term.h macros.h structs.h regexp.h \
   gui.h gui_beval.h proto/gui_beval.pro option.h ex_cmds.h proto.h \
-@@ -2681,3 +2705,26 @@
+@@ -2815,3 +2839,26 @@
   auto/osdef.h ascii.h keymap.h term.h macros.h structs.h regexp.h \
   gui.h gui_beval.h proto/gui_beval.pro option.h ex_cmds.h proto.h \
   globals.h farsi.h arabic.h version.h
@@ -226,9 +226,9 @@ diff -burN vim62.orig/src/Makefile vim62/src/Makefile
 + 
 +objects/util.o: spell/util.c spell/config.h spell/ispell.h spell/i_proto.h spell/local.h
 +	$(CC) -c $(SPELL_CFLAGS) spell/util.c -o objects/util.o
-diff -burN vim62.orig/src/normal.c vim62/src/normal.c
---- vim62.orig/src/normal.c	2004-03-01 22:36:43.334686200 +0100
-+++ vim62/src/normal.c	2004-03-01 22:43:16.611898976 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/normal.c vim-6.2.532/src/normal.c
+--- vim-6.2.532.orig/src/normal.c	2004-05-08 08:55:11.000000000 +0200
++++ vim-6.2.532/src/normal.c	2004-05-08 09:25:12.304949392 +0200
 @@ -84,6 +84,10 @@
  #ifdef FEAT_VISUAL
  static int	get_visual_text __ARGS((cmdarg_T *cap, char_u **pp, int *lenp));
@@ -240,7 +240,7 @@ diff -burN vim62.orig/src/normal.c vim62/src/normal.c
  static void	nv_tagpop __ARGS((cmdarg_T *cap));
  static void	nv_scroll __ARGS((cmdarg_T *cap));
  static void	nv_right __ARGS((cmdarg_T *cap));
-@@ -231,9 +235,17 @@
+@@ -232,9 +236,17 @@
      {Ctrl_N,	nv_down,	NV_STS,			FALSE},
      {Ctrl_O,	nv_ctrlo,	0,			0},
      {Ctrl_P,	nv_up,		NV_STS,			FALSE},
@@ -258,7 +258,7 @@ diff -burN vim62.orig/src/normal.c vim62/src/normal.c
      {Ctrl_T,	nv_tagpop,	NV_NCW,			0},
      {Ctrl_U,	nv_halfpage,	0,			0},
  #ifdef FEAT_VISUAL
-@@ -7686,6 +7698,28 @@
+@@ -7834,6 +7846,28 @@
  #endif
  }
  
@@ -287,9 +287,9 @@ diff -burN vim62.orig/src/normal.c vim62/src/normal.c
  #ifdef FEAT_VISUAL
  /*
   * In exclusive Visual mode, may include the last character.
-diff -burN vim62.orig/src/option.c vim62/src/option.c
---- vim62.orig/src/option.c	2004-03-01 22:36:43.724626920 +0100
-+++ vim62/src/option.c	2004-03-01 22:43:16.645893808 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/option.c vim-6.2.532/src/option.c
+--- vim-6.2.532.orig/src/option.c	2004-05-08 08:55:13.000000000 +0200
++++ vim-6.2.532/src/option.c	2004-05-08 09:43:59.312618184 +0200
 @@ -121,6 +121,8 @@
      , PV_SW
      , PV_SWF
@@ -310,16 +310,16 @@ diff -burN vim62.orig/src/option.c vim62/src/option.c
  static long	p_ts;
  static long	p_tw;
  static int	p_tx;
-@@ -1071,7 +1077,7 @@
+@@ -1072,7 +1078,7 @@
  			    {(char_u *)FALSE, (char_u *)0L}},
      {"highlight",   "hl",   P_STRING|P_VI_DEF|P_RCLR|P_COMMA|P_NODUP,
  			    (char_u *)&p_hl, PV_NONE,
--			    {(char_u *)"8:SpecialKey,@:NonText,d:Directory,e:ErrorMsg,i:IncSearch,l:Search,m:MoreMsg,M:ModeMsg,n:LineNr,r:Question,s:StatusLine,S:StatusLineNC,c:VertSplit,t:Title,v:Visual,V:VisualNOS,w:WarningMsg,W:WildMenu,f:Folded,F:FoldColumn,A:DiffAdd,C:DiffChange,D:DiffDelete,T:DiffText",
-+			    {(char_u *)"8:SpecialKey,@:NonText,d:Directory,e:ErrorMsg,i:IncSearch,l:Search,m:MoreMsg,M:ModeMsg,n:LineNr,r:Question,s:StatusLine,S:StatusLineNC,c:VertSplit,t:Title,v:Visual,V:VisualNOS,w:WarningMsg,W:WildMenu,f:Folded,F:FoldColumn,A:DiffAdd,C:DiffChange,D:DiffDelete,T:DiffText,Z:Spell",
+-			    {(char_u *)"8:SpecialKey,@:NonText,d:Directory,e:ErrorMsg,i:IncSearch,l:Search,m:MoreMsg,M:ModeMsg,n:LineNr,r:Question,s:StatusLine,S:StatusLineNC,c:VertSplit,t:Title,v:Visual,V:VisualNOS,w:WarningMsg,W:WildMenu,f:Folded,F:FoldColumn,A:DiffAdd,C:DiffChange,D:DiffDelete,T:DiffText,>:SignColumn",
++			    {(char_u *)"8:SpecialKey,@:NonText,d:Directory,e:ErrorMsg,i:IncSearch,l:Search,m:MoreMsg,M:ModeMsg,n:LineNr,r:Question,s:StatusLine,S:StatusLineNC,c:VertSplit,t:Title,v:Visual,V:VisualNOS,w:WarningMsg,W:WildMenu,f:Folded,F:FoldColumn,A:DiffAdd,C:DiffChange,D:DiffDelete,T:DiffText,>:SignColumn,Z:Spell",
  				(char_u *)0L}},
      {"history",	    "hi",   P_NUM|P_VIM,
  			    (char_u *)&p_hi, PV_NONE,
-@@ -1336,6 +1342,13 @@
+@@ -1337,6 +1343,13 @@
  			    (char_u *)NULL, PV_NONE,
  #endif
  			    {(char_u *)"", (char_u *)0L}},
@@ -333,7 +333,7 @@ diff -burN vim62.orig/src/option.c vim62/src/option.c
      {"laststatus",  "ls",   P_NUM|P_VI_DEF|P_RALL,
  #ifdef FEAT_WINDOWS
  			    (char_u *)&p_ls, PV_NONE,
-@@ -1934,6 +1947,14 @@
+@@ -1935,6 +1948,14 @@
      {"sourceany",   NULL,   P_BOOL|P_VI_DEF,
  			    (char_u *)NULL, PV_NONE,
  			    {(char_u *)FALSE, (char_u *)0L}},
@@ -348,7 +348,7 @@ diff -burN vim62.orig/src/option.c vim62/src/option.c
      {"splitbelow",  "sb",   P_BOOL|P_VI_DEF,
  #ifdef FEAT_WINDOWS
  			    (char_u *)&p_sb, PV_NONE,
-@@ -4770,6 +4791,26 @@
+@@ -4815,6 +4836,26 @@
  	    errmsg = e_invarg;
      }
  #endif
@@ -375,7 +375,7 @@ diff -burN vim62.orig/src/option.c vim62/src/option.c
  
  #ifdef FEAT_MBYTE
      /* 'encoding' and 'fileencoding' */
-@@ -7842,6 +7883,10 @@
+@@ -7921,6 +7962,10 @@
  #ifdef FEAT_SYN_HL
  	case PV_SYN:	return (char_u *)&(curbuf->b_p_syn);
  #endif
@@ -386,10 +386,10 @@ diff -burN vim62.orig/src/option.c vim62/src/option.c
  	case PV_SW:	return (char_u *)&(curbuf->b_p_sw);
  	case PV_TS:	return (char_u *)&(curbuf->b_p_ts);
  	case PV_TW:	return (char_u *)&(curbuf->b_p_tw);
-diff -burN vim62.orig/src/option.h vim62/src/option.h
---- vim62.orig/src/option.h	2004-03-01 22:36:43.726626616 +0100
-+++ vim62/src/option.h	2004-03-01 22:43:16.649893200 +0100
-@@ -375,6 +375,8 @@
+diff -burN -x '*.orig' vim-6.2.532.orig/src/option.h vim-6.2.532/src/option.h
+--- vim-6.2.532.orig/src/option.h	2004-05-08 08:55:13.000000000 +0200
++++ vim-6.2.532/src/option.h	2004-05-08 09:25:23.884189080 +0200
+@@ -385,6 +385,8 @@
  EXTERN char_u	*p_dex;		/* 'diffexpr' */
  # endif
  #endif
@@ -398,18 +398,18 @@ diff -burN vim62.orig/src/option.h vim62/src/option.h
  #ifdef FEAT_INS_EXPAND
  EXTERN char_u	*p_dict;	/* 'dictionary' */
  #endif
-diff -burN vim62.orig/src/proto/spell.pro vim62/src/proto/spell.pro
---- vim62.orig/src/proto/spell.pro	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/proto/spell.pro	2004-03-01 22:43:16.651892896 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/proto/spell.pro vim-6.2.532/src/proto/spell.pro
+--- vim-6.2.532.orig/src/proto/spell.pro	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/proto/spell.pro	2004-05-08 09:25:23.885188928 +0200
 @@ -0,0 +1,5 @@
 +int  reload_dict(void);
 +void ex_spell(exarg_T *eap);
 +int  get_spell_attr(colnr_T spell_col, colnr_T col, char_u	*line);
 +int  set_to_private_dict(char *line, int cursor_col, int convert_to_lower);
 +void spell_save_private_dict(void);
-diff -burN vim62.orig/src/proto.h vim62/src/proto.h
---- vim62.orig/src/proto.h	2004-03-01 22:36:43.736625096 +0100
-+++ vim62/src/proto.h	2004-03-01 22:43:16.652892744 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/proto.h vim-6.2.532/src/proto.h
+--- vim-6.2.532.orig/src/proto.h	2004-05-08 08:55:13.000000000 +0200
++++ vim-6.2.532/src/proto.h	2004-05-08 09:25:23.887188624 +0200
 @@ -72,6 +72,9 @@
  #  include "os_qnx.pro"
  # endif
@@ -420,10 +420,10 @@ diff -burN vim62.orig/src/proto.h vim62/src/proto.h
  # include "buffer.pro"
  # include "charset.pro"
  # ifdef FEAT_CSCOPE
-diff -burN vim62.orig/src/screen.c vim62/src/screen.c
---- vim62.orig/src/screen.c	2004-03-01 22:36:43.642639384 +0100
-+++ vim62/src/screen.c	2004-03-01 22:43:16.681888336 +0100
-@@ -115,6 +115,9 @@
+diff -burN -x '*.orig' vim-6.2.532.orig/src/screen.c vim-6.2.532/src/screen.c
+--- vim-6.2.532.orig/src/screen.c	2004-05-08 08:55:12.000000000 +0200
++++ vim-6.2.532/src/screen.c	2004-05-08 09:25:23.901186496 +0200
+@@ -118,6 +118,9 @@
  static match_T match_hl;	/* used for ":match" highlight matching */
  #endif
  
@@ -433,7 +433,7 @@ diff -burN vim62.orig/src/screen.c vim62/src/screen.c
  #ifdef FEAT_FOLDING
  static foldinfo_T win_foldinfo;	/* info for 'foldcolumn' */
  #endif
-@@ -2468,6 +2471,9 @@
+@@ -2537,6 +2540,9 @@
      int		has_syntax = FALSE;	/* this buffer has syntax highl. */
      int		save_did_emsg;
  #endif
@@ -443,7 +443,7 @@ diff -burN vim62.orig/src/screen.c vim62/src/screen.c
      int		extra_check;		/* has syntax or linebreak */
  #ifdef FEAT_MBYTE
      int		multi_attr = 0;		/* attributes desired by multibyte */
-@@ -2546,8 +2552,18 @@
+@@ -2615,8 +2621,18 @@
  #else
      extra_check = 0;
  #endif
@@ -463,7 +463,7 @@ diff -burN vim62.orig/src/screen.c vim62/src/screen.c
      {
  	/* Prepare for syntax highlighting in this line.  When there is an
  	 * error, stop syntax highlighting. */
-@@ -3198,6 +3214,10 @@
+@@ -3263,6 +3279,10 @@
  	    else if (search_attr == 0 && has_syntax)
  		char_attr = syntax_attr;
  #endif
@@ -474,7 +474,7 @@ diff -burN vim62.orig/src/screen.c vim62/src/screen.c
  	    else
  		char_attr = search_attr;
  
-@@ -3512,6 +3532,17 @@
+@@ -3577,6 +3597,17 @@
  			char_attr = syntax_attr;
  		}
  #endif
@@ -492,9 +492,9 @@ diff -burN vim62.orig/src/screen.c vim62/src/screen.c
  #ifdef FEAT_LINEBREAK
  		/*
  		 * Found last space before word: check for line break
-diff -burN vim62.orig/src/spell/config.h vim62/src/spell/config.h
---- vim62.orig/src/spell/config.h	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/config.h	2004-03-01 22:43:16.704884840 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/config.h vim-6.2.532/src/spell/config.h
+--- vim-6.2.532.orig/src/spell/config.h	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/config.h	2004-05-08 09:25:23.929182240 +0200
 @@ -0,0 +1,846 @@
 +#include "local.h"	/* local definitions for options */
 +
@@ -1342,9 +1342,9 @@ diff -burN vim62.orig/src/spell/config.h vim62/src/spell/config.h
 +#endif /* COUNTSUFFIX */
 +#define SIGNAL_TYPE_STRING "void"
 +#define MASKTYPE_STRING "long"
-diff -burN vim62.orig/src/spell/good.c vim62/src/spell/good.c
---- vim62.orig/src/spell/good.c	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/good.c	2004-03-01 22:43:16.721882256 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/good.c vim-6.2.532/src/spell/good.c
+--- vim-6.2.532.orig/src/spell/good.c	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/good.c	2004-05-08 09:25:23.933181632 +0200
 @@ -0,0 +1,400 @@
 +#ifndef lint
 +static char Rcs_Id[] =
@@ -1746,9 +1746,9 @@ diff -burN vim62.orig/src/spell/good.c vim62/src/spell/good.c
 +    if (sufflag > 0)
 +	(void) putchar (sufflag);
 +}
-diff -burN vim62.orig/src/spell/hash.c vim62/src/spell/hash.c
---- vim62.orig/src/spell/hash.c	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/hash.c	2004-03-01 22:43:16.722882104 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/hash.c vim-6.2.532/src/spell/hash.c
+--- vim-6.2.532.orig/src/spell/hash.c	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/hash.c	2004-05-08 09:25:23.934181480 +0200
 @@ -0,0 +1,91 @@
 +/*
 + * hash.c - a simple hash function for ispell
@@ -1841,9 +1841,9 @@ diff -burN vim62.orig/src/spell/hash.c vim62/src/spell/hash.c
 +	}
 +    return (unsigned long) h % hashtblsize;
 +}
-diff -burN vim62.orig/src/spell/i_proto.h vim62/src/spell/i_proto.h
---- vim62.orig/src/spell/i_proto.h	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/i_proto.h	2004-03-01 22:43:16.724881800 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/i_proto.h vim-6.2.532/src/spell/i_proto.h
+--- vim-6.2.532.orig/src/spell/i_proto.h	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/i_proto.h	2004-05-08 09:25:23.936181176 +0200
 @@ -0,0 +1,112 @@
 +Global int	addvheader (struct dent * ent);
 +Global void	askmode (void);
@@ -1957,9 +1957,9 @@ diff -burN vim62.orig/src/spell/i_proto.h vim62/src/spell/i_proto.h
 +Global int insert(register ichar_t *	word);
 +Global char * linit (char *);
 +Global char * last_slash (char *file);
-diff -burN vim62.orig/src/spell/ispell.h vim62/src/spell/ispell.h
---- vim62.orig/src/spell/ispell.h	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/ispell.h	2004-03-01 22:43:16.728881192 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/ispell.h vim-6.2.532/src/spell/ispell.h
+--- vim-6.2.532.orig/src/spell/ispell.h	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/ispell.h	2004-05-08 09:25:23.940180568 +0200
 @@ -0,0 +1,611 @@
 +/*
 + * $Id$
@@ -2572,9 +2572,9 @@ diff -burN vim62.orig/src/spell/ispell.h vim62/src/spell/ispell.h
 +S_INIT (char LaTeX_Mode, 'P');
 +
 +#include "i_proto.h"
-diff -burN vim62.orig/src/spell/local.h vim62/src/spell/local.h
---- vim62.orig/src/spell/local.h	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/local.h	2004-03-01 22:43:16.731880736 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/local.h vim-6.2.532/src/spell/local.h
+--- vim-6.2.532.orig/src/spell/local.h	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/local.h	2004-05-08 09:25:23.942180264 +0200
 @@ -0,0 +1,338 @@
 +/*
 + * Written by Eli Zaretskii <eliz@is.elta.co.il>
@@ -2914,9 +2914,9 @@ diff -burN vim62.orig/src/spell/local.h vim62/src/spell/local.h
 +#define HASHSUFFIX	".hash"
 +#define STATSUFFIX	".sta"
 +#define COUNTSUFFIX	".cnt"
-diff -burN vim62.orig/src/spell/lookup.c vim62/src/spell/lookup.c
---- vim62.orig/src/spell/lookup.c	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/lookup.c	2004-03-01 22:43:16.734880280 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/lookup.c vim-6.2.532/src/spell/lookup.c
+--- vim-6.2.532.orig/src/spell/lookup.c	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/lookup.c	2004-05-08 09:25:23.945179808 +0200
 @@ -0,0 +1,534 @@
 +#ifndef lint
 +static char Rcs_Id[] =
@@ -3452,9 +3452,9 @@ diff -burN vim62.orig/src/spell/lookup.c vim62/src/spell/lookup.c
 +    else
 +	return NULL;
 +}
-diff -burN vim62.orig/src/spell/makedent.c vim62/src/spell/makedent.c
---- vim62.orig/src/spell/makedent.c	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/makedent.c	2004-03-01 22:43:16.755877088 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/makedent.c vim-6.2.532/src/spell/makedent.c
+--- vim-6.2.532.orig/src/spell/makedent.c	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/makedent.c	2004-05-08 09:25:23.953178592 +0200
 @@ -0,0 +1,1107 @@
 +/*
 + * Copyright 1988, 1989, 1992, 1993, Geoff Kuenning, Granada Hills, CA
@@ -4563,9 +4563,9 @@ diff -burN vim62.orig/src/spell/makedent.c vim62/src/spell/makedent.c
 +       }
 +    return(NULL);
 +}
-diff -burN vim62.orig/src/spell/msgs.h vim62/src/spell/msgs.h
---- vim62.orig/src/spell/msgs.h	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/msgs.h	2004-03-01 22:43:16.758876632 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/msgs.h vim-6.2.532/src/spell/msgs.h
+--- vim-6.2.532.orig/src/spell/msgs.h	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/msgs.h	2004-05-08 09:25:23.956178136 +0200
 @@ -0,0 +1,278 @@
 +/*
 + * $Id$
@@ -4845,9 +4845,9 @@ diff -burN vim62.orig/src/spell/msgs.h vim62/src/spell/msgs.h
 + */
 +#define UNSQ_C_BAD_COUNT	"Illegal count character 0x%x\n"
 +#define UNSQ_C_SURPRISE_EOF	"Unexpected EOF\n"
-diff -burN vim62.orig/src/spell/tgood.c vim62/src/spell/tgood.c
---- vim62.orig/src/spell/tgood.c	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/tgood.c	2004-03-01 22:43:16.762876024 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/tgood.c vim-6.2.532/src/spell/tgood.c
+--- vim-6.2.532.orig/src/spell/tgood.c	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/tgood.c	2004-05-08 09:25:23.960177528 +0200
 @@ -0,0 +1,654 @@
 +/*
 + * Copyright 1987, 1988, 1989, 1992, 1993, Geoff Kuenning, Granada Hills, CA
@@ -5503,9 +5503,9 @@ diff -burN vim62.orig/src/spell/tgood.c vim62/src/spell/tgood.c
 +    for (  ;  --len >= 0;  dst++)
 +	*dst = mytolower (*dst);
 +    }
-diff -burN vim62.orig/src/spell/tree.c vim62/src/spell/tree.c
---- vim62.orig/src/spell/tree.c	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/tree.c	2004-03-01 22:43:16.766875416 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/tree.c vim-6.2.532/src/spell/tree.c
+--- vim-6.2.532.orig/src/spell/tree.c	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/tree.c	2004-05-08 09:25:23.964176920 +0200
 @@ -0,0 +1,748 @@
 +/*
 + * tree.c - a hash style dictionary for user's personal words
@@ -6255,9 +6255,9 @@ diff -burN vim62.orig/src/spell/tree.c vim62/src/spell/tree.c
 +    return NULL;
 +}
 +#endif /* REGEX_LOOKUP */
-diff -burN vim62.orig/src/spell/util.c vim62/src/spell/util.c
---- vim62.orig/src/spell/util.c	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/util.c	2004-03-01 22:43:16.768875112 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/util.c vim-6.2.532/src/spell/util.c
+--- vim-6.2.532.orig/src/spell/util.c	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/util.c	2004-05-08 09:25:23.966176616 +0200
 @@ -0,0 +1,351 @@
 +#include <ctype.h>
 +#include "ispell.h"
@@ -6610,9 +6610,9 @@ diff -burN vim62.orig/src/spell/util.c vim62/src/spell/util.c
 +       }
 +    return(NULL);
 +}
-diff -burN vim62.orig/src/spell/version.h vim62/src/spell/version.h
---- vim62.orig/src/spell/version.h	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/version.h	2004-03-01 22:43:16.770874808 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/version.h vim-6.2.532/src/spell/version.h
+--- vim-6.2.532.orig/src/spell/version.h	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/version.h	2004-05-08 09:25:23.968176312 +0200
 @@ -0,0 +1,124 @@
 +/*
 + * Since the strings in this file are printed out when the "-v" switch is
@@ -6738,9 +6738,9 @@ diff -burN vim62.orig/src/spell/version.h vim62/src/spell/version.h
 + * Get rid of all old RCS log lines in preparation for the 3.1 release.
 + *
 + */
-diff -burN vim62.orig/src/spell/wm.h vim62/src/spell/wm.h
---- vim62.orig/src/spell/wm.h	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell/wm.h	2004-03-01 22:43:16.770874808 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell/wm.h vim-6.2.532/src/spell/wm.h
+--- vim-6.2.532.orig/src/spell/wm.h	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell/wm.h	2004-05-08 09:25:23.969176160 +0200
 @@ -0,0 +1,12 @@
 +#ifndef Public
 +enum _logical {False,True};
@@ -6754,9 +6754,9 @@ diff -burN vim62.orig/src/spell/wm.h vim62/src/spell/wm.h
 +#define Public 
 +#define Local static
 +#endif
-diff -burN vim62.orig/src/spell.c vim62/src/spell.c
---- vim62.orig/src/spell.c	1970-01-01 01:00:00.000000000 +0100
-+++ vim62/src/spell.c	2004-03-01 22:43:16.772874504 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/spell.c vim-6.2.532/src/spell.c
+--- vim-6.2.532.orig/src/spell.c	1970-01-01 01:00:00.000000000 +0100
++++ vim-6.2.532/src/spell.c	2004-05-08 09:25:23.970176008 +0200
 @@ -0,0 +1,183 @@
 +#include "spell/wm.h"
 +#include "vim.h"
@@ -6941,10 +6941,10 @@ diff -burN vim62.orig/src/spell.c vim62/src/spell.c
 +	treeoutput ();
 +}
 +#endif
-diff -burN vim62.orig/src/syntax.c vim62/src/syntax.c
---- vim62.orig/src/syntax.c	2004-03-01 22:36:43.675634368 +0100
-+++ vim62/src/syntax.c	2004-03-01 22:43:16.806869336 +0100
-@@ -5921,6 +5921,9 @@
+diff -burN -x '*.orig' vim-6.2.532.orig/src/syntax.c vim-6.2.532/src/syntax.c
+--- vim-6.2.532.orig/src/syntax.c	2004-05-08 08:55:12.000000000 +0200
++++ vim-6.2.532/src/syntax.c	2004-05-08 09:25:23.987173424 +0200
+@@ -5922,6 +5922,9 @@
  	"VertSplit term=reverse cterm=reverse gui=reverse",
  	"Visual term=reverse cterm=reverse gui=reverse guifg=Grey guibg=fg",
  	"VisualNOS term=underline,bold cterm=underline,bold gui=underline,bold",
@@ -6954,9 +6954,9 @@ diff -burN vim62.orig/src/syntax.c vim62/src/syntax.c
  	"DiffText term=reverse cterm=bold ctermbg=Red gui=bold guibg=Red",
  	NULL
      };
-@@ -5940,6 +5943,9 @@
- 	"Folded term=standout ctermbg=Grey ctermfg=DarkBlue guibg=LightGrey guifg=DarkBlue",
+@@ -5942,6 +5945,9 @@
  	"FoldColumn term=standout ctermbg=Grey ctermfg=DarkBlue guibg=Grey guifg=DarkBlue",
+ 	"SignColumn term=standout ctermbg=Grey ctermfg=DarkBlue guibg=Grey guifg=DarkBlue",
  	"DiffAdd term=bold ctermbg=LightBlue guibg=LightBlue",
 +#ifdef FEAT_SPELL_HL
 +  	"Spell term=reverse ctermbg=NONE ctermfg=White guibg=NONE guifg=Red",
@@ -6964,9 +6964,9 @@ diff -burN vim62.orig/src/syntax.c vim62/src/syntax.c
  	"DiffChange term=bold ctermbg=LightMagenta guibg=LightMagenta",
  	"DiffDelete term=bold ctermfg=Blue ctermbg=LightCyan gui=bold guifg=Blue guibg=LightCyan",
  	NULL
-@@ -5960,6 +5966,9 @@
- 	"Folded term=standout ctermbg=DarkGrey ctermfg=Cyan guibg=DarkGrey guifg=Cyan",
+@@ -5963,6 +5969,9 @@
  	"FoldColumn term=standout ctermbg=DarkGrey ctermfg=Cyan guibg=Grey guifg=Cyan",
+ 	"SignColumn term=standout ctermbg=DarkGrey ctermfg=Cyan guibg=Grey guifg=Cyan",
  	"DiffAdd term=bold ctermbg=DarkBlue guibg=DarkBlue",
 +#ifdef FEAT_SPELL_HL
 +  	"Spell term=reverse ctermbg=NONE ctermfg=White guibg=NONE guifg=Red",
@@ -6974,10 +6974,10 @@ diff -burN vim62.orig/src/syntax.c vim62/src/syntax.c
  	"DiffChange term=bold ctermbg=DarkMagenta guibg=DarkMagenta",
  	"DiffDelete term=bold ctermfg=Blue ctermbg=DarkCyan gui=bold guifg=Blue guibg=DarkCyan",
  	NULL
-diff -burN vim62.orig/src/version.c vim62/src/version.c
---- vim62.orig/src/version.c	2004-03-01 22:36:43.728626312 +0100
-+++ vim62/src/version.c	2004-03-01 22:43:16.810868728 +0100
-@@ -470,6 +470,11 @@
+diff -burN -x '*.orig' vim-6.2.532.orig/src/version.c vim-6.2.532/src/version.c
+--- vim-6.2.532.orig/src/version.c	2004-05-08 08:55:13.000000000 +0200
++++ vim-6.2.532/src/version.c	2004-05-08 09:25:23.992172664 +0200
+@@ -474,6 +474,11 @@
  #else
  	"-syntax",
  #endif
@@ -6989,7 +6989,7 @@ diff -burN vim62.orig/src/version.c vim62/src/version.c
  	    /* only interesting on Unix systems */
  #if defined(USE_SYSTEM) && (defined(UNIX) || defined(__EMX__))
  	"+system()",
-@@ -1729,7 +1734,7 @@
+@@ -2201,7 +2206,7 @@
      int		add_version;
      int		attr;
  {
@@ -6998,9 +6998,9 @@ diff -burN vim62.orig/src/version.c vim62/src/version.c
      int		col;
      char_u	*p;
      int		l;
-diff -burN vim62.orig/src/version.h vim62/src/version.h
---- vim62.orig/src/version.h	2004-03-01 22:36:43.728626312 +0100
-+++ vim62/src/version.h	2004-03-01 22:43:16.812868424 +0100
+diff -burN -x '*.orig' vim-6.2.532.orig/src/version.h vim-6.2.532/src/version.h
+--- vim-6.2.532.orig/src/version.h	2004-05-08 08:55:13.000000000 +0200
++++ vim-6.2.532/src/version.h	2004-05-08 09:25:23.993172512 +0200
 @@ -35,6 +35,10 @@
   */
  #define VIM_VERSION_NODOT	"vim62"
@@ -7012,22 +7012,22 @@ diff -burN vim62.orig/src/version.h vim62/src/version.h
 +#endif
  #define VIM_VERSION_LONG	"VIM - Vi IMproved 6.2 (2003 Jun 1)"
  #define VIM_VERSION_LONG_DATE	"VIM - Vi IMproved 6.2 (2003 Jun 1, compiled "
-diff -burN vim62.orig/src/vim.h vim62/src/vim.h
---- vim62.orig/src/vim.h	2004-03-01 22:36:43.367681184 +0100
-+++ vim62/src/vim.h	2004-03-01 22:43:16.815867968 +0100
-@@ -1068,13 +1068,14 @@
-     , HLF_CHD	    /* Changed diff line */
+diff -burN -x '*.orig' vim-6.2.532.orig/src/vim.h vim-6.2.532/src/vim.h
+--- vim-6.2.532.orig/src/vim.h	2004-05-08 08:55:11.000000000 +0200
++++ vim-6.2.532/src/vim.h	2004-05-08 09:27:06.192635832 +0200
+@@ -1084,13 +1084,14 @@
      , HLF_DED	    /* Deleted diff line */
      , HLF_TXD	    /* Text Changed in diff line */
-+    , HLF_SPELL	    /* spell  - string not in dictionary WM */
+     , HLF_SC	    /* Sign column */
++    , HLF_SPELL	    /* spell - string in dictionary WM */
      , HLF_COUNT	    /* MUST be the last one */
  };
  
  /* the HL_FLAGS must be in the same order as the HLF_ enums! */
  #define HL_FLAGS {'8', '@', 'd', 'e', 'h', 'i', 'l', 'm', 'M', \
  		  'n', 'r', 's', 'S', 'c', 't', 'v', 'V', 'w', 'W', \
--		  'f', 'F', 'A', 'C', 'D', 'T'}
-+		  'f', 'F', 'A', 'C', 'D', 'T', 'Z'}
+-		  'f', 'F', 'A', 'C', 'D', 'T', '>'}
++		  'f', 'F', 'A', 'C', 'D', 'T', '>', 'Z'}
  
  /*
   * Boolean constants
