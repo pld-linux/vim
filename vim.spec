@@ -1,10 +1,10 @@
 #
 # Conditional build:
-# bcond_off_static	- without static version
-# bcond_off_athena	- without Athena Widgets-based gvim
-# bcond_off_motif	- without Motif-based gvim
-# bcond_off_gtk		- without gtk+-based gvim support
-# bcond_off_gnome	- without gnome-based gvim support
+# _without_static	- without static version
+# _without_athena	- without Athena Widgets-based gvim
+# _without_motif	- without Motif-based gvim
+# _without_gtk		- without gtk+-based gvim support
+# _without_gnome	- without gnome-based gvim support
 #
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -35,18 +35,18 @@ Patch4:		%{name}-paths.patch
 #Patch5:		%{name}-speed_t.patch
 URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
-%{!?bcond_off_static:BuildRequires:	ncurses-static}
-%{!?bcond_off_static:BuildRequires:	glibc-static}
+%{!?_without_static:BuildRequires:	ncurses-static}
+%{!?_without_static:BuildRequires:	glibc-static}
 BuildRequires:	gpm-devel
-%{!?bcond_off_athena:BuildRequires:	Xaw3d-devel}
-%{!?bcond_off_motif:BuildRequires:	motif-devel}
-%{!?bcond_off_gtk:BuildRequires:	gtk+-devel}
-%{!?bcond_off_gnome:BuildRequires:	gnome-libs-devel}
-%{!?bcond_off_gnome:BuildRequires:	esound-devel}
+%{!?_without_athena:BuildRequires:	Xaw3d-devel}
+%{!?_without_motif:BuildRequires:	motif-devel}
+%{!?_without_gtk:BuildRequires:	gtk+-devel}
+%{!?_without_gnome:BuildRequires:	gnome-libs-devel}
+%{!?_without_gnome:BuildRequires:	esound-devel}
 BuildRequires:	iconv
 Requires:	%{name}-rt = %{version}
 Requires:	iconv
-%{?bcond_off_static:Requires:	%{name}-static = %{version}}
+%{?_without_static:Requires:	%{name}-static = %{version}}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -217,8 +217,8 @@ cd src
 %{__make} vim
 mv -f vim vim.ncurses
 
-%{?bcond_off_static:#}%{__make} distclean
-%{?bcond_off_static:#}%configure \
+%{?_without_static:#}%{__make} distclean
+%{?_without_static:#}%configure \
 	--disable-gui \
 	--without-x \
 	--disable-perlinterp \
@@ -231,13 +231,13 @@ mv -f vim vim.ncurses
 	--with-tlib=tinfo \
 	--disable-nls
 
-%{?bcond_off_static:#}%{__make} vim
+%{?_without_static:#}%{__make} vim
 %{__make} xxd/xxd
-%{?bcond_off_static:#}mv -f vim vim.static
+%{?_without_static:#}mv -f vim vim.static
 mv -f xxd/xxd xxd.static
 
-%{?bcond_off_athena:#}%{__make} distclean
-%{?bcond_off_athena:#}%configure \
+%{?_without_athena:#}%{__make} distclean
+%{?_without_athena:#}%configure \
 	--enable-max-features \
 	--enable-gui=athena \
 	--with-x \
@@ -250,11 +250,11 @@ mv -f xxd/xxd xxd.static
 	--disable-gpm \
 	--without-gnome \
 	--enable-nls
-%{?bcond_off_athena:#}%{__make} vim
-%{?bcond_off_athena:#}mv -f vim gvim.athena
+%{?_without_athena:#}%{__make} vim
+%{?_without_athena:#}mv -f vim gvim.athena
 
-%{?bcond_off_motif:#}%{__make} distclean
-%{?bcond_off_motif:#}%configure \
+%{?_without_motif:#}%{__make} distclean
+%{?_without_motif:#}%configure \
 	--enable-max-features \
 	--enable-gui=motif \
 	--with-x \
@@ -268,11 +268,11 @@ mv -f xxd/xxd xxd.static
 	--disable-gpm \
 	--without-gnome \
 	--enable-nls
-%{?bcond_off_motif:#}%{__make} vim
-%{?bcond_off_motif:#}mv -f vim gvim.motif
+%{?_without_motif:#}%{__make} vim
+%{?_without_motif:#}mv -f vim gvim.motif
 
-%{?bcond_off_gtk:#}%{__make} distclean
-%{?bcond_off_gtk:#}%configure \
+%{?_without_gtk:#}%{__make} distclean
+%{?_without_gtk:#}%configure \
 	--enable-max-features \
 	--enable-gui=gtk \
 	--with-x \
@@ -284,11 +284,11 @@ mv -f xxd/xxd xxd.static
 	--enable-cscope \
 	--enable-fontset \
 	--enable-nls
-%{?bcond_off_gtk:#}%{__make} vim
-%{?bcond_off_gtk:#}mv -f vim gvim.gtk
+%{?_without_gtk:#}%{__make} vim
+%{?_without_gtk:#}mv -f vim gvim.gtk
 
-%{?bcond_off_gnome:#}%{__make} distclean
-%{?bcond_off_gnome:#}%configure \
+%{?_without_gnome:#}%{__make} distclean
+%{?_without_gnome:#}%configure \
 	--enable-max-features \
 	--enable-gui=gnome \
 	--with-x \
@@ -300,8 +300,8 @@ mv -f xxd/xxd xxd.static
 	--enable-cscope \
 	--enable-fontset \
 	--enable-nls
-%{?bcond_off_gnome:#}%{__make} vim
-%{?bcond_off_gnome:#}mv -f vim gvim.gnome
+%{?_without_gnome:#}%{__make} vim
+%{?_without_gnome:#}mv -f vim gvim.gnome
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -312,10 +312,10 @@ install -d $RPM_BUILD_ROOT{%{_var}/lib/vim,%{_sysconfdir}/vim,%{_bindir}} \
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 rm $RPM_BUILD_ROOT%{_bindir}/*
 
-%{!?bcond_off_static:install src/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim}
-%{?bcond_off_static:install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi}
-%{!?bcond_off_static:install src/vim.static	$RPM_BUILD_ROOT/bin/vi}
-%{?bcond_off_static:ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim}
+%{!?_without_static:install src/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim}
+%{?_without_static:install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi}
+%{!?_without_static:install src/vim.static	$RPM_BUILD_ROOT/bin/vi}
+%{?_without_static:ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim}
 install src/xxd.static				$RPM_BUILD_ROOT/bin/xxd
 install src/vimtutor				$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
@@ -340,20 +340,20 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
-%{!?bcond_off_athena:install src/gvim.athena	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.athena}
-%{!?bcond_off_motif: install src/gvim.motif	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.motif}
-%{!?bcond_off_gtk:   install src/gvim.gtk	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gtk}
-%{!?bcond_off_gnome: install src/gvim.gnome	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gnome}
+%{!?_without_athena:install src/gvim.athena	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.athena}
+%{!?_without_motif: install src/gvim.motif	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.motif}
+%{!?_without_gtk:   install src/gvim.gtk	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gtk}
+%{!?_without_gnome: install src/gvim.gnome	$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gnome}
 
-%{!?bcond_off_gtk:ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim}
-%{!?bcond_off_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgvim}
-%{!?bcond_off_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
-%{!?bcond_off_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
+%{!?_without_gtk:ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim}
+%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgvim}
+%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
+%{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
 
-%{!?bcond_off_athena:install %{SOURCE4}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?bcond_off_motif: install %{SOURCE5}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?bcond_off_gtk:   install %{SOURCE6} 	$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?bcond_off_gnome: install %{SOURCE7}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_athena:install %{SOURCE4}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_motif: install %{SOURCE5}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_gtk:   install %{SOURCE6} 	$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_gnome: install %{SOURCE7}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -413,25 +413,25 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/vim.*
 %{_mandir}/man1/rvim.*
 
-%{!?bcond_off_athena:%files -n gvim-athena}
-%{!?bcond_off_athena:%defattr(644,root,root,755)}
-%{!?bcond_off_athena:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.athena}
-%{!?bcond_off_athena:%{_applnkdir}/Development/Editors/gvim-athena.desktop}
+%{!?_without_athena:%files -n gvim-athena}
+%{!?_without_athena:%defattr(644,root,root,755)}
+%{!?_without_athena:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.athena}
+%{!?_without_athena:%{_applnkdir}/Development/Editors/gvim-athena.desktop}
 
-%{!?bcond_off_motif:%files -n gvim-motif}
-%{!?bcond_off_motif:%defattr(644,root,root,755)}
-%{!?bcond_off_motif:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.motif}
-%{!?bcond_off_motif:%{_applnkdir}/Development/Editors/gvim-motif.desktop}
+%{!?_without_motif:%files -n gvim-motif}
+%{!?_without_motif:%defattr(644,root,root,755)}
+%{!?_without_motif:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.motif}
+%{!?_without_motif:%{_applnkdir}/Development/Editors/gvim-motif.desktop}
 
-%{!?bcond_off_gtk:%files -n gvim-gtk}
-%{!?bcond_off_gtk:%defattr(644,root,root,755)}
-%{!?bcond_off_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gtk}
-%{!?bcond_off_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgvim}
-%{!?bcond_off_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgview}
-%{!?bcond_off_gtk:%attr(755,root,root) %verify(not link) %{_prefix}/X11R6/bin/gvim}
-%{!?bcond_off_gtk:%{_applnkdir}/Development/Editors/gvim-gtk.desktop}
+%{!?_without_gtk:%files -n gvim-gtk}
+%{!?_without_gtk:%defattr(644,root,root,755)}
+%{!?_without_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gtk}
+%{!?_without_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgvim}
+%{!?_without_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgview}
+%{!?_without_gtk:%attr(755,root,root) %verify(not link) %{_prefix}/X11R6/bin/gvim}
+%{!?_without_gtk:%{_applnkdir}/Development/Editors/gvim-gtk.desktop}
 
-%{!?bcond_off_gnome:%files -n gvim-gnome}
-%{!?bcond_off_gnome:%defattr(644,root,root,755)}
-%{!?bcond_off_gnome:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gnome}
-%{!?bcond_off_gnome:%{_applnkdir}/Development/Editors/gvim-gnome.desktop}
+%{!?_without_gnome:%files -n gvim-gnome}
+%{!?_without_gnome:%defattr(644,root,root,755)}
+%{!?_without_gnome:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gnome}
+%{!?_without_gnome:%{_applnkdir}/Development/Editors/gvim-gnome.desktop}
