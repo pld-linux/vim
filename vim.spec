@@ -2,12 +2,13 @@ Summary:	Vim built with ncurses
 Summary(pl):	Vim korzystaj±cy z bibliotek ncurses
 Name:		vim
 Version:	5.4k
-Release:	3
+Release:	4
 ########	ftp://ftp.nl.vim.org/pub/vim/unreleased
 Source0:        %{name}-%{version}-src.tar.gz
 Source1:        %{name}-%{version}-rt.tar.gz
 Source2:        %{name}-%{version}-extra.tar.gz
 Patch0:		vim-fhs.patch
+Patch1:		vim-visual.patch
 Copyright:	GPL
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
@@ -64,7 +65,8 @@ innych usprawnieñ.
 
 %prep
 %setup -q -b 1 -b 2
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 
 %build
 cd src
