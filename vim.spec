@@ -121,6 +121,7 @@ BuildRequires:	ncurses-static
 Provides:	%{name}-static = %{epoch}:%{version}-%{release}
 Obsoletes:	%{name}-static
 %endif
+BuildRequires:	unzip
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
