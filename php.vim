@@ -2,8 +2,13 @@
 " Language:	PHP
 " Author:	John Wellesz <John.wellesz (AT) teaser (DOT) fr>
 " URL:		http://www.2072productions.com/vim/indent/php.vim
-" Last Change: 2005 Janury 10th
-" Version: 1.08
+" Last Change: 2005 February 10th
+" Version: 1.10
+"
+" Changes: 1.10		- Lines beginning by a single or double quote were
+"					  not indented in some cases.
+"
+" Changes: 1.09		- JavaScript code was not always directly indented.
 "
 " Changes: 1.08		- End comment tags '*/' are indented like start tags '/*'.
 "					- When typing a multiline comment, '}' are indented
@@ -329,7 +334,8 @@ function! IslinePHP (lnum, tofind) " {{{
 	let cline = getline(a:lnum)
 
 	if a:tofind==""
-		let tofind = '\%(^\s*\)\@<=\S'
+		let tofind = "^\\s*[\"']*\s*\\zs\\S" " This correct the issue where lines beginning by a 
+		" single or double quote were not indented in some cases.
 	else
 		let tofind = a:tofind
 	endif
@@ -339,8 +345,10 @@ function! IslinePHP (lnum, tofind) " {{{
 	let coltotest = match (cline, tofind) + 1 "find the first non blank char in the current line
 	
 	let synname = synIDattr(synID(a:lnum, coltotest, 0), "name") " ask to syntax what is its name
+	"echo synname
 
-	if matchstr(synname, '^...') == "php" || synname=="Delimiter"
+	" if matchstr(synname, '^...') == "php" || synname=="Delimiter" || synname =~? '^javaScript'
+	if synname =~ '^php' || synname=="Delimiter" || synname =~? '^javaScript'
 		return synname
 	else
 		return ""
@@ -415,11 +423,17 @@ function! GetPhpIndent()
 			if synname != "phpHereDoc"
 				let b:InPHPcode = 1
 				let b:InPHPcode_tofind = ""
+
 				if synname == "phpComment"
 					let b:UserIsTypingComment = 1
 				else
 					let b:UserIsTypingComment = 0
 				endif
+
+				if synname =~? '^javaScript'
+					let b:InPHPcode_and_script = 1
+				endif
+
 			else
 				let b:InPHPcode = 0
 				let b:UserIsTypingComment = 0
@@ -431,7 +445,7 @@ function! GetPhpIndent()
 
 				let b:InPHPcode_tofind = substitute( getline(lnum), '^.*<<<\(\a\w*\)\c', '^\\s*\1;$', '')
 			endif
-		else
+		else " IslinePHP returned "" => we are not in PHP or Javascript
 			let b:InPHPcode = 0
 			let b:UserIsTypingComment = 0
 			" Then we have to find a php start tag...
@@ -441,7 +455,7 @@ function! GetPhpIndent()
 
 	" Now we know where we are so we can verify the line right above the
 	" current one to see if we have to stop or restart php indenting
-	
+
 	" Test if we are indenting PHP code {{{
 	" Find an executable php code line above the current line.
 	let lnum = prevnonblank(v:lnum - 1)
@@ -479,14 +493,14 @@ function! GetPhpIndent()
 
 			" Was last line the start of a HereDoc ?
 		elseif last_line =~? '<<<\a\w*$' 
-					" \&& IslinePHP(lnum, '\a\w*$')=="Delimiter"
+			" \&& IslinePHP(lnum, '\a\w*$')=="Delimiter"
 			let b:InPHPcode = 0
 			let b:InPHPcode_tofind = substitute( last_line, '^.*<<<\(\a\w*\)\c', '^\\s*\1;$', '')
 
 			" Skip /* \n+ */ comments execept when the user is currently
 			" writting them
 		elseif !UserIsEditing && cline =~ '^\s*/\*\%(.*\*/\)\@!'
-					" \ && IslinePHP(v:lnum, '/\*')=="phpComment"
+			" \ && IslinePHP(v:lnum, '/\*')=="phpComment"
 			let b:InPHPcode = 0
 			let b:InPHPcode_tofind = '\*/'
 
@@ -585,7 +599,7 @@ function! GetPhpIndent()
 		let lnum = searchpair('/\*\zs', '', '\*/\zs', 'bWr', '') " find the most outside /*
 		return indent(lnum)
 	endif
-	
+
 	let LastLineClosed = 0 " used to prevent redundant tests in the last part of the script
 
 	let unstated='\%(^\s*'.s:blockstart.'.*)\|\%(//.*\)\@<!\<e'.'lse\>\)'.endline
