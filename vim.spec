@@ -656,6 +656,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files rt
 %defattr(644,root,root,755)
+%doc vim2html.pl
 %attr(755,root,root) %{_bindir}/vimtutor
 %dir %{_sysconfdir}/vim
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/vimrc
@@ -663,7 +664,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %dir %{_datadir}/vim
 %dir %{_datadir}/vim/v*
-%{_datadir}/vim/v*/doc
+%dir %{_datadir}/vim/v*/doc
+%{_datadir}/vim/v*/doc/*.txt
+%verify(not size mtime md5) %{_datadir}/vim/v*/doc/tags
 %{_datadir}/vim/v*/ftplugin
 %{_datadir}/vim/v*/indent
 %{_datadir}/vim/v*/keymap
