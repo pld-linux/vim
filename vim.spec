@@ -9,12 +9,14 @@
 #
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
+Summary(es):	Editor visual incrementado
 Summary(fr):	editeur VIM : VIsual editor iMproved
 Summary(pl):	Vi IMproved - klon edytora Vi
+Summary(pt_BR):	Editor visual incrementado
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	6.0
-Release:	2
+Release:	13
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -28,7 +30,7 @@ Source4:	g%{name}-motif.desktop
 Source5:	g%{name}-gtk.desktop
 Source6:	g%{name}-gnome.desktop
 #packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.0.*
-Source7:	%{name}-patches-6.0.101.tar.bz2
+Source7:	%{name}-patches-%{version}.101.tar.bz2
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-phphighlight.patch
@@ -62,6 +64,13 @@ wird. Er bringt mehrere Fenster, mehrstufige Widerrufen-Funktion,
 Block-Markierung und viele weitere Zusatzfunktionen im Vergleich zum
 Standard-vi-Programm.
 
+%description -l es
+El editor Visual Mejorado es una versión actualizada y con nuevas
+características adicionales del mundialmente famoso 'vi' que acompaña
+prácticamente todos los sistemas UN*X. Posibilita trabajar con
+múltiples ventanas, varios niveles de deshacer, bloques enfatizados, y
+otras muchas características del 'vi'.
+
 %description -l fr
 L'éditeur VIsuel aMélioré est un clone mis à jour et doté de
 caractéristiques supplémentaires de l'éditeur « vi » fourni avec
@@ -71,8 +80,15 @@ blocs et autres caractéristiques au vi de base.
 
 %description -l pl
 Edytor tekstu podobny do Vi. Wa¿ne ulepszenia: mo¿liwo¶æ pracy w wielu
-oknach, wielopoziomowa opcja 'cofnij', bloki, pod¶wietlanie sk³adni
-i wiele innych.
+oknach, wielopoziomowa opcja 'cofnij', bloki, pod¶wietlanie sk³adni i
+wiele innych.
+
+%description -l pt_BR
+O editor Vim (Vi Enhanced) é um versão atualizada e com novas
+características do mundialmente famoso 'vi' que acompanha praticamente
+todos os sistemas UN*X. Ele possibilita trabalhar com múltiplas
+janelas, vários níveis de desfazer, blocos enfatizados, e muitas
+outras características do 'vi'.
 
 %description -l tr
 Standart vi metin düzenleyicisinin geliþmiþ hali; daha fazla komut,
@@ -115,8 +131,8 @@ and is installed in /bin as a rescue tool. The installation of this
 package is STRONGLY recommended.
 
 %description static -l pl
-Edytor tekstu podobny do Vi. Ta wersja zosta³a zlinkowana statycznie
-i posiada minimaln± ilo¶æ dodatków. Jest instalowana w /bin jako
+Edytor tekstu podobny do Vi. Ta wersja zosta³a zlinkowana statycznie i
+posiada minimaln± ilo¶æ dodatków. Jest instalowana w /bin jako
 narzêdzie dla administratora. Instalacja tego pakietu jest MOCNO
 zalecana, mo¿e on pomóc Ci uratowaæ system w czasie awarii.
 
