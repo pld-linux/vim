@@ -5,13 +5,13 @@
 %bcond_without	static		# don't build static version
 %bcond_without	athena		# don't build Athena Widgets-based gvim
 %bcond_without	motif		# don't build Motif-based gvim
-%bcond_without	gtk		# don't build gtk+-based gvim support
-%bcond_without	gnome		# don't build gnome-based gvim support
+%bcond_without	gtk		# don't build GTK+-based gvim support
+%bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	kde		# don't build kvim
-%bcond_with	perl		# with perl interp
-%bcond_with	python		# with python interp
-%bcond_with	ruby		# with ruby interp
-%bcond_with	tcl		# with tcl interp
+%bcond_with	perl		# with Perl interp
+%bcond_with	python		# with Python interp
+%bcond_with	ruby		# with Ruby interp
+%bcond_with	tcl		# with Tcl interp
 %bcond_with	bonobo		# with bonobo component (breaks other things)
 %bcond_without	selinux		# without selinux support
 %bcond_without	ispell		# don't build vim.ispell
@@ -492,7 +492,7 @@ GTK, что позволяет запускать VIM как приложение X Window System - с
 граф╕чним ╕нтерфейсом та п╕дтримкою миш╕. Просто скаж╕ть 'gvim'...
 
 %package -n gvim-gnome
-Summary:	Vim for X Window built with gnome
+Summary:	Vim for X Window built with GNOME
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki GNOME
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
