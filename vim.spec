@@ -29,7 +29,7 @@ Summary(tr):	Gelişmiş bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	3
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -379,7 +379,6 @@ Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Athena
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
-Requires:	ctags
 Obsoletes:	vim-X11
 
 %description -n gvim-athena
