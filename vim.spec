@@ -11,8 +11,9 @@
 # _with_ruby		- with ruby interp
 # _with_tcl		- with tcl interp
 
-%define		_ver		6.0
-%define		_patchlevel	208
+#%define		_ver		6.0
+#%define		_patchlevel	208
+
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
 Summary(es):	Editor visual incrementado
@@ -23,19 +24,19 @@ Summary(ru):	Visual editor IMproved - Единственно Правильный Редактор :)
 Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
-Version:	%{_ver}.%{_patchlevel}
-Release:	3
+Version:	6.1
+Release:	0.1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
-Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
-Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
+Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}.tar.bz2
+Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{version}-lang.tar.gz
 Source2:	g%{name}-athena.desktop
 Source3:	g%{name}-motif.desktop
 Source4:	g%{name}-gtk.desktop
 Source5:	g%{name}-gnome.desktop
 #packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.0.*
-Source6:	%{name}-patches-%{_ver}.%{_patchlevel}.tar.bz2
+#Source6:	%{name}-patches-%{_ver}.%{_patchlevel}.tar.bz2
 Source7:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
@@ -405,23 +406,24 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 повн╕стю граф╕чним ╕нтерфейсом та п╕дтримкою миш╕.
 
 %prep
-%setup -q -b1 -a6 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
+%setup -q -b1 -n %{name}%(echo %{version} | sed -e "s#\.##g")
+#%setup -q -b1 -a6 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
+#%patch2 -p1
 %patch3 -p1
 %{?_with_ispell:%patch4 -p1}
 %ifarch alpha
 %{?_with_ispell:%patch5 -p1}
 %endif
 
-# these patches are to "extra" package which we don't need (nor use)
-rm -f patches/6.0.{027,048,053,064,070,073,093,106,107,115,116,117,119,123,121,122,125,135,161,162,164,165,179,186,188,205,207}
-# apply the rest of official patches
-for f in patches/6.0.* ; do
-	echo "Applying official patch `basename $f` ..."
-	patch -s -p0 < $f
-done
+## # these patches are to "extra" package which we don't need (nor use)
+## rm -f patches/6.0.{027,048,053,064,070,073,093,106,107,115,116,117,119,123,121,122,125,135,161,162,164,165,179,186,188,205,207}
+## # apply the rest of official patches
+## for f in patches/6.0.* ; do
+## 	echo "Applying official patch `basename $f` ..."
+## 	patch -s -p0 < $f
+## done
 
 %build
 cd src
