@@ -1,0 +1,124 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.439
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.439
+Problem:    GTK 2: Changing 'lines' may cause a mismatch between the window
+	    layout and the size of the window.
+Solution:   Disable the hack with force_shell_resize_idle().
+Files:	    src/gui_gtk_x11.c
+
+
+*** ../vim-6.2.438/src/gui_gtk_x11.c	Fri Apr  2 17:28:18 2004
+--- src/gui_gtk_x11.c	Sat Apr  3 14:32:57 2004
+***************
+*** 3753,3758 ****
+--- 3759,3765 ----
+  }
+  
+  #ifdef HAVE_GTK2
++ #if 0
+  static int resize_idle_installed = FALSE;
+  /*
+   * Idle handler to force resize.  Used by gui_mch_set_shellsize() to ensure
+***************
+*** 3760,3766 ****
+   * ignored our size request.  Usually this happens if the window is maximized.
+   *
+   * FIXME: It'd be nice if we could find a little more orthodox solution.
+!  * See also the rant below in gui_mch_set_shellsize().
+   */
+  /*ARGSUSED0*/
+      static gboolean
+--- 3767,3778 ----
+   * ignored our size request.  Usually this happens if the window is maximized.
+   *
+   * FIXME: It'd be nice if we could find a little more orthodox solution.
+!  * See also the remark below in gui_mch_set_shellsize().
+!  *
+!  * DISABLED: When doing ":set lines+=1" this function would first invoke
+!  * gui_resize_shell() with the old size, then the normal callback would
+!  * report the new size through form_configure_event().  That caused the window
+!  * layout to be messed up.
+   */
+  /*ARGSUSED0*/
+      static gboolean
+***************
+*** 3784,3789 ****
+--- 3796,3802 ----
+      resize_idle_installed = FALSE;
+      return FALSE; /* don't call me again */
+  }
++ #endif
+  #endif /* HAVE_GTK2 */
+  
+  /*
+***************
+*** 3823,3844 ****
+  
+      gtk_window_resize(GTK_WINDOW(gui.mainwin), width, height);
+  
+      if (!resize_idle_installed)
+      {
+  	g_idle_add_full(GDK_PRIORITY_EVENTS + 10,
+  			&force_shell_resize_idle, NULL, NULL);
+  	resize_idle_installed = TRUE;
+      }
+      /*
+       * Wait until all events are processed to prevent a crash because the
+       * real size of the drawing area doesn't reflect Vim's internal ideas.
+       *
+!      * This is obviously a hack and only necessary because the entire GUI
+!      * code of Vim is a hack as well.  The root cause of the problem is that
+!      * Vim tries really hard to ignore the asynchronous nature of X.  The
+!      * whole *concept* of the GUI code is badly broken beyond repair.  It's
+!      * almost a philosophical issue: instead of trying to control everything
+!      * Vim should rather try to cooperate for a change.
+       */
+      gui_mch_update();
+  #endif
+--- 3836,3855 ----
+  
+      gtk_window_resize(GTK_WINDOW(gui.mainwin), width, height);
+  
++ #if 0
+      if (!resize_idle_installed)
+      {
+  	g_idle_add_full(GDK_PRIORITY_EVENTS + 10,
+  			&force_shell_resize_idle, NULL, NULL);
+  	resize_idle_installed = TRUE;
+      }
++ #endif
+      /*
+       * Wait until all events are processed to prevent a crash because the
+       * real size of the drawing area doesn't reflect Vim's internal ideas.
+       *
+!      * This is a bit of a hack, since Vim is a terminal application with a GUI
+!      * on top, while the GUI expects to be the boss.
+       */
+      gui_mch_update();
+  #endif
+*** ../vim-6.2.438/src/version.c	Sat Apr  3 17:00:08 2004
+--- src/version.c	Sun Apr  4 12:00:23 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     439,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+259. When you enter your name in the AltaVista search engine, the top ten
+     matches do indeed refer to you.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

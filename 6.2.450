@@ -1,0 +1,118 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.450
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.450
+Problem:    "  #include" and "  #define" are not recognized with the default
+	    option values for 'include' and 'defined'. (RG Kiran)
+Solution:   Adjust the default values to allow white space before the #.
+Files:	    runtime/doc/options.txt, src/option.c
+
+
+*** ../vim-6.2.449/runtime/doc/options.txt	Fri Apr  2 21:06:43 2004
+--- runtime/doc/options.txt	Mon Apr  5 19:33:20 2004
+***************
+*** 1,4 ****
+! *options.txt*	For Vim version 6.2.  Last change: 2004 Apr 02
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+--- 1,4 ----
+! *options.txt*	For Vim version 6.2.  Last change: 2004 Apr 05
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+***************
+*** 1814,1820 ****
+  	'indentexpr'.
+  
+  						*'define'* *'def'*
+! 'define' 'def'		string	(default "^#\s*define")
+  			global or local to buffer |global-local|
+  			{not in Vi}
+  	Pattern to be used to find a macro definition.	It is a search
+--- 1827,1833 ----
+  	'indentexpr'.
+  
+  						*'define'* *'def'*
+! 'define' 'def'		string	(default "^\s*#\s*define")
+  			global or local to buffer |global-local|
+  			{not in Vi}
+  	Pattern to be used to find a macro definition.	It is a search
+***************
+*** 3284,3290 ****
+  	methods.  Use 'imdisable' to disable XIM then.
+  
+  						*'include'* *'inc'*
+! 'include' 'inc'		string	(default "^#\s*include")
+  			global or local to buffer |global-local|
+  			{not in Vi}
+  			{not available when compiled without the
+--- 3318,3324 ----
+  	methods.  Use 'imdisable' to disable XIM then.
+  
+  						*'include'* *'inc'*
+! 'include' 'inc'		string	(default "^\s*#\s*include")
+  			global or local to buffer |global-local|
+  			{not in Vi}
+  			{not available when compiled without the
+*** ../vim-6.2.449/src/option.c	Tue Mar 30 21:58:19 2004
+--- src/option.c	Mon Apr  5 19:32:35 2004
+***************
+*** 696,702 ****
+      {"define",	    "def",  P_STRING|P_ALLOCED|P_VI_DEF,
+  #ifdef FEAT_FIND_ID
+  			    (char_u *)&p_def, OPT_BOTH(PV_DEF),
+! 			    {(char_u *)"^#\\s*define", (char_u *)0L}
+  #else
+  			    (char_u *)NULL, PV_NONE,
+  			    {(char_u *)NULL, (char_u *)0L}
+--- 696,702 ----
+      {"define",	    "def",  P_STRING|P_ALLOCED|P_VI_DEF,
+  #ifdef FEAT_FIND_ID
+  			    (char_u *)&p_def, OPT_BOTH(PV_DEF),
+! 			    {(char_u *)"^\\s#\\s*define", (char_u *)0L}
+  #else
+  			    (char_u *)NULL, PV_NONE,
+  			    {(char_u *)NULL, (char_u *)0L}
+***************
+*** 1156,1162 ****
+      {"include",	    "inc",  P_STRING|P_ALLOCED|P_VI_DEF,
+  #ifdef FEAT_FIND_ID
+  			    (char_u *)&p_inc, OPT_BOTH(PV_INC),
+! 			    {(char_u *)"^#\\s*include", (char_u *)0L}
+  #else
+  			    (char_u *)NULL, PV_NONE,
+  			    {(char_u *)0L, (char_u *)0L}
+--- 1168,1174 ----
+      {"include",	    "inc",  P_STRING|P_ALLOCED|P_VI_DEF,
+  #ifdef FEAT_FIND_ID
+  			    (char_u *)&p_inc, OPT_BOTH(PV_INC),
+! 			    {(char_u *)"^\\s*#\\s*include", (char_u *)0L}
+  #else
+  			    (char_u *)NULL, PV_NONE,
+  			    {(char_u *)0L, (char_u *)0L}
+*** ../vim-6.2.449/src/version.c	Mon Apr  5 19:46:49 2004
+--- src/version.c	Mon Apr  5 19:48:19 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     450,
+  /**/
+
+-- 
+Microsoft: "Windows NT 4.0 now has the same user-interface as Windows 95"
+    Windows 95: "Press CTRL-ALT-DEL to reboot"
+Windows NT 4.0: "Press CTRL-ALT-DEL to login"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

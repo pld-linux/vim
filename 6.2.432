@@ -1,0 +1,73 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.432
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.432 (after 6.2.430 and 6.2.431)
+Problem:    Lint warnings.
+Solution:   Add type casts.
+Files:	    src/ex_cmds2.c, src/gui.c
+
+
+*** ../vim-6.2.431/src/ex_cmds2.c	Fri Apr  2 15:28:03 2004
+--- src/ex_cmds2.c	Fri Apr  2 22:16:21 2004
+***************
+*** 2268,2274 ****
+  	    convert_setup(&cookie.conv, (char_u *)"utf-8", p_enc);
+  	else
+  	    /* No BOM found, rewind. */
+! 	    fseek(cookie.fp, (off_t)0L, SEEK_SET);
+      }
+  #endif
+  
+--- 2268,2274 ----
+  	    convert_setup(&cookie.conv, (char_u *)"utf-8", p_enc);
+  	else
+  	    /* No BOM found, rewind. */
+! 	    fseek(cookie.fp, 0L, SEEK_SET);
+      }
+  #endif
+  
+*** ../vim-6.2.431/src/gui.c	Fri Apr  2 21:06:43 2004
+--- src/gui.c	Fri Apr  2 22:17:32 2004
+***************
+*** 3906,3913 ****
+  		    longest_lnum = lnum;
+  		}
+  		else if (n == (colnr_T)max
+! 			&& abs(lnum - curwin->w_cursor.lnum)
+! 				  < abs(longest_lnum - curwin->w_cursor.lnum))
+  		    longest_lnum = lnum;
+  	    }
+  	}
+--- 3906,3913 ----
+  		    longest_lnum = lnum;
+  		}
+  		else if (n == (colnr_T)max
+! 			&& abs((int)(lnum - curwin->w_cursor.lnum))
+! 			   < abs((int)(longest_lnum - curwin->w_cursor.lnum)))
+  		    longest_lnum = lnum;
+  	    }
+  	}
+*** ../vim-6.2.431/src/version.c	Fri Apr  2 21:06:43 2004
+--- src/version.c	Fri Apr  2 22:24:51 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     432,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+249. You've forgotten what the outside looks like.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

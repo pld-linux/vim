@@ -1,0 +1,82 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.457
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.457 (after 6.2.244)
+Problem:    When 'encoding' is "utf-8" and writing text with chars above 0x80
+	    in latin1, conversion is wrong every 8200 bytes. (Oyvind Holm)
+Solution:   Correct the utf_ptr2len_check_len() function and fix the problem
+	    of displaying 0xf7 in utfc_ptr2len_check_len().
+Files:	    src/mbyte.c
+
+
+*** ../vim-6.2.456/src/mbyte.c	Mon Apr  5 20:28:39 2004
+--- src/mbyte.c	Wed Apr  7 10:48:51 2004
+***************
+*** 1545,1551 ****
+  	return 1;
+      len = utf8len_tab[*p];
+      if (len > size)
+! 	return 1;	/* Probably illegal byte sequence. */
+      for (i = 1; i < len; ++i)
+  	if ((p[i] & 0xc0) != 0x80)
+  	    return 1;
+--- 1545,1551 ----
+  	return 1;
+      len = utf8len_tab[*p];
+      if (len > size)
+! 	return len;	/* incomplete byte sequence. */
+      for (i = 1; i < len; ++i)
+  	if ((p[i] & 0xc0) != 0x80)
+  	    return 1;
+***************
+*** 1600,1605 ****
+--- 1600,1606 ----
+  /*
+   * Return the number of bytes the UTF-8 encoding of the character at "p[size]"
+   * takes.  This includes following composing characters.
++  * Returns 1 for an illegal char or an incomplete byte sequence.
+   */
+      int
+  utfc_ptr2len_check_len(p, size)
+***************
+*** 1619,1626 ****
+      /* Skip over first UTF-8 char, stopping at a NUL byte. */
+      len = utf_ptr2len_check_len(p, size);
+  
+!     /* Check for illegal byte. */
+!     if (len == 1 && p[0] >= 0x80)
+  	return 1;
+  
+      /*
+--- 1620,1627 ----
+      /* Skip over first UTF-8 char, stopping at a NUL byte. */
+      len = utf_ptr2len_check_len(p, size);
+  
+!     /* Check for illegal byte and incomplete byte sequence. */
+!     if ((len == 1 && p[0] >= 0x80) || len > size)
+  	return 1;
+  
+      /*
+*** ../vim-6.2.456/src/version.c	Tue Apr  6 21:31:48 2004
+--- src/version.c	Wed Apr  7 10:52:00 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     457,
+  /**/
+
+-- 
+Eight Megabytes And Continually Swapping.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

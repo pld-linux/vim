@@ -1,0 +1,64 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.454
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.454
+Problem:    ":let b:changedtick" doesn't work. (Alan Schmitt)  ":let
+	    b:changedtick = 99" does not give an error message.
+Solution:   Add code to recognize ":let b:changedtick".
+Files:	    src/eval.c
+
+
+*** ../vim-6.2.453/src/eval.c	Sun Apr  4 12:34:29 2004
+--- src/eval.c	Tue Apr  6 13:06:42 2004
+***************
+*** 1004,1009 ****
+--- 1004,1018 ----
+  		    i = find_vim_var(arg, arg_len);
+  		    if (i >= 0)
+  			list_vim_var(i);
++ 		    else if (STRCMP("b:changedtick", arg) == 0)
++ 		    {
++ 			char_u	numbuf[NUMBUFLEN];
++ 
++ 			sprintf((char *)numbuf, "%ld",
++ 						 (long)curbuf->b_changedtick);
++ 			list_one_var_a((char_u *)"b:", (char_u *)"changedtick",
++ 							  VAR_NUMBER, numbuf);
++ 		    }
+  		    else
+  		    {
+  			varp = find_var(arg, FALSE);
+***************
+*** 1148,1153 ****
+--- 1157,1164 ----
+  
+  		if (*skipwhite(p) != '=')
+  		    EMSG(_(e_letunexp));
++ 		else if (STRNCMP(arg, "b:changedtick", p - arg) == 0)
++ 		    EMSG2(_(e_readonlyvar), arg);
+  #ifdef FEAT_MAGIC_BRACES
+  		else if (expr_start != NULL)
+  		{
+*** ../vim-6.2.453/src/version.c	Mon Apr  5 22:14:07 2004
+--- src/version.c	Tue Apr  6 20:05:29 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     454,
+  /**/
+
+-- 
+            ### Hiroshima 45, Chernobyl 86, Windows 95 ###
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

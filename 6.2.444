@@ -1,0 +1,365 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.444
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.444
+Problem:    When adding the 'c' flag to a ":substitute" command it may replace
+	    more times than without the 'c' flag.  Happens for a  match that
+	    starts with "\ze" (Marcel Svitalsk) and when using "\@<=" (Klaus
+	    Bosau).
+Solution:   Correct "prev_matchcol" when replacing the line.  Don't replace
+	    the line when the pattern uses look-behind matching.
+Files:	    src/ex_cmds.c, src/proto/regexp.pro, src/regexp.c
+
+
+*** ../vim-6.2.443/src/ex_cmds.c	Fri Mar 26 22:26:46 2004
+--- src/ex_cmds.c	Sun Apr  4 14:45:57 2004
+***************
+*** 4097,4107 ****
+  		lastone = ((sub_firstline[matchcol] == NUL && nmatch <= 1)
+  			     || got_int || got_quit || !(do_all || do_again));
+  		nmatch = -1;
+! 		/* The check for nmatch_tl is needed for when multi-line
+  		 * matching must replace the lines before trying to do another
+! 		 * match, otherwise "\@<=" won't work. */
+  		if (lastone
+! 			|| do_ask
+  			|| nmatch_tl > 0
+  			|| (nmatch = vim_regexec_multi(&regmatch, curwin,
+  				       curbuf, sub_firstlnum, matchcol)) == 0)
+--- 4097,4115 ----
+  		lastone = ((sub_firstline[matchcol] == NUL && nmatch <= 1)
+  			     || got_int || got_quit || !(do_all || do_again));
+  		nmatch = -1;
+! 
+! 		/*
+! 		 * Replace the line in the buffer when needed.  This is
+! 		 * skipped when there are more matches.
+! 		 * The check for nmatch_tl is needed for when multi-line
+  		 * matching must replace the lines before trying to do another
+! 		 * match, otherwise "\@<=" won't work.
+! 		 * When asking the user we like to show the already replaced
+! 		 * text, but don't do it when "\<@=" or "\<@!" is used, it
+! 		 * changes what matches.
+! 		 */
+  		if (lastone
+! 			|| (do_ask && !re_lookbehind(regmatch.regprog))
+  			|| nmatch_tl > 0
+  			|| (nmatch = vim_regexec_multi(&regmatch, curwin,
+  				       curbuf, sub_firstlnum, matchcol)) == 0)
+***************
+*** 4110,4121 ****
+  		    {
+  			/*
+  			 * Copy the rest of the line, that didn't match.
+! 			 * matchcol has to be adjusted, we use the end of the
+! 			 * line as reference, because the substitute may have
+! 			 * changed the number of characters.
+  			 */
+  			STRCAT(new_start, sub_firstline + copycol);
+  			matchcol = (colnr_T)STRLEN(sub_firstline) - matchcol;
+  
+  			if (u_savesub(lnum) != OK)
+  			    break;
+--- 4118,4132 ----
+  		    {
+  			/*
+  			 * Copy the rest of the line, that didn't match.
+! 			 * "matchcol" has to be adjusted, we use the end of
+! 			 * the line as reference, because the substitute may
+! 			 * have changed the number of characters.  Same for
+! 			 * "prev_matchcol".
+  			 */
+  			STRCAT(new_start, sub_firstline + copycol);
+  			matchcol = (colnr_T)STRLEN(sub_firstline) - matchcol;
++ 			prev_matchcol = (colnr_T)STRLEN(sub_firstline)
++ 							      - prev_matchcol;
+  
+  			if (u_savesub(lnum) != OK)
+  			    break;
+***************
+*** 4159,4164 ****
+--- 4170,4177 ----
+  			sub_firstline = new_start;
+  			new_start = NULL;
+  			matchcol = (colnr_T)STRLEN(sub_firstline) - matchcol;
++ 			prev_matchcol = (colnr_T)STRLEN(sub_firstline)
++ 							      - prev_matchcol;
+  			copycol = 0;
+  		    }
+  		    if (nmatch == -1 && !lastone)
+*** ../vim-6.2.443/src/proto/regexp.pro	Tue Mar 30 10:43:14 2004
+--- src/proto/regexp.pro	Sun Apr  4 14:46:22 2004
+***************
+*** 1,5 ****
+--- 1,6 ----
+  /* regexp.c */
+  int re_multiline __ARGS((regprog_T *prog));
++ int re_lookbehind __ARGS((regprog_T *prog));
+  char_u *skip_regexp __ARGS((char_u *startp, int dirc, int magic, char_u **newp));
+  regprog_T *vim_regcomp __ARGS((char_u *expr, int re_flags));
+  int vim_regcomp_had_eol __ARGS((void));
+*** ../vim-6.2.443/src/regexp.c	Mon Mar 29 14:32:19 2004
+--- src/regexp.c	Sun Apr  4 14:51:07 2004
+***************
+*** 355,360 ****
+--- 355,361 ----
+  #define SIMPLE		0x2	/* Simple enough to be STAR/PLUS operand. */
+  #define SPSTART		0x4	/* Starts with * or +. */
+  #define HASNL		0x8	/* Contains some \n. */
++ #define HASLOOKBH	0x10	/* Contains "\@<=" or "\@<!". */
+  #define WORST		0	/* Worst case. */
+  
+  /*
+***************
+*** 602,607 ****
+--- 603,609 ----
+  #define RF_NOICASE  2	/* don't ignore case */
+  #define RF_HASNL    4	/* can match a NL */
+  #define RF_ICOMBINE 8	/* ignore combining characters */
++ #define RF_LOOKBH   16	/* uses "\@<=" or "\@<!" */
+  
+  /*
+   * Global work variables for vim_regcomp().
+***************
+*** 712,717 ****
+--- 714,730 ----
+  #endif
+  
+  /*
++  * Return TRUE if compiled regular expression "prog" looks before the start
++  * position (pattern contains "\@<=" or "\@<!").
++  */
++     int
++ re_lookbehind(prog)
++     regprog_T *prog;
++ {
++     return (prog->regflags & RF_LOOKBH);
++ }
++ 
++ /*
+   * Skip past regular expression.
+   * Stop at end of 'p' of where 'dirc' is found ('/', '?', etc).
+   * Take care of characters with a backslash in front of it.
+***************
+*** 852,857 ****
+--- 865,872 ----
+      r->regflags = regflags;
+      if (flags & HASNL)
+  	r->regflags |= RF_HASNL;
++     if (flags & HASLOOKBH)
++ 	r->regflags |= RF_LOOKBH;
+  #ifdef FEAT_SYN_HL
+      /* Remember whether this pattern has any \z specials in it. */
+      r->reghasz = re_has_z;
+***************
+*** 1030,1036 ****
+       * whole thing can. */
+      if (!(flags & HASWIDTH))
+  	*flagp &= ~HASWIDTH;
+!     *flagp |= flags & (SPSTART | HASNL);
+      while (peekchr() == Magic('|'))
+      {
+  	skipchr();
+--- 1045,1051 ----
+       * whole thing can. */
+      if (!(flags & HASWIDTH))
+  	*flagp &= ~HASWIDTH;
+!     *flagp |= flags & (SPSTART | HASNL | HASLOOKBH);
+      while (peekchr() == Magic('|'))
+      {
+  	skipchr();
+***************
+*** 1040,1046 ****
+  	regtail(ret, br);	/* BRANCH -> BRANCH. */
+  	if (!(flags & HASWIDTH))
+  	    *flagp &= ~HASWIDTH;
+! 	*flagp |= flags & (SPSTART | HASNL);
+      }
+  
+      /* Make a closing node, and hook it on the end. */
+--- 1055,1061 ----
+  	regtail(ret, br);	/* BRANCH -> BRANCH. */
+  	if (!(flags & HASWIDTH))
+  	    *flagp &= ~HASWIDTH;
+! 	*flagp |= flags & (SPSTART | HASNL | HASLOOKBH);
+      }
+  
+      /* Make a closing node, and hook it on the end. */
+***************
+*** 1109,1116 ****
+  	if (latest == NULL)
+  	    return NULL;
+  	/* If one of the branches has width, the whole thing has.  If one of
+! 	 * the branches anchors at start-of-line, the whole thing does. */
+! 	*flagp |= flags & (HASWIDTH | SPSTART);
+  	/* If one of the branches doesn't match a line-break, the whole thing
+  	 * doesn't. */
+  	*flagp &= ~HASNL | (flags & HASNL);
+--- 1124,1132 ----
+  	if (latest == NULL)
+  	    return NULL;
+  	/* If one of the branches has width, the whole thing has.  If one of
+! 	 * the branches anchors at start-of-line, the whole thing does.
+! 	 * If one of the branches uses look-behind, the whole thing does. */
+! 	*flagp |= flags & (HASWIDTH | SPSTART | HASLOOKBH);
+  	/* If one of the branches doesn't match a line-break, the whole thing
+  	 * doesn't. */
+  	*flagp &= ~HASNL | (flags & HASNL);
+***************
+*** 1192,1198 ****
+  			    latest = regpiece(&flags);
+  			    if (latest == NULL)
+  				return NULL;
+! 			    *flagp |= flags & (HASWIDTH | HASNL);
+  			    if (chain == NULL)	/* First piece. */
+  				*flagp |= flags & SPSTART;
+  			    else
+--- 1208,1214 ----
+  			    latest = regpiece(&flags);
+  			    if (latest == NULL)
+  				return NULL;
+! 			    *flagp |= flags & (HASWIDTH | HASNL | HASLOOKBH);
+  			    if (chain == NULL)	/* First piece. */
+  				*flagp |= flags & SPSTART;
+  			    else
+***************
+*** 1248,1254 ****
+  						       reg_magic == MAGIC_ALL);
+  	/* "\{}" is checked below, it's allowed when there is an upper limit */
+      }
+!     *flagp = (WORST | SPSTART | (flags & HASNL));	/* default flags */
+  
+      skipchr();
+      switch (op)
+--- 1264,1271 ----
+  						       reg_magic == MAGIC_ALL);
+  	/* "\{}" is checked below, it's allowed when there is an upper limit */
+      }
+!     /* default flags */
+!     *flagp = (WORST | SPSTART | (flags & (HASNL | HASLOOKBH)));
+  
+      skipchr();
+      switch (op)
+***************
+*** 1279,1285 ****
+  		regtail(next, regnode(BRANCH)); /* or */
+  		regtail(ret, regnode(NOTHING)); /* null. */
+  	    }
+! 	    *flagp = (WORST | HASWIDTH | (flags & HASNL));
+  	    break;
+  
+  	case Magic('@'):
+--- 1296,1302 ----
+  		regtail(next, regnode(BRANCH)); /* or */
+  		regtail(ret, regnode(NOTHING)); /* null. */
+  	    }
+! 	    *flagp = (WORST | HASWIDTH | (flags & (HASNL | HASLOOKBH)));
+  	    break;
+  
+  	case Magic('@'):
+***************
+*** 1302,1308 ****
+--- 1319,1328 ----
+  						      reg_magic == MAGIC_ALL);
+  		/* Look behind must match with behind_pos. */
+  		if (lop == BEHIND || lop == NOBEHIND)
++ 		{
+  		    regtail(ret, regnode(BHPOS));
++ 		    *flagp |= HASLOOKBH;
++ 		}
+  		regtail(ret, regnode(END)); /* operand ends */
+  		reginsert(lop, ret);
+  		break;
+***************
+*** 1342,1348 ****
+  		++num_complex_braces;
+  	    }
+  	    if (minval > 0 && maxval > 0)
+! 		*flagp = (HASWIDTH | (flags & HASNL));
+  	    break;
+      }
+      if (re_multi_type(peekchr()) != NOT_MULTI)
+--- 1362,1368 ----
+  		++num_complex_braces;
+  	    }
+  	    if (minval > 0 && maxval > 0)
+! 		*flagp = (HASWIDTH | (flags & (HASNL | HASLOOKBH)));
+  	    break;
+      }
+      if (re_multi_type(peekchr()) != NOT_MULTI)
+***************
+*** 1498,1504 ****
+  	ret = reg(REG_PAREN, &flags);
+  	if (ret == NULL)
+  	    return NULL;
+! 	*flagp |= flags & (HASWIDTH | SPSTART | HASNL);
+  	break;
+  
+        case NUL:
+--- 1518,1524 ----
+  	ret = reg(REG_PAREN, &flags);
+  	if (ret == NULL)
+  	    return NULL;
+! 	*flagp |= flags & (HASWIDTH | SPSTART | HASNL | HASLOOKBH);
+  	break;
+  
+        case NUL:
+***************
+*** 1590,1596 ****
+  			  ret = reg(REG_ZPAREN, &flags);
+  			  if (ret == NULL)
+  			      return NULL;
+! 			  *flagp |= flags & (HASWIDTH | SPSTART | HASNL);
+  			  re_has_z = REX_SET;
+  			  break;
+  
+--- 1610,1616 ----
+  			  ret = reg(REG_ZPAREN, &flags);
+  			  if (ret == NULL)
+  			      return NULL;
+! 			  *flagp |= flags & (HASWIDTH|SPSTART|HASNL|HASLOOKBH);
+  			  re_has_z = REX_SET;
+  			  break;
+  
+***************
+*** 1632,1638 ****
+  		    ret = reg(REG_NPAREN, &flags);
+  		    if (ret == NULL)
+  			return NULL;
+! 		    *flagp |= flags & (HASWIDTH | SPSTART | HASNL);
+  		    break;
+  
+  		/* Catch \%^ and \%$ regardless of where they appear in the
+--- 1652,1658 ----
+  		    ret = reg(REG_NPAREN, &flags);
+  		    if (ret == NULL)
+  			return NULL;
+! 		    *flagp |= flags & (HASWIDTH | SPSTART | HASNL | HASLOOKBH);
+  		    break;
+  
+  		/* Catch \%^ and \%$ regardless of where they appear in the
+*** ../vim-6.2.443/src/version.c	Sun Apr  4 13:51:39 2004
+--- src/version.c	Sun Apr  4 15:37:32 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     444,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+264. You turn to the teletext page "surfing report" and are surprised that it
+     is about sizes of waves and a weather forecast for seaside resorts.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

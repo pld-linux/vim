@@ -1,0 +1,249 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.443
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.443
+Problem:    With ":silent! echoerr something" you don't get the position of
+	    the error.  emsg() only writes the message itself and returns.
+Solution:   Also redirect the position of the error.
+Files:	    src/message.c
+
+
+*** ../vim-6.2.442/src/message.c	Thu Mar 18 12:16:20 2004
+--- src/message.c	Sun Apr  4 13:34:34 2004
+***************
+*** 20,25 ****
+--- 20,27 ----
+  #endif
+  
+  static void reset_last_sourcing __ARGS((void));
++ static char_u *get_emsg_source __ARGS((int other));
++ static char_u *get_emsg_lnum __ARGS((int other));
+  static void add_msg_hist __ARGS((char_u *s, int len, int attr));
+  static void hit_return_msg __ARGS((void));
+  static void msg_home_replace_attr __ARGS((char_u *fname, int attr));
+***************
+*** 397,402 ****
+--- 399,452 ----
+  }
+  
+  /*
++  * Get the message about the source, as used for an error message.
++  * Returns an allocated string with room for one more character.
++  * Returns NULL when no message is to be given.
++  */
++     static char_u *
++ get_emsg_source(other)
++     int		other;	/* TRUE when "sourcing_name" differs from last time */
++ {
++     char_u	*Buf, *p;
++ 
++     if (sourcing_name != NULL && other)
++     {
++ 	p = (char_u *)_("Error detected while processing %s:");
++ 	Buf = alloc((unsigned)(STRLEN(sourcing_name) + STRLEN(p)));
++ 	if (Buf != NULL)
++ 	    sprintf((char *)Buf, (char *)p, sourcing_name);
++ 	return Buf;
++     }
++     return NULL;
++ }
++ 
++ /*
++  * Get the message about the source lnum, as used for an error message.
++  * Returns an allocated string with room for one more character.
++  * Returns NULL when no message is to be given.
++  */
++     static char_u *
++ get_emsg_lnum(other)
++     int		other;	/* TRUE when "sourcing_name" differs from last time */
++ {
++     char_u	*Buf, *p;
++ 
++     /* lnum is 0 when executing a command from the command line
++      * argument, we don't want a line number then */
++     if (sourcing_name != NULL
++ 	    && (other || sourcing_lnum != last_sourcing_lnum)
++ 	    && sourcing_lnum != 0)
++     {
++ 	p = (char_u *)_("line %4ld:");
++ 	Buf = alloc((unsigned)(STRLEN(p) + 20));
++ 	if (Buf != NULL)
++ 	    sprintf((char *)Buf, (char *)p, (long)sourcing_lnum);
++ 	return Buf;
++     }
++     return NULL;
++ }
++ 
++ /*
+   * emsg() - display an error message
+   *
+   * Rings the bell, if appropriate, and calls message() to do the real work
+***************
+*** 408,417 ****
+  emsg(s)
+      char_u	*s;
+  {
+-     char_u	*Buf;
+      int		attr;
+      int		other_sourcing_name;
+!     char	*p;
+  #ifdef FEAT_EVAL
+      int		ignore = FALSE;
+      int		severe;
+--- 458,466 ----
+  emsg(s)
+      char_u	*s;
+  {
+      int		attr;
+      int		other_sourcing_name;
+!     char_u	*p;
+  #ifdef FEAT_EVAL
+      int		ignore = FALSE;
+      int		severe;
+***************
+*** 440,445 ****
+--- 489,504 ----
+  	    )
+  	return TRUE;
+  
++     if (sourcing_name != NULL)
++     {
++ 	if (last_sourcing_name != NULL)
++ 	    other_sourcing_name = STRCMP(sourcing_name, last_sourcing_name);
++ 	else
++ 	    other_sourcing_name = TRUE;
++     }
++     else
++ 	other_sourcing_name = FALSE;
++ 
+      if (!emsg_off)
+      {
+  #ifdef FEAT_EVAL
+***************
+*** 468,473 ****
+--- 527,546 ----
+  	if (emsg_silent != 0)
+  	{
+  	    msg_start();
++ 	    p = get_emsg_source(other_sourcing_name);
++ 	    if (p != NULL)
++ 	    {
++ 		STRCAT(p, "\n");
++ 		redir_write(p, -1);
++ 		vim_free(p);
++ 	    }
++ 	    p = get_emsg_lnum(other_sourcing_name);
++ 	    if (p != NULL)
++ 	    {
++ 		STRCAT(p, "\n");
++ 		redir_write(p, -1);
++ 		vim_free(p);
++ 	    }
+  	    redir_write(s, -1);
+  	    return TRUE;
+  	}
+***************
+*** 503,544 ****
+  				     * and a redraw is expected because
+  				     * msg_scrolled is non-zero */
+  
+! /*
+!  * First output name and line number of source of error message
+!  */
+!     if (sourcing_name != NULL)
+      {
+! 	if (last_sourcing_name != NULL)
+! 	    other_sourcing_name = STRCMP(sourcing_name, last_sourcing_name);
+! 	else
+! 	    other_sourcing_name = TRUE;
+      }
+!     else
+! 	other_sourcing_name = FALSE;
+! 
+!     p = _("Error detected while processing %s:");
+!     if (sourcing_name != NULL
+! 	    && (other_sourcing_name || sourcing_lnum != last_sourcing_lnum)
+! 	    && (Buf = alloc((unsigned)(STRLEN(sourcing_name)
+! 						       + STRLEN(p)))) != NULL)
+      {
+! 	++no_wait_return;
+! 	if (other_sourcing_name)
+! 	{
+! 	    sprintf((char *)Buf, p, sourcing_name);
+! 	    msg_attr(Buf, attr);
+! 	}
+! 	    /* lnum is 0 when executing a command from the command line
+! 	     * argument, we don't want a line number then */
+! 	if (sourcing_lnum != 0)
+! 	{
+! 	    sprintf((char *)Buf, _("line %4ld:"), (long)sourcing_lnum);
+! 	    msg_attr(Buf, hl_attr(HLF_N));
+! 	}
+! 	--no_wait_return;
+  	last_sourcing_lnum = sourcing_lnum;  /* only once for each line */
+- 	vim_free(Buf);
+      }
+  
+      /* remember the last sourcing name printed, also when it's empty */
+      if (sourcing_name == NULL || other_sourcing_name)
+--- 576,599 ----
+  				     * and a redraw is expected because
+  				     * msg_scrolled is non-zero */
+  
+!     /*
+!      * Display name and line number for the source of the error.
+!      */
+!     ++no_wait_return;
+!     p = get_emsg_source(other_sourcing_name);
+!     if (p != NULL)
+      {
+! 	msg_attr(p, attr);
+! 	vim_free(p);
+      }
+!     p = get_emsg_lnum(other_sourcing_name);
+!     if (p != NULL)
+      {
+! 	msg_attr(p, hl_attr(HLF_N));
+! 	vim_free(p);
+  	last_sourcing_lnum = sourcing_lnum;  /* only once for each line */
+      }
++     --no_wait_return;
+  
+      /* remember the last sourcing name printed, also when it's empty */
+      if (sourcing_name == NULL || other_sourcing_name)
+***************
+*** 551,556 ****
+--- 606,614 ----
+      }
+      msg_nowait = FALSE;			/* wait for this msg */
+  
++     /*
++      * Display the error message itself.
++      */
+      return msg_attr(s, attr);
+  }
+  
+*** ../vim-6.2.442/src/version.c	Sun Apr  4 12:34:29 2004
+--- src/version.c	Sun Apr  4 13:50:53 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     443,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+263. You have more e-mail addresses than shorts.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

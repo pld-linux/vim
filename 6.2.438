@@ -1,0 +1,63 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.438
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.438
+Problem:    When the 'v' flag is present in 'cpoptions', backspacing and then
+	    typing text again: one character too much is overtyped before
+	    inserting is done again.
+Solution:   Set "dollar_vcol" to the right column.
+Files:	    src/edit.c
+
+
+*** ../vim-6.2.437/src/edit.c	Thu Apr  1 14:19:33 2004
+--- src/edit.c	Sat Apr  3 16:55:21 2004
+***************
+*** 6705,6715 ****
+       *		     was there remains visible
+       * Vim behaviour: the cursor moves backward and the character that
+       *		      was there is erased from the screen.
+!      * We can emulate the vi bahaviour by pretending there is a dollar
+       * displayed even when there isn't.
+       *  --pkv Sun Jan 19 01:56:40 EST 2003 */
+      if (vim_strchr(p_cpo, CPO_BACKSPACE) != NULL && dollar_vcol == 0)
+! 	dollar_vcol = curwin->w_virtcol + 1;
+  
+      return did_backspace;
+  }
+--- 6705,6715 ----
+       *		     was there remains visible
+       * Vim behaviour: the cursor moves backward and the character that
+       *		      was there is erased from the screen.
+!      * We can emulate the vi behaviour by pretending there is a dollar
+       * displayed even when there isn't.
+       *  --pkv Sun Jan 19 01:56:40 EST 2003 */
+      if (vim_strchr(p_cpo, CPO_BACKSPACE) != NULL && dollar_vcol == 0)
+! 	dollar_vcol = curwin->w_virtcol;
+  
+      return did_backspace;
+  }
+*** ../vim-6.2.437/src/version.c	Sat Apr  3 16:40:28 2004
+--- src/version.c	Sat Apr  3 16:59:26 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     438,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+255. You work for a newspaper and your editor asks you to write an
+     article about Internet addiction...in the "first person."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,67 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.466 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.466 (extra)
+Problem:    Win32: Compiling with Borland C fails, and an un/signed warning.
+Solution:   Redefine wcsicmp() to wcscmpi() and add type casts. (Yasuhiro
+	    Matsumoto)
+Files:	    src/os_win32.c
+
+
+*** ../vim-6.2.465/src/os_win32.c	Fri Apr  9 19:50:59 2004
+--- src/os_win32.c	Mon Apr 12 15:33:59 2004
+***************
+*** 146,151 ****
+--- 146,155 ----
+  PFNGCKLN    s_pfnGetConsoleKeyboardLayoutName = NULL;
+  #endif
+  
++ #if defined(__BORLANDC__)
++ /* Strangely Borland uses a non-standard name. */
++ # define wcsicmp(a, b) wcscmpi((a), (b))
++ #endif
+  
+  #ifndef FEAT_GUI_W32
+  /* Win32 Console handles for input and output */
+***************
+*** 4458,4464 ****
+  	/* Copy block of bytes at a time.  Abort when something goes wrong. */
+  	for (done = 0; done < len; done += written)
+  	{
+! 	    todo = len - done > sizeof(buf) ? sizeof(buf) : len - done;
+  	    if (!BackupRead(sh, (LPBYTE)buf, todo, &readcnt,
+  						       FALSE, FALSE, context)
+  		    || readcnt != todo
+--- 4462,4470 ----
+  	/* Copy block of bytes at a time.  Abort when something goes wrong. */
+  	for (done = 0; done < len; done += written)
+  	{
+! 	    /* (size_t) cast for Borland C 5.5 */
+! 	    todo = (size_t)(len - done) > sizeof(buf) ? sizeof(buf)
+! 						       : (size_t)(len - done);
+  	    if (!BackupRead(sh, (LPBYTE)buf, todo, &readcnt,
+  						       FALSE, FALSE, context)
+  		    || readcnt != todo
+*** ../vim-6.2.465/src/version.c	Mon Apr 12 15:41:18 2004
+--- src/version.c	Mon Apr 12 15:44:02 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     466,
+  /**/
+
+-- 
+Advice to worms:  Sleep late.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

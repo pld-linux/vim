@@ -1,0 +1,90 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.479
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.479
+Problem:    The error message for errors during recovery goes unnoticed.
+Solution:   Avoid that the hit-enter prompt overwrites the message.  Add a few
+	    lines to make the error stand out.
+Files:	    src/main.c, src/message.c, src/memline.c
+
+
+*** ../vim-6.2.478/src/main.c	Fri Apr 16 21:10:08 2004
+--- src/main.c	Fri Apr 16 21:57:21 2004
+***************
+*** 1743,1749 ****
+      {
+  	msg_scroll = TRUE;		/* scroll message up */
+  	ml_recover();
+- 	msg_scroll = FALSE;
+  	if (curbuf->b_ml.ml_mfp == NULL) /* failed */
+  	    getout(1);
+  	do_modelines();			/* do modelines */
+--- 1743,1748 ----
+*** ../vim-6.2.478/src/message.c	Sun Apr  4 13:51:39 2004
+--- src/message.c	Fri Apr 16 21:52:18 2004
+***************
+*** 1075,1082 ****
+      }
+      if (!msg_didany || lines_left < 0)
+  	msg_starthere();
+!     msg_didout = FALSE;			    /* no output on current line yet */
+!     cursor_off();
+  
+      /* when redirecting, may need to start a new line. */
+      if (!did_return)
+--- 1075,1085 ----
+      }
+      if (!msg_didany || lines_left < 0)
+  	msg_starthere();
+!     if (msg_silent == 0)
+!     {
+! 	msg_didout = FALSE;		    /* no output on current line yet */
+! 	cursor_off();
+!     }
+  
+      /* when redirecting, may need to start a new line. */
+      if (!did_return)
+*** ../vim-6.2.478/src/memline.c	Tue Apr  6 21:31:48 2004
+--- src/memline.c	Fri Apr 16 22:00:08 2004
+***************
+*** 1142,1148 ****
+--- 1142,1155 ----
+      if (got_int)
+  	EMSG(_("E311: Recovery Interrupted"));
+      else if (error)
++     {
++ 	++no_wait_return;
++ 	MSG(">>>>>>>>>>>>>");
+  	EMSG(_("E312: Errors detected while recovering; look for lines starting with ???"));
++ 	--no_wait_return;
++ 	MSG(_("See \":help E312\" for more information."));
++ 	MSG(">>>>>>>>>>>>>");
++     }
+      else
+      {
+  	MSG(_("Recovery completed. You should check if everything is OK."));
+*** ../vim-6.2.478/src/version.c	Fri Apr 16 21:10:08 2004
+--- src/version.c	Fri Apr 16 22:02:59 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     479,
+  /**/
+
+-- 
+A parent can be arrested if his child cannot hold back a burp during a church
+service.
+		[real standing law in Nebraska, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.435
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.435
+Problem:    When there are vertically split windows the minimal Vim window
+	    height is computed wrong.
+Solution:   Use frame_minheight() to correctly compute the minimal height.
+Files:	    src/window.c
+
+
+*** ../vim-6.2.434/src/window.c	Wed Mar 17 22:18:24 2004
+--- src/window.c	Sat Apr  3 15:38:43 2004
+***************
+*** 4701,4709 ****
+      int
+  min_rows()
+  {
+- #ifdef FEAT_WINDOWS
+-     win_T	*wp;
+- #endif
+      int		total;
+  
+      if (firstwin == NULL)	/* not initialized yet */
+--- 4701,4706 ----
+***************
+*** 4711,4721 ****
+  
+      total = 1;		/* count the room for the command line */
+  #ifdef FEAT_WINDOWS
+!     for (wp = firstwin; wp != NULL; wp = wp->w_next)
+! 	total += p_wmh + W_STATUS_HEIGHT(wp);
+!     if (p_wmh == 0)
+  #endif
+- 	total += 1;	/* at least one window should have a line! */
+      return total;
+  }
+  
+--- 4708,4717 ----
+  
+      total = 1;		/* count the room for the command line */
+  #ifdef FEAT_WINDOWS
+!     total += frame_minheight(topframe, NULL);
+! #else
+!     total += 1;		/* at least one window should have a line! */
+  #endif
+      return total;
+  }
+  
+*** ../vim-6.2.434/src/version.c	Fri Apr  2 22:33:55 2004
+--- src/version.c	Sat Apr  3 15:53:39 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     435,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+254. You wake up daily with your keyboard printed on your forehead.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,125 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.478
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.478
+Problem:    Win32: "--remote file" fails changing directory if the current
+	    directory name starts with a single quote.  (Iestyn Walters)
+Solution:   Add a backslash where it will be removed later.
+Files:	    src/main.c, src/misc2.c, src/proto/misc2.pro
+
+
+*** ../vim-6.2.477/src/main.c	Fri Apr 16 20:18:29 2004
+--- src/main.c	Fri Apr 16 20:45:43 2004
+***************
+*** 3033,3039 ****
+  	mainerr_arg_missing((char_u *)filev[-1]);
+      if (mch_dirname(cwd, MAXPATHL) != OK)
+  	return NULL;
+!     if ((p = vim_strsave_escaped(cwd, PATH_ESC_CHARS)) == NULL)
+  	return NULL;
+      ga_init2(&ga, 1, 100);
+      ga_concat(&ga, (char_u *)"<C-\\><C-N>:cd ");
+--- 3033,3039 ----
+  	mainerr_arg_missing((char_u *)filev[-1]);
+      if (mch_dirname(cwd, MAXPATHL) != OK)
+  	return NULL;
+!     if ((p = vim_strsave_escaped_ext(cwd, PATH_ESC_CHARS, TRUE)) == NULL)
+  	return NULL;
+      ga_init2(&ga, 1, 100);
+      ga_concat(&ga, (char_u *)"<C-\\><C-N>:cd ");
+*** ../vim-6.2.477/src/misc2.c	Fri Apr 16 11:14:51 2004
+--- src/misc2.c	Fri Apr 16 21:07:36 2004
+***************
+*** 979,984 ****
+--- 979,997 ----
+      char_u	*string;
+      char_u	*esc_chars;
+  {
++     return vim_strsave_escaped_ext(string, esc_chars, FALSE);
++ }
++ 
++ /*
++  * Same as vim_strsave_escaped(), but when "bsl" is TRUE also escape
++  * characters where rem_backslash() would remove the backslash.
++  */
++     char_u *
++ vim_strsave_escaped_ext(string, esc_chars, bsl)
++     char_u	*string;
++     char_u	*esc_chars;
++     int		bsl;
++ {
+      char_u	*p;
+      char_u	*p2;
+      char_u	*escaped_string;
+***************
+*** 1002,1008 ****
+  	    continue;
+  	}
+  #endif
+! 	if (vim_strchr(esc_chars, *p) != NULL)
+  	    ++length;			/* count a backslash */
+  	++length;			/* count an ordinary char */
+      }
+--- 1015,1021 ----
+  	    continue;
+  	}
+  #endif
+! 	if (vim_strchr(esc_chars, *p) != NULL || (bsl && rem_backslash(p)))
+  	    ++length;			/* count a backslash */
+  	++length;			/* count an ordinary char */
+      }
+***************
+*** 1021,1027 ****
+  		continue;
+  	    }
+  #endif
+! 	    if (vim_strchr(esc_chars, *p) != NULL)
+  		*p2++ = '\\';
+  	    *p2++ = *p;
+  	}
+--- 1034,1040 ----
+  		continue;
+  	    }
+  #endif
+! 	    if (vim_strchr(esc_chars, *p) != NULL || (bsl && rem_backslash(p)))
+  		*p2++ = '\\';
+  	    *p2++ = *p;
+  	}
+*** ../vim-6.2.477/src/proto/misc2.pro	Sun Jun  1 12:26:15 2003
+--- src/proto/misc2.pro	Fri Apr 16 20:52:44 2004
+***************
+*** 27,32 ****
+--- 27,33 ----
+  char_u *vim_strsave __ARGS((char_u *string));
+  char_u *vim_strnsave __ARGS((char_u *string, int len));
+  char_u *vim_strsave_escaped __ARGS((char_u *string, char_u *esc_chars));
++ char_u *vim_strsave_escaped_ext __ARGS((char_u *string, char_u *esc_chars, int bsl));
+  char_u *vim_strsave_up __ARGS((char_u *string));
+  char_u *vim_strnsave_up __ARGS((char_u *string, int len));
+  void vim_strup __ARGS((char_u *p));
+*** ../vim-6.2.477/src/version.c	Fri Apr 16 20:18:29 2004
+--- src/version.c	Fri Apr 16 21:09:10 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     478,
+  /**/
+
+-- 
+Yesterday, all my deadlines seemed so far away
+now it looks as though it's freeze in four days
+oh I believe in cvs..
+    [ CVS log "Beatles style" for FreeBSD ports/INDEX, Satoshi Asami ]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

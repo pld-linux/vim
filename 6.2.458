@@ -1,0 +1,81 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.458
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.458
+Problem:    When 'virtualedit' is set "$" doesn't move to the end of an
+	    unprintable character, causing "y$" not to include that character.
+	    (Fred Ma)
+Solution:   Set "coladd" to move the cursor to the end of the character.
+Files:	    src/misc2.c
+
+
+*** ../vim-6.2.457/src/misc2.c	Fri Apr  2 21:06:43 2004
+--- src/misc2.c	Wed Apr  7 12:36:56 2004
+***************
+*** 304,318 ****
+  
+      if (finetune)
+      {
+! 	int a = col;
+! 	int b = wcol - a;
+  
+! 	/* 'virtualedit' is set: The difference between wcol and col is used
+! 	 * to set coladd. */
+! 	if (b > 0 && b < (MAXCOL - 2 * W_WIDTH(curwin)))
+! 	    pos->coladd = b;
+  
+! 	col += b;
+      }
+  #endif
+  
+--- 304,330 ----
+  
+      if (finetune)
+      {
+! 	if (wcol == MAXCOL)
+! 	{
+! 	    /* The width of the last character is used to set coladd. */
+! 	    if (!one_more)
+! 	    {
+! 		colnr_T	    scol, ecol;
+  
+! 		getvcol(curwin, pos, &scol, NULL, &ecol);
+! 		pos->coladd = ecol - scol;
+! 	    }
+! 	}
+! 	else
+! 	{
+! 	    int b = (int)wcol - (int)col;
+  
+! 	    /* The difference between wcol and col is used to set coladd. */
+! 	    if (b > 0 && b < (MAXCOL - 2 * W_WIDTH(curwin)))
+! 		pos->coladd = b;
+! 
+! 	    col += b;
+! 	}
+      }
+  #endif
+  
+*** ../vim-6.2.457/src/version.c	Wed Apr  7 10:52:49 2004
+--- src/version.c	Wed Apr  7 13:11:33 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     458,
+  /**/
+
+-- 
+Back up my hard drive?  I can't find the reverse switch!
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

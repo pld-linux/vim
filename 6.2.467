@@ -1,0 +1,71 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.467 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.467 (extra, after 6.2.463)
+Problem:    Win32: can't compile without multi-byte feature. (Ajit Thakkar)
+Solution:   Add #ifdefs around the info stream code.
+Files:	    src/os_win32.c
+
+
+*** ../vim-6.2.466/src/os_win32.c	Mon Apr 12 15:45:28 2004
+--- src/os_win32.c	Tue Apr 13 16:25:08 2004
+***************
+*** 4418,4423 ****
+--- 4418,4424 ----
+  }
+  #endif
+  
++ #ifdef FEAT_MBYTE
+  /*
+   * SUB STREAM (aka info stream) handling:
+   *
+***************
+*** 4561,4566 ****
+--- 4562,4568 ----
+      vim_free(fromw);
+      vim_free(tow);
+  }
++ #endif
+  
+  /*
+   * Copy file attributes from file "from" to file "to".
+***************
+*** 4570,4579 ****
+--- 4572,4583 ----
+      int
+  mch_copy_file_attribute(char_u *from, char_u *to)
+  {
++ #ifdef FEAT_MBYTE
+      /* File streams only work on Windows NT and later. */
+      PlatformId();
+      if (g_PlatformId == VER_PLATFORM_WIN32_NT)
+  	copy_infostreams(from, to);
++ #endif
+      return 0;
+  }
+  
+*** ../vim-6.2.466/src/version.c	Mon Apr 12 15:45:28 2004
+--- src/version.c	Wed Apr 14 10:42:43 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     467,
+  /**/
+
+-- 
+Q: How do you tell the difference between a female cat and a male cat?
+A: You ask it a question and if HE answers, it's a male but, if SHE
+   answers, it's a female.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,56 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.465
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.465
+Problem:    When resizing the GUI window the window manager sometimes moves it
+	    left of or above the screen. (Michael McCarty)
+Solution:   Check the window position after resizing it and move it onto the
+	    screen when it isn't.
+Files:	    src/gui.c
+
+
+*** ../vim-6.2.464/src/gui.c	Mon Apr  5 19:46:49 2004
+--- src/gui.c	Fri Apr  9 11:15:00 2004
+***************
+*** 1363,1368 ****
+--- 1363,1378 ----
+  
+      gui_mch_set_shellsize(width, height, min_width, min_height,
+  						     base_width, base_height);
++     if (fit_to_display)
++     {
++ 	int	    x, y;
++ 
++ 	/* Some window managers put the Vim window left of/above the screen. */
++ 	gui_mch_update();
++ 	if (gui_mch_get_winpos(&x, &y) == OK && (x < 0 || y < 0))
++ 	    gui_mch_set_winpos(x < 0 ? 0 : x, y < 0 ? 0 : y);
++     }
++ 
+      gui_position_components(width);
+      gui_update_scrollbars(TRUE);
+      gui_reset_scroll_region();
+*** ../vim-6.2.464/src/version.c	Fri Apr  9 20:00:54 2004
+--- src/version.c	Mon Apr 12 15:39:14 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     465,
+  /**/
+
+-- 
+The early bird gets the worm. If you want something else for
+breakfast, get up later.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,59 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.464
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.464 (extra, after 6.2.427)
+Problem:    Amiga: Compilation error with gcc. (Ali Akcaagac)
+Solution:   Move the #ifdef outside of Read().
+Files:	    src/os_amiga.c
+
+
+*** ../vim-6.2.463/src/os_amiga.c	Fri Apr  2 11:36:09 2004
+--- src/os_amiga.c	Fri Apr  9 10:29:21 2004
+***************
+*** 172,182 ****
+  
+      for (;;)	    /* repeat until we got a character */
+      {
+- 	len = Read(raw_in, (char *)buf, (long)maxlen
+  #  ifdef FEAT_MBYTE
+! 		/ input_conv.vc_factor
+  #  endif
+- 		);
+  	if (len > 0)
+  	{
+  #ifdef FEAT_AUTOCMD
+--- 172,182 ----
+  
+      for (;;)	    /* repeat until we got a character */
+      {
+  #  ifdef FEAT_MBYTE
+! 	len = Read(raw_in, (char *)buf, (long)maxlen / input_conv.vc_factor);
+! #  else
+! 	len = Read(raw_in, (char *)buf, (long)maxlen);
+  #  endif
+  	if (len > 0)
+  	{
+  #ifdef FEAT_AUTOCMD
+*** ../vim-6.2.463/src/version.c	Fri Apr  9 19:50:59 2004
+--- src/version.c	Fri Apr  9 20:00:24 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     464,
+  /**/
+
+-- 
+    f y cn rd ths thn y cn hv grt jb n cmptr prgrmmng
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

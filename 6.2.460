@@ -1,0 +1,46 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.460
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.460 (extra, after 6.2.456)
+Problem:    Compiler warnings for missing prototypes.
+Solution:   Include the missing prototypes.
+Files:	    src/proto/os_win32.pro
+
+
+*** ../vim-6.2.459/src/proto/os_win32.pro	Sun Feb 29 14:48:02 2004
+--- src/proto/os_win32.pro	Mon Mar 15 22:16:42 2004
+***************
+*** 40,45 ****
+--- 40,47 ----
+  int mch_rename __ARGS((const char *pszOldFile, const char *pszNewFile));
+  char *default_shell __ARGS((void));
+  int mch_access __ARGS((char *n, int p));
++ int mch_open __ARGS((char *name, int flags, int mode));
++ FILE *mch_fopen __ARGS((char *name, char *mode));
+  int mch_copy_file_attribute __ARGS((char_u *from, char_u *to));
+  int myresetstkoflw __ARGS((void));
+  /* vim: set ft=c : */
+*** ../vim-6.2.459/src/version.c	Wed Apr  7 19:48:53 2004
+--- src/version.c	Wed Apr  7 19:49:34 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     460,
+  /**/
+
+-- 
+What the word 'politics' means: 'Poli' in Latin meaning 'many' and 'tics'
+meaning 'bloodsucking creatures'.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

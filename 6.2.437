@@ -1,0 +1,62 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.437
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.437
+Problem:    ":mksession" always puts "set nocompatible" in the session file.
+	    This changes option settings. (Ron Aaron)
+Solution:   Add an "if" to only change 'compatible' when needed.
+Files:	    src/ex_docmd.c
+
+
+*** ../vim-6.2.436/src/ex_docmd.c	Thu Apr  1 13:01:12 2004
+--- src/ex_docmd.c	Sat Apr  3 16:35:51 2004
+***************
+*** 7565,7575 ****
+  	if (eap->cmdidx != CMD_mkview)
+  #endif
+  	{
+! 	    /* Write setting 'compatible' first, because it has side effects */
+  	    if (p_cp)
+! 		(void)put_line(fd, "set compatible");
+  	    else
+! 		(void)put_line(fd, "set nocompatible");
+  	}
+  
+  #ifdef FEAT_SESSION
+--- 7563,7574 ----
+  	if (eap->cmdidx != CMD_mkview)
+  #endif
+  	{
+! 	    /* Write setting 'compatible' first, because it has side effects.
+! 	     * For that same reason only do it when needed. */
+  	    if (p_cp)
+! 		(void)put_line(fd, "if !&cp | set cp | endif");
+  	    else
+! 		(void)put_line(fd, "if &cp | set nocp | endif");
+  	}
+  
+  #ifdef FEAT_SESSION
+*** ../vim-6.2.436/src/version.c	Sat Apr  3 16:31:39 2004
+--- src/version.c	Sat Apr  3 16:39:33 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     437,
+  /**/
+
+-- 
+Did you hear about the new 3 million dollar West Virginia State Lottery?
+The winner gets 3 dollars a year for a million years.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

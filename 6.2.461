@@ -1,0 +1,86 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.461
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.461
+Problem:    After using a search command "x" starts putting single characters
+	    in the numbered registers.
+Solution:   Reset "use_reg_one" at the right moment.
+Files:	    src/normal.c
+
+
+*** ../vim-6.2.460/src/normal.c	Sun Apr  4 12:06:41 2004
+--- src/normal.c	Wed Apr  7 22:52:24 2004
+***************
+*** 1118,1125 ****
+  	    && !oap->op_type
+  	    && (idx < 0 || !(nv_cmds[idx].cmd_flags & NV_KEEPREG)))
+      {
+! 	oap->regname = 0;
+! 	oap->motion_force = NUL;
+  #ifdef FEAT_EVAL
+  	set_reg_var('"');
+  #endif
+--- 1118,1124 ----
+  	    && !oap->op_type
+  	    && (idx < 0 || !(nv_cmds[idx].cmd_flags & NV_KEEPREG)))
+      {
+! 	clearop(oap);
+  #ifdef FEAT_EVAL
+  	set_reg_var('"');
+  #endif
+***************
+*** 2000,2006 ****
+  		    && (oap->op_type == OP_LSHIFT || oap->op_type == OP_RSHIFT
+  						|| oap->op_type == OP_DELETE))
+  		coladvance(curwin->w_curswant = old_col);
+- 	    oap->op_type = OP_NOP;
+  	}
+  	else
+  	{
+--- 1999,2004 ----
+***************
+*** 2009,2016 ****
+  #ifdef FEAT_VISUAL
+  	oap->block_mode = FALSE;
+  #endif
+! 	oap->regname = 0;
+! 	oap->motion_force = NUL;
+      }
+  }
+  
+--- 2007,2013 ----
+  #ifdef FEAT_VISUAL
+  	oap->block_mode = FALSE;
+  #endif
+! 	clearop(oap);
+      }
+  }
+  
+*** ../vim-6.2.460/src/version.c	Wed Apr  7 19:49:52 2004
+--- src/version.c	Thu Apr  8 12:29:02 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     461,
+  /**/
+
+-- 
+ARTHUR:    Well, it doesn't matter.  Will you go and tell your master that
+           Arthur from the Court of Camelot is here.
+GUARD #1:  Listen, in order to maintain air-speed velocity, a swallow
+           needs to beat its wings 43 times every second, right?
+ARTHUR:    Please!
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,48 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.473
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.473
+Problem:    Using CTRL-] in a help buffer without a name causes a crash.
+Solution:   Check for name to be present before using it. (Taro Muraoka)
+Files:	    src/tag.c
+
+
+*** ../vim-6.2.472/src/tag.c	Thu Apr  1 13:01:12 2004
+--- src/tag.c	Thu Apr 15 20:04:54 2004
+***************
+*** 1291,1296 ****
+--- 1291,1297 ----
+  		 * language. */
+  		if ((flags & TAG_KEEP_LANG)
+  			&& help_lang_find == NULL
++ 			&& curbuf->b_fname != NULL
+  			&& (i = STRLEN(curbuf->b_fname)) > 4
+  			&& curbuf->b_fname[i - 1] == 'x'
+  			&& curbuf->b_fname[i - 4] == '.'
+*** ../vim-6.2.472/src/version.c	Wed Apr 14 22:39:35 2004
+--- src/version.c	Thu Apr 15 20:45:27 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     473,
+  /**/
+
+-- 
+BRIDGEKEEPER: What is the air-speed velocity of an unladen swallow?
+ARTHUR:       What do you mean?  An African or European swallow?
+BRIDGEKEEPER: Er ...  I don't know that ... Aaaaarrrrrrggghhh!
+   BRIDGEKEEPER is cast into the gorge.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

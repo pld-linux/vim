@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.459
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.459 (after 6.2.454)
+Problem:    Variable "b" cannot be written. (Salman Halim)
+Solution:   Compare strings properly.
+Files:	    src/eval.c
+
+*** ../vim-6.2.458/src/eval.c	Tue Apr  6 20:14:01 2004
+--- src/eval.c	Wed Apr  7 17:55:20 2004
+***************
+*** 1157,1163 ****
+  
+  		if (*skipwhite(p) != '=')
+  		    EMSG(_(e_letunexp));
+! 		else if (STRNCMP(arg, "b:changedtick", p - arg) == 0)
+  		    EMSG2(_(e_readonlyvar), arg);
+  #ifdef FEAT_MAGIC_BRACES
+  		else if (expr_start != NULL)
+--- 1157,1164 ----
+  
+  		if (*skipwhite(p) != '=')
+  		    EMSG(_(e_letunexp));
+! 		else if (p - arg == 13
+! 				    && STRNCMP(arg, "b:changedtick", 13) == 0)
+  		    EMSG2(_(e_readonlyvar), arg);
+  #ifdef FEAT_MAGIC_BRACES
+  		else if (expr_start != NULL)
+*** ../vim-6.2.458/src/version.c	Wed Apr  7 13:14:18 2004
+--- src/version.c	Wed Apr  7 19:47:51 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     459,
+  /**/
+
+-- 
+I have to exercise early in the morning before my brain
+figures out what I'm doing.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

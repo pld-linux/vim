@@ -1,0 +1,265 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.471
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.471
+Problem:    "-L/usr/lib" is used in the link command, even though it's
+	    supposed to be filtered out. "-lw" and "-ldl" are not
+	    automatically added when needed for "-lXmu". (Antonio Colombo)
+Solution:   Check for a space after the argument instead of before.  Also
+	    remove "-R/usr/lib" if it's there.  Check for "-lw" and "-ldl"
+	    before trying "-lXmu".
+Files:	    src/auto/configure, src/configure.in, src/link.sh
+
+
+*** ../vim-6.2.470/src/auto/configure	Fri Mar 26 14:25:07 2004
+--- src/auto/configure	Wed Apr 14 21:44:01 2004
+***************
+*** 3473,3494 ****
+    fi
+  
+      X_CFLAGS="`echo $X_CFLAGS\  | sed 's%-I/usr/include %%'`"
+!     X_LIBS="`echo $X_LIBS\  | sed 's% -L/usr/lib%%'`"
+  
+  
+        echo $ac_n "checking if X11 header files can be found""... $ac_c" 1>&6
+! echo "configure:3253: checking if X11 header files can be found" >&5
+    cflags_save=$CFLAGS
+    CFLAGS="$CFLAGS $X_CFLAGS"
+    cat > conftest.$ac_ext <<EOF
+! #line 3257 "configure"
+  #include "confdefs.h"
+  #include <X11/Xlib.h>
+  int main() {
+  
+  ; return 0; }
+  EOF
+! if { (eval echo configure:3264: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+    rm -rf conftest*
+    echo "$ac_t""yes" 1>&6
+  else
+--- 3474,3496 ----
+    fi
+  
+      X_CFLAGS="`echo $X_CFLAGS\  | sed 's%-I/usr/include %%'`"
+!     X_LIBS="`echo $X_LIBS\  | sed 's%-L/usr/lib %%'`"
+!     X_LIBS="`echo $X_LIBS\  | sed -e 's%-R/usr/lib %%' -e 's%-R /usr/lib %%'`"
+  
+  
+        echo $ac_n "checking if X11 header files can be found""... $ac_c" 1>&6
+! echo "configure:3483: checking if X11 header files can be found" >&5
+    cflags_save=$CFLAGS
+    CFLAGS="$CFLAGS $X_CFLAGS"
+    cat > conftest.$ac_ext <<EOF
+! #line 3487 "configure"
+  #include "confdefs.h"
+  #include <X11/Xlib.h>
+  int main() {
+  
+  ; return 0; }
+  EOF
+! if { (eval echo configure:3494: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+    rm -rf conftest*
+    echo "$ac_t""yes" 1>&6
+  else
+***************
+*** 4742,4749 ****
+    echo "$ac_t""no" 1>&6
+  fi
+  
+    echo $ac_n "checking for XmuCreateStippledPixmap in -lXmu""... $ac_c" 1>&6
+! echo "configure:4482: checking for XmuCreateStippledPixmap in -lXmu" >&5
+  ac_lib_var=`echo Xmu'_'XmuCreateStippledPixmap | sed 'y%./+-%__p_%'`
+  if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+    echo $ac_n "(cached) $ac_c" 1>&6
+--- 4744,4831 ----
+    echo "$ac_t""no" 1>&6
+  fi
+  
++     echo $ac_n "checking for wslen in -lw""... $ac_c" 1>&6
++ echo "configure:4749: checking for wslen in -lw" >&5
++ ac_lib_var=`echo w'_'wslen | sed 'y%./+-%__p_%'`
++ if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++   echo $ac_n "(cached) $ac_c" 1>&6
++ else
++   ac_save_LIBS="$LIBS"
++ LIBS="-lw $GUI_X_LIBS -lXt $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
++ cat > conftest.$ac_ext <<EOF
++ #line 4757 "configure"
++ #include "confdefs.h"
++ /* Override any gcc2 internal prototype to avoid an error.  */
++ /* We use char because int might match the return type of a gcc2
++     builtin and then its argument prototype would still apply.  */
++ char wslen();
++ 
++ int main() {
++ wslen()
++ ; return 0; }
++ EOF
++ if { (eval echo configure:4768: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++   rm -rf conftest*
++   eval "ac_cv_lib_$ac_lib_var=yes"
++ else
++   echo "configure: failed program was:" >&5
++   cat conftest.$ac_ext >&5
++   rm -rf conftest*
++   eval "ac_cv_lib_$ac_lib_var=no"
++ fi
++ rm -f conftest*
++ LIBS="$ac_save_LIBS"
++ 
++ fi
++ if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++   echo "$ac_t""yes" 1>&6
++   X_EXTRA_LIBS="$X_EXTRA_LIBS -lw"
++ else
++   echo "$ac_t""no" 1>&6
++ fi
++ 
++   echo $ac_n "checking for dlsym in -ldl""... $ac_c" 1>&6
++ echo "configure:4789: checking for dlsym in -ldl" >&5
++ ac_lib_var=`echo dl'_'dlsym | sed 'y%./+-%__p_%'`
++ if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
++   echo $ac_n "(cached) $ac_c" 1>&6
++ else
++   ac_save_LIBS="$LIBS"
++ LIBS="-ldl $GUI_X_LIBS -lXt $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
++ cat > conftest.$ac_ext <<EOF
++ #line 4797 "configure"
++ #include "confdefs.h"
++ /* Override any gcc2 internal prototype to avoid an error.  */
++ /* We use char because int might match the return type of a gcc2
++     builtin and then its argument prototype would still apply.  */
++ char dlsym();
++ 
++ int main() {
++ dlsym()
++ ; return 0; }
++ EOF
++ if { (eval echo configure:4808: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
++   rm -rf conftest*
++   eval "ac_cv_lib_$ac_lib_var=yes"
++ else
++   echo "configure: failed program was:" >&5
++   cat conftest.$ac_ext >&5
++   rm -rf conftest*
++   eval "ac_cv_lib_$ac_lib_var=no"
++ fi
++ rm -f conftest*
++ LIBS="$ac_save_LIBS"
++ 
++ fi
++ if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
++   echo "$ac_t""yes" 1>&6
++   X_EXTRA_LIBS="$X_EXTRA_LIBS -ldl"
++ else
++   echo "$ac_t""no" 1>&6
++ fi
++ 
+    echo $ac_n "checking for XmuCreateStippledPixmap in -lXmu""... $ac_c" 1>&6
+! echo "configure:4829: checking for XmuCreateStippledPixmap in -lXmu" >&5
+  ac_lib_var=`echo Xmu'_'XmuCreateStippledPixmap | sed 'y%./+-%__p_%'`
+  if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+    echo $ac_n "(cached) $ac_c" 1>&6
+*** ../vim-6.2.470/src/configure.in	Fri Mar 26 14:25:07 2004
+--- src/configure.in	Tue Apr 13 15:30:22 2004
+***************
+*** 916,923 ****
+  
+    dnl Remove "-I/usr/include " from X_CFLAGS, should not be needed.
+    X_CFLAGS="`echo $X_CFLAGS\  | sed 's%-I/usr/include %%'`"
+!   dnl Remove " -L/usr/lib" from X_LIBS, should not be needed.
+!   X_LIBS="`echo $X_LIBS\  | sed 's% -L/usr/lib%%'`"
+  
+  
+    dnl Check if the X11 header files are correctly installed. On some systems
+--- 916,925 ----
+  
+    dnl Remove "-I/usr/include " from X_CFLAGS, should not be needed.
+    X_CFLAGS="`echo $X_CFLAGS\  | sed 's%-I/usr/include %%'`"
+!   dnl Remove "-L/usr/lib " from X_LIBS, should not be needed.
+!   X_LIBS="`echo $X_LIBS\  | sed 's%-L/usr/lib %%'`"
+!   dnl Same for "-R/usr/lib ".
+!   X_LIBS="`echo $X_LIBS\  | sed -e 's%-R/usr/lib %%' -e 's%-R /usr/lib %%'`"
+  
+  
+    dnl Check if the X11 header files are correctly installed. On some systems
+***************
+*** 1644,1649 ****
+--- 1646,1656 ----
+    LDFLAGS="$X_LIBS $LDFLAGS"
+    AC_CHECK_LIB(Xext, XShapeQueryExtension, [GUI_X_LIBS="-lXext"],,
+  		[-lXt $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
++   dnl For Solaris we need -lw and -ldl before linking with -lXmu works.
++   AC_CHECK_LIB(w, wslen, [X_EXTRA_LIBS="$X_EXTRA_LIBS -lw"],,
++ 		[$GUI_X_LIBS -lXt $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
++   AC_CHECK_LIB(dl, dlsym, [X_EXTRA_LIBS="$X_EXTRA_LIBS -ldl"],,
++ 		[$GUI_X_LIBS -lXt $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+    AC_CHECK_LIB(Xmu, XmuCreateStippledPixmap, [GUI_X_LIBS="-lXmu $GUI_X_LIBS"],,
+  		[$GUI_X_LIBS -lXt $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+    if test -z "$SKIP_MOTIF"; then
+*** ../vim-6.2.470/src/link.sh	Sun May 19 11:51:43 2002
+--- src/link.sh	Mon Apr  5 15:09:00 2004
+***************
+*** 5,11 ****
+  # libraries when they exist, but this doesn't mean they are needed for Vim.
+  #
+  #      Author: Bram Moolenaar
+! # Last change: 2002 Feb 21
+  #
+  # Warning: This fails miserably if the linker doesn't return an error code!
+  #
+--- 5,11 ----
+  # libraries when they exist, but this doesn't mean they are needed for Vim.
+  #
+  #      Author: Bram Moolenaar
+! # Last change: 2004 Apr 05
+  #
+  # Warning: This fails miserably if the linker doesn't return an error code!
+  #
+***************
+*** 40,46 ****
+    if sh link.cmd; then
+      touch auto/link.sed
+      cp link.cmd linkit.sh
+!     for libname in SM ICE nsl dnet dnet_stub inet socket dir elf iconv Xt Xmu Xp Xpm X11 Xdmcp x pthread thread readline m perl crypt attr; do
+        cont=yes
+        while test -n "$cont"; do
+          if grep "l$libname " linkit.sh >/dev/null; then
+--- 40,46 ----
+    if sh link.cmd; then
+      touch auto/link.sed
+      cp link.cmd linkit.sh
+!     for libname in SM ICE nsl dnet dnet_stub inet socket dir elf iconv Xt Xmu Xp Xpm X11 Xdmcp x w dl pthread thread readline m perl crypt attr; do
+        cont=yes
+        while test -n "$cont"; do
+          if grep "l$libname " linkit.sh >/dev/null; then
+*** ../vim-6.2.470/src/version.c	Wed Apr 14 21:41:32 2004
+--- src/version.c	Wed Apr 14 21:43:55 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     471,
+  /**/
+
+-- 
+MONK: ... and the Lord spake, saying, "First shalt thou take out the Holy Pin,
+      then shalt thou count to three, no more, no less.  Three shalt be the
+      number thou shalt count, and the number of the counting shalt be three.
+      Four shalt thou not count, neither count thou two, excepting that thou
+      then proceed to three.  Five is right out.  Once the number three, being
+      the third number, be reached, then lobbest thou thy Holy Hand Grenade of
+      Antioch towards thou foe, who being naughty in my sight, shall snuff it.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

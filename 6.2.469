@@ -1,0 +1,77 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.469 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.469 (extra, after 6.2.456)
+Problem:    Win32: Can't create swap file when 'encoding' differs from the
+	    active code page. (Kriton Kyrimis)
+Solution:   In enc_to_ucs2() terminate the converted string with a NUL
+Files:	    src/os_mswin.c
+
+
+*** ../vim-6.2.468/src/os_mswin.c	Tue Apr  6 21:31:48 2004
+--- src/os_mswin.c	Wed Apr 14 12:38:18 2004
+***************
+*** 1016,1022 ****
+   * Convert "str" from 'encoding' to UCS-2.
+   * Input in "str" with length "*lenp".  When "lenp" is NULL, use strlen().
+   * Output is returned as an allocated string.  "*lenp" is set to the length of
+!  * the result.
+   * Returns NULL when out of memory.
+   */
+      short_u *
+--- 1016,1022 ----
+   * Convert "str" from 'encoding' to UCS-2.
+   * Input in "str" with length "*lenp".  When "lenp" is NULL, use strlen().
+   * Output is returned as an allocated string.  "*lenp" is set to the length of
+!  * the result.  A trailing NUL is always added.
+   * Returns NULL when out of memory.
+   */
+      short_u *
+***************
+*** 1058,1067 ****
+  	convert_setup(&conv, NULL, NULL);
+  
+  	length = utf8_to_ucs2(str, *lenp, NULL, NULL);
+! 	ret = (WCHAR *)alloc((unsigned)((length == 0 ? 1 : length)
+! 							    * sizeof(WCHAR)));
+  	if (ret != NULL)
+  	    utf8_to_ucs2(str, *lenp, (short_u *)ret, NULL);
+  
+  	vim_free(allocbuf);
+      }
+--- 1058,1069 ----
+  	convert_setup(&conv, NULL, NULL);
+  
+  	length = utf8_to_ucs2(str, *lenp, NULL, NULL);
+! 	ret = (WCHAR *)alloc((unsigned)((length + 1) * sizeof(WCHAR)));
+  	if (ret != NULL)
++ 	{
+  	    utf8_to_ucs2(str, *lenp, (short_u *)ret, NULL);
++ 	    ret[length] = 0;
++ 	}
+  
+  	vim_free(allocbuf);
+      }
+*** ../vim-6.2.468/src/version.c	Wed Apr 14 11:08:53 2004
+--- src/version.c	Wed Apr 14 14:09:56 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     469,
+  /**/
+
+-- 
+Why isn't there mouse-flavored cat food?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
