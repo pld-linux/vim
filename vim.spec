@@ -29,7 +29,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -49,9 +49,6 @@ Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
-# http://www.vim.org/scripts/download_script.php?src_id=3091
-Source100:	taglist.zip
-# Source100-md5:	d08db6c820130d42262171571e74f0ec
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -908,8 +905,6 @@ install -m755 src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 
 bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 unzip -d $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE6}
-
-unzip -d $RPM_BUILD_ROOT%{_datadir}/vim/v* %{SOURCE100}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
