@@ -1,0 +1,33 @@
+--- vim63/runtime/KVim.desktop~	Wed Jul 28 02:18:30 2004
++++ vim63/runtime/KVim.desktop	Wed Jul 28 02:18:30 2004
+@@ -1,13 +1,12 @@
+ # KDE Config File  
+ [Desktop Entry]
++Encoding=UTF-8
+ Type=Application
+ Exec=kvim -f %F
+ Icon=kvim
+ MiniIcon=kvim
+ DocPath=kvim/index.html
+-Comment=
+-Comment[xx]=xx
+-Terminal=0
++Terminal=false
+ Name=KVim
+ Name[eo]=VIM-fasado
+ Name[sv]=Kvim
+@@ -26,6 +25,7 @@
+ Comment[ja]=テキストエディタ
+ Comment[lt]=Teksto redaktorius
+ Comment[mt]=Editur tat-test
++Comment[pl]=Edytor tekstu
+ Comment[pt_BR]=Editor de Texto
+ Comment[ro]=Editor de text
+ Comment[ru]=редактор
+@@ -41,4 +41,5 @@
+ MimeType=application/mathml+xml;application/xhtml+xml;application/x-perl;application/x-python;application/x-shellscript;audio/x-mpegurl;audio/x-scpls;image/svg+xml;message/news;message/rfc822;text/calendar;text/css;text/english;text/html;text/mrml;text/plain;text/rdf;text/rss;text/rtf;text/sgml;text/vnd.wap.wml;text/x-adasrc;text/x-bibtex;text/x-chdr;text/x-c++hdr;text/x-csrc;text/x-c++src;text/x-csv;text/x-diff;text/x-java;text/x-katefilelist;text/x-latex;text/x-log;text/x-lyx;text/x-makefile;text/xmcd;text/xml;text/x-moc;text/x-mswinurl;text/x-objcsrc;text/x-pascal;text/x-perl;text/x-python;text/x-tcl;text/x-tex;text/x-vcalendar;text/x-vcard;text/x-xslfo;text/x-xslt
+ X-KDE-StartupNotify=true
+ X-KDE-AuthorizeAction=shell access
+-
++Categories=Qt;KDE;TextEditor;
++# vi: encoding=utf-8
