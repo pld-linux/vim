@@ -7,6 +7,6 @@ diff -urN vim61/runtime/vimrc_example.vim vim61.pld/runtime/vimrc_example.vim
  endif " has("autocmd")
 +
 +" ADDED BY PLD.
-+" USE :help colorshame FOR INFO
-+set background=dark
++" USE :help colorscheme FOR INFO
++"set background=dark
 +
