@@ -1,0 +1,64 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.325
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.325
+Problem:    When $HOME includes a space, doing ":set tags=~/tags" doesn't
+	    work, the space is used to separate file names.  (Brett Stahlman)
+Solution:   Escape the space with a backslash.
+Files:	    src/option.c
+
+
+*** ../vim-6.2.324/src/option.c	Tue Mar  2 15:10:20 2004
+--- src/option.c	Sun Mar  7 17:22:32 2004
+***************
+*** 4240,4247 ****
+  
+      /*
+       * Expanding this with NameBuff, expand_env() must not be passed IObuff.
+       */
+!     expand_env(val, NameBuff, MAXPATHL);
+      if (STRCMP(NameBuff, val) == 0)   /* they are the same */
+  	return NULL;
+  
+--- 4240,4250 ----
+  
+      /*
+       * Expanding this with NameBuff, expand_env() must not be passed IObuff.
++      * Escape spaces when expanding 'tags', they are used to separate file
++      * names.
+       */
+!     expand_env_esc(val, NameBuff, MAXPATHL,
+! 				  (char_u **)options[opt_idx].var == &p_tags);
+      if (STRCMP(NameBuff, val) == 0)   /* they are the same */
+  	return NULL;
+  
+*** ../vim-6.2.324/src/version.c	Sun Mar  7 17:03:27 2004
+--- src/version.c	Sun Mar  7 18:18:40 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     325,
+  /**/
+
+-- 
+ARTHUR: CHARGE!
+   [The mighty ARMY charges.  Thundering noise of feet.  Clatter of coconuts.
+   Shouts etc.   Suddenly there is a wail of a siren and a couple of police
+   cars roar round in front of the charging ARMY and the POLICE leap out and
+   stop them.  TWO POLICEMAN and the HISTORIAN'S WIFE.  Black Marias skid up
+   behind them.]
+HISTORIAN'S WIFE: They're the ones, I'm sure.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,61 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.314
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.314
+Problem:    When 'virtualedit' is set "rx" may cause a crash with a blockwise
+	    selection and using "$". (Moritz Orbach)
+Solution:   Don't try replacing chars in a line that has no characters in the
+	    block.
+Files:	    src/ops.c
+
+
+*** ../vim-6.2.313/src/ops.c	Sun Feb 15 13:49:38 2004
+--- src/ops.c	Wed Mar  3 21:51:58 2004
+***************
+*** 1922,1929 ****
+  	for ( ; curwin->w_cursor.lnum <= oap->end.lnum; ++curwin->w_cursor.lnum)
+  	{
+  	    block_prep(oap, &bd, curwin->w_cursor.lnum, TRUE);
+! 	    if (bd.textlen == 0 && !virtual_op)	/* nothing to delete */
+! 		continue;
+  
+  	    /* n == number of extra chars required
+  	     * If we split a TAB, it may be replaced by several characters.
+--- 1922,1929 ----
+  	for ( ; curwin->w_cursor.lnum <= oap->end.lnum; ++curwin->w_cursor.lnum)
+  	{
+  	    block_prep(oap, &bd, curwin->w_cursor.lnum, TRUE);
+! 	    if (bd.textlen == 0 && (!virtual_op || bd.is_MAX))
+! 		continue;	    /* nothing to replace */
+  
+  	    /* n == number of extra chars required
+  	     * If we split a TAB, it may be replaced by several characters.
+*** ../vim-6.2.313/src/version.c	Wed Mar  3 21:08:15 2004
+--- src/version.c	Wed Mar  3 23:00:31 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     314,
+  /**/
+
+-- 
+ARTHUR: Charge!
+   [They all charge with swords drawn towards the RABBIT.  A tremendous twenty
+   second fight with Peckinpahish shots and borrowing heavily also on the
+   Kung Fu and karate-type films ensues, in which some four KNIGHTS are
+   comprehensively killed.]
+ARTHUR: Run away!  Run away!
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
