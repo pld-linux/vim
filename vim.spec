@@ -29,7 +29,7 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	4
+Release:	5
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -57,6 +57,7 @@ Patch4:		%{name}-ispell-axp.patch
 Patch5:		%{name}-%{name}rc.patch
 Patch6:		%{name}-no_libelf.patch
 Patch7:		%{name}-egrep.patch
+Patch8:		k%{name}-desktop.patch
 Patch9:		%{name}-specsyntax.patch
 Patch10:	%{name}-specsyntax-pld.patch
 Patch11:	%{name}-bonobo.patch
@@ -542,6 +543,7 @@ element bonobo.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 %patch9 -p1
 %patch10 -p1
 %{?with_bonobo:%patch11 -p1}
@@ -892,7 +894,6 @@ install runtime/kvim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/kvi
 install runtime/kvim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/kvim.png
 install runtime/kvim64x64.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/64x64/apps/kvim.png
 install runtime/KVim.desktop $RPM_BUILD_ROOT%{_desktopdir}/kde
-echo "Categories=Qt;KDE;Utility;TextEditor" >> $RPM_BUILD_ROOT%{_desktopdir}/kde/KVim.desktop
 install -d $RPM_BUILD_ROOT%{_datadir}/apps/kvim
 install runtime/kde-tips $RPM_BUILD_ROOT%{_datadir}/apps/kvim/tips
 %endif
