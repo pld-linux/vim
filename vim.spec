@@ -7,6 +7,7 @@ Release:	4
 Source0:        %{name}-%{version}-src.tar.gz
 Source1:        %{name}-%{version}-rt.tar.gz
 Source2:        %{name}-%{version}-extra.tar.gz
+Source3:	http://www.free.net.pl/michalz/download/tutor-vi-pl.bz2
 Patch0:		vim-fhs.patch
 Patch1:		vim-visual.patch
 Copyright:	GPL
@@ -111,6 +112,7 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/{bin,var/state/vim}
 install -d $RPM_BUILD_ROOT%{_prefix}/{bin,share/{vim/{doc,tutor},man/man1}}
 
+install %{SOURCE3}	  .
 install -s src/vim.static $RPM_BUILD_ROOT/bin/vi
 install -s src/xxd.static $RPM_BUILD_ROOT/bin/xxd
 
@@ -178,7 +180,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files rt
 %defattr(644,root,root,755)
-
+%doc tutor-vi-pl.bz2
 %attr(755,root,root) %{_bindir}/vimtutor
 
 %dir %{_datadir}/vim
