@@ -11,7 +11,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.1
-%define		_patchlevel	057
+%define		_patchlevel	063
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -24,7 +24,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	3
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
