@@ -10,7 +10,7 @@
 %bcond_with    ruby   # with ruby interp
 %bcond_with    tcl    # with tcl interp
 %bcond_with    bonobo # with bonobo patch (doesn't work at the moment)
-
+#
 %define		_ver		6.2
 %define		_patchlevel	154
 
@@ -238,8 +238,8 @@ BuildRequires:	glibc-static
 BuildRequires:	libselinux-static
 BuildRequires:	ncurses-static
 %else
-Provides:       %{name}-static = %{epoch}:%{version}-%{release}
-Obsoletes:      %{name}-static
+Provides:	%{name}-static = %{epoch}:%{version}-%{release}
+Obsoletes:	%{name}-static
 %endif
 Requires:	%{name}-rt = %{epoch}:%{version}
 Obsoletes:	vim-enhanced
@@ -807,8 +807,8 @@ LDFLAGS="%{rpmldflags} -static"
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} \
-	SPELL_OBJ= vim
+%{__make} vim \
+	SPELL_OBJ=
 mv -f vim vim.static
 LDFLAGS="%{rpmldflags}"
 %endif
@@ -834,8 +834,8 @@ LDFLAGS="%{rpmldflags}"
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} \
-	SPELL_OBJ= vim
+%{__make} vim \
+	SPELL_OBJ=
 mv -f vim vim.ncurses
 %{__make} xxd/xxd
 
@@ -985,6 +985,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
+
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
 
 %if %{with static}
@@ -995,9 +996,9 @@ install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi
 ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
 %endif
 
-install src/vim.ispell				$RPM_BUILD_ROOT%{_bindir}/vim.ispell
-install src/xxd/xxd				$RPM_BUILD_ROOT%{_bindir}/xxd
-install src/vimtutor				$RPM_BUILD_ROOT%{_bindir}/vimtutor
+install src/vim.ispell	$RPM_BUILD_ROOT%{_bindir}/vim.ispell
+install src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
+install src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
 
