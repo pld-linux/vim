@@ -2887,9 +2887,9 @@ diff -Nur vim60am.old/src/spell/local.h vim60am/src/spell/local.h
 +/*
 +** Environment variable to use to locate the home directory.  On DOS
 +** systems we set this to ISPELL_HOME to avoid conflicts with
-+** other programs that look for a HOME environment variable.
++** other programs that look for a HOME environment variable. We're not on DOS.
 +*/
-+#define HOME              "ISPELL_HOME"
++#define HOME              "HOME"
 +#define PDICTHOME         "."
 +#define OPTIONVAR         "ISPELL_OPTIONS"
 +#define LIBRARYVAR        "ISPELL_DICTDIR"
