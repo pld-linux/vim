@@ -5,7 +5,7 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	5.7
-Release:	9
+Release:	10
 Epoch:		1
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -41,6 +41,11 @@ Patch20:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.016
 Patch21:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.017
 Patch22:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.018
 Patch23:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.019
+Patch24:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.020
+Patch25:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.021
+Patch26:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.022
+Patch27:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.023
+Patch28:	%{name}-mktemp.patch
 URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
 %{!?bcond_off_static:BuildRequires:	ncurses-static}
@@ -108,6 +113,7 @@ Summary(pl):	Pliki przydatne edytorowi Vim
 Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Requires:	mktemp
 Obsoletes:	vim-common
 
 %description rt
@@ -197,6 +203,11 @@ biblioteki GTK.
 %patch21 -p2
 %patch22 -p2
 %patch23 -p2
+%patch24 -p2
+%patch25 -p2
+%patch26 -p2
+%patch27 -p2
+%patch28 -p1
 
 %build
 cd src
