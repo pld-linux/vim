@@ -209,8 +209,8 @@ mv -f vim vim.ncurses
 mv -f vim vim.static
 mv -f xxd/xxd xxd.static
 
-%{?noathena:#}%{__make} distclean
-%{?noathena:#}%configure \
+%{?no_athena:#}%{__make} distclean
+%{?no_athena:#}%configure \
 	--enable-max-features \
 	--enable-gui=athena \
 	--with-x \
@@ -219,11 +219,11 @@ mv -f xxd/xxd xxd.static
 	--disable-tclinterp \
 	--disable-cscope \
 	--disable-gpm
-%{?noathena:#}%{__make} vim
-%{?noathena:#}mv -f vim gvim.athena
+%{?no_athena:#}%{__make} vim
+%{?no_athena:#}mv -f vim gvim.athena
 
-%{?nomotif:#}%{__make} distclean
-%{?nomotif:#}%configure \
+%{?no_motif:#}%{__make} distclean
+%{?no_motif:#}%configure \
 	--enable-max-features \
 	--enable-gui=motif \
 	--with-x \
@@ -232,11 +232,11 @@ mv -f xxd/xxd xxd.static
 	--disable-tclinterp \
 	--disable-cscope \
 	--disable-gpm
-%{?nomotif:#}%{__make} vim
-%{?nomotif:#}mv -f vim gvim.motif
+%{?no_motif:#}%{__make} vim
+%{?no_motif:#}mv -f vim gvim.motif
 
-%{?nogtk:#}%{__make} distclean
-%{?nogtk:#}%configure \
+%{?no_gtk:#}%{__make} distclean
+%{?no_gtk:#}%configure \
 	--enable-max-features \
 	--enable-gui=gtk \
 	--with-x \
@@ -245,8 +245,8 @@ mv -f xxd/xxd xxd.static
 	--disable-tclinterp \
 	--disable-cscope \
 	--disable-gpm
-%{?nogtk:#}%{__make} vim
-%{?nogtk:#}mv -f vim gvim.gtk
+%{?no_gtk:#}%{__make} vim
+%{?no_gtk:#}mv -f vim gvim.gtk
 
 %install
 rm -rf $RPM_BUILD_ROOT
