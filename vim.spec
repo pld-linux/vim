@@ -12,7 +12,7 @@ Summary(fr):	editeur VIM : VIsual editor iMproved
 Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
-Version:	6.0ah
+Version:	6.0ai
 Release:	1
 Epoch:		2
 License:	Charityware
