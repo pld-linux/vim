@@ -12,6 +12,7 @@
 %bcond_with	tcl	# with tcl interp
 %bcond_with	bonobo	# with bonobo component (breaks other things)
 %bcond_without  selinux # without selinux
+%bcond_without	ispell	# disable vim.ispell
 #
 %define		_ver		6.2
 %define		_patchlevel	498
@@ -61,6 +62,7 @@ Patch12:	%{name}-home_etc.patch
 #Patch12:	%{name}-dynamic_python.patch
 Patch13:	%{name}-selinux.patch
 Patch14:	%{name}-specsyntax4.patch
+Patch15:	%{name}-po.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001-100.gz
@@ -811,7 +813,7 @@ LDFLAGS="%{rpmldflags}"
 %{__make} vim \
 	SPELL_OBJ=
 mv -f vim bin/vim.ncurses
-
+%if %{with ispell}
 %{__make} distclean
 %configure \
 	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
@@ -837,7 +839,7 @@ mv -f vim bin/vim.ncurses
 
 %{__make} vim
 mv -f vim bin/vim.ispell
-
+%endif
 %if %{with kde}
 %{__make} distclean
 %configure \
@@ -1004,8 +1006,9 @@ install -m755 src/bin/vim.static	$RPM_BUILD_ROOT/bin/vi
 install -m755 src/bin/vim.ncurses	$RPM_BUILD_ROOT/bin/vi
 ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
 %endif
-
+%if %{with ispell}
 install -m755 src/bin/vim.ispell	$RPM_BUILD_ROOT%{_bindir}/vim.ispell
+%endif
 install -m755 src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
 install -m755 src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
