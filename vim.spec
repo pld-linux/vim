@@ -916,7 +916,6 @@ mv -f vim gvim.gnome
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
-	$RPM_BUILD_ROOT%{_applnkdir}/Editors \
 	$RPM_BUILD_ROOT%{_desktopdir}
 
 %{__make} install \
@@ -958,11 +957,11 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
 %if %{with athena}
 install src/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena
-install %{SOURCE10}	$RPM_BUILD_ROOT%{_applnkdir}/Editors
+install %{SOURCE10}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with motif}
 install src/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif
-install %{SOURCE11}	$RPM_BUILD_ROOT%{_applnkdir}/Editors
+install %{SOURCE11}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with gnome}
 install src/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome
@@ -974,7 +973,7 @@ ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_bindir}/gvim
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
-install %{SOURCE12}	$RPM_BUILD_ROOT%{_applnkdir}/Editors
+install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 
 # Bonobo
@@ -1119,14 +1118,14 @@ rm -rf $RPM_BUILD_ROOT
 %files -n gvim-athena
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.athena
-%{_applnkdir}/Editors/gvim-athena.desktop
+%{_desktopdir}/gvim-athena.desktop
 %endif
 
 %if %{with motif}
 %files -n gvim-motif
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.motif
-%{_applnkdir}/Editors/gvim-motif.desktop
+%{_desktopdir}/gvim-motif.desktop
 %endif
 
 %if %{with gtk}
@@ -1136,7 +1135,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/rgvim
 %attr(755,root,root) %{_bindir}/rgview
 %attr(755,root,root) %verify(not link) %{_bindir}/gvim
-%{_applnkdir}/Editors/gvim-gtk.desktop
+%{_desktopdir}/gvim-gtk.desktop
 %endif
 
 %if %{with gnome}
