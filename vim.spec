@@ -33,6 +33,7 @@ Patch2:		%{name}-lilo.patch
 Patch3:		%{name}-phphighlight.patch
 Patch4:		%{name}-paths.patch
 Patch5:		%{name}-speed_t.patch
+Patch6:		%{name}-gettext.patch
 URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
 %{!?bcond_off_static:BuildRequires:	ncurses-static}
@@ -197,6 +198,7 @@ biblioteki GNOME.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 cd src
