@@ -40,10 +40,9 @@ Source5:	g%{name}-gnome.desktop
 Source7:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
-Patch2:		%{name}-phphighlight.patch
-Patch3:		%{name}-paths.patch
-Patch4:		%{name}-ispell.patch
-Patch5:		%{name}-ispell-axp.patch
+Patch2:		%{name}-paths.patch
+Patch3:		%{name}-ispell.patch
+Patch4:		%{name}-ispell-axp.patch
 URL:		http://www.vim.org/
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -410,11 +409,10 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 #%setup -q -b1 -a6 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
 %patch0 -p1
 %patch1 -p1
-#%patch2 -p1
-%patch3 -p1
-%{?_with_ispell:%patch4 -p1}
+%patch2 -p1
+%{?_with_ispell:%patch3 -p1}
 %ifarch alpha
-%{?_with_ispell:%patch5 -p1}
+%{?_with_ispell:%patch4 -p1}
 %endif
 
 ## # these patches are to "extra" package which we don't need (nor use)
