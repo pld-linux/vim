@@ -2,7 +2,7 @@ Summary:	Vi IMproved - a Vi clone
 Summary(pl):	Vi IMproved - klon edytora Vi
 Name:		vim
 Version:	5.6
-Release:	2
+Release:	3
 Copyright:	Charityware
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
@@ -202,7 +202,7 @@ cd ..
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_var}/state/vim,%{_sysconfdir},%{_prefix}/{bin,share/{vim/{doc,tutor},man/man1}}} \
+install -d $RPM_BUILD_ROOT{%{_var}/lib/vim,%{_sysconfdir},%{_prefix}/{bin,share/{vim/{doc,tutor},man/man1}}} \
 	$RPM_BUILD_ROOT/{bin,usr/X11R6/{bin,share/applnk/Applications/Editors}}
 
 install -s src/vim.ncurses $RPM_BUILD_ROOT%{_bindir}/vim
@@ -314,7 +314,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not size mtime md5) %{_datadir}/vim/vimrc
 %config(noreplace) %verify(not size mtime md5) %{_datadir}/vim/gvimrc
 
-%dir %{_var}/state/vim
+%dir %{_var}/lib/vim
 
 %dir %{_datadir}/vim
 %{_datadir}/vim/doc
