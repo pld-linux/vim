@@ -19,6 +19,7 @@ Requires:       ncurses >= 4.2-12
 Obsoletes:	vim-gtk
 Obsoletes:	vim-lesstif
 Obsoletes:	vim-athena
+Obsoletes:	vim-ncurses
 Buildroot:	/tmp/%{name}-%{version}-root
 
 %description 
@@ -74,6 +75,7 @@ Requires:       ncurses >= 4.2-12
 Obsoletes:	vim-lesstif
 Obsoletes:	vim-gtk
 Obsoletes:	vim-ncurses
+Obsoletes:	vim
 
 %description athena 
 The classic Unix text editor now also under X Window System! 
@@ -92,6 +94,7 @@ Requires:	lesstif
 Obsoletes:	vim-athena
 Obsoletes:	vim-gtk
 Obsoletes:	vim-ncurses
+Obsoletes:	vim
 
 %description lesstif
 The classic Unix text editor now also under X Window System! 
@@ -111,6 +114,7 @@ Requires:	gtk+
 Obsoletes:	vim-athena
 Obsoletes:	vim-lesstif
 Obsoletes:      vim-ncurses
+Obsoletes:	vim
 
 %description gtk
 The classic Unix text editor now also under X Window System!
