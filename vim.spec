@@ -1,8 +1,8 @@
 Summary:	Vim built with ncurses
 Summary(pl):	Vim korzystaj±cy z bibliotek ncurses
 Name:		vim
-Version:	5.4h
-Release:	2
+Version:	5.4k
+Release:	1
 Source0:        ftp://ftp.nl.vim.org/pub/vim/unreleased/unix/%{name}-%{version}-src.tar.gz
 Source1:        ftp://ftp.nl.vim.org/pub/vim/unreleased/unix/%{name}-%{version}-rt.tar.gz
 Source2:        ftp://ftp.nl.vim.org/pub/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
