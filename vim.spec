@@ -24,7 +24,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	3
+Release:	4
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -45,6 +45,7 @@ Patch3:		%{name}-ispell.patch
 Patch4:		%{name}-ispell-axp.patch
 Patch5:		%{name}-ac25x.patch
 Patch6:		%{name}-vimrc.patch
+Patch7:		%{name}-libacl_fix.patch
 URL:		http://www.vim.org/
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -438,6 +439,8 @@ done
 %endif
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
+
 %build
 cd src
 %{__autoconf}
