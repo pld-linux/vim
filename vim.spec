@@ -12,27 +12,28 @@ Summary(fr):	editeur VIM : VIsual editor iMproved
 Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
-Version:	6.0ai
-Release:	3
+Version:	6.0ap
+Release:	1
 Epoch:		2
 License:	Charityware
 Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Source0:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-src.tar.gz
-Source1:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-rt.tar.gz
-#Source2:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
-Source3:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-lang.tar.gz
-Source4:	g%{name}-athena.desktop
-Source5:	g%{name}-motif.desktop
-Source6:	g%{name}-gtk.desktop
-Source7:	g%{name}-gnome.desktop
+Source0:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-src1.tar.gz
+Source1:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-src2.tar.gz
+Source2:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-rt1.tar.gz
+Source3:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-rt2.tar.gz
+Source4:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
+Source5:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-lang.tar.gz
+Source6:	g%{name}-athena.desktop
+Source7:	g%{name}-motif.desktop
+Source8:	g%{name}-gtk.desktop
+Source9:	g%{name}-gnome.desktop
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
-Patch2:		%{name}-lilo.patch
-Patch3:		%{name}-phphighlight.patch
-Patch4:		%{name}-paths.patch
-#Patch5:		%{name}-speed_t.patch
+Patch2:		%{name}-phphighlight.patch
+Patch3:		%{name}-paths.patch
+#Patch4:		%{name}-speed_t.patch
 URL:		http://www.vim.org/
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
@@ -74,6 +75,27 @@ i wiele innych.
 %description -l tr
 Standart vi metin düzenleyicisinin geliþmiþ hali; daha fazla komut,
 birden fazla pencere desteði ve blok iþaretleme yetenekleri içerir.
+
+%package -n xxd
+Summary:	Utility to convert files to hexdump or do the reverse
+Summary(pl):	Narzêdzie do zamiany plików na postaæ szesnastkow± i odwrotnie
+Group:		Applications/Editors/Vim
+Group(de):	Applikationen/Editors/Vim
+Group(pl):	Aplikacje/Edytory/Vim
+
+%description -n xxd
+xxd creates a hex dump of a given file or standard input. It can also
+convert a hex dump back to its original binary form. Like uuencode and
+uudecode it allows the transmission of binary data in a `mail-safe'
+ASCII representation, but has the advantage of decoding to standard
+output. Moreover, it can be used to perform binary file patching.
+
+%description -n xxd -l pl
+xxd tworzy szesnastkowy zapis pliku podanego na standardowe wej¶cie.
+Mo¿e tak¿e przekonwertowaæ taki zapis na oryginaln±, binarn± postaæ.
+Podobnie jak uuencode i uudecode pozwala na przesy³anie danych
+binarnych w postaci ASCII, ale ma mo¿liwo¶æ dekodowania na standardowe
+wyj¶cie. Co wiêcej, mo¿e byæ u¿yty do modyfikowania plików binarnych.
 
 %package static
 Summary:	Staticly linked Vim
@@ -189,16 +211,16 @@ Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 biblioteki GNOME.
 
 %prep
-%setup -q -b 1 -b 3 -n %{name}%(echo %{version} | sed -e "s#\.##g")
+%setup -q -b1 -b2 -b3 -b4 -b5 -n %{name}%(echo %{version} | sed -e "s#\.##g")
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-#%patch5 -p1
+#%patch4 -p1
 
 %build
 cd src
+autoconf
 %configure \
 	--disable-gui \
 	--without-x \
@@ -215,6 +237,8 @@ cd src
 
 %{__make} vim
 mv -f vim vim.ncurses
+
+%{__make} xxd/xxd
 
 %if %{!?_without_static:1}%{?_without_static:0}
 %{__make} distclean
@@ -235,9 +259,6 @@ LDFLAGS="%{rpmldflags} -static"
 %{__make} vim
 mv -f vim vim.static
 %endif
-
-%{__make} xxd/xxd
-mv -f xxd/xxd xxd.static
 
 %if %{!?_without_athena:1}%{?_without_athena:0}
 %{__make} distclean
@@ -328,7 +349,7 @@ rm $RPM_BUILD_ROOT%{_bindir}/*
 %{?_without_static:install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi}
 %{!?_without_static:install src/vim.static	$RPM_BUILD_ROOT/bin/vi}
 %{?_without_static:ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim}
-install src/xxd.static				$RPM_BUILD_ROOT/bin/xxd
+install src/xxd/xxd				$RPM_BUILD_ROOT%{_bindir}/xxd
 install src/vimtutor				$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
@@ -362,10 +383,10 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 %{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
 %{!?_without_gtk:ln -sf gvim			$RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
 
-%{!?_without_athena:install %{SOURCE4}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_motif: install %{SOURCE5}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_gtk:   install %{SOURCE6} 	$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?_without_gnome: install %{SOURCE7}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_athena:install %{SOURCE6}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_motif: install %{SOURCE7}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_gtk:   install %{SOURCE8} 		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?_without_gnome: install %{SOURCE9}		$RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -375,13 +396,17 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/rvim
 
+%files -n xxd
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/xxd
+%{_mandir}/man1/xxd.1*
+
 %files static
 %defattr(644,root,root,755)
 %attr(755,root,root) /bin/*
 
 %{_mandir}/man1/vi.1*
 %{_mandir}/man1/ex.1*
-%{_mandir}/man1/xxd.1*
 %{_mandir}/man1/view.1*
 %{_mandir}/man1/rview.1*
 
@@ -412,7 +437,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(it) %{_datadir}/vim/v*/lang/*it*
 %lang(ja) %{_datadir}/vim/v*/lang/*ja*
 %lang(ko) %{_datadir}/vim/v*/lang/*ko*
-#%lang(pl) %{_datadir}/vim/v*/lang/*pl*
+%lang(pl) %{_datadir}/vim/v*/lang/*pl*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/*zh*
 %{_datadir}/vim/v*/macros
 %{_datadir}/vim/v*/plugin
