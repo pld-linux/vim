@@ -13,7 +13,7 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	6.0z
-Release:	2
+Release:	3
 Epoch:		1
 License:	Charityware
 Group:		Applications/Editors/Vim
