@@ -1,16 +1,14 @@
 Summary:	Vim built with ncurses
 Summary(pl):	Vim korzystaj±cy z bibliotek ncurses
 Name:		vim
-Version:	5.4e
-Release:	2
+Version:	5.4f
+Release:	1
 #######		ftp://ftp.nl.vim.org/pub/vim/unreleased/unix
 Source0:	%{name}-%{version}-src.tar.gz
 Source1:	%{name}-%{version}-rt.tar.gz
 #######		ftp://ftp.nl.vim.org/pub/vim/unreleased/extra
 Source2:	%{name}-%{version}-extra.tar.gz
 Source3:	gvim.wmconfig
-Patch0:		%{name}-hold_gui_events.patch
-Patch1:		%{name}-CMDLINE_COMPL.patch
 Copyright:	GPL
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
@@ -90,7 +88,6 @@ Summary:	Vim built with X11 and LessTif support
 Summary(pl):	Vim pod X-Window korzystaj±cy z bibliotek LessTif
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Requires:	lesstif
 Obsoletes:	vim-athena
 Obsoletes:	vim-gtk
 Obsoletes:	vim-ncurses
@@ -110,7 +107,6 @@ Summary(pl):	Vim pod X-Window korzystaj±cy z bibliotek gtk
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 Requires:       ncurses >= 4.2-12
-Requires:	gtk+ 
 Obsoletes:	vim-athena
 Obsoletes:	vim-lesstif
 Obsoletes:      vim-ncurses
@@ -126,8 +122,6 @@ z wykorzystaniem gtk.
 
 %prep
 %setup  -q  -b 1 -b 2
-%patch0 -p0 
-%patch1 -p1
 
 %build
 cd src
@@ -160,6 +154,7 @@ LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
 	--disable-pythoninterp \
 	--disable-tclinterp \
 	--disable-cscope \
+	--enable-gmp \
 	--with-tlib=ncurses \
 	--prefix=/usr
 make vim
@@ -175,6 +170,7 @@ LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
 	--disable-pythoninterp \
 	--disable-tclinterp \
 	--disable-cscope \
+	--enable-gmp \
 	--with-tlib=ncurses \
 	--prefix=/usr
 make vim
@@ -190,6 +186,7 @@ LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
 	--disable-pythoninterp \
 	--disable-tclinterp \
 	--disable-cscope \
+	--enable-gmp \
 	--with-tlib=ncurses \
 	--prefix=/usr
 make vim
@@ -205,6 +202,7 @@ LDFLAGS=-s CFLAGS="$RPM_OPT_FLAGS" \
 	--disable-pythoninterp \
 	--disable-tclinterp \
 	--disable-cscope \
+	--enable-gmp \
 	--with-tlib=ncurses \
 	--prefix=/usr
 make vim
@@ -353,6 +351,12 @@ ln -sf /usr/X11R6/bin/gvim /usr/bin/vim
 %config %verify(not size mtime md5) /usr/share/vim/vimrc
 
 %changelog
+* Fri Mar 12 1999 Artur Frysiak <wiget@pld.org.pl>
+  [5.4f-1]
+- removed  vim-hold_gui_events.patch and vim-CMDLINE_COMPL.patch
+- removed Requires: lesstif gtk+
+- added --enable-gpm to configure
+
 * Tue Feb 23 1999 Artur Frysiak <wiget@usa.net>
   [5.4e-1d]
 - removed vim-clip.patch (now in 5.4e)
