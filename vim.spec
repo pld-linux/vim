@@ -780,13 +780,21 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/rvim.*
 %lang(fi) %{_mandir}/fi/man1/vim*
 %lang(fi) %{_mandir}/fi/man1/rvim.*
+%lang(fi) %{_mandir}/fi/man1/gvi*
+%lang(fi) %{_mandir}/fi/man1/rgv*
 %lang(fr) %{_mandir}/fr/man1/vim*
 %lang(fr) %{_mandir}/fr/man1/rvim.*
+%lang(fr) %{_mandir}/fr/man1/gvi*
+%lang(fr) %{_mandir}/fr/man1/rgv*
 %lang(id) %{_mandir}/id/man1/vim*
 %lang(id) %{_mandir}/id/man1/rvim.*
+%lang(id) %{_mandir}/id/man1/gvi*
+%lang(id) %{_mandir}/id/man1/rgv*
 %lang(it) %{_mandir}/it/man1/vim*
 %lang(pl) %{_mandir}/pl/man1/vim*
 %lang(pl) %{_mandir}/pl/man1/rvim.*
+%lang(pl) %{_mandir}/pl/man1/gvi*
+%lang(pl) %{_mandir}/pl/man1/rgv*
 
 %if %{!?_without_athena:1}%{?_without_athena:0}
 %files -n gvim-athena
