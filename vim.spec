@@ -15,8 +15,8 @@
 %bcond_without	ispell	# disable vim.ispell
 %bcond_without	home_etc # don't use home_etc
 #
-%define		_ver		6.2
-%define		_patchlevel	532
+%define		_ver		6.3
+%define		_patchlevel	0
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -29,16 +29,16 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	0.1
+Release:	0.0.1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
-# Source0-md5:	c49d360bbd069d00e2a57804f2a123d9
+# Source0-md5:	821fda8f14d674346b87e3ef9cb96389
 Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
-# Source1-md5:	aa0079938f636d08be71078933477d8b
+# Source1-md5:	5395c4dacbf1c5008b22c4b86794e8a7
 Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
-# Source2-md5:	db0db37baea01874867d8d2414db104c
+# Source2-md5:	6e4bd6c8122bcb9dc576514bdb52484e
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source5:	http://freenux.org/kvim/kvim-runtime-6.2.14.tar.bz2
@@ -67,44 +67,7 @@ Patch15:	%{name}-po.patch
 Patch16:	%{name}-filetype_vim-perl_tests.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
-Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001-100.gz
-Patch201:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.101-200.gz
-Patch301:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.201-300.gz
-Patch401:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.301-400.gz
-Patch501:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.401-500.gz
-Patch601:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.501
-Patch602:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.502
-Patch603:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.503
-Patch604:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.504
-Patch605:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.505
-Patch606:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.506
-Patch607:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.507
-Patch608:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.508
-Patch609:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.509
-Patch610:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.510
-Patch611:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.511
-Patch612:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.512
-Patch613:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.513
-Patch614:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.514
-Patch615:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.515
-Patch616:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.516
-Patch617:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.517
-Patch618:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.518
-Patch619:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.519
-Patch620:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.520
-Patch621:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.521
-Patch622:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.522
-Patch623:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.523
-Patch624:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.524
-Patch625:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.525
-Patch626:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.526
-Patch627:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.527
-Patch628:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.528
-Patch629:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.529
-Patch630:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.530
-Patch631:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.531
-Patch632:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.532
-Patch999:	http://freenux.org/vim/%{name}2kvim-6.2.532.diff.bz2
+Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -534,47 +497,6 @@ element bonobo.
 
 %prep
 %setup -q -b1 -b2 -a5 -n %{name}%(echo %{_ver} | tr -d .)
-# official patches
-# cumulative
-%patch101 -p0
-%patch201 -p0
-%patch301 -p0
-%patch401 -p0
-%patch501 -p0
-
-# single
-%patch601 -p0
-%patch602 -p0
-%patch603 -p0
-%patch604 -p0
-%patch605 -p0
-%patch606 -p0
-%patch607 -p0
-%patch608 -p0
-%patch609 -p0
-%patch610 -p0
-%patch611 -p0
-%patch612 -p0
-%patch613 -p0
-%patch614 -p0
-%patch615 -p0
-%patch616 -p0
-%patch617 -p0
-%patch618 -p0
-%patch619 -p0
-%patch620 -p0
-%patch621 -p0
-%patch622 -p0
-%patch623 -p0
-%patch624 -p0
-%patch625 -p0
-%patch626 -p0
-%patch627 -p0
-%patch628 -p0
-%patch629 -p0
-%patch630 -p0
-%patch631 -p0
-%patch632 -p0
 
 # kvim
 %patch999 -p1
@@ -583,14 +505,14 @@ element bonobo.
 %{?with_bonobo:%patch99 -p1}
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
+#%patch3 -p1
 %ifarch alpha
 %patch4 -p1
 %endif
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch8 -p1
+#%patch8 -p1
 %patch9 -p1
 %patch10 -p1
 %{?with_bonobo:%patch11 -p1}
