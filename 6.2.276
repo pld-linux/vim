@@ -1,0 +1,62 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.276
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.276
+Problem:    ":echo X()" does not put a line break between the message that X()
+	    displays and the text that X() returns. (Yakov Lerner)
+Solution:   Invoke msg_start() after evaluating the argument.
+Files:	    src/eval.c
+
+
+*** ../vim-6.2.275/src/eval.c	Thu Feb 19 15:11:20 2004
+--- src/eval.c	Wed Feb 18 12:00:45 2004
+***************
+*** 8447,8454 ****
+  
+      if (eap->skip)
+  	++emsg_skip;
+-     else if (eap->cmdidx == CMD_echo)
+- 	msg_start();
+      while (*arg != NUL && *arg != '|' && *arg != '\n' && !got_int)
+      {
+  	p = arg;
+--- 8447,8452 ----
+***************
+*** 8466,8472 ****
+--- 8464,8476 ----
+  	if (!eap->skip)
+  	{
+  	    if (atstart)
++ 	    {
+  		atstart = FALSE;
++ 		/* Call msg_start() after eval1(), evaluating the expression
++ 		 * may cause a message to appear. */
++ 		if (eap->cmdidx == CMD_echo)
++ 		    msg_start();
++ 	    }
+  	    else if (eap->cmdidx == CMD_echo)
+  		msg_puts_attr((char_u *)" ", echo_attr);
+  	    for (p = get_var_string(&retvar); *p != NUL && !got_int; ++p)
+*** ../vim-6.2.275/src/version.c	Thu Feb 19 15:17:18 2004
+--- src/version.c	Thu Feb 19 15:18:35 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     276,
+  /**/
+
+-- 
+A computer program does what you tell it to do, not what you want it to do.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

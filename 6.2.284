@@ -1,0 +1,108 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.284
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.284
+Problem:    Listing a function puts "endfunction" in the message history.
+	    Typing "q" at the more prompt isn't handled correctly when listing
+	    variables and functions.  (Hara Krishna Dara)
+Solution:   Don't use msg() for "endfunction".  Check "got_int" regularly.
+Files:	    src/eval.c
+
+
+*** ../vim-6.2.283/src/eval.c	Thu Feb 19 15:31:20 2004
+--- src/eval.c	Fri Feb 20 20:23:16 2004
+***************
+*** 949,955 ****
+  	    /*
+  	     * List variables.
+  	     */
+! 	    while (!ends_excmd(*arg))
+  	    {
+  		char_u	*temp_string = NULL;
+  		int	arg_len;
+--- 949,955 ----
+  	    /*
+  	     * List variables.
+  	     */
+! 	    while (!ends_excmd(*arg) && !got_int)
+  	    {
+  		char_u	*temp_string = NULL;
+  		int	arg_len;
+***************
+*** 8732,8744 ****
+  	eap->nextcmd = check_nextcmd(p);
+  	if (eap->nextcmd != NULL)
+  	    *p = NUL;
+! 	if (!eap->skip)
+  	{
+  	    fp = find_func(name);
+  	    if (fp != NULL)
+  	    {
+  		list_func_head(fp, TRUE);
+! 		for (j = 0; j < fp->lines.ga_len; ++j)
+  		{
+  		    msg_putchar('\n');
+  		    msg_outnum((long)(j + 1));
+--- 8733,8745 ----
+  	eap->nextcmd = check_nextcmd(p);
+  	if (eap->nextcmd != NULL)
+  	    *p = NUL;
+! 	if (!eap->skip && !got_int)
+  	{
+  	    fp = find_func(name);
+  	    if (fp != NULL)
+  	    {
+  		list_func_head(fp, TRUE);
+! 		for (j = 0; j < fp->lines.ga_len && !got_int; ++j)
+  		{
+  		    msg_putchar('\n');
+  		    msg_outnum((long)(j + 1));
+***************
+*** 8747,8754 ****
+  		    if (j < 99)
+  			msg_putchar(' ');
+  		    msg_prt_line(FUNCLINE(fp, j));
+  		}
+- 		MSG("   endfunction");
+  	    }
+  	    else
+  		EMSG2(_("E123: Undefined function: %s"), eap->arg);
+--- 8748,8761 ----
+  		    if (j < 99)
+  			msg_putchar(' ');
+  		    msg_prt_line(FUNCLINE(fp, j));
++ 		    out_flush();	/* show a line at a time */
++ 		    ui_breakcheck();
++ 		}
++ 		if (!got_int)
++ 		{
++ 		    msg_putchar('\n');
++ 		    msg_puts((char_u *)"   endfunction");
+  		}
+  	    }
+  	    else
+  		EMSG2(_("E123: Undefined function: %s"), eap->arg);
+*** ../vim-6.2.283/src/version.c	Fri Feb 20 22:08:18 2004
+--- src/version.c	Fri Feb 20 22:09:31 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     284,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+207. You're given one phone call in prison and you ask them for a laptop.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

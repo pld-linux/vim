@@ -1,0 +1,59 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.285
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.285
+Problem:    GUI: In a single wrapped line that fills the window, "gj" in the
+	    last screen line leaves the cursor behind. (Ivan Tarasov)
+Solution:   Undraw the cursor before scrolling the text up.
+Files:	    src/gui.c
+
+
+*** ../vim-6.2.284/src/gui.c	Tue Feb 17 21:31:23 2004
+--- src/gui.c	Fri Feb 20 17:08:50 2004
+***************
+*** 1677,1683 ****
+      void
+  gui_dont_update_cursor()
+  {
+!     can_update_cursor = FALSE;
+  }
+  
+      void
+--- 1677,1688 ----
+      void
+  gui_dont_update_cursor()
+  {
+!     if (gui.in_use)
+!     {
+! 	/* Undraw the cursor now, we probably can't do it after the change. */
+! 	gui_undraw_cursor();
+! 	can_update_cursor = FALSE;
+!     }
+  }
+  
+      void
+*** ../vim-6.2.284/src/version.c	Fri Feb 20 22:11:01 2004
+--- src/version.c	Fri Feb 20 22:12:27 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     285,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+208. Your goals for the future are obtaining an T1 connection and
+     a 130 gig hard drive.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

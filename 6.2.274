@@ -1,0 +1,71 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.274
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.274
+Problem:    ":print" skips empty lines when 'list' is set and there is no
+	    "eol" in 'listchars'. (Yakov Lerner)
+Solution:   Skip outputting a space for an empty line only when 'list' is set
+	    and the end-of-line character is not empty.
+Files:	    src/message.c
+
+
+*** ../vim-6.2.273/src/message.c	Tue Feb 17 20:44:14 2004
+--- src/message.c	Wed Feb 18 10:56:09 2004
+***************
+*** 1435,1441 ****
+  
+      /* output a space for an empty line, otherwise the line will be
+       * overwritten */
+!     if (*s == NUL && !curwin->w_p_list)
+  	msg_putchar(' ');
+  
+      for (;;)
+--- 1435,1441 ----
+  
+      /* output a space for an empty line, otherwise the line will be
+       * overwritten */
+!     if (*s == NUL && !(curwin->w_p_list && lcs_eol != NUL))
+  	msg_putchar(' ');
+  
+      for (;;)
+***************
+*** 1479,1485 ****
+  		    attr = hl_attr(HLF_8);
+  		}
+  	    }
+! 	    else if (c == NUL && curwin->w_p_list && lcs_eol)
+  	    {
+  		p_extra = (char_u *)"";
+  		c_extra = NUL;
+--- 1479,1485 ----
+  		    attr = hl_attr(HLF_8);
+  		}
+  	    }
+! 	    else if (c == NUL && curwin->w_p_list && lcs_eol != NUL)
+  	    {
+  		p_extra = (char_u *)"";
+  		c_extra = NUL;
+*** ../vim-6.2.273/src/version.c	Thu Feb 19 15:11:20 2004
+--- src/version.c	Thu Feb 19 15:12:09 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     274,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+188. You purchase a laptop so you can surf while sitting on the can.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

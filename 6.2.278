@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.278
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.278
+Problem:    Using "much" instead of "many".
+Solution:   Correct the error message.
+Files:	    src/eval.c
+
+
+*** ../vim-6.2.277/src/eval.c	Thu Feb 19 15:20:32 2004
+--- src/eval.c	Wed Feb 18 12:00:45 2004
+***************
+*** 5919,5925 ****
+  		{
+  		    vim_free(p);
+  		    vim_free(remain);
+! 		    EMSG(_("E655: Too much symbolic links (cycle?)"));
+  		    retvar->var_val.var_string = NULL;
+  		    goto fail;
+  		}
+--- 5919,5925 ----
+  		{
+  		    vim_free(p);
+  		    vim_free(remain);
+! 		    EMSG(_("E655: Too many symbolic links (cycle?)"));
+  		    retvar->var_val.var_string = NULL;
+  		    goto fail;
+  		}
+*** ../vim-6.2.277/src/version.c	Thu Feb 19 15:23:11 2004
+--- src/version.c	Thu Feb 19 15:28:13 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     278,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+190. You quickly hand over your wallet, leather jacket, and car keys
+     during a mugging, then proceed to beat the crap out of your
+     assailant when he asks for your laptop.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

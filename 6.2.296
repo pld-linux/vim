@@ -1,0 +1,245 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.296 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.296 (extra)
+Problem:    Same as 6.2.295.
+Solution:   Extra files for patch 6.2.295.
+Files:	    src/os_amiga.c, src/os_msdos.c, src/os_riscos.c, src/os_win32.c,
+	    src/proto/os_amiga.pro, src/proto/os_msdos.pro,
+	    src/proto/os_riscos.pro, src/proto/os_win32.pro
+
+
+*** ../vim-6.2.295/src/os_amiga.c	Sun Oct 12 17:25:14 2003
+--- src/os_amiga.c	Sat Feb 28 16:35:03 2004
+***************
+*** 111,120 ****
+   * Return number of characters read.
+   */
+      int
+! mch_inchar(buf, maxlen, time)
+      char_u  *buf;
+      int	    maxlen;
+      long    time;		/* milli seconds */
+  {
+      int	    len;
+      long    utime;
+--- 111,121 ----
+   * Return number of characters read.
+   */
+      int
+! mch_inchar(buf, maxlen, time, tb_change_cnt)
+      char_u  *buf;
+      int	    maxlen;
+      long    time;		/* milli seconds */
++     int	    tb_change_cnt;
+  {
+      int	    len;
+      long    utime;
+*** ../vim-6.2.295/src/os_msdos.c	Thu May 15 20:49:07 2003
+--- src/os_msdos.c	Sat Feb 28 16:35:15 2004
+***************
+*** 982,988 ****
+  mch_inchar(
+      char_u	*buf,
+      int		maxlen,
+!     long	time)
+  {
+      int		len = 0;
+      int		c;
+--- 982,989 ----
+  mch_inchar(
+      char_u	*buf,
+      int		maxlen,
+!     long	time,
+!     int		tb_change_cnt)
+  {
+      int		len = 0;
+      int		c;
+*** ../vim-6.2.295/src/os_riscos.c	Sat Apr 19 15:12:24 2003
+--- src/os_riscos.c	Sat Feb 28 16:35:28 2004
+***************
+*** 217,226 ****
+   * TODO: call convert_input() for 'fileencoding' to 'encoding' conversion.
+   */
+      int
+! mch_inchar(buf, maxlen, wtime)
+      char_u  *buf;
+      int	    maxlen;
+      long    wtime;
+  {
+      int got=0;
+      unsigned int start_time = clock();
+--- 217,227 ----
+   * TODO: call convert_input() for 'fileencoding' to 'encoding' conversion.
+   */
+      int
+! mch_inchar(buf, maxlen, wtime, tb_change_cnt)
+      char_u  *buf;
+      int	    maxlen;
+      long    wtime;
++     int	    tb_change_cnt;
+  {
+      int got=0;
+      unsigned int start_time = clock();
+*** ../vim-6.2.295/src/os_win32.c	Tue Feb  3 16:55:34 2004
+--- src/os_win32.c	Sat Feb 28 16:36:00 2004
+***************
+*** 1268,1274 ****
+  mch_inchar(
+      char_u	*buf,
+      int		maxlen,
+!     long	time)
+  {
+  #ifndef FEAT_GUI_W32	    /* this isn't used for the GUI */
+  
+--- 1268,1275 ----
+  mch_inchar(
+      char_u	*buf,
+      int		maxlen,
+!     long	time,
+!     int		tb_change_cnt)
+  {
+  #ifndef FEAT_GUI_W32	    /* this isn't used for the GUI */
+  
+***************
+*** 1356,1361 ****
+--- 1357,1369 ----
+  
+      while ((len == 0 || WaitForChar(0L)) && len < maxlen)
+      {
++ 	if (typebuf_changed(tb_change_cnt))
++ 	{
++ 	    /* "buf" may be invalid now if a client put something in the
++ 	     * typeahead buffer and "buf" is in the typeahead buffer. */
++ 	    len = 0;
++ 	    break;
++ 	}
+  #ifdef FEAT_MOUSE
+  	if (g_nMouseClick != -1 && maxlen - len >= 5)
+  	{
+***************
+*** 1378,1390 ****
+  	{
+  	    c = tgetch();
+  
+! #ifdef FEAT_CLIENTSERVER
+! 	    if (input_available())
+  	    {
+! 		len = read_from_input_buf(buf, (long)maxlen);
+  		break;
+  	    }
+- #endif
+  
+  	    if (c == Ctrl_C && ctrl_c_interrupts)
+  	    {
+--- 1386,1398 ----
+  	{
+  	    c = tgetch();
+  
+! 	    if (typebuf_changed(tb_change_cnt))
+  	    {
+! 		/* "buf" may be invalid now if a client put something in the
+! 		 * typeahead buffer and "buf" is in the typeahead buffer. */
+! 		len = 0;
+  		break;
+  	    }
+  
+  	    if (c == Ctrl_C && ctrl_c_interrupts)
+  	    {
+*** ../vim-6.2.295/src/proto/os_amiga.pro	Sun Jun  1 12:26:29 2003
+--- src/proto/os_amiga.pro	Sat Feb 28 16:40:57 2004
+***************
+*** 2,8 ****
+  void win_resize_on __ARGS((void));
+  void win_resize_off __ARGS((void));
+  void mch_write __ARGS((char_u *p, int len));
+! int mch_inchar __ARGS((char_u *buf, int maxlen, long time));
+  int mch_char_avail __ARGS((void));
+  long_u mch_avail_mem __ARGS((int special));
+  void mch_delay __ARGS((long msec, int ignoreinput));
+--- 2,8 ----
+  void win_resize_on __ARGS((void));
+  void win_resize_off __ARGS((void));
+  void mch_write __ARGS((char_u *p, int len));
+! int mch_inchar __ARGS((char_u *buf, int maxlen, long time, int tb_change_cnt));
+  int mch_char_avail __ARGS((void));
+  long_u mch_avail_mem __ARGS((int special));
+  void mch_delay __ARGS((long msec, int ignoreinput));
+*** ../vim-6.2.295/src/proto/os_msdos.pro	Sun Jun  1 12:26:30 2003
+--- src/proto/os_msdos.pro	Sat Feb 28 16:41:08 2004
+***************
+*** 4,10 ****
+  long_u mch_avail_mem __ARGS((int special));
+  void mch_delay __ARGS((long msec, int ignoreinput));
+  void mch_write __ARGS((char_u *s, int len));
+! int mch_inchar __ARGS((char_u *buf, int maxlen, long time));
+  int mch_char_avail __ARGS((void));
+  void mch_suspend __ARGS((void));
+  void mch_init __ARGS((void));
+--- 4,10 ----
+  long_u mch_avail_mem __ARGS((int special));
+  void mch_delay __ARGS((long msec, int ignoreinput));
+  void mch_write __ARGS((char_u *s, int len));
+! int mch_inchar __ARGS((char_u *buf, int maxlen, long time, int tb_change_cnt));
+  int mch_char_avail __ARGS((void));
+  void mch_suspend __ARGS((void));
+  void mch_init __ARGS((void));
+*** ../vim-6.2.295/src/proto/os_riscos.pro	Sun Jun  1 12:26:32 2003
+--- src/proto/os_riscos.pro	Sat Feb 28 16:41:14 2004
+***************
+*** 1,6 ****
+  /* os_riscos.c */
+  void mch_write __ARGS((char_u *s, int len));
+! int mch_inchar __ARGS((char_u *buf, int maxlen, long wtime));
+  int mch_char_avail __ARGS((void));
+  long_u mch_avail_mem __ARGS((int special));
+  void mch_delay __ARGS((long msec, int ignoreinput));
+--- 1,6 ----
+  /* os_riscos.c */
+  void mch_write __ARGS((char_u *s, int len));
+! int mch_inchar __ARGS((char_u *buf, int maxlen, long wtime, int tb_change_cnt));
+  int mch_char_avail __ARGS((void));
+  long_u mch_avail_mem __ARGS((int special));
+  void mch_delay __ARGS((long msec, int ignoreinput));
+*** ../vim-6.2.295/src/proto/os_win32.pro	Tue Feb  3 16:55:34 2004
+--- src/proto/os_win32.pro	Sat Feb 28 16:41:22 2004
+***************
+*** 6,12 ****
+  void mch_setmouse __ARGS((int on));
+  void mch_update_cursor __ARGS((void));
+  int mch_char_avail __ARGS((void));
+! int mch_inchar __ARGS((char_u *buf, int maxlen, long time));
+  void mch_init __ARGS((void));
+  void mch_exit __ARGS((int r));
+  int mch_check_win __ARGS((int argc, char **argv));
+--- 6,12 ----
+  void mch_setmouse __ARGS((int on));
+  void mch_update_cursor __ARGS((void));
+  int mch_char_avail __ARGS((void));
+! int mch_inchar __ARGS((char_u *buf, int maxlen, long time, int tb_change_cnt));
+  void mch_init __ARGS((void));
+  void mch_exit __ARGS((int r));
+  int mch_check_win __ARGS((int argc, char **argv));
+*** ../vim-6.2.295/src/version.c	Sun Feb 29 14:45:49 2004
+--- src/version.c	Sun Feb 29 14:47:03 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     296,
+  /**/
+
+-- 
+Not too long ago, a keyboard was something to make music with...
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

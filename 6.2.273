@@ -1,0 +1,62 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.273
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.273
+Problem:    Changing the sort order in an explorer window for an empty
+	    directory produces error messages. (Doug Kearns)
+Solution:   When an invalid range is used for a function that is not going to
+	    be executed, skip over the arguments anyway.
+Files:	    src/eval.c
+
+
+*** ../vim-6.2.272/src/eval.c	Tue Feb  3 17:25:35 2004
+--- src/eval.c	Wed Feb 18 12:00:45 2004
+***************
+*** 1315,1322 ****
+       * call, and the loop is broken.
+       */
+      if (eap->skip)
+  	++emsg_skip;
+!     for (lnum = eap->line1; lnum <= eap->line2; ++lnum)
+      {
+  	if (!eap->skip && eap->addr_count > 0)
+  	{
+--- 1315,1327 ----
+       * call, and the loop is broken.
+       */
+      if (eap->skip)
++     {
+  	++emsg_skip;
+! 	lnum = eap->line2;	/* do it once, also with an invalid range */
+!     }
+!     else
+! 	lnum = eap->line1;
+!     for ( ; lnum <= eap->line2; ++lnum)
+      {
+  	if (!eap->skip && eap->addr_count > 0)
+  	{
+*** ../vim-6.2.272/src/version.c	Thu Feb 19 14:48:06 2004
+--- src/version.c	Thu Feb 19 15:08:05 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     273,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+187. You promise yourself that you'll only stay online for another
+     15 minutes...at least once every hour.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

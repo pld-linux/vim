@@ -1,0 +1,79 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.293
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.293 (after 6.2.255)
+Problem:    GTK: A new item in a menu is put before the tearoff item.
+Solution:   Do increment the menu item index for non-popup menu items.
+Files:	    src/gui_gtk.c
+
+
+*** ../vim-6.2.292/src/gui_gtk.c	Sun Feb 15 13:42:25 2004
+--- src/gui_gtk.c	Thu Feb 26 17:47:49 2004
+***************
+*** 575,582 ****
+      parent_widget = (parent != NULL) ? parent->submenu_id : gui.menubar;
+      menu_item_new(menu, parent_widget);
+  
+!     if (parent != NULL)
+! 	/* since the tearoff should always appear first, increment idx */
+  	++idx;
+  
+      gtk_menu_shell_insert(GTK_MENU_SHELL(parent_widget), menu->id, idx);
+--- 575,582 ----
+      parent_widget = (parent != NULL) ? parent->submenu_id : gui.menubar;
+      menu_item_new(menu, parent_widget);
+  
+!     /* since the tearoff should always appear first, increment idx */
+!     if (parent != NULL && !menu_is_popup(parent->name))
+  	++idx;
+  
+      gtk_menu_shell_insert(GTK_MENU_SHELL(parent_widget), menu->id, idx);
+***************
+*** 804,812 ****
+  	if (parent->submenu_id == NULL)
+  	    return;
+  
+! 	/* make place for the possible tearoff handle item */
+! 	/* ++idx; Don't understand why this was here; makes adding an item to
+! 	 * the popup menu appear after instead of before an existing item. */
+  
+  	if (menu_is_separator(menu->name))
+  	{
+--- 804,813 ----
+  	if (parent->submenu_id == NULL)
+  	    return;
+  
+! 	/* Make place for the possible tearoff handle item.  Not in the popup
+! 	 * menu, it doesn't have a tearoff item. */
+! 	if (parent != NULL && !menu_is_popup(parent->name))
+! 	    ++idx;
+  
+  	if (menu_is_separator(menu->name))
+  	{
+*** ../vim-6.2.292/src/version.c	Thu Feb 26 15:42:54 2004
+--- src/version.c	Thu Feb 26 18:15:20 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     293,
+  /**/
+
+-- 
+       Bravely bold Sir Robin, rode forth from Camelot,
+       He was not afraid to die, Oh Brave Sir Robin,
+       He was not at all afraid to be killed in nasty ways
+       Brave, brave, brave, brave Sir Robin.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

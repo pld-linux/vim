@@ -1,0 +1,388 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.271
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.271
+Problem:    NetBeans: Can't do "tail -f" on the log.  Passing socket info with
+	    an argument or environment variable is not secure.
+Solution:   Wait after initializing the log.  Allow passing the socket info
+	    through a file. (Gordon Prieur)
+Files:	    runtime/doc/netbeans.txt, src/main.c, src/netbeans.c
+
+
+*** ../vim-6.2.270/runtime/doc/netbeans.txt	Fri Jan 30 21:03:16 2004
+--- runtime/doc/netbeans.txt	Sun Feb 15 16:45:37 2004
+***************
+*** 1,4 ****
+! *netbeans.txt*  For Vim version 6.2.  Last change: 2004 Jan 17
+  
+  
+  		  VIM REFERENCE MANUAL    by Gordon Prieur
+--- 1,4 ----
+! *netbeans.txt*  For Vim version 6.2.  Last change: 2004 Feb 15
+  
+  
+  		  VIM REFERENCE MANUAL    by Gordon Prieur
+***************
+*** 200,207 ****
+  ==============================================================================
+  9. Running Vim from NetBeans				*netbeans-run*
+  
+! NetBeans starts Vim with the |-nb| argument.  The full form is: >
+! 	-nb:{hostname}:{addr}:{password}
+  
+  {hostname} is the name of the machine where NetBeans is running.  When omitted
+  the environment variable "__NETBEANS_HOST" is used or the default "localhost".
+--- 200,225 ----
+  ==============================================================================
+  9. Running Vim from NetBeans				*netbeans-run*
+  
+! NetBeans starts Vim with the |-nb| argument.  Three forms can be used, that
+! differ in the way the information for the connection is specified:
+! 
+! 	-nb={fname}				from a file
+! 	-nb:{hostname}:{addr}:{password}	directly
+! 	-nb					from a file or environment
+! 
+! 								*E660*
+! For security reasons, the best method is to write the information in a file
+! readable only by the user.  The name of the file can be passed with the
+! "-nb={fname}" argument or, when "-nb" is used without a parameter, the
+! environment variable "__NETBEANS_CONINFO".  The file must contain these three
+! lines, in any order:
+! 
+! 	host={hostname}
+! 	port={addr}
+! 	auth={password}
+! 
+! Other lines are ignored.  The caller of Vim is responsible for deleting the
+! file afterwards.
+  
+  {hostname} is the name of the machine where NetBeans is running.  When omitted
+  the environment variable "__NETBEANS_HOST" is used or the default "localhost".
+*** ../vim-6.2.270/src/main.c	Sun Feb 15 13:37:22 2004
+--- src/main.c	Sun Feb 15 15:58:56 2004
+***************
+*** 148,155 ****
+  #endif
+  
+  # ifdef NBDEBUG
+-     nbdebug_wait(WT_ENV | WT_WAIT | WT_STOP, "SPRO_GVIM_WAIT", 20);
+      nbdebug_log_init("SPRO_GVIM_DEBUG", "SPRO_GVIM_DLEVEL");
+  # endif
+  
+      /*
+--- 148,155 ----
+  #endif
+  
+  # ifdef NBDEBUG
+      nbdebug_log_init("SPRO_GVIM_DEBUG", "SPRO_GVIM_DLEVEL");
++     nbdebug_wait(WT_ENV | WT_WAIT | WT_STOP, "SPRO_GVIM_WAIT", 20);
+  # endif
+  
+      /*
+*** ../vim-6.2.270/src/netbeans.c	Thu Feb  5 12:09:25 2004
+--- src/netbeans.c	Sun Feb 15 21:25:26 2004
+***************
+*** 70,75 ****
+--- 70,76 ----
+  static long get_buf_size __ARGS((buf_T *));
+  
+  static void netbeans_connect __ARGS((void));
++ static void getConnInfo __ARGS((char *file, char **host, char **port, char **password));
+  
+  static void nb_init_graphics __ARGS((void));
+  static void coloncmd __ARGS((char *cmd, ...));
+***************
+*** 220,225 ****
+--- 221,230 ----
+  }
+  #endif /* FEAT_GUI_W32 */
+  
++ #define NB_DEF_HOST "localhost"
++ #define NB_DEF_ADDR "3219"
++ #define NB_DEF_PASS "changeme"
++ 
+      static void
+  netbeans_connect(void)
+  {
+***************
+*** 235,271 ****
+      struct sockaddr_un	server;
+  #endif
+      char	buf[32];
+!     char *	hostname;
+!     char *	address;
+!     char *	password;
+! 
+!     /* netbeansArg is -nb or -nb:<host>:<addr>:<password> */
+!     if (netbeansArg[3] == ':')
+! 	netbeansArg += 4;
+      else
+! 	netbeansArg = NULL;
+  
+!     hostname = netbeansArg;
+!     if (hostname == NULL || *hostname == '\0')
+! 	hostname = getenv("__NETBEANS_HOST");
+!     if (hostname == NULL || *hostname == '\0')
+! 	hostname = "localhost"; /* default */
+  
+!     address = strchr(hostname, ':');
+!     if (address != NULL)
+! 	*address++ = '\0';
+!     else
+! 	address = getenv("__NETBEANS_SOCKET");
+      if (address == NULL || *address == '\0')
+! 	address = "3219";  /* default */
+! 
+!     password = strchr(address, ':');
+!     if (password != NULL)
+! 	*password++ = '\0';
+!     else
+! 	password = getenv("__NETBEANS_VIM_PASSWORD");
+      if (password == NULL || *password == '\0')
+! 	password = "changeme"; /* default */
+  
+  #ifdef INET_SOCKETS
+      port = atoi(address);
+--- 240,314 ----
+      struct sockaddr_un	server;
+  #endif
+      char	buf[32];
+!     char	*hostname = NULL;
+!     char	*address = NULL;
+!     char	*password = NULL;
+!     char	*fname;
+!     char	*arg = NULL;
+! 
+!     if (netbeansArg[3] == '=')
+! 	/* "-nb=fname": Read info from specified file. */
+! 	getConnInfo(netbeansArg + 4, &hostname, &address, &password);
+      else
+!     {
+! 	if (netbeansArg[3] == ':')
+! 	    /* "-nb:<host>:<addr>:<password>": get info from argument */
+! 	    arg = netbeansArg + 4;
+! 	if (arg == NULL && (fname = getenv("__NETBEANS_CONINFO")) != NULL)
+! 	    /* "-nb": get info from file specified in environment */
+! 	    getConnInfo(fname, &hostname, &address, &password);
+! 	else
+! 	{
+! 	    if (arg != NULL)
+! 	    {
+! 		/* "-nb:<host>:<addr>:<password>": get info from argument */
+! 		hostname = arg;
+! 		address = strchr(hostname, ':');
+! 		if (address != NULL)
+! 		{
+! 		    *address++ = '\0';
+! 		    password = strchr(address, ':');
+! 		    if (password != NULL)
+! 			*password++ = '\0';
+! 		}
+! 	    }
+  
+! 	    /* Get the missing values from the environment. */
+! 	    if (hostname == NULL || *hostname == '\0')
+! 		hostname = getenv("__NETBEANS_HOST");
+! 	    if (address == NULL)
+! 		address = getenv("__NETBEANS_SOCKET");
+! 	    if (password == NULL)
+! 		password = getenv("__NETBEANS_VIM_PASSWORD");
+! 
+! 	    /* Move values to allocated memory. */
+! 	    if (hostname != NULL)
+! 		hostname = (char *)vim_strsave((char_u *)hostname);
+! 	    if (address != NULL)
+! 		address = (char *)vim_strsave((char_u *)address);
+! 	    if (password != NULL)
+! 		password = (char *)vim_strsave((char_u *)password);
+! 	}
+!     }
+  
+!     /* Use the default when a value is missing. */
+!     if (hostname == NULL || *hostname == '\0')
+!     {
+! 	vim_free(hostname);
+! 	hostname = (char *)vim_strsave((char_u *)NB_DEF_HOST);
+!     }
+      if (address == NULL || *address == '\0')
+!     {
+! 	vim_free(address);
+! 	address = (char *)vim_strsave((char_u *)NB_DEF_ADDR);
+!     }
+      if (password == NULL || *password == '\0')
+!     {
+! 	vim_free(password);
+! 	password = (char *)vim_strsave((char_u *)NB_DEF_PASS);
+!     }
+!     if (hostname == NULL || address == NULL || password == NULL)
+! 	goto theend;	    /* out of memory */
+  
+  #ifdef INET_SOCKETS
+      port = atoi(address);
+***************
+*** 273,279 ****
+      if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+      {
+  	PERROR("socket() in netbeans_connect()");
+! 	return;
+      }
+  
+      /* Get the server internet address and put into addr structure */
+--- 316,322 ----
+      if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+      {
+  	PERROR("socket() in netbeans_connect()");
+! 	goto theend;
+      }
+  
+      /* Get the server internet address and put into addr structure */
+***************
+*** 287,304 ****
+  	{
+  	    /* DEBUG: input file */
+  	    sd = open(hostname, O_RDONLY);
+! 	    return;
+  	}
+  	PERROR("gethostbyname() in netbeans_connect()");
+  	sd = -1;
+! 	return;
+      }
+      memcpy((char *)&server.sin_addr, host->h_addr, host->h_length);
+  #else
+      if ((sd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+      {
+  	PERROR("socket()");
+! 	return;
+      }
+  
+      server.sun_family = AF_UNIX;
+--- 330,347 ----
+  	{
+  	    /* DEBUG: input file */
+  	    sd = open(hostname, O_RDONLY);
+! 	    goto theend;
+  	}
+  	PERROR("gethostbyname() in netbeans_connect()");
+  	sd = -1;
+! 	goto theend;
+      }
+      memcpy((char *)&server.sin_addr, host->h_addr, host->h_length);
+  #else
+      if ((sd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+      {
+  	PERROR("socket()");
+! 	goto theend;
+      }
+  
+      server.sun_family = AF_UNIX;
+***************
+*** 315,327 ****
+  	    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+  	    {
+  		PERROR("socket()#2 in netbeans_connect()");
+! 		return;
+  	    }
+  #else
+  	    if ((sd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+  	    {
+  		PERROR("socket()#2 in netbeans_connect()");
+! 		return;
+  	    }
+  #endif
+  	    if (connect(sd, (struct sockaddr *)&server, sizeof(server)))
+--- 358,370 ----
+  	    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+  	    {
+  		PERROR("socket()#2 in netbeans_connect()");
+! 		goto theend;
+  	    }
+  #else
+  	    if ((sd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1)
+  	    {
+  		PERROR("socket()#2 in netbeans_connect()");
+! 		goto theend;
+  	    }
+  #endif
+  	    if (connect(sd, (struct sockaddr *)&server, sizeof(server)))
+***************
+*** 368,374 ****
+--- 411,463 ----
+  
+      haveConnection = TRUE;
+  
++ theend:
++     vim_free(hostname);
++     vim_free(address);
++     vim_free(password);
+      return;
++ }
++ 
++ /*
++  * Obtain the NetBeans hostname, port address and password from a file.
++  * Return the strings in allocated memory.
++  */
++     static void
++ getConnInfo(char *file, char **host, char **port, char **auth)
++ {
++     FILE *fp = mch_fopen(file, "r");
++     char_u buf[BUFSIZ];
++     char_u *lp;
++     char_u *nl;
++ 
++     if (fp == NULL)
++ 	PERROR("E660: Cannot open NetBeans connection info file");
++     else
++     {
++ 	/* Read the file. There should be one of each parameter */
++ 	while ((lp = (char_u *)fgets((char *)buf, BUFSIZ, fp)) != NULL)
++ 	{
++ 	    if ((nl = vim_strchr(lp, '\n')) != NULL)
++ 		*nl = 0;	    /* strip off the trailing newline */
++ 
++ 	    if (STRNCMP(lp, "host=", 5) == 0)
++ 	    {
++ 		vim_free(*host);
++ 		*host = (char *)vim_strsave(&buf[5]);
++ 	    }
++ 	    else if (STRNCMP(lp, "port=", 5) == 0)
++ 	    {
++ 		vim_free(*port);
++ 		*port = (char *)vim_strsave(&buf[5]);
++ 	    }
++ 	    else if (STRNCMP(lp, "auth=", 5) == 0)
++ 	    {
++ 		vim_free(*auth);
++ 		*auth = (char *)vim_strsave(&buf[5]);
++ 	    }
++ 	}
++ 	fclose(fp);
++     }
+  }
+  
+  
+*** ../vim-6.2.270/src/version.c	Tue Feb 17 21:46:46 2004
+--- src/version.c	Thu Feb 19 14:39:28 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     271,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+184. You no longer ask prospective dates what their sign is, instead
+     your line is "Hi, what's your URL?"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

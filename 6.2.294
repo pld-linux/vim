@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.294 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.294 (extra)
+Problem:    Mac: Cannot use modifiers with Space, Tab, Enter and Escape.
+Solution:   Handle all modifiers for these keys.  (Eckehard Berns)
+Files:	    src/gui_mac.c
+
+
+*** ../vim-6.2.293/src/gui_mac.c	Wed Feb 25 13:13:26 2004
+--- src/gui_mac.c	Thu Feb 26 22:24:26 2004
+***************
+*** 2153,2159 ****
+  
+      /* Add the modifier to the input bu if needed */
+      /* Do not want SHIFT-A or CTRL-A with modifier */
+!     if (!IS_SPECIAL(key_char))
+      {
+  #if 1
+      /* Clear modifiers when only one modifier is set */
+--- 2153,2164 ----
+  
+      /* Add the modifier to the input bu if needed */
+      /* Do not want SHIFT-A or CTRL-A with modifier */
+!     if (!IS_SPECIAL(key_char)
+! 	    && key_sym != vk_Space
+! 	    && key_sym != vk_Tab
+! 	    && key_sym != vk_Return
+! 	    && key_sym != vk_Enter
+! 	    && key_sym != vk_Esc)
+      {
+  #if 1
+      /* Clear modifiers when only one modifier is set */
+*** ../vim-6.2.293/src/version.c	Thu Feb 26 18:16:35 2004
+--- src/version.c	Sat Feb 28 15:29:05 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     294,
+  /**/
+
+-- 
+FATHER: One day, lad, all this will be yours ...
+PRINCE: What - the curtains?
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

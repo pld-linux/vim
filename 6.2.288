@@ -1,0 +1,70 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.288 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.288 (extra)
+Problem:    Mac: An external program can't be interrupted.
+Solution:   Don't use the 'c' key for backspace. (Eckehard Berns)
+Files:      src/gui_mac.c
+
+
+*** ../vim-6.2.287/src/gui_mac.c	Tue Feb 10 19:44:28 2004
+--- src/gui_mac.c	Tue Feb 24 20:51:19 2004
+***************
+*** 236,241 ****
+--- 247,253 ----
+  #define vk_Space	0x31	/* -> 20 */
+  #define vk_Tab		0x30	/* -> 09 */
+  #define vk_Return	0x24	/* -> 0D */
++ /* This is wrong for OSX, what is it for? */
+  #define vk_Delete	0X08	/* -> 08 BackSpace */
+  
+  #define vk_Help		0x72	/* -> 05 */
+***************
+*** 293,299 ****
+--- 305,314 ----
+  
+  /*  {XK_Help,		'%', '1'}, */
+  /*  {XK_Undo,		'&', '8'}, */
++ /*  {XK_BackSpace,	'k', 'b'}, */
++ #ifndef MACOS_X
+      {vk_Delete,		'k', 'b'},
++ #endif
+      {vk_Insert,		'k', 'I'},
+      {vk_FwdDelete,	'k', 'D'},
+      {vk_Home,		'k', 'h'},
+***************
+*** 307,315 ****
+  
+      /* End of list marker: */
+      {(KeySym)0,		0, 0}
+- 
+- /** {XK_BackSpace,	'k', 'b'}, **/
+- 
+  };
+  
+  /*
+--- 322,327 ----
+*** ../vim-6.2.287/src/version.c	Tue Feb 24 15:23:58 2004
+--- src/version.c	Tue Feb 24 20:08:53 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     288,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+246. You use up your free 100 hours in less than a week.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

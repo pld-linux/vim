@@ -1,0 +1,84 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.279
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.279
+Problem:    There is no default choice for a confirm() dialog, now that it is
+	    possible not to have a default choice.
+Solution:   Make the first choice the default choice.
+Files:	    runtime/doc/eval.txt, src/eval.c
+
+
+*** ../vim-6.2.278/runtime/doc/eval.txt	Sun Jan 18 20:50:42 2004
+--- runtime/doc/eval.txt	Sun Feb 15 20:29:15 2004
+***************
+*** 1,4 ****
+! *eval.txt*      For Vim version 6.2.  Last change: 2004 Jan 18
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *eval.txt*      For Vim version 6.2.  Last change: 2004 Feb 15
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 1113,1119 ****
+  		The optional {default} argument is the number of the choice
+  		that is made if the user hits <CR>.  Use 1 to make the first
+  		choice the default one.  Use 0 to not set a default.  If
+! 		{default} is omitted, 0 is used.
+  		The optional {type} argument gives the type of dialog.  This
+  		is only used for the icon of the Win32 GUI.  It can be one of
+  		these values: "Error", "Question", "Info", "Warning" or
+--- 1115,1121 ----
+  		The optional {default} argument is the number of the choice
+  		that is made if the user hits <CR>.  Use 1 to make the first
+  		choice the default one.  Use 0 to not set a default.  If
+! 		{default} is omitted, 1 is used.
+  		The optional {type} argument gives the type of dialog.  This
+  		is only used for the icon of the Win32 GUI.  It can be one of
+  		these values: "Error", "Question", "Info", "Warning" or
+*** ../vim-6.2.278/src/eval.c	Thu Feb 19 15:28:58 2004
+--- src/eval.c	Wed Feb 18 12:00:45 2004
+***************
+*** 3628,3634 ****
+      char_u	*buttons = NULL;
+      char_u	buf[NUMBUFLEN];
+      char_u	buf2[NUMBUFLEN];
+!     int		def = 0;
+      int		type = VIM_GENERIC;
+      int		c;
+  
+--- 3628,3634 ----
+      char_u	*buttons = NULL;
+      char_u	buf[NUMBUFLEN];
+      char_u	buf2[NUMBUFLEN];
+!     int		def = 1;
+      int		type = VIM_GENERIC;
+      int		c;
+  
+*** ../vim-6.2.278/src/version.c	Thu Feb 19 15:28:58 2004
+--- src/version.c	Thu Feb 19 15:30:05 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     279,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+191. You rate eating establishments not by the quality of the food,
+     but by the availability of electrical outlets for your PowerBook.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

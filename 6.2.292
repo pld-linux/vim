@@ -1,0 +1,68 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.292
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.292
+Problem:    Motif: When removing GUI arguments from argv[] a "ps -ef" shows
+	    the last argument repeated.
+Solution:   Set argv[argc] to NULL. (Michael Jarvis)
+Files:	    src/gui_x11.c
+
+
+*** ../vim-6.2.291/src/gui_x11.c	Mon Dec 29 21:21:52 2003
+--- src/gui_x11.c	Wed Feb 25 21:55:24 2004
+***************
+*** 1217,1222 ****
+--- 1217,1223 ----
+  							    * sizeof(char *));
+  		}
+  	    }
++ 	    argv[*argc] = NULL;
+  	}
+  	else
+  #ifdef FEAT_SUN_WORKSHOP
+***************
+*** 1227,1232 ****
+--- 1228,1234 ----
+  	    gui.dofork = FALSE;	/* don't fork() when starting GUI */
+  	    mch_memmove(&argv[arg], &argv[arg + 1],
+  					    (--*argc - arg) * sizeof(char *));
++ 	    argv[*argc] = NULL;
+  # ifdef WSDEBUG
+  	    wsdebug_wait(WT_ENV | WT_WAIT | WT_STOP, "SPRO_GVIM_WAIT", 20);
+  	    wsdebug_log_init("SPRO_GVIM_DEBUG", "SPRO_GVIM_DLEVEL");
+***************
+*** 1242,1247 ****
+--- 1244,1250 ----
+  	    netbeansArg = argv[arg];
+  	    mch_memmove(&argv[arg], &argv[arg + 1],
+  					    (--*argc - arg) * sizeof(char *));
++ 	    argv[*argc] = NULL;
+  	}
+  	else
+  #endif
+*** ../vim-6.2.291/src/version.c	Wed Feb 25 13:13:26 2004
+--- src/version.c	Thu Feb 26 15:41:42 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     292,
+  /**/
+
+-- 
+ARTHUR: Right! Knights! Forward!
+   ARTHUR leads a charge toward the castle.  Various shots of them battling on,
+   despite being hit by a variety of farm animals.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

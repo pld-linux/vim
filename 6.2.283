@@ -1,0 +1,88 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.283
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.283
+Problem:    The "local additions" in help.txt are used without conversion,
+	    causing latin1 characters showing up wrong when 'enc' is utf-8.
+	    (Antoine J. Mechelynck)
+Solution:   Convert the text to 'encoding'.
+Files:	    src/ex_cmds.c
+
+
+*** ../vim-6.2.282/src/ex_cmds.c	Fri Feb 20 22:04:18 2004
+--- src/ex_cmds.c	Fri Feb 20 22:00:08 2004
+***************
+*** 5003,5008 ****
+--- 5031,5040 ----
+  			FILE	*fd;
+  			char_u	*s;
+  			int	fi;
++ #ifdef FEAT_MBYTE
++ 			vimconv_T	vc;
++ 			char_u		*cp;
++ #endif
+  
+  			/* Find all "doc/ *.txt" files in this directory. */
+  			add_pathsep(NameBuff);
+***************
+*** 5031,5038 ****
+--- 5063,5096 ----
+  						*s = NUL;
+  					    ++s;
+  					}
++ #ifdef FEAT_MBYTE
++ 					/* Assume the help file is latin1 and
++ 					 * conversion to the current
++ 					 * 'encoding' may be required. */
++ 					vc.vc_type = CONV_NONE;
++ 					convert_setup(&vc,
++ 						   (char_u *)"latin1", p_enc);
++ 					if (vc.vc_type == CONV_NONE)
++ 					    /* No conversion needed. */
++ 					    cp = IObuff;
++ 					else
++ 					{
++ 					    /* Do the conversion.  If it fails
++ 					     * use the unconverted text. */
++ 					    cp = string_convert(&vc, IObuff,
++ 									NULL);
++ 					    if (cp == NULL)
++ 						cp = IObuff;
++ 					}
++ 					convert_setup(&vc, NULL, NULL);
++ 
++ 					ml_append(lnum, cp, (colnr_T)0, FALSE);
++ 					if (cp != IObuff)
++ 					    vim_free(cp);
++ #else
+  					ml_append(lnum, IObuff, (colnr_T)0,
+  								       FALSE);
++ #endif
+  					++lnum;
+  				    }
+  				    fclose(fd);
+*** ../vim-6.2.282/src/version.c	Fri Feb 20 22:04:18 2004
+--- src/version.c	Fri Feb 20 22:06:21 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     283,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+206. You religiously respond immediately to e-mail, while ignoring
+     your growing pile of snail mail.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

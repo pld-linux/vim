@@ -1,0 +1,173 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.291 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.291 (extra)
+Problem:    Mac: the plus button and close button don't do anything.
+Solution:   Make the plus button maximize the window and the close button
+            close Vim. (Eckehard Berns)
+Files:      src/gui.c, src/gui_mac.c
+
+
+*** ../vim-6.2.290/src/gui.c	Fri Feb 20 22:14:29 2004
+--- src/gui.c	Tue Feb 24 20:42:34 2004
+***************
+*** 572,578 ****
+  }
+  
+  #if defined(FEAT_GUI_GTK) || defined(FEAT_GUI_X11) || defined(FEAT_GUI_MSWIN) \
+! 	|| defined(FEAT_GUI_PHOTON) || defined(PROTO)
+  /*
+   * Called when the GUI shell is closed by the user.  If there are no changed
+   * files Vim exits, otherwise there will be a dialog to ask the user what to
+--- 572,578 ----
+  }
+  
+  #if defined(FEAT_GUI_GTK) || defined(FEAT_GUI_X11) || defined(FEAT_GUI_MSWIN) \
+! 	|| defined(FEAT_GUI_PHOTON) || defined(FEAT_GUI_MAC) || defined(PROTO)
+  /*
+   * Called when the GUI shell is closed by the user.  If there are no changed
+   * files Vim exits, otherwise there will be a dialog to ask the user what to
+*** ../vim-6.2.290/src/gui_mac.c	Wed Feb 25 12:54:47 2004
+--- src/gui_mac.c	Wed Feb 25 13:04:47 2004
+***************
+*** 1831,1837 ****
+      };
+  #endif
+  
+! };
+  
+  /*
+   * ------------------------------------------------------------
+--- 1831,1885 ----
+      };
+  #endif
+  
+! }
+! 
+! /*
+!  * Handle the click in the zoom box
+!  */
+! #ifdef USE_CARBONIZED
+!     static void
+! gui_mac_doInZoomClick(theEvent, whichWindow)
+!     EventRecord	*theEvent;
+!     WindowPtr	whichWindow;
+! {
+!     Rect	r;
+!     Point	p;
+!     short	thePart;
+! 
+!     /* ideal width is current */
+!     p.h = Columns * gui.char_width + 2 * gui.border_offset;
+!     if (gui.which_scrollbars[SBAR_LEFT])
+! 	p.h += gui.scrollbar_width;
+!     if (gui.which_scrollbars[SBAR_RIGHT])
+! 	p.h += gui.scrollbar_width;
+!     /* ideal height is as heigh as we can get */
+!     p.v = 15 * 1024;
+! 
+!     thePart = IsWindowInStandardState(whichWindow, &p, &r)
+! 						       ? inZoomIn : inZoomOut;
+! 
+!     if (!TrackBox(whichWindow, theEvent->where, thePart))
+! 	return;
+! 
+!     /* use returned width */
+!     p.h = r.right - r.left;
+!     /* adjust returned height */
+!     p.v = r.bottom - r.top - 2 * gui.border_offset;
+!     if (gui.which_scrollbars[SBAR_BOTTOM])
+! 	p.v -= gui.scrollbar_height;
+!     p.v -= p.v % gui.char_height;
+!     p.v += 2 * gui.border_width;
+!     if (gui.which_scrollbars[SBAR_BOTTOM]);
+! 	p.v += gui.scrollbar_height;
+! 
+!     ZoomWindowIdeal(whichWindow, thePart, &p);
+! 
+!     GetWindowBounds(whichWindow, kWindowContentRgn, &r);
+!     gui_resize_shell(r.right - r.left, r.bottom - r.top);
+!     gui_mch_set_bg_color(gui.back_pixel);
+!     gui_set_shellsize(TRUE, FALSE);
+! }
+! #endif /* defined(USE_CARBONIZED) */
+  
+  /*
+   * ------------------------------------------------------------
+***************
+*** 2184,2193 ****
+  	    gui_mac_doInGrowClick (theEvent->where, whichWindow);
+  	    break;
+  
+! 	case (inGoAway):  /* TODO */
+  	case (inZoomIn):
+  	case (inZoomOut):
+! 	    /* For now the window doesn't have a GoAway and Zoom */
+  	    break;
+      }
+  }
+--- 2232,2247 ----
+  	    gui_mac_doInGrowClick (theEvent->where, whichWindow);
+  	    break;
+  
+! 	case (inGoAway):
+! 	    if (TrackGoAway(whichWindow, theEvent->where))
+! 		gui_shell_closed();
+! 	    break;
+! 
+  	case (inZoomIn):
+  	case (inZoomOut):
+! #ifdef USE_CARBONIZED
+! 	    gui_mac_doInZoomClick(theEvent, whichWindow);
+! #endif
+  	    break;
+      }
+  }
+***************
+*** 2861,2868 ****
+      SetRect (&windRect, 300, 40, 300+80*7 + 16, 40+24*11);
+  #endif
+  
+!     gui.VimWindow = NewCWindow(nil, &windRect, "\pgVim on Macintosh", true, documentProc,
+! 			(WindowPtr) -1L, false, 0);
+      InstallReceiveHandler((DragReceiveHandlerUPP)receiveHandler,
+  	    gui.VimWindow, NULL);
+  #ifdef USE_CARBONIZED
+--- 2915,2927 ----
+      SetRect (&windRect, 300, 40, 300+80*7 + 16, 40+24*11);
+  #endif
+  
+!     gui.VimWindow = NewCWindow(nil, &windRect, "\pgVim on Macintosh", true,
+! #ifdef USE_CARBONIZED
+! 			zoomDocProc,
+! #else
+! 			documentProc,
+! #endif
+! 			(WindowPtr)-1L, true, 0);
+      InstallReceiveHandler((DragReceiveHandlerUPP)receiveHandler,
+  	    gui.VimWindow, NULL);
+  #ifdef USE_CARBONIZED
+*** ../vim-6.2.290/src/version.c	Wed Feb 25 12:54:47 2004
+--- src/version.c	Wed Feb 25 13:11:49 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     291,
+  /**/
+
+-- 
+Did you hear about the new 3 million dollar West Virginia State Lottery?
+The winner gets 3 dollars a year for a million years.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

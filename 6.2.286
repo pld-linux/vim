@@ -1,0 +1,76 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.286
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.286
+Problem:    When trying to rename a file and it doesn't exist, the destination
+	    file is deleted anyway. (Luc Deux)
+Solution:   Don't delete the destination when the source doesn't exist. (Taro
+	    Muraoka)
+Files:	    src/fileio.c
+
+
+*** ../vim-6.2.285/src/fileio.c	Fri Jan 30 21:03:16 2004
+--- src/fileio.c	Sat Feb 21 12:09:01 2004
+***************
+*** 5249,5254 ****
+--- 5249,5255 ----
+  #ifdef AMIGA
+      BPTR	flock;
+  #endif
++     struct stat	st;
+  
+      /*
+       * When the names are identical, there is nothing to do.
+***************
+*** 5257,5265 ****
+  	return 0;
+  
+      /*
+!      * First delete the "to" file, this is required on some systems to make
+!      * the mch_rename() work, on other systems it makes sure that we don't
+!      * have two files when the mch_rename() fails.
+       */
+  
+  #ifdef AMIGA
+--- 5258,5272 ----
+  	return 0;
+  
+      /*
+!      * Fail if the "from" file doesn't exist.  Avoids that "to" is deleted.
+!      */
+!     if (mch_stat((char *)from, &st) < 0)
+! 	return -1;
+! 
+!     /*
+!      * Delete the "to" file, this is required on some systems to make the
+!      * mch_rename() work, on other systems it makes sure that we don't have
+!      * two files when the mch_rename() fails.
+       */
+  
+  #ifdef AMIGA
+*** ../vim-6.2.285/src/version.c	Fri Feb 20 22:14:29 2004
+--- src/version.c	Tue Feb 24 15:17:27 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     286,
+  /**/
+
+-- 
+"The amigos also appear to be guilty of not citing the work of others who had
+gone before them.  Even worse, they have a chapter about modeling time and
+space without making a single reference to Star Trek!"
+			(Scott Ambler, reviewing the UML User Guide)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
