@@ -11,6 +11,7 @@
 %bcond_with	ruby	# with ruby interp
 %bcond_with	tcl	# with tcl interp
 %bcond_with	bonobo	# with bonobo component (breaks other things)
+%bcond_without  selinux # without selinux
 #
 %define		_ver		6.2
 %define		_patchlevel	430
@@ -104,7 +105,7 @@ BuildRequires:	gpm-devel
 %{?with_gtk:BuildRequires:	gtk+2-devel >= 2.2.1}
 %{?with_kde:BuildRequires:	kdelibs-devel >= 9:3.0.0}
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
-BuildRequires:	libselinux-devel
+%{?with_selinux:BuildRequires:	libselinux-devel}
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	ncurses-devel
 %{?with_perl:BuildRequires:	perl-devel}
@@ -121,7 +122,7 @@ BuildRequires:	nautilus-devel >= 2.2.0
 BuildRequires:	acl-static
 BuildRequires:	attr-static
 BuildRequires:	glibc-static
-BuildRequires:	libselinux-static
+%{?with_selinux:BuildRequires:	libselinux-static}
 BuildRequires:	ncurses-static
 %else
 Provides:	%{name}-static = %{epoch}:%{version}-%{release}
@@ -583,7 +584,7 @@ element bonobo.
 %patch10 -p1
 %{?with_bonobo:%patch11 -p1}
 %patch12 -p1
-%patch13 -p1
+%{?with_selinux:%patch13 -p1}
 
 %build
 cd src
