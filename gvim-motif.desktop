@@ -7,3 +7,4 @@ Terminal=0
 Icon=gnome-word.png
 Type=Applications/Editors
 Type[pl]=Aplikacje/Edytory
+# vi: encoding=utf-8
