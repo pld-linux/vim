@@ -25,7 +25,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -213,6 +213,19 @@ zalecana, mo©e on pomСc Ci uratowaФ system w czasie awarii.
 %description static -l uk
 Пакет vim-static встановлю╓ р╕зновид vim як /bin/vi, що зручно для
 запуску нав╕ть тод╕, коли змонтована т╕льки корньова файлова система.
+
+%package ispell
+Summary:	Vim with ispell support
+Summary(pl):	Vim z wsparciem dla ispella
+Group:		Applications/Editors/Vim
+Requires:	%{name}-rt = %{version}
+
+%description ispell
+Text editor similar to Vi. This version is built with ispell support.
+
+%description ispell -l pl
+Edytor tekstu podobny do Vi. Ta wersja zostaЁa skompilowana ze wsparciem
+dla ispella.
 
 %package rt
 Summary:	Vim runtime files
@@ -419,9 +432,9 @@ done
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%{?_with_ispell:%patch3 -p1}
+%patch3 -p1
 %ifarch alpha
-%{?_with_ispell:%patch4 -p1}
+%patch4 -p1
 %endif
 %patch5 -p1
 
@@ -448,8 +461,31 @@ cp -f configure auto
 	--with-tlib=ncurses \
 	--enable-nls
 
-%{__make} vim
+%{__make} SPELL_OBJ= vim
 mv -f vim vim.ncurses
+%{__make} xxd/xxd
+
+%{__make} distclean
+%configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
+	--disable-gui \
+	--without-x \
+	%{!?_with_perl:--disable-perlinterp} \
+	%{?_with_perl:--enable-perlinterp} \
+	%{!?_with_python:--disable-pythoninterp} \
+	%{?_with_python:--enable-pythoninterp} \
+	%{!?_with_ruby:--disable-rubyinterp} \
+	%{?_with_ruby:--enable-rubyinterp} \
+	%{!?_with_tcl:--disable-tclinterp} \
+	%{?_with_tcl:--enable-tclinterp} \
+	--enable-cscope \
+	--enable-gpm \
+	--with-features=huge \
+	--enable-multibyte \
+	--with-tlib=ncurses \
+	--enable-nls
+
+%{__make} vim
+mv -f vim vim.ispell
 %{__make} xxd/xxd
 
 %if %{!?_without_static:1}%{?_without_static:0}
@@ -469,14 +505,14 @@ LDFLAGS="%{rpmldflags} -static"
 	--with-tlib=tinfo \
 	--disable-nls
 
-%{__make} vim
+%{__make} SPELL_OBJ= vim
 mv -f vim vim.static
 %endif
 
 %if %{!?_without_athena:1}%{?_without_athena:0}
 %{__make} distclean
 LDFLAGS="%{rpmldflags}"
-%configure \
+%configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
@@ -499,7 +535,7 @@ mv -f vim gvim.athena
 
 %if %{!?_without_motif:1}%{?_without_motif:0}
 %{__make} distclean
-%configure \
+%configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
@@ -523,7 +559,7 @@ mv -f vim gvim.motif
 
 %if %{!?_without_gtk:1}%{?_without_gtk:0}
 %{__make} distclean
-%configure \
+%configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gtk \
 	--with-x \
@@ -545,7 +581,7 @@ mv -f vim gvim.gtk
 
 %if %{!?_without_gnome:1}%{?_without_gnome:0}
 %{__make} distclean
-%configure \
+%configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome \
 	--with-x \
@@ -578,6 +614,7 @@ rm -f $RPM_BUILD_ROOT%{_bindir}/*
 %{?_without_static:install src/vim.ncurses	$RPM_BUILD_ROOT/bin/vi}
 %{!?_without_static:install src/vim.static	$RPM_BUILD_ROOT/bin/vi}
 %{?_without_static:ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim}
+install src/vim.ispell				$RPM_BUILD_ROOT%{_bindir}/vim.ispell
 install src/xxd/xxd				$RPM_BUILD_ROOT%{_bindir}/xxd
 install src/vimtutor				$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
@@ -626,6 +663,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/rvim
+
+%files ispell
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/vim.ispell
 
 %files -n xxd
 %defattr(644,root,root,755)
