@@ -1,0 +1,405 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.267 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.267 (extra)
+Problem:    Win32: "&&" in a tearoff menu is not shown. (Luc Hermitte)
+Solution:   Use the "name" item from the menu instead of the "dname" item.
+Files:	    src/gui_w32.c, src/menu.c
+
+
+*** ../vim-6.2.266/src/gui_w32.c	Sun Jan 25 20:24:03 2004
+--- src/gui_w32.c	Mon Feb 16 12:19:06 2004
+***************
+*** 2965,2971 ****
+      HFONT	font, oldFont;
+      int		col, spaceWidth, len;
+      int		columnWidths[2];
+!     char_u	*label, *text, *end, *acEnd = NULL;
+      int		padding0, padding1, padding2 = 0;
+      int		sepPadding=0;
+  #ifdef USE_SYSMENU_FONT
+--- 2965,2973 ----
+      HFONT	font, oldFont;
+      int		col, spaceWidth, len;
+      int		columnWidths[2];
+!     char_u	*label, *text;
+!     int		acLen;
+!     int		nameLen;
+      int		padding0, padding1, padding2 = 0;
+      int		sepPadding=0;
+  #ifdef USE_SYSMENU_FONT
+***************
+*** 2974,2984 ****
+  #endif
+  
+      /*
+!      * If this menu is already torn off, then don't
+!      * tear it off again, but move the existing tearoff
+!      * to the mouse position.
+       */
+- 
+      if (IsWindow(menu->tearoff_handle))
+      {
+  	POINT mp;
+--- 2976,2983 ----
+  #endif
+  
+      /*
+!      * If this menu is already torn off, move it to the mouse position.
+       */
+      if (IsWindow(menu->tearoff_handle))
+      {
+  	POINT mp;
+***************
+*** 2991,3003 ****
+      }
+  
+      /*
+!      * Otherwise, create a new tearoff
+       */
+- 
+      if (*title == MNU_HIDDEN_CHAR)
+  	title++;
+  
+!     /* Allocate some memory to play with.  It's made bigger when needed. */
+      template_len = DLG_ALLOC_SIZE;
+      pdlgtemplate = p = (WORD *)LocalAlloc(LPTR, template_len);
+      if (p == NULL)
+--- 2990,3002 ----
+      }
+  
+      /*
+!      * Create a new tearoff.
+       */
+      if (*title == MNU_HIDDEN_CHAR)
+  	title++;
+  
+!     /* Allocate memory to store the dialog template.  It's made bigger when
+!      * needed. */
+      template_len = DLG_ALLOC_SIZE;
+      pdlgtemplate = p = (WORD *)LocalAlloc(LPTR, template_len);
+      if (p == NULL)
+***************
+*** 3019,3051 ****
+  	oldFont = SelectFont(hdc, font);
+      else
+  	oldFont = SelectFont(hdc, GetStockObject(SYSTEM_FONT));
+!     /*
+!      * Calculate width of a single space.  Used for padding columns to the
+!      * right width.
+!      */
+      spaceWidth = GetTextWidth(hdc, " ", 1);
+  
+      submenuWidth = 0;
+-     /* Figure out widths for each column. */
+      for (col = 0; col < 2; col++)
+      {
+  	columnWidths[col] = 0;
+  	for (pmenu = menu->children; pmenu != NULL; pmenu = pmenu->next)
+  	{
+  	    text = (col == 0) ? pmenu->dname : pmenu->actext;
+- 	    if (pmenu->children != NULL)
+- 		submenuWidth = TEAROFF_COLUMN_PADDING * spaceWidth;
+  	    if (text != NULL && *text != NUL)
+  	    {
+! 		end = text + strlen(text);
+! 		textWidth = GetTextWidth(hdc, text, (int)(end - text));
+  		if (textWidth > columnWidths[col])
+  		    columnWidths[col] = textWidth;
+  	    }
+  	}
+      }
+      if (columnWidths[1] == 0)
+      {
+  	if (submenuWidth != 0)
+  	    columnWidths[0] += submenuWidth;
+  	else
+--- 3018,3051 ----
+  	oldFont = SelectFont(hdc, font);
+      else
+  	oldFont = SelectFont(hdc, GetStockObject(SYSTEM_FONT));
+! 
+!     /* Calculate width of a single space.  Used for padding columns to the
+!      * right width. */
+      spaceWidth = GetTextWidth(hdc, " ", 1);
+  
++     /* Figure out max width of the text column, the accelerator column and the
++      * optional submenu column. */
+      submenuWidth = 0;
+      for (col = 0; col < 2; col++)
+      {
+  	columnWidths[col] = 0;
+  	for (pmenu = menu->children; pmenu != NULL; pmenu = pmenu->next)
+  	{
++ 	    /* Use "dname" here to compute the width of the visible text. */
+  	    text = (col == 0) ? pmenu->dname : pmenu->actext;
+  	    if (text != NULL && *text != NUL)
+  	    {
+! 		textWidth = GetTextWidth(hdc, text, (int)STRLEN(text));
+  		if (textWidth > columnWidths[col])
+  		    columnWidths[col] = textWidth;
+  	    }
++ 	    if (pmenu->children != NULL)
++ 		submenuWidth = TEAROFF_COLUMN_PADDING * spaceWidth;
+  	}
+      }
+      if (columnWidths[1] == 0)
+      {
++ 	/* no accelerators */
+  	if (submenuWidth != 0)
+  	    columnWidths[0] += submenuWidth;
+  	else
+***************
+*** 3053,3071 ****
+      }
+      else
+      {
+  	columnWidths[0] += TEAROFF_COLUMN_PADDING * spaceWidth;
+  	columnWidths[1] += submenuWidth;
+      }
+      /*
+!      * Now find the width of our 'menu'.
+       */
+!     textWidth = 0;
+!     for (col = 0; col < 2; col++)
+! 	textWidth += columnWidths[col];
+      if (submenuWidth != 0)
+      {
+  	submenuWidth = GetTextWidth(hdc, TEAROFF_SUBMENU_LABEL,
+! 			      (int)STRLEN(TEAROFF_SUBMENU_LABEL));
+  	textWidth += submenuWidth;
+      }
+      dlgwidth = GetTextWidth(hdc, title, (int)STRLEN(title));
+--- 3053,3071 ----
+      }
+      else
+      {
++ 	/* there is an accelerator column */
+  	columnWidths[0] += TEAROFF_COLUMN_PADDING * spaceWidth;
+  	columnWidths[1] += submenuWidth;
+      }
++ 
+      /*
+!      * Now find the total width of our 'menu'.
+       */
+!     textWidth = columnWidths[0] + columnWidths[1];
+      if (submenuWidth != 0)
+      {
+  	submenuWidth = GetTextWidth(hdc, TEAROFF_SUBMENU_LABEL,
+! 					  (int)STRLEN(TEAROFF_SUBMENU_LABEL));
+  	textWidth += submenuWidth;
+      }
+      dlgwidth = GetTextWidth(hdc, title, (int)STRLEN(title));
+***************
+*** 3105,3113 ****
+      *p++ = 0;		// Class
+  
+      /* copy the title of the dialog */
+!     nchar = nCopyAnsiToWideChar(p, ((*title) ?
+! 				    (LPSTR)title :
+! 				    (LPSTR)("Vim "VIM_VERSION_MEDIUM)));
+      p += nchar;
+  
+      if (s_usenewlook)
+--- 3105,3113 ----
+      *p++ = 0;		// Class
+  
+      /* copy the title of the dialog */
+!     nchar = nCopyAnsiToWideChar(p, ((*title)
+! 				    ? (LPSTR)title
+! 				    : (LPSTR)("Vim "VIM_VERSION_MEDIUM)));
+      p += nchar;
+  
+      if (s_usenewlook)
+***************
+*** 3130,3141 ****
+  	p += nchar;
+      }
+  
+!     /* Don't include tearbar in tearoff menu */
+      if (STRCMP(menu->children->name, TEAR_STRING) == 0)
+  	menu = menu->children->next;
+      else
+  	menu = menu->children;
+- 
+      for ( ; menu != NULL; menu = menu->next)
+      {
+  	if (menu->modes == 0)	/* this menu has just been deleted */
+--- 3130,3143 ----
+  	p += nchar;
+      }
+  
+!     /*
+!      * Loop over all the items in the menu.
+!      * But skip over the tearbar.
+!      */
+      if (STRCMP(menu->children->name, TEAR_STRING) == 0)
+  	menu = menu->children->next;
+      else
+  	menu = menu->children;
+      for ( ; menu != NULL; menu = menu->next)
+      {
+  	if (menu->modes == 0)	/* this menu has just been deleted */
+***************
+*** 3166,3188 ****
+  	    }
+  	}
+  
+! 	/* Figure out length of this menu label */
+! 	len = (int)STRLEN(menu->dname);
+! 	end = menu->dname + STRLEN(menu->dname);
+  	padding0 = (columnWidths[0] - GetTextWidth(hdc, menu->dname,
+! 		    (int)(end - menu->dname))) / spaceWidth;
+  	len += padding0;
+  	if (menu->actext != NULL)
+  	{
+! 	    len += (int)STRLEN(menu->actext);
+! 	    acEnd = menu->actext + STRLEN(menu->actext);
+! 	    textWidth = GetTextWidth(hdc, menu->actext, (int)(acEnd - menu->actext));
+  	}
+  	else
+  	    textWidth = 0;
+- 
+  	padding1 = (columnWidths[1] - textWidth) / spaceWidth;
+  	len += padding1;
+  	if (menu->children == NULL)
+  	{
+  	    padding2 = submenuWidth / spaceWidth;
+--- 3168,3192 ----
+  	    }
+  	}
+  
+! 	/* Figure out minimal length of this menu label.  Use "name" for the
+! 	 * actual text, "dname" for estimating the displayed size.  "name"
+! 	 * has "&a" for mnemonic and includes the accelerator. */
+! 	len = nameLen = (int)STRLEN(menu->name);
+  	padding0 = (columnWidths[0] - GetTextWidth(hdc, menu->dname,
+! 				      (int)STRLEN(menu->dname))) / spaceWidth;
+  	len += padding0;
++ 
+  	if (menu->actext != NULL)
+  	{
+! 	    acLen = (int)STRLEN(menu->actext);
+! 	    len += acLen;
+! 	    textWidth = GetTextWidth(hdc, menu->actext, acLen);
+  	}
+  	else
+  	    textWidth = 0;
+  	padding1 = (columnWidths[1] - textWidth) / spaceWidth;
+  	len += padding1;
++ 
+  	if (menu->children == NULL)
+  	{
+  	    padding2 = submenuWidth / spaceWidth;
+***************
+*** 3199,3212 ****
+  	text = label = alloc((unsigned)len + 1);
+  	if (label == NULL)
+  	    break;
+! 	STRNCPY(text, menu->dname, end - menu->dname);
+! 	text += end - menu->dname;
+  	while (padding0-- > 0)
+  	    *text++ = ' ';
+  	if (menu->actext != NULL)
+  	{
+! 	    STRNCPY(text, menu->actext, acEnd - menu->actext);
+! 	    text += acEnd - menu->actext;
+  	}
+  	while (padding1-- > 0)
+  	    *text++ = ' ';
+--- 3203,3219 ----
+  	text = label = alloc((unsigned)len + 1);
+  	if (label == NULL)
+  	    break;
+! 
+! 	STRNCPY(text, menu->name, nameLen);
+! 	text = vim_strchr(text, TAB);	    /* stop at TAB before actext */
+! 	if (text == NULL)
+! 	    text = label + nameLen;	    /* no actext, use whole name */
+  	while (padding0-- > 0)
+  	    *text++ = ' ';
+  	if (menu->actext != NULL)
+  	{
+! 	    STRNCPY(text, menu->actext, acLen);
+! 	    text += acLen;
+  	}
+  	while (padding1-- > 0)
+  	    *text++ = ' ';
+***************
+*** 3221,3227 ****
+  		*text++ = ' ';
+  	}
+  	*text = NUL;
+- 	*end = NUL;
+  
+  	/*
+  	 * BS_LEFT will just be ignored on Win32s/NT3.5x - on
+--- 3228,3233 ----
+*** ../vim-6.2.266/src/menu.c	Sun Feb 15 13:33:50 2004
+--- src/menu.c	Sun Feb 15 22:06:06 2004
+***************
+*** 1596,1607 ****
+      }
+      else
+  	text = vim_strsave(str);
+!     if (text != NULL)
+      {
+! 	p = vim_strchr(text, '&');
+  	if (p != NULL)
+  	{
+! 	    if (mnemonic != NULL)
+  #if !defined(__MVS__) || defined(MOTIF390_MNEMONIC_FIXED)
+  		*mnemonic = p[1];
+  #else
+--- 1596,1611 ----
+      }
+      else
+  	text = vim_strsave(str);
+! 
+!     /* Find mnemonic characters "&a" and reduce "&&" to "&". */
+!     for (p = text; p != NULL; )
+      {
+! 	p = vim_strchr(p, '&');
+  	if (p != NULL)
+  	{
+! 	    if (p[1] == NUL)	    /* trailing "&" */
+! 		break;
+! 	    if (mnemonic != NULL && p[1] != '&')
+  #if !defined(__MVS__) || defined(MOTIF390_MNEMONIC_FIXED)
+  		*mnemonic = p[1];
+  #else
+***************
+*** 1618,1623 ****
+--- 1622,1628 ----
+  	    }
+  #endif
+  	    mch_memmove(p, p + 1, STRLEN(p));
++ 	    p = p + 1;
+  	}
+      }
+      return text;
+*** ../vim-6.2.266/src/version.c	Tue Feb 17 20:44:14 2004
+--- src/version.c	Tue Feb 17 21:01:21 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     267,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+170. You introduce your wife as "my_lady@home.wife" and refer to your
+     children as "forked processes."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

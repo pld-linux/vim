@@ -1,0 +1,62 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.270
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.270
+Problem:    Completion in Insert mode, then repeating with ".", doesn't handle
+	    composing characters in the completed text. (Raphael Finkel)
+Solution:   Don't skip over composing chars when adding completed text to the
+	    redo buffer.
+Files:	    src/getchar.c
+
+
+*** ../vim-6.2.269/src/getchar.c	Tue Feb 17 20:44:14 2004
+--- src/getchar.c	Tue Feb 17 17:47:22 2004
+***************
+*** 550,556 ****
+  	    /* Handle a special or multibyte character. */
+  #ifdef FEAT_MBYTE
+  	    if (has_mbyte)
+! 		c = mb_ptr2char_adv(&s);
+  	    else
+  #endif
+  		c = *s++;
+--- 550,563 ----
+  	    /* Handle a special or multibyte character. */
+  #ifdef FEAT_MBYTE
+  	    if (has_mbyte)
+! 	    {
+! 		c = (*mb_ptr2char)(s);
+! 		if (enc_utf8)
+! 		    /* Handle composing chars as well. */
+! 		    s += utf_ptr2len_check(s);
+! 		else
+! 		    s += (*mb_ptr2len_check)(s);
+! 	    }
+  	    else
+  #endif
+  		c = *s++;
+*** ../vim-6.2.269/src/version.c	Tue Feb 17 21:36:55 2004
+--- src/version.c	Tue Feb 17 21:46:03 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     270,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+173. You keep tracking down the email addresses of all your friends
+     (even childhood friends).
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///
