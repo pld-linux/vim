@@ -48,7 +48,6 @@ Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
 Patch3:		%{name}-ispell.patch
 Patch4:		%{name}-ispell-axp.patch
-#Patch5:		%{name}-ac25x.patch
 Patch5:		%{name}-vimrc.patch
 Patch6:		%{name}-no_libelf.patch
 Patch7:		%{name}-egrep.patch
