@@ -1,7 +1,7 @@
 #
 # Conditional build:
 # _without_static	- without static version
-# _without_athena	- without Athena Widgets-based gvim
+# _without_athena	- without Athena Widgets-based gvim. DOESN'T WORK.
 # _without_motif	- without Motif-based gvim
 # _without_gtk		- without gtk+-based gvim support
 # _without_gnome	- without gnome-based gvim support
