@@ -439,7 +439,7 @@ done
 
 %build
 cd src
-autoconf
+%{__autoconf}
 # needed to prevent deconfiguring
 cp -f configure auto
 
