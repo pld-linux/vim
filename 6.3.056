@@ -1,0 +1,73 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.056
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.056
+Problem:    The last characters of a multi-byte file name may not be displayed
+	    in the window title.
+Solution:   Avoid to remove a multi-byte character where the last byte looks
+	    like a path separator character. (Yasuhiro Matsumoto)
+Files:	    src/buffer.c, src/ex_getln.c
+
+
+*** ../vim-6.3.055/src/buffer.c	Sun Dec  5 16:18:46 2004
+--- src/buffer.c	Thu Dec 16 13:59:48 2004
+***************
+*** 2953,2959 ****
+  		}
+  		else
+  		{
+! 		    while (p > buf + off + 1 && vim_ispathsep(p[-1]))
+  			--p;
+  #ifdef VMS
+  		    /* path separator is part of the path */
+--- 2953,2964 ----
+  		}
+  		else
+  		{
+! 		    while (p > buf + off + 1 && vim_ispathsep(p[-1])
+! #ifdef FEAT_MBYTE
+! 			    && (!has_mbyte
+! 				     || (*mb_head_off)(buf + off, p - 1) == 0)
+! #endif
+! 			    )
+  			--p;
+  #ifdef VMS
+  		    /* path separator is part of the path */
+*** ../vim-6.3.055/src/ex_getln.c	Thu Jan 13 14:17:23 2005
+--- src/ex_getln.c	Thu Jan 13 14:22:02 2005
+***************
+*** 496,501 ****
+--- 496,505 ----
+  		i = (int)(xpc.xp_pattern - ccline.cmdbuff);
+  		while (--j > i)
+  		{
++ #ifdef FEAT_MBYTE
++ 		    if (has_mbyte)
++ 			j -= (*mb_head_off)(ccline.cmdbuff, ccline.cmdbuff + j);
++ #endif
+  		    if (vim_ispathsep(ccline.cmdbuff[j]))
+  		    {
+  			found = TRUE;
+*** ../vim-6.3.055/src/version.c	Thu Jan 13 14:17:23 2005
+--- src/version.c	Thu Jan 13 16:21:13 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     56,
+  /**/
+
+-- 
+Vim is like Emacs without all the typing.  (John "Johann" Spetz)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

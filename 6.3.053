@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.053
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.053
+Problem:    Win32: ":loadview" cannot find a file with non-ASCII characters.
+	    (Valerie Kondakoff)
+Solution:   Use mch_open() instead of open() to open the file.
+Files:	    src/ex_cmds2.c
+
+
+*** ../vim-6.3.052/src/ex_cmds2.c	Mon Jun 28 19:38:42 2004
+--- src/ex_cmds2.c	Thu Dec 23 17:14:25 2004
+***************
+*** 2112,2118 ****
+  fopen_noinh_readbin(filename)
+      char    *filename;
+  {
+!     int	fd_tmp = open(filename, O_RDONLY | O_BINARY | O_NOINHERIT);
+  
+      if (fd_tmp == -1)
+  	return NULL;
+--- 2112,2118 ----
+  fopen_noinh_readbin(filename)
+      char    *filename;
+  {
+!     int	fd_tmp = mch_open(filename, O_RDONLY | O_BINARY | O_NOINHERIT, 0);
+  
+      if (fd_tmp == -1)
+  	return NULL;
+*** ../vim-6.3.052/src/version.c	Thu Dec 16 14:26:44 2004
+--- src/version.c	Thu Dec 23 17:15:28 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     53,
+  /**/
+
+-- 
+The difference between theory and practice, is that in theory, there
+is no difference between theory and practice.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

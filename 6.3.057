@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.057
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.057
+Problem:    When filtering lines folds are not updated. (Carl Osterwisch)
+Solution:   Update folds for filtered lines.
+Files:	    src/ex_cmds.c
+
+
+*** ../vim-6.3.056/src/ex_cmds.c	Tue Jul  6 14:57:26 2004
+--- src/ex_cmds.c	Thu Jan 13 17:38:23 2005
+***************
+*** 905,910 ****
+--- 905,913 ----
+  	    curbuf->b_op_end.lnum -= linecount;		/* adjust '] */
+  	    write_lnum_adjust(-linecount);		/* adjust last line
+  							   for next write */
++ #ifdef FEAT_FOLDING
++ 	    foldUpdate(curwin, curbuf->b_op_start.lnum, curbuf->b_op_end.lnum);
++ #endif
+  	}
+  	else
+  	{
+*** ../vim-6.3.056/src/version.c	Thu Jan 13 16:25:02 2005
+--- src/version.c	Thu Jan 13 17:36:11 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     57,
+  /**/
+
+-- 
+WOMAN:   I didn't know we had a king. I thought we were an autonomous
+         collective.
+DENNIS:  You're fooling yourself.  We're living in a dictatorship.  A
+         self-perpetuating autocracy in which the working classes--
+WOMAN:   Oh there you go, bringing class into it again.
+DENNIS:  That's what it's all about if only people would--
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

@@ -1,0 +1,340 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.055
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.055 (after 6.3.013)
+Problem:    Can't use getcmdline(), getcmdpos() or setcmdpos() with <C-R>=
+	    when editing a command line.  Using <C-\>e may crash Vim. (Peter
+	    Winters)
+Solution:   When moving ccline out of the way for recursive use, make it
+	    available to the functions that need it.  Also save and restore
+	    ccline when calling get_expr_line().  Make ccline.cmdbuf NULL at
+	    the end of getcmdline().
+Files:	    src/ex_getln.c
+
+
+*** ../vim-6.3.054/src/ex_getln.c	Fri Oct 22 11:45:17 2004
+--- src/ex_getln.c	Thu Jan 13 14:06:56 2005
+***************
+*** 80,85 ****
+--- 80,87 ----
+  static void	alloc_cmdbuff __ARGS((int len));
+  static int	realloc_cmdbuff __ARGS((int len));
+  static void	draw_cmdline __ARGS((int start, int len));
++ static void	save_cmdline __ARGS((struct cmdline_info *ccp));
++ static void	restore_cmdline __ARGS((struct cmdline_info *ccp));
+  static int	cmdline_paste __ARGS((int regname, int literally));
+  #if defined(FEAT_XIM) && defined(FEAT_GUI_GTK)
+  static void	redrawcmd_preedit __ARGS((void));
+***************
+*** 589,596 ****
+  #ifdef FEAT_EVAL
+  	    else if (c == 'e')
+  	    {
+! 		struct cmdline_info	    save_ccline;
+! 		char_u		    *p;
+  
+  		/*
+  		 * Replace the command line with the result of an expression.
+--- 591,598 ----
+  #ifdef FEAT_EVAL
+  	    else if (c == 'e')
+  	    {
+! 		struct cmdline_info save_ccline;
+! 		char_u		    *p = NULL;
+  
+  		/*
+  		 * Replace the command line with the result of an expression.
+***************
+*** 601,614 ****
+  		    new_cmdpos = 99999;	/* keep it at the end */
+  		else
+  		    new_cmdpos = ccline.cmdpos;
+! 		save_ccline = ccline;
+! 		ccline.cmdbuff = NULL;
+! 		ccline.cmdprompt = NULL;
+  		c = get_expr_register();
+! 		ccline = save_ccline;
+  		if (c == '=')
+  		{
+  		    p = get_expr_line();
+  		    if (p != NULL
+  			     && realloc_cmdbuff((int)STRLEN(p) + 1) == OK)
+  		    {
+--- 603,618 ----
+  		    new_cmdpos = 99999;	/* keep it at the end */
+  		else
+  		    new_cmdpos = ccline.cmdpos;
+! 
+! 		save_cmdline(&save_ccline);
+  		c = get_expr_register();
+! 		restore_cmdline(&save_ccline);
+  		if (c == '=')
+  		{
++ 		    save_cmdline(&save_ccline);
+  		    p = get_expr_line();
++ 		    restore_cmdline(&save_ccline);
++ 
+  		    if (p != NULL
+  			     && realloc_cmdbuff((int)STRLEN(p) + 1) == OK)
+  		    {
+***************
+*** 1027,1037 ****
+  		    }
+  		    else
+  		    {
+! 			save_ccline = ccline;
+! 			ccline.cmdbuff = NULL;
+! 			ccline.cmdprompt = NULL;
+  			c = get_expr_register();
+! 			ccline = save_ccline;
+  		    }
+  		}
+  #endif
+--- 1031,1039 ----
+  		    }
+  		    else
+  		    {
+! 			save_cmdline(&save_ccline);
+  			c = get_expr_register();
+! 			restore_cmdline(&save_ccline);
+  		    }
+  		}
+  #endif
+***************
+*** 1723,1729 ****
+      ui_cursor_shape();		/* may show different cursor shape */
+  #endif
+  
+!     return ccline.cmdbuff;
+  }
+  
+  #if (defined(FEAT_CRYPT) || defined(FEAT_EVAL)) || defined(PROTO)
+--- 1725,1737 ----
+      ui_cursor_shape();		/* may show different cursor shape */
+  #endif
+  
+!     {
+! 	char_u *p = ccline.cmdbuff;
+! 
+! 	/* Make ccline empty, getcmdline() may try to use it. */
+! 	ccline.cmdbuff = NULL;
+! 	return p;
+!     }
+  }
+  
+  #if (defined(FEAT_CRYPT) || defined(FEAT_EVAL)) || defined(PROTO)
+***************
+*** 1743,1754 ****
+      struct cmdline_info	save_ccline;
+      int			msg_col_save = msg_col;
+  
+!     save_ccline = ccline;
+!     ccline.cmdbuff = NULL;
+      ccline.cmdprompt = prompt;
+      ccline.cmdattr = attr;
+      s = getcmdline(firstc, 1L, 0);
+!     ccline = save_ccline;
+      /* Restore msg_col, the prompt from input() may have changed it. */
+      msg_col = msg_col_save;
+  
+--- 1751,1761 ----
+      struct cmdline_info	save_ccline;
+      int			msg_col_save = msg_col;
+  
+!     save_cmdline(&save_ccline);
+      ccline.cmdprompt = prompt;
+      ccline.cmdattr = attr;
+      s = getcmdline(firstc, 1L, 0);
+!     restore_cmdline(&save_ccline);
+      /* Restore msg_col, the prompt from input() may have changed it. */
+      msg_col = msg_col_save;
+  
+***************
+*** 2537,2542 ****
+--- 2544,2583 ----
+      return retval;
+  }
+  
++ static struct cmdline_info  prev_ccline;
++ static int		    prev_ccline_used = FALSE;
++ 
++ /*
++  * Save ccline, because obtaining the "=" register may execute "normal :cmd"
++  * and overwrite it.  But get_cmdline_str() may need it, thus make it
++  * available globally in prev_ccline.
++  */
++     static void
++ save_cmdline(ccp)
++     struct cmdline_info *ccp;
++ {
++     if (!prev_ccline_used)
++     {
++ 	vim_memset(&prev_ccline, 0, sizeof(struct cmdline_info));
++ 	prev_ccline_used = TRUE;
++     }
++     *ccp = prev_ccline;
++     prev_ccline = ccline;
++     ccline.cmdbuff = NULL;
++     ccline.cmdprompt = NULL;
++ }
++ 
++ /*
++  * Resture ccline after it has been saved with save_cmdline().
++  */
++     static void
++ restore_cmdline(ccp)
++     struct cmdline_info *ccp;
++ {
++     ccline = prev_ccline;
++     prev_ccline = *ccp;
++ }
++ 
+  /*
+   * paste a yank register into the command line.
+   * used by CTRL-R command in command-line mode
+***************
+*** 2571,2583 ****
+      regname = may_get_selection(regname);
+  #endif
+  
+!     /* Need to save and restore ccline, because obtaining the "=" register may
+!      * execute "normal :cmd" and overwrite it. */
+!     save_ccline = ccline;
+!     ccline.cmdbuff = NULL;
+!     ccline.cmdprompt = NULL;
+      i = get_spec_reg(regname, &arg, &allocated, TRUE);
+!     ccline = save_ccline;
+  
+      if (i)
+      {
+--- 2612,2621 ----
+      regname = may_get_selection(regname);
+  #endif
+  
+!     /* Need to save and restore ccline. */
+!     save_cmdline(&save_ccline);
+      i = get_spec_reg(regname, &arg, &allocated, TRUE);
+!     restore_cmdline(&save_ccline);
+  
+      if (i)
+      {
+***************
+*** 4541,4546 ****
+--- 4579,4602 ----
+      return history[histype][hisidx[histype]].hisnum;
+  }
+  
++ static struct cmdline_info *get_ccline_ptr __ARGS((void));
++ 
++ /*
++  * Get pointer to the command line info to use. cmdline_paste() may clear
++  * ccline and put the previous value in prev_ccline.
++  */
++     static struct cmdline_info *
++ get_ccline_ptr()
++ {
++     if ((State & CMDLINE) == 0)
++ 	return NULL;
++     if (ccline.cmdbuff != NULL)
++ 	return &ccline;
++     if (prev_ccline_used && prev_ccline.cmdbuff != NULL)
++ 	return &prev_ccline;
++     return NULL;
++ }
++ 
+  /*
+   * Get the current command line in allocated memory.
+   * Only works when the command line is being edited.
+***************
+*** 4549,4557 ****
+      char_u *
+  get_cmdline_str()
+  {
+!     if (ccline.cmdbuff == NULL || (State & CMDLINE) == 0)
+  	return NULL;
+!     return vim_strnsave(ccline.cmdbuff, ccline.cmdlen);
+  }
+  
+  /*
+--- 4605,4615 ----
+      char_u *
+  get_cmdline_str()
+  {
+!     struct cmdline_info *p = get_ccline_ptr();
+! 
+!     if (p == NULL)
+  	return NULL;
+!     return vim_strnsave(p->cmdbuff, p->cmdlen);
+  }
+  
+  /*
+***************
+*** 4563,4571 ****
+      int
+  get_cmdline_pos()
+  {
+!     if (ccline.cmdbuff == NULL || (State & CMDLINE) == 0)
+  	return -1;
+!     return ccline.cmdpos;
+  }
+  
+  /*
+--- 4621,4631 ----
+      int
+  get_cmdline_pos()
+  {
+!     struct cmdline_info *p = get_ccline_ptr();
+! 
+!     if (p == NULL)
+  	return -1;
+!     return p->cmdpos;
+  }
+  
+  /*
+***************
+*** 4577,4583 ****
+  set_cmdline_pos(pos)
+      int		pos;
+  {
+!     if (ccline.cmdbuff == NULL || (State & CMDLINE) == 0)
+  	return 1;
+  
+      /* The position is not set directly but after CTRL-\ e or CTRL-R = has
+--- 4637,4645 ----
+  set_cmdline_pos(pos)
+      int		pos;
+  {
+!     struct cmdline_info *p = get_ccline_ptr();
+! 
+!     if (p == NULL)
+  	return 1;
+  
+      /* The position is not set directly but after CTRL-\ e or CTRL-R = has
+*** ../vim-6.3.054/src/version.c	Wed Jan  5 11:17:36 2005
+--- src/version.c	Thu Jan 13 14:08:12 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     55,
+  /**/
+
+-- 
+ARTHUR:  Well, I AM king...
+DENNIS:  Oh king, eh, very nice.  An' how'd you get that, eh?  By exploitin'
+         the workers -- by 'angin' on to outdated imperialist dogma which
+         perpetuates the economic an' social differences in our society!  If
+         there's ever going to be any progress--
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

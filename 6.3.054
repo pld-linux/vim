@@ -1,0 +1,62 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.054
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.054
+Problem:    When 'insertmode' is set <C-L>4ixxx<C-L> hangs Vim. (Jens Paulus)
+	    Vim is actually still working but redraw is disabled.
+Solution:   When stopping Insert mode with CTRL-L don't put an Esc in the redo
+	    buffer but a CTRL-L.
+Files:	    src/edit.c
+
+
+*** ../vim-6.3.053/src/edit.c	Wed Jun  9 14:56:28 2004
+--- src/edit.c	Wed Jan  5 11:13:14 2005
+***************
+*** 6048,6056 ****
+      {
+  	/*
+  	 * Don't append the ESC for "r<CR>" and "grx".
+  	 */
+  	if (cmdchar != 'r' && cmdchar != 'v')
+! 	    AppendToRedobuff(ESC_STR);
+  
+  	/*
+  	 * Repeating insert may take a long time.  Check for
+--- 6048,6058 ----
+      {
+  	/*
+  	 * Don't append the ESC for "r<CR>" and "grx".
++ 	 * When 'insertmode' is set only CTRL-L stops Insert mode.  Needed for
++ 	 * when "count" is non-zero.
+  	 */
+  	if (cmdchar != 'r' && cmdchar != 'v')
+! 	    AppendToRedobuff(p_im ? (char_u *)"\014" : ESC_STR);
+  
+  	/*
+  	 * Repeating insert may take a long time.  Check for
+*** ../vim-6.3.053/src/version.c	Thu Dec 23 17:17:02 2004
+--- src/version.c	Wed Jan  5 11:16:24 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     54,
+  /**/
+
+-- 
+"The amigos also appear to be guilty of not citing the work of others who had
+gone before them.  Even worse, they have a chapter about modeling time and
+space without making a single reference to Star Trek!"
+			(Scott Ambler, reviewing the UML User Guide)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
