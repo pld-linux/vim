@@ -1,0 +1,96 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.523
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.523
+Problem:    When loading a session and aborting when a swap file already
+	    exists, the user is left with useless windows. (Robert Webb)
+Solution:   Load one file before creating the windows.
+Files:	    src/ex_docmd.c
+
+
+*** ../vim-6.2.522/src/ex_docmd.c	Fri Apr 23 12:02:42 2004
+--- src/ex_docmd.c	Thu Apr 29 13:45:57 2004
+***************
+*** 8569,8574 ****
+--- 8567,8573 ----
+      int		restore_size = TRUE;
+      win_T	*wp;
+      char_u	*sname;
++     win_T	*edited_win = NULL;
+  
+      if (ssop_flags & SSOP_BUFFERS)
+  	only_save_windows = FALSE;		/* Save ALL buffers */
+***************
+*** 8657,8662 ****
+--- 8656,8684 ----
+  #endif
+  
+      /*
++      * Before creating the window layout, try loading one file.  If this is
++      * aborted we don't end up with a number of useless windows.
++      * This may have side effects! (e.g., compressed or network file).
++      */
++     for (wp = firstwin; wp != NULL; wp = wp->w_next)
++     {
++ 	if (ses_do_win(wp)
++ 		&& wp->w_buffer->b_ffname != NULL
++ 		&& !wp->w_buffer->b_help
++ #ifdef FEAT_QUICKFIX
++ 		&& !bt_nofile(wp->w_buffer)
++ #endif
++ 		)
++ 	{
++ 	    if (fputs("edit ", fd) < 0
++ 		    || ses_fname(fd, wp->w_buffer, &ssop_flags) == FAIL)
++ 		return FAIL;
++ 	    edited_win = wp;
++ 	    break;
++ 	}
++     }
++ 
++     /*
+       * Save current window layout.
+       */
+      if (put_line(fd, "set splitbelow splitright") == FAIL)
+***************
+*** 8702,8708 ****
+      {
+  	if (!ses_do_win(wp))
+  	    continue;
+! 	if (put_view(fd, wp, TRUE, &ssop_flags) == FAIL)
+  	    return FAIL;
+  	if (nr > 1 && put_line(fd, "wincmd w") == FAIL)
+  	    return FAIL;
+--- 8724,8730 ----
+      {
+  	if (!ses_do_win(wp))
+  	    continue;
+! 	if (put_view(fd, wp, wp != edited_win, &ssop_flags) == FAIL)
+  	    return FAIL;
+  	if (nr > 1 && put_line(fd, "wincmd w") == FAIL)
+  	    return FAIL;
+*** ../vim-6.2.522/src/version.c	Mon May  3 21:26:46 2004
+--- src/version.c	Mon May  3 21:28:08 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     523,
+  /**/
+
+-- 
+I AM THANKFUL...
+...for all the complaining I hear about the government
+because it means we have freedom of speech.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,65 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.518
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.518
+Problem:    Last line of a window is not updated after using "J" and then "D".
+	    (Adri Verhoef)
+Solution:   When no line is found below a change that doesn't need updating,
+	    update all lines below the change.
+Files:	    src/screen.c
+
+
+*** ../vim-6.2.517/src/screen.c	Thu Apr 29 16:36:50 2004
+--- src/screen.c	Sat May  1 14:13:00 2004
+***************
+*** 1484,1498 ****
+  
+  		if (i >= wp->w_lines_valid)
+  		{
+! 		    /* When buffer lines have been inserted/deleted, and
+! 		     * insering/deleting window lines is not possible, need to
+! 		     * check for redraw until the end of the window.  This is
+! 		     * also required when w_topline changed. */
+! 		    if (buf->b_mod_xlines != 0
+! 			    || (wp->w_topline == mod_top
+! 				&& wp->w_lines_valid > 0
+! 				&& wp->w_lines[0].wl_lnum != mod_top))
+! 			bot_start = 0;
+  		}
+  		else
+  		{
+--- 1484,1493 ----
+  
+  		if (i >= wp->w_lines_valid)
+  		{
+! 		    /* We can't find a valid line below the changed lines,
+! 		     * need to redraw until the end of the window.
+! 		     * Inserting/deleting lines has no use. */
+! 		    bot_start = 0;
+  		}
+  		else
+  		{
+*** ../vim-6.2.517/src/version.c	Fri Apr 30 19:42:02 2004
+--- src/version.c	Sat May  1 14:17:27 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     518,
+  /**/
+
+-- 
+From "know your smileys":
+ :^[/   mean-smiley-with-cigarette
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,44 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.530
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.530
+Problem:    Warning for missing prototype on the Amiga.
+Solution:   Include time.h
+Files:	    src/version.c
+
+
+*** ../vim-6.2.529/src/version.c	Wed May  5 11:54:50 2004
+--- src/version.c	Wed May  5 11:56:11 2004
+***************
+*** 10,13 ****
+--- 10,17 ----
+  #include "vim.h"
+  
++ #ifdef AMIGA
++ # include <time.h>	/* for time() */
++ #endif
++ 
+  /*
+   * Vim originated from Stevie version 3.6 (Fish disk 217) by GRWalter (Fred)
+***************
+*** 639,640 ****
+--- 642,645 ----
+  {   /* Add new patch number below this line */
++ /**/
++     530,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+114. You are counting items, you go "0,1,2,3,4,5,6,7,8,9,A,B,C,D...".
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

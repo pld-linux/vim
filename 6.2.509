@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.509
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.509 (after 6.2.508)
+Problem:    Crash when $LANG is not set.
+Solution:   Add check for NULL pointer. (Ron Aaron)
+Files:	    src/ex_cmds2.c
+
+
+*** ../vim-6.2.508/src/ex_cmds2.c	Tue Apr 27 22:27:24 2004
+--- src/ex_cmds2.c	Wed Apr 28 10:12:39 2004
+***************
+*** 5510,5517 ****
+  	if (p == NULL || *p == NUL)
+  	{
+  	    p = mch_getenv((char_u *)"LANG");
+! 	    if (VIM_ISDIGIT(*p))	/* ignore something like "1043" */
+! 		p = NULL;
+  # if defined(HAVE_LOCALE_H) || defined(X_LOCALE)
+  	    if (p == NULL || *p == NUL)
+  		p = (char_u *)get_locale_val(LC_CTYPE);
+--- 5510,5517 ----
+  	if (p == NULL || *p == NUL)
+  	{
+  	    p = mch_getenv((char_u *)"LANG");
+! 	    if (p != NULL && VIM_ISDIGIT(*p))
+! 		p = NULL;		/* ignore something like "1043" */
+  # if defined(HAVE_LOCALE_H) || defined(X_LOCALE)
+  	    if (p == NULL || *p == NUL)
+  		p = (char_u *)get_locale_val(LC_CTYPE);
+*** ../vim-6.2.508/src/version.c	Tue Apr 27 22:27:24 2004
+--- src/version.c	Wed Apr 28 12:01:15 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     509,
+  /**/
+
+-- 
+Don't read everything you believe.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
