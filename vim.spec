@@ -129,7 +129,7 @@ z wykorzystaniem gtk.
 cd src
 
 CFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-static -s" \
-./configure \
+./configure %{_target} \
 	--disable-gui \
 	--without-x \
 	--disable-perlinterp \
@@ -148,7 +148,7 @@ mv xxd/xxd xxd.static
 
 make distclean
 LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
-./configure \
+./configure %{_target} \
 	--enable-max-features \
 	--disable-gui \
 	--without-x \
@@ -164,7 +164,7 @@ mv vim vim.ncurses
 
 make distclean
 LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
-./configure \
+./configure %{_target} \
         --enable-max-features \
 	--enable-gui=athena \
 	--with-x \
@@ -180,7 +180,7 @@ mv vim vim.athena
 
 make distclean
 LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
-./configure \
+./configure %{_target} \
         --enable-max-features \
 	--enable-gui=motif \
 	--with-x \
@@ -196,7 +196,7 @@ mv vim vim.lesstif
 
 make distclean
 LDFLAGS="-s" CFLAGS="$RPM_OPT_FLAGS" \
-./configure \
+./configure %{_target} \
         --enable-max-features \
 	--enable-gui=gtk \
 	--with-x \
