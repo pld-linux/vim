@@ -470,7 +470,6 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch7 -p1
 %patch8 -p1
 
-
 %build
 cd src
 %{__autoconf}
@@ -672,7 +671,6 @@ echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rview.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rvim.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
-
 
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
