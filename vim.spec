@@ -27,7 +27,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -60,6 +60,7 @@ Patch11:	%{name}-bonobo.patch
 Patch12:	%{name}-home_etc.patch
 #Patch12:	%{name}-dynamic_python.patch
 Patch13:	%{name}-selinux.patch
+Patch14:	%{name}-specsyntax4.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001-100.gz
@@ -585,6 +586,7 @@ element bonobo.
 %{?with_bonobo:%patch11 -p1}
 %patch12 -p1
 %{?with_selinux:%patch13 -p1}
+%patch14 -p1
 
 %build
 cd src
