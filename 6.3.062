@@ -1,0 +1,78 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.062
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.062
+Problem:    ":normal! gQ" hangs.
+Solution:   Quit getcmdline() and do_exmode() when out of typeahead.
+Files:	    src/ex_getln.c, src/ex_docmd.c
+
+
+*** ../vim-6.3.049/src/ex_getln.c	Thu Jan 13 16:25:02 2005
+--- src/ex_getln.c	Sun Feb 13 20:35:24 2005
+***************
+*** 997,1004 ****
+  
+  	case ESC:	/* get here if p_wc != ESC or when ESC typed twice */
+  	case Ctrl_C:
+! 		/* In exmode it doesn't make sense to return. */
+! 		if (exmode_active)
+  		    goto cmdline_not_changed;
+  
+  		gotesc = TRUE;		/* will free ccline.cmdbuff after
+--- 997,1009 ----
+  
+  	case ESC:	/* get here if p_wc != ESC or when ESC typed twice */
+  	case Ctrl_C:
+! 		/* In exmode it doesn't make sense to return. Except when
+! 		 * ":normal" runs out of characters. */
+! 		if (exmode_active
+! #ifdef FEAT_EX_EXTRA
+! 			&& (ex_normal_busy == 0 || typebuf.tb_len > 0)
+! #endif
+! 		   )
+  		    goto cmdline_not_changed;
+  
+  		gotesc = TRUE;		/* will free ccline.cmdbuff after
+*** ../vim-6.3.049/src/ex_docmd.c	Sun Dec  5 16:18:46 2004
+--- src/ex_docmd.c	Sun Feb 13 20:39:37 2005
+***************
+*** 525,530 ****
+--- 525,538 ----
+      MSG(_("Entering Ex mode.  Type \"visual\" to go to Normal mode."));
+      while (exmode_active)
+      {
++ #ifdef FEAT_EX_EXTRA
++ 	/* Check for a ":normal" command and no more characters left. */
++ 	if (ex_normal_busy > 0 && typebuf.tb_len == 0)
++ 	{
++ 	    exmode_active = FALSE;
++ 	    break;
++ 	}
++ #endif
+  	msg_scroll = TRUE;
+  	need_wait_return = FALSE;
+  	ex_pressedreturn = FALSE;
+*** ../vim-6.3.049/src/version.c	Sat Jan 29 16:25:36 2005
+--- src/version.c	Sun Feb 13 20:45:33 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     62,
+  /**/
+
+-- 
+I AM THANKFUL...
+...for the taxes that I pay because it means that I am employed.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
