@@ -208,6 +208,9 @@ Requires:	%{name}-rt = %{epoch}:%{version}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+# that's example script
+%define		_noautoreq	'/bin/csh'
+
 %description
 Text editor similar to Vi. Important improvements: multiple windows,
 multi-level undo, block highliting, folding, and many other.
