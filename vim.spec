@@ -31,7 +31,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -1012,6 +1012,8 @@ install -m755 src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 unzip -d $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE6}
 
+install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{after/,}{syntax,ftdetect,plugin}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -1080,6 +1082,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/keymap
 %dir %{_datadir}/vim/v*/lang
 %doc %{_datadir}/vim/v*/lang/README*
+
+%{_datadir}/vim/vimfiles
 
 %lang(af) %{_datadir}/vim/v*/lang/af
 %lang(en_GB) %{_datadir}/vim/v*/lang/en_GB
