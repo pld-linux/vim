@@ -5,6 +5,7 @@
 # _without_motif	- without Motif-based gvim
 # _without_gtk		- without gtk+-based gvim support
 # _without_gnome	- without gnome-based gvim support
+# _with_gtk1		- use gtk+ 1.2 and GNOME 1.x instead of 2.x
 # _with_perl		- with perl interp
 # _with_python		- with python interp
 # _with_ruby		- with ruby interp
