@@ -54,6 +54,8 @@ Source13:	g%{name}-gnome.desktop
 Source14:	%{name}.desktop
 # http://www.vim.org/scripts/script.php?script_id=1120
 Source15:	php.vim
+# http://www.vim.org/scripts/script.php?script_id=415 (1.13)
+Source16:	zenburn.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -656,6 +658,7 @@ element bonobo.
 %patch19 -p0 -b .modprobe
 
 install %{SOURCE15} runtime/indent
+install %{SOURCE16} runtime/colors
 
 %build
 cd src
