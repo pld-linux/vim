@@ -1,0 +1,4 @@
+- fixed optwin.vim path
+- fixed MAKEEF - only one file can be placed here
+- s/no_feature/_without_feature/
+- release 13
