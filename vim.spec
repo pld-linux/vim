@@ -31,7 +31,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	1.1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -180,6 +180,10 @@ BuildRequires:	ncurses-static
 %else
 Provides:	%{name}-static = %{epoch}:%{version}-%{release}
 Obsoletes:	%{name}-static
+Obsoletes:	elvis-static
+Obsoletes:	nvi
+Obsoletes:	vi
+Obsoletes:	vim-minimal
 %endif
 BuildRequires:	unzip
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
