@@ -1035,13 +1035,14 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim
 %dir %{_datadir}/vim/v*
 %dir %{_datadir}/vim/v*/doc
-%{_datadir}/vim/v*/doc/*
+%doc %{_datadir}/vim/v*/doc/*.txt
+%attr(755,root,root) %{_datadir}/vim/v*/doc/*.pl
 %verify(not size mtime md5) %{_datadir}/vim/v*/doc/tags
 %{_datadir}/vim/v*/ftplugin
 %{_datadir}/vim/v*/indent
 %{_datadir}/vim/v*/keymap
 %dir %{_datadir}/vim/v*/lang
-%{_datadir}/vim/v*/lang/README*
+%doc %{_datadir}/vim/v*/lang/README*
 
 %lang(af) %{_datadir}/vim/v*/lang/af
 %lang(en_GB) %{_datadir}/vim/v*/lang/en_gb
