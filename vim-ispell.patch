@@ -1007,7 +1007,7 @@ diff -Nur vim61.orig/src/spell/config.h vim61/src/spell/config.h
 +** character counts as two!
 +*/
 +#ifndef MAXSTRINGCHARS
-+#define MAXSTRINGCHARS 100
++#define MAXSTRINGCHARS 512
 +#endif /* MAXSTRINGCHARS */
 +
 +/*
@@ -1946,7 +1946,7 @@ diff -Nur vim61.orig/src/spell/i_proto.h vim61/src/spell/i_proto.h
 diff -Nur vim61.orig/src/spell/ispell.h vim61/src/spell/ispell.h
 --- vim61.orig/src/spell/ispell.h	Thu Jan  1 01:00:00 1970
 +++ vim61/src/spell/ispell.h	Wed Mar 27 15:08:08 2002
-@@ -0,0 +1,619 @@
+@@ -0,0 +1,611 @@
 +/*
 + * $Id$
 + */
@@ -2311,16 +2311,8 @@ diff -Nur vim61.orig/src/spell/ispell.h vim61/src/spell/ispell.h
 +#define SPELL_MAGIC			0x9602
 +
 +/* compile options, put in the hash header for consistency checking */
-+#ifdef NO8BIT
-+# define MAGIC8BIT		0x01
-+#else
-+# define MAGIC8BIT		0x00
-+#endif
-+#ifdef NO_CAPITALIZATION_SUPPORT
-+# define MAGICCAPITALIZATION	0x00
-+#else
-+# define MAGICCAPITALIZATION	0x02
-+#endif
++# define MAGICNOTUSED1		0x01
++# define MAGICNOTUSED2		0x02
 +#if MASKBITS <= 32
 +# define MAGICMASKSET		0x00
 +#else
@@ -2335,7 +2327,7 @@ diff -Nur vim61.orig/src/spell/ispell.h vim61/src/spell/ispell.h
 +# endif
 +#endif
 +
-+#define COMPILEOPTIONS	(MAGIC8BIT | MAGICCAPITALIZATION | MAGICMASKSET)
++#define COMPILEOPTIONS	(MAGICNOTUSED1 | MAGICNOTUSED2 | MAGICMASKSET)
 +
 +/*
 + * Structure used to record data about successful lookups; these values
