@@ -97,7 +97,7 @@
 +  
 +#ifdef HAVE_SELINUX
 +  if (selinux_enabled == -1)
-+    selinux_enabled = is_selinux_enabled ();
++    selinux_enabled = (is_selinux_enabled () > 0);
 +
 +  if (selinux_enabled)
 +    {
