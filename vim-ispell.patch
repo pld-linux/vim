@@ -133,18 +133,18 @@ diff -Nur vim60am.old/src/edit.c vim60am/src/edit.c
  
  	case Ctrl_Y:		/* copy from previous line or scroll down */
  	case Ctrl_E:		/* copy from next line	   or scroll up */
-diff -Nur vim60am.old/src/ex_cmds.h vim60am/src/ex_cmds.h
---- vim60am.old/src/ex_cmds.h	Wed Jul  4 20:42:09 2001
-+++ vim60am/src/ex_cmds.h	Tue Jul  3 18:49:12 2001
+diff -ur vim60/src/ex_cmds.h vim60-/src/ex_cmds.h
+--- vim60/src/ex_cmds.h	Sat Sep  8 20:20:22 2001
++++ vim60-/src/ex_cmds.h	Sun Feb 17 21:06:53 2002
 @@ -700,6 +700,8 @@
- 			RANGE|WHOLEFOLD|EXTRA|CMDWIN|MODIFY),
- EX(CMD_source,		"source",	ex_source,
  			BANG|FILE1|TRLBAR|SBOXOK|CMDWIN),
-+EX(CMD_spell,		"spell",	ex_spell,
-+			EXTRA|NOTRLCOM|CMDWIN),
  EX(CMD_split,		"split",	ex_splitview,
  			BANG|FILE1|RANGE|NOTADR|EDITCMD|ARGOPT|TRLBAR),
++EX(CMD_spell,		"spell",	ex_spell,
++			EXTRA|NOTRLCOM|CMDWIN),
  EX(CMD_sprevious,	"sprevious",	ex_previous,
+ 			EXTRA|RANGE|NOTADR|COUNT|BANG|EDITCMD|ARGOPT|TRLBAR),
+ EX(CMD_srewind,		"srewind",	ex_rewind,
 diff -Nur vim60am.old/src/ex_docmd.c vim60am/src/ex_docmd.c
 --- vim60am.old/src/ex_docmd.c	Wed Jul  4 20:42:09 2001
 +++ vim60am/src/ex_docmd.c	Tue Jul  3 18:47:38 2001
@@ -461,22 +461,24 @@ diff -Nur vim60am.old/src/screen.c vim60am/src/screen.c
  	    else
  		char_attr = search_attr;
  
-@@ -3238,6 +3258,15 @@
- 
- 		    if (area_attr == 0 && search_attr == 0)
+@@ -3320,6 +3340,17 @@
  			char_attr = syntax_attr;
-+		}
-+#endif
-+#ifdef FEAT_SPELL_HL
-+ 	       if (spell_flag)
-+		{
-+		    v = ptr - line;
-+ 		    spell_attr = get_spell_attr((colnr_T)v - 1, col, ml_get_buf(wp->w_buffer, lnum, FALSE));
-+ 		if (!area_attr && !char_attr)
-+ 		    char_attr = spell_attr;
  		}
  #endif
++#ifdef FEAT_SPELL_HL
++		if (spell_flag)
++		{
++		    v = ptr - line;
++ 		    spell_attr = get_spell_attr((colnr_T)v - 1, col, 
++					        ml_get_buf(wp->w_buffer, 
++							   lnum, FALSE));
++		    if (area_attr == 0 && search_attr == 0 && spell_attr)
++			char_attr = spell_attr;
++		}
++#endif
  #ifdef FEAT_LINEBREAK
+ 		/*
+ 		 * Found last space before word: check for line break
 diff -Nur vim60am.old/src/spell/config.h vim60am/src/spell/config.h
 --- vim60am.old/src/spell/config.h	Thu Jan  1 01:00:00 1970
 +++ vim60am/src/spell/config.h	Wed Jun 27 19:16:50 2001
