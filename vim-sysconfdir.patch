@@ -21,7 +21,7 @@ diff -Nru vim-5.7/src/feature.h vim-5.7.new/src/feature.h
   * SYS_MENU_FILE	Name of the default menu.vim file.
   */
 -/* # define SYS_MENU_FILE	"$VIMRUNTIME/menu.vim" */
-+#define SYS_MENU_FILE	"/etc/vim/menu.vim"
++/* # define SYS_MENU_FILE	"$VIMRUNTIME/menu.vim" */
  
  /*
   * SYS_OPTWIN_FILE	Name of the default optwin.vim file.
