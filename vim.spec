@@ -28,8 +28,12 @@ Summary(ru):	Visual editor IMproved - Единственно Правильный Редактор :)
 Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
+%if %{_patchlevel}
 Version:	%{_ver}.%{_patchlevel}
-Release:	0.0.1
+%else
+Version:        %{_ver}
+%endif
+Release:	0.1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -55,7 +59,6 @@ Patch4:		%{name}-ispell-axp.patch
 Patch5:		%{name}-%{name}rc.patch
 Patch6:		%{name}-no_libelf.patch
 Patch7:		%{name}-egrep.patch
-Patch8:		%{name}-spec-fix.patch
 Patch9:		%{name}-specsyntax.patch
 Patch10:	%{name}-specsyntax-pld.patch
 Patch11:	%{name}-bonobo.patch
@@ -505,14 +508,13 @@ element bonobo.
 %{?with_bonobo:%patch99 -p1}
 %patch1 -p1
 %patch2 -p1
-#%patch3 -p1
+%patch3 -p1
 %ifarch alpha
 %patch4 -p1
 %endif
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-#%patch8 -p1
 %patch9 -p1
 %patch10 -p1
 %{?with_bonobo:%patch11 -p1}
@@ -958,25 +960,37 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW*
 
-%lang(af) %{_datadir}/vim/v*/lang/menu_af_af*
-%lang(cs) %{_datadir}/vim/v*/lang/menu_cs_cz*
-%lang(de) %{_datadir}/vim/v*/lang/menu_de_de*
-%lang(es) %{_datadir}/vim/v*/lang/menu_es_es*
+%lang(af) %{_datadir}/vim/v*/lang/menu_af*
+%lang(ca) %{_datadir}/vim/v*/lang/menu_ca*
+%lang(cs) %{_datadir}/vim/v*/lang/menu_cs*
+%lang(cs) %{_datadir}/vim/v*/lang/menu_*czech*
+%lang(de) %{_datadir}/vim/v*/lang/menu_de*
+%lang(de) %{_datadir}/vim/v*/lang/menu_*german*
+%lang(es) %{_datadir}/vim/v*/lang/menu_es*
+%lang(es) %{_datadir}/vim/v*/lang/menu_*spanish*
 %lang(en_GB) %{_datadir}/vim/v*/lang/menu_en_gb*
-%lang(fr) %{_datadir}/vim/v*/lang/menu_fr_fr*
-%lang(hu) %{_datadir}/vim/v*/lang/menu_hu_hu*
-%lang(it) %{_datadir}/vim/v*/lang/menu_it_it*
-%lang(ja) %{_datadir}/vim/v*/lang/menu_ja_jp*
-%lang(ko) %{_datadir}/vim/v*/lang/menu_ko_kr*
-%lang(nl) %{_datadir}/vim/v*/lang/menu_nl_nl*
-%lang(nb) %{_datadir}/vim/v*/lang/menu_no_no*
-%lang(pl) %{_datadir}/vim/v*/lang/menu_pl_pl*
-%lang(pt) %{_datadir}/vim/v*/lang/menu_pt_br*
-%lang(sk) %{_datadir}/vim/v*/lang/menu_sk_sk*
-%lang(sr) %{_datadir}/vim/v*/lang/menu_sr_yu*
-%lang(uk) %{_datadir}/vim/v*/lang/menu_uk_ua*
+%lang(en_GB) %{_datadir}/vim/v*/lang/menu_*english*
+%lang(fr) %{_datadir}/vim/v*/lang/menu_fr*
+%lang(hu) %{_datadir}/vim/v*/lang/menu_hu*
+%lang(it) %{_datadir}/vim/v*/lang/menu_it*
+%lang(ja) %{_datadir}/vim/v*/lang/menu_ja*
+%lang(ko) %{_datadir}/vim/v*/lang/menu_ko*
+%lang(nl) %{_datadir}/vim/v*/lang/menu_nl*
+%lang(nb) %{_datadir}/vim/v*/lang/menu_no*
+%lang(pl) %{_datadir}/vim/v*/lang/menu_pl*
+%lang(pl) %{_datadir}/vim/v*/lang/menu_*polish*
+%lang(pt) %{_datadir}/vim/v*/lang/menu_pt*
+%lang(ru) %{_datadir}/vim/v*/lang/menu_ru*
+%lang(sk) %{_datadir}/vim/v*/lang/menu_sk*
+%lang(sk) %{_datadir}/vim/v*/lang/menu_*slovak*
+%lang(sr) %{_datadir}/vim/v*/lang/menu_sr*
+%lang(sv) %{_datadir}/vim/v*/lang/menu_sv*
+%lang(uk) %{_datadir}/vim/v*/lang/menu_uk*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
+%lang(zh_CN) %{_datadir}/vim/v*/lang/menu_*chinese*gb*
+%lang(zh_CN) %{_datadir}/vim/v*/lang/menu_*zh*gb*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
+%lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 
 %{_datadir}/vim/v*/macros
 %{_datadir}/vim/v*/plugin
