@@ -38,7 +38,8 @@ Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
 # Source2-md5:	db0db37baea01874867d8d2414db104c
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
-Source5:	http://freenux.org/kvim/k%{name}-runtime-6.2.14.tar.bz2
+Source5:	http://freenux.org/kvim/kvim-runtime-6.2.14.tar.bz2
+# Source5-md5:	6f633e79bcf5f35918bb0bff6850a971
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
