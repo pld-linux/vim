@@ -100,7 +100,7 @@ binarnych w postaci ASCII, ale ma mo¿liwo¶æ dekodowania na standardowe
 wyj¶cie. Co wiêcej, mo¿e byæ u¿yty do modyfikowania plików binarnych.
 
 %package static
-Summary:	Staticly linked Vim
+Summary:	Statically linked Vim
 Summary(pl):	Statycznie zlinkowany Vim
 Group:		Applications/Editors/Vim
 Group(de):	Applikationen/Editors/Vim
