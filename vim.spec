@@ -24,7 +24,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -223,8 +223,8 @@ Summary:	Vim with ispell support
 Summary(pl):	Vim z wsparciem dla ispella
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{version}
-Conflicts:	ispell < 3.2.06
-Conflicts:	ispell-pl < 20021127-2
+Conflicts:	ispell >= 3.2.06
+Conflicts:	ispell-pl >= 20021127-2
 
 %description ispell
 Text editor similar to Vi. This version is built with ispell support.
