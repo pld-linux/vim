@@ -1,0 +1,124 @@
+To: vim-dev@vim.org
+Subject: Patch 5.7.023
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+------------
+
+Patch 5.7.023
+Problem:    Crash when a WinLeave autocommand deletes the buffer in the other
+	    window.
+Solution:   Check that after executing the WinLeave autocommands there still
+	    is a window to be closed.  Also update the test that was supposed
+	    to check for this problem.
+Files:	    src/window.c, testdir/test13.in, testdir/test13.ok
+
+
+*** ../vim-5.7.22/src/window.c	Tue Jan 25 10:47:16 2000
+--- src/window.c	Thu Jan 18 13:41:47 2001
+***************
+*** 900,910 ****
+  	{
+  	    other_buffer = TRUE;
+  	    apply_autocmds(EVENT_BUFLEAVE, NULL, NULL, FALSE, curbuf);
+! 	    if (!win_valid(win))
+  		return;
+  	}
+  	apply_autocmds(EVENT_WINLEAVE, NULL, NULL, FALSE, curbuf);
+! 	if (!win_valid(win))
+  	    return;
+      }
+  #endif
+--- 900,910 ----
+  	{
+  	    other_buffer = TRUE;
+  	    apply_autocmds(EVENT_BUFLEAVE, NULL, NULL, FALSE, curbuf);
+! 	    if (!win_valid(win) || firstwin == lastwin)
+  		return;
+  	}
+  	apply_autocmds(EVENT_WINLEAVE, NULL, NULL, FALSE, curbuf);
+! 	if (!win_valid(win) || firstwin == lastwin)
+  	    return;
+      }
+  #endif
+***************
+*** 930,936 ****
+   */
+      close_buffer(win, win->w_buffer, free_buf, FALSE);
+      /* autocommands may have closed the window already */
+!     if (!win_valid(win))
+  	return;
+  
+      win_new_height(wp, wp->w_height + win->w_height + win->w_status_height);
+--- 930,936 ----
+   */
+      close_buffer(win, win->w_buffer, free_buf, FALSE);
+      /* autocommands may have closed the window already */
+!     if (!win_valid(win) || firstwin == lastwin)
+  	return;
+  
+      win_new_height(wp, wp->w_height + win->w_height + win->w_status_height);
+*** ../vim-5.7.22/src/testdir/test13.in	Tue Jul 20 13:31:27 1999
+--- src/testdir/test13.in	Thu Jan 18 12:59:41 2001
+***************
+*** 24,33 ****
+  otestje3
+  :w
+  
+! :au WinLeave testje bdel
+  
+  :w! test.out
+! :au WinLeave testje bdel testje3
+  :close
+  :w >>test.out
+  :e Xtestje1
+--- 24,33 ----
+  otestje3
+  :w
+  
+! :au WinLeave Xtestje2 bdel
+  
+  :w! test.out
+! :au WinLeave Xtestje1 bdel Xtestje3
+  :close
+  :w >>test.out
+  :e Xtestje1
+*** ../vim-5.7.22/src/testdir/test13.ok	Tue Jul 20 13:35:40 1999
+--- src/testdir/test13.ok	Thu Jan 18 13:56:54 2001
+***************
+*** 5,11 ****
+  	contents
+  end of testfile
+  start of testfile
+! testje2
+  	contents
+  	contents
+  	contents
+--- 5,11 ----
+  	contents
+  end of testfile
+  start of testfile
+! testje1
+  	contents
+  	contents
+  	contents
+*** ../vim-5.7.22/src/version.c	Mon Jan  8 11:50:35 2001
+--- src/version.c	Thu Jan 18 13:54:38 2001
+***************
+*** 439,440 ****
+--- 439,442 ----
+  {   /* Add new patch number below this line */
++ /**/
++     23,
+  /**/
+
+-- 
+ERIC IDLE PLAYED: THE DEAD COLLECTOR, MR BINT (A VILLAGE NE'ER-DO -WELL VERY
+                  KEEN ON BURNING WITCHES), SIR ROBIN, THE GUARD WHO DOESN'T
+                  HICOUGH BUT TRIES TO GET THINGS STRAIGHT, CONCORDE (SIR
+                  LAUNCELOT'S TRUSTY STEED), ROGER THE SHRUBBER (A SHRUBBER),
+                  BROTHER MAYNARD
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ ///  Bram Moolenaar -- Bram@moolenaar.net -- http://www.moolenaar.net  \\\
+(((   Creator of Vim - http://www.vim.org -- ftp://ftp.vim.org/pub/vim   )))
+ \\\  Help me helping AIDS orphans in Uganda - http://iccf-holland.org  ///
