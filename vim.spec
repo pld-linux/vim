@@ -31,7 +31,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -52,6 +52,8 @@ Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
 Source14:	%{name}.desktop
+# http://www.vim.org/scripts/script.php?script_id=1120
+Source15:	php.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -640,6 +642,8 @@ element bonobo.
 %patch17 -p1
 %patch18 -p1
 %patch19 -p0 -b .modprobe
+
+install %{SOURCE15} runtime/indent
 
 %build
 cd src
