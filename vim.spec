@@ -18,7 +18,6 @@ BuildRequires:	gpm-devel
 BuildRequires:	Xaw3d-devel
 BuildRequires:	lesstif-devel
 BuildRequires:	gtk+-devel
-BuildRequires:	glib-devel
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
