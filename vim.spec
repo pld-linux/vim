@@ -1,15 +1,16 @@
 Summary:	Vi IMproved - a Vi clone
 Summary(pl):	Vi IMproved - klon edytora Vi
 Name:		vim
-Version:	19991222
-Release:	1
+Version:	5.6
+Release:	2
 Copyright:	Charityware
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
 URL:		http://www.vim.org
-########	cvs://cvs.vim.org
-Source0:	%{name}-%{version}.tar.bz2
-Source1:	gvim.desktop
+Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-src.tar.gz
+Source1:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-rt.tar.gz
+Source2:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-extra.tar.gz
+Source3:	gvim.desktop
 Patch:		vim-fhs.patch
 BuildRequires:	ncurses-devel
 BuildRequires:	ncurses-static
@@ -116,10 +117,8 @@ Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 biblioteki GTK.    
 
 %prep
-%setup -q -n vim
+%setup -q -b 1 -b 2
 %patch -p1
-
-find . -name CVS | xargs rm -rf
 
 %build
 cd src
@@ -253,7 +252,7 @@ ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgvim
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/gview
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgview
  
-install %{SOURCE1} $RPM_BUILD_ROOT/usr/X11R6/share/applnk/Applications/Editors
+install %{SOURCE3} $RPM_BUILD_ROOT/usr/X11R6/share/applnk/Applications/Editors
 
 gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man1/*
 
