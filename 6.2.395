@@ -1,0 +1,453 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.395
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.395
+Problem:    When using ":tag" or ":pop" the previous matching tag is used.
+	    But since the current file is different, the ordering of the tags
+	    may change.
+Solution:   Remember what the current buffer was for when re-using cur_match.
+Files:	    src/edit.c, src/ex_cmds.c, src/proto/tag.pro, src/structs.h,
+	    src/tag.c
+
+
+*** ../vim-6.2.394/src/edit.c	Tue Mar  9 17:13:10 2004
+--- src/edit.c	Tue Mar 23 12:37:45 2004
+***************
+*** 2765,2771 ****
+  	    if (find_tags(complete_pat, &num_matches, &matches,
+  		    TAG_REGEXP | TAG_NAMES | TAG_NOIC |
+  		    TAG_INS_COMP | (ctrl_x_mode ? TAG_VERBOSE : 0),
+! 		    TAG_MANY) == OK && num_matches > 0)
+  	    {
+  		ins_compl_add_matches(num_matches, matches, dir);
+  	    }
+--- 2765,2771 ----
+  	    if (find_tags(complete_pat, &num_matches, &matches,
+  		    TAG_REGEXP | TAG_NAMES | TAG_NOIC |
+  		    TAG_INS_COMP | (ctrl_x_mode ? TAG_VERBOSE : 0),
+! 		    TAG_MANY, curbuf->b_ffname) == OK && num_matches > 0)
+  	    {
+  		ins_compl_add_matches(num_matches, matches, dir);
+  	    }
+*** ../vim-6.2.394/src/ex_cmds.c	Wed Mar 17 14:08:56 2004
+--- src/ex_cmds.c	Tue Mar 23 12:38:33 2004
+***************
+*** 4955,4961 ****
+      flags = TAG_HELP | TAG_REGEXP | TAG_NAMES | TAG_VERBOSE;
+      if (keep_lang)
+  	flags |= TAG_KEEP_LANG;
+!     if (find_tags(IObuff, num_matches, matches, flags, (int)MAXCOL) == OK
+  	    && *num_matches > 0)
+  	/* Sort the matches found on the heuristic number that is after the
+  	 * tag name. */
+--- 4955,4961 ----
+      flags = TAG_HELP | TAG_REGEXP | TAG_NAMES | TAG_VERBOSE;
+      if (keep_lang)
+  	flags |= TAG_KEEP_LANG;
+!     if (find_tags(IObuff, num_matches, matches, flags, (int)MAXCOL, NULL) == OK
+  	    && *num_matches > 0)
+  	/* Sort the matches found on the heuristic number that is after the
+  	 * tag name. */
+*** ../vim-6.2.394/src/proto/tag.pro	Sun Jun  1 12:26:20 2003
+--- src/proto/tag.pro	Tue Mar 23 12:56:35 2004
+***************
+*** 2,8 ****
+  int do_tag __ARGS((char_u *tag, int type, int count, int forceit, int verbose));
+  void tag_freematch __ARGS((void));
+  void do_tags __ARGS((exarg_T *eap));
+! int find_tags __ARGS((char_u *pat, int *num_matches, char_u ***matchesp, int flags, int mincount));
+  void simplify_filename __ARGS((char_u *filename));
+  int expand_tags __ARGS((int tagnames, char_u *pat, int *num_file, char_u ***file));
+  /* vim: set ft=c : */
+--- 2,8 ----
+  int do_tag __ARGS((char_u *tag, int type, int count, int forceit, int verbose));
+  void tag_freematch __ARGS((void));
+  void do_tags __ARGS((exarg_T *eap));
+! int find_tags __ARGS((char_u *pat, int *num_matches, char_u ***matchesp, int flags, int mincount, char_u *buf_ffname));
+  void simplify_filename __ARGS((char_u *filename));
+  int expand_tags __ARGS((int tagnames, char_u *pat, int *num_file, char_u ***file));
+  /* vim: set ft=c : */
+*** ../vim-6.2.394/src/structs.h	Sun Mar 14 20:12:26 2004
+--- src/structs.h	Tue Mar 23 12:43:06 2004
+***************
+*** 119,124 ****
+--- 119,125 ----
+      char_u	*tagname;	/* tag name */
+      fmark_T	fmark;		/* cursor position BEFORE ":tag" */
+      int		cur_match;	/* match number */
++     int		cur_fnum;	/* buffer number used for cur_match */
+  } taggy_T;
+  
+  /*
+***************
+*** 1506,1512 ****
+      winopt_T	w_onebuf_opt;
+      winopt_T	w_allbuf_opt;
+  
+!     /* transfor a pointer to a "onebuf" option to a "allbuf" option */
+  #define GLOBAL_WO(p)	((char *)p + sizeof(winopt_T))
+  
+  #ifdef FEAT_SCROLLBIND
+--- 1507,1513 ----
+      winopt_T	w_onebuf_opt;
+      winopt_T	w_allbuf_opt;
+  
+!     /* transform a pointer to a "onebuf" option into a "allbuf" option */
+  #define GLOBAL_WO(p)	((char *)p + sizeof(winopt_T))
+  
+  #ifdef FEAT_SCROLLBIND
+*** ../vim-6.2.394/src/tag.c	Wed Mar 17 14:08:56 2004
+--- src/tag.c	Tue Mar 23 13:49:47 2004
+***************
+*** 81,89 ****
+  static char_u *tag_full_fname __ARGS((tagptrs_T *tagp));
+  static char_u *expand_tag_fname __ARGS((char_u *fname, char_u *tag_fname, int expand));
+  #ifdef FEAT_EMACS_TAGS
+! static int test_for_current __ARGS((int, char_u *, char_u *, char_u *));
+  #else
+! static int test_for_current __ARGS((char_u *, char_u *, char_u *));
+  #endif
+  static int find_extra __ARGS((char_u **pp));
+  
+--- 81,89 ----
+  static char_u *tag_full_fname __ARGS((tagptrs_T *tagp));
+  static char_u *expand_tag_fname __ARGS((char_u *fname, char_u *tag_fname, int expand));
+  #ifdef FEAT_EMACS_TAGS
+! static int test_for_current __ARGS((int, char_u *, char_u *, char_u *, char_u *));
+  #else
+! static int test_for_current __ARGS((char_u *, char_u *, char_u *, char_u *));
+  #endif
+  static int find_extra __ARGS((char_u **pp));
+  
+***************
+*** 138,143 ****
+--- 138,144 ----
+      int		tagstackidx = curwin->w_tagstackidx;
+      int		tagstacklen = curwin->w_tagstacklen;
+      int		cur_match = 0;
++     int		cur_fnum = curbuf->b_fnum;
+      int		oldtagstackidx = tagstackidx;
+      int		prevtagstackidx = tagstackidx;
+      int		prev_num_matches;
+***************
+*** 163,168 ****
+--- 164,171 ----
+      int		attr;
+      int		use_tagstack;
+      int		skip_msg = FALSE;
++     char_u	*buf_ffname = curbuf->b_ffname;	    /* name to use for
++ 						       priority computation */
+  
+      /* remember the matches for the last used tag */
+      static int		num_matches = 0;
+***************
+*** 213,218 ****
+--- 216,222 ----
+  		    /* Jumping to same tag: keep the current match, so that
+  		     * the CursorHold autocommand example works. */
+  		    cur_match = ptag_entry.cur_match;
++ 		    cur_fnum = ptag_entry.cur_fnum;
+  		}
+  		else
+  		{
+***************
+*** 336,342 ****
+--- 343,352 ----
+  	    {
+  #if defined(FEAT_WINDOWS) && defined(FEAT_QUICKFIX)
+  		if (g_do_tagpreview)
++ 		{
+  		    cur_match = ptag_entry.cur_match;
++ 		    cur_fnum = ptag_entry.cur_fnum;
++ 		}
+  		else
+  #endif
+  		{
+***************
+*** 360,365 ****
+--- 370,376 ----
+  			goto end_do_tag;
+  		    }
+  		    cur_match = tagstack[tagstackidx].cur_match;
++ 		    cur_fnum = tagstack[tagstackidx].cur_fnum;
+  		}
+  		new_tag = TRUE;
+  	    }
+***************
+*** 370,382 ****
+--- 381,397 ----
+  
+  #if defined(FEAT_WINDOWS) && defined(FEAT_QUICKFIX)
+  		if (g_do_tagpreview)
++ 		{
+  		    cur_match = ptag_entry.cur_match;
++ 		    cur_fnum = ptag_entry.cur_fnum;
++ 		}
+  		else
+  #endif
+  		{
+  		    if (--tagstackidx < 0)
+  			tagstackidx = 0;
+  		    cur_match = tagstack[tagstackidx].cur_match;
++ 		    cur_fnum = tagstack[tagstackidx].cur_fnum;
+  		}
+  		switch (type)
+  		{
+***************
+*** 397,402 ****
+--- 412,418 ----
+  		    EMSG(_("E425: Cannot go before first matching tag"));
+  		    skip_msg = TRUE;
+  		    cur_match = 0;
++ 		    cur_fnum = curbuf->b_fnum;
+  		}
+  	    }
+  	}
+***************
+*** 405,411 ****
+--- 421,430 ----
+  	if (g_do_tagpreview)
+  	{
+  	    if (type != DT_SELECT && type != DT_JUMP)
++ 	    {
+  		ptag_entry.cur_match = cur_match;
++ 		ptag_entry.cur_fnum = cur_fnum;
++ 	    }
+  	}
+  	else
+  #endif
+***************
+*** 425,434 ****
+--- 444,467 ----
+  	     * tagstackidx now. */
+  	    curwin->w_tagstackidx = tagstackidx;
+  	    if (type != DT_SELECT && type != DT_JUMP)
++ 	    {
+  		curwin->w_tagstack[tagstackidx].cur_match = cur_match;
++ 		curwin->w_tagstack[tagstackidx].cur_fnum = cur_fnum;
++ 	    }
+  	}
+      }
+  
++     /* When not using the current buffer get the name of buffer "cur_fnum".
++      * Makes sure that the tag order doesn't change when using a remembered
++      * position for "cur_match". */
++     if (cur_fnum != curbuf->b_fnum)
++     {
++ 	buf_T *buf = buflist_findnr(cur_fnum);
++ 
++ 	if (buf != NULL)
++ 	    buf_ffname = buf->b_ffname;
++     }
++ 
+      /*
+       * Repeat searching for tags, when a file has not been found.
+       */
+***************
+*** 476,482 ****
+  	    if (verbose)
+  		flags |= TAG_VERBOSE;
+  	    if (find_tags(name, &new_num_matches, &new_matches, flags,
+! 							max_num_matches) == OK
+  		    && new_num_matches < max_num_matches)
+  		max_num_matches = MAXCOL; /* If less than max_num_matches
+  					     found: all matches found. */
+--- 509,515 ----
+  	    if (verbose)
+  		flags |= TAG_VERBOSE;
+  	    if (find_tags(name, &new_num_matches, &new_matches, flags,
+! 					    max_num_matches, buf_ffname) == OK
+  		    && new_num_matches < max_num_matches)
+  		max_num_matches = MAXCOL; /* If less than max_num_matches
+  					     found: all matches found. */
+***************
+*** 758,768 ****
+--- 791,805 ----
+  	    if (use_tagstack)
+  	    {
+  		tagstack[tagstackidx].cur_match = cur_match;
++ 		tagstack[tagstackidx].cur_fnum = cur_fnum;
+  		++tagstackidx;
+  	    }
+  #if defined(FEAT_WINDOWS) && defined(FEAT_QUICKFIX)
+  	    else if (g_do_tagpreview)
++ 	    {
+  		ptag_entry.cur_match = cur_match;
++ 		ptag_entry.cur_fnum = cur_fnum;
++ 	    }
+  #endif
+  
+  	    /*
+***************
+*** 993,1005 ****
+   * TAG_KEEP_LANG  keep language
+   */
+      int
+! find_tags(pat, num_matches, matchesp, flags, mincount)
+      char_u	*pat;			/* pattern to search for */
+      int		*num_matches;		/* return: number of matches found */
+      char_u	***matchesp;		/* return: array of matches found */
+      int		flags;
+      int		mincount;		/*  MAXCOL: find all matches
+  					     other: minimal number of matches */
+  {
+      FILE       *fp;
+      char_u     *lbuf;			/* line buffer */
+--- 1030,1043 ----
+   * TAG_KEEP_LANG  keep language
+   */
+      int
+! find_tags(pat, num_matches, matchesp, flags, mincount, buf_ffname)
+      char_u	*pat;			/* pattern to search for */
+      int		*num_matches;		/* return: number of matches found */
+      char_u	***matchesp;		/* return: array of matches found */
+      int		flags;
+      int		mincount;		/*  MAXCOL: find all matches
+  					     other: minimal number of matches */
++     char_u	*buf_ffname;		/* name of buffer for priority */
+  {
+      FILE       *fp;
+      char_u     *lbuf;			/* line buffer */
+***************
+*** 1842,1848 ****
+  #ifdef FEAT_EMACS_TAGS
+  			    is_etag,
+  #endif
+! 				     tagp.fname, tagp.fname_end, tag_fname);
+  #ifdef FEAT_EMACS_TAGS
+  		    is_static = FALSE;
+  		    if (!is_etag)	/* emacs tags are never static */
+--- 1880,1887 ----
+  #ifdef FEAT_EMACS_TAGS
+  			    is_etag,
+  #endif
+! 				     tagp.fname, tagp.fname_end, tag_fname,
+! 				     buf_ffname);
+  #ifdef FEAT_EMACS_TAGS
+  		    is_static = FALSE;
+  		    if (!is_etag)	/* emacs tags are never static */
+***************
+*** 3244,3270 ****
+  }
+  
+  /*
+!  * Check if we have a tag for the current file.
+   * This is a bit slow, because of the full path compare in fullpathcmp().
+   * Return TRUE if tag for file "fname" if tag file "tag_fname" is for current
+   * file.
+   */
+      static int
+  #ifdef FEAT_EMACS_TAGS
+! test_for_current(is_etag, fname, fname_end, tag_fname)
+      int	    is_etag;
+  #else
+! test_for_current(fname, fname_end, tag_fname)
+  #endif
+      char_u  *fname;
+      char_u  *fname_end;
+      char_u  *tag_fname;
+  {
+      int	    c;
+      int	    retval = FALSE;
+      char_u  *fullname;
+  
+!     if (curbuf->b_ffname != NULL)	/* if the current buffer has a name */
+      {
+  #ifdef FEAT_EMACS_TAGS
+  	if (is_etag)
+--- 3283,3310 ----
+  }
+  
+  /*
+!  * Check if we have a tag for the buffer with name "buf_ffname".
+   * This is a bit slow, because of the full path compare in fullpathcmp().
+   * Return TRUE if tag for file "fname" if tag file "tag_fname" is for current
+   * file.
+   */
+      static int
+  #ifdef FEAT_EMACS_TAGS
+! test_for_current(is_etag, fname, fname_end, tag_fname, buf_ffname)
+      int	    is_etag;
+  #else
+! test_for_current(fname, fname_end, tag_fname, buf_ffname)
+  #endif
+      char_u  *fname;
+      char_u  *fname_end;
+      char_u  *tag_fname;
++     char_u  *buf_ffname;
+  {
+      int	    c;
+      int	    retval = FALSE;
+      char_u  *fullname;
+  
+!     if (buf_ffname != NULL)	/* if the buffer has a name */
+      {
+  #ifdef FEAT_EMACS_TAGS
+  	if (is_etag)
+***************
+*** 3278,3284 ****
+  	fullname = expand_tag_fname(fname, tag_fname, TRUE);
+  	if (fullname != NULL)
+  	{
+! 	    retval = (fullpathcmp(fullname, curbuf->b_ffname, TRUE) & FPC_SAME);
+  	    vim_free(fullname);
+  	}
+  #ifdef FEAT_EMACS_TAGS
+--- 3318,3324 ----
+  	fullname = expand_tag_fname(fname, tag_fname, TRUE);
+  	if (fullname != NULL)
+  	{
+! 	    retval = (fullpathcmp(fullname, buf_ffname, TRUE) & FPC_SAME);
+  	    vim_free(fullname);
+  	}
+  #ifdef FEAT_EMACS_TAGS
+***************
+*** 3350,3359 ****
+  	tagnmflag = 0;
+      if (pat[0] == '/')
+  	ret = find_tags(pat + 1, num_file, file,
+! 			    TAG_REGEXP | tagnmflag | TAG_VERBOSE, TAG_MANY);
+      else
+  	ret = find_tags(pat, num_file, file,
+! 		 TAG_REGEXP | tagnmflag | TAG_VERBOSE | TAG_NOIC, TAG_MANY);
+      if (ret == OK && !tagnames)
+      {
+  	 /* Reorganize the tags for display and matching as strings of:
+--- 3390,3401 ----
+  	tagnmflag = 0;
+      if (pat[0] == '/')
+  	ret = find_tags(pat + 1, num_file, file,
+! 		TAG_REGEXP | tagnmflag | TAG_VERBOSE,
+! 		TAG_MANY, curbuf->b_ffname);
+      else
+  	ret = find_tags(pat, num_file, file,
+! 		TAG_REGEXP | tagnmflag | TAG_VERBOSE | TAG_NOIC,
+! 		TAG_MANY, curbuf->b_ffname);
+      if (ret == OK && !tagnames)
+      {
+  	 /* Reorganize the tags for display and matching as strings of:
+*** ../vim-6.2.394/src/version.c	Tue Mar 23 11:43:16 2004
+--- src/version.c	Tue Mar 23 14:00:07 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     395,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+119. You are reading a book and look for the scroll bar to get to
+     the next page.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

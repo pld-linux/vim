@@ -1,0 +1,206 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.379
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.379
+Problem:    Using ":mkvimrc" in the ":options" window sets 'bufhidden' to
+	    "delete". (Michael Naumann)
+Solution:   Do not add buffer-specific option values to a global vimrc file.
+Files:	    src/option.c
+
+
+*** ../vim-6.2.378/src/option.c	Thu Mar 11 21:08:44 2004
+--- src/option.c	Thu Mar 18 15:19:32 2004
+***************
+*** 292,297 ****
+--- 292,298 ----
+  
+  #define P_SECURE	0x40000L/* cannot change in modeline or secure mode */
+  #define P_GETTEXT	0x80000L/* expand default value with _() */
++ #define P_NOGLOB       0x100000L/* do not use local value for global vimrc */
+  
+  /*
+   * options[] is initialized here.
+***************
+*** 479,485 ****
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
+!     {"bufhidden",   "bh",   P_STRING|P_ALLOCED|P_VI_DEF,
+  #if defined(FEAT_QUICKFIX)
+  			    (char_u *)&p_bh, PV_BH,
+  			    {(char_u *)"", (char_u *)0L}
+--- 480,486 ----
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
+!     {"bufhidden",   "bh",   P_STRING|P_ALLOCED|P_VI_DEF|P_NOGLOB,
+  #if defined(FEAT_QUICKFIX)
+  			    (char_u *)&p_bh, PV_BH,
+  			    {(char_u *)"", (char_u *)0L}
+***************
+*** 488,498 ****
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
+!     {"buflisted",   "bl",   P_BOOL|P_VI_DEF,
+  			    (char_u *)&p_bl, PV_BL,
+  			    {(char_u *)1L, (char_u *)0L}
+  			    },
+!     {"buftype",	    "bt",   P_STRING|P_ALLOCED|P_VI_DEF,
+  #if defined(FEAT_QUICKFIX)
+  			    (char_u *)&p_bt, PV_BT,
+  			    {(char_u *)"", (char_u *)0L}
+--- 489,499 ----
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
+!     {"buflisted",   "bl",   P_BOOL|P_VI_DEF|P_NOGLOB,
+  			    (char_u *)&p_bl, PV_BL,
+  			    {(char_u *)1L, (char_u *)0L}
+  			    },
+!     {"buftype",	    "bt",   P_STRING|P_ALLOCED|P_VI_DEF|P_NOGLOB,
+  #if defined(FEAT_QUICKFIX)
+  			    (char_u *)&p_bt, PV_BT,
+  			    {(char_u *)"", (char_u *)0L}
+***************
+*** 716,722 ****
+  			    (char_u *)NULL, PV_NONE,
+  #endif
+  			    {(char_u *)"", (char_u *)0L}},
+!     {"diff",	    NULL,   P_BOOL|P_VI_DEF|P_RWIN,
+  #ifdef FEAT_DIFF
+  			    (char_u *)VAR_WIN, PV_DIFF,
+  #else
+--- 717,723 ----
+  			    (char_u *)NULL, PV_NONE,
+  #endif
+  			    {(char_u *)"", (char_u *)0L}},
+!     {"diff",	    NULL,   P_BOOL|P_VI_DEF|P_RWIN|P_NOGLOB,
+  #ifdef FEAT_DIFF
+  			    (char_u *)VAR_WIN, PV_DIFF,
+  #else
+***************
+*** 845,851 ****
+      {"fileformats", "ffs",  P_STRING|P_VIM|P_COMMA|P_NODUP,
+  			    (char_u *)&p_ffs, PV_NONE,
+  			    {(char_u *)DFLT_FFS_VI, (char_u *)DFLT_FFS_VIM}},
+!     {"filetype",    "ft",   P_STRING|P_ALLOCED|P_VI_DEF,
+  #ifdef FEAT_AUTOCMD
+  			    (char_u *)&p_ft, PV_FT,
+  			    {(char_u *)"", (char_u *)0L}
+--- 846,852 ----
+      {"fileformats", "ffs",  P_STRING|P_VIM|P_COMMA|P_NODUP,
+  			    (char_u *)&p_ffs, PV_NONE,
+  			    {(char_u *)DFLT_FFS_VI, (char_u *)DFLT_FFS_VIM}},
+!     {"filetype",    "ft",   P_STRING|P_ALLOCED|P_VI_DEF|P_NOGLOB,
+  #ifdef FEAT_AUTOCMD
+  			    (char_u *)&p_ft, PV_FT,
+  			    {(char_u *)"", (char_u *)0L}
+***************
+*** 1462,1468 ****
+      {"modelines",   "mls",  P_NUM|P_VI_DEF,
+  			    (char_u *)&p_mls, PV_NONE,
+  			    {(char_u *)5L, (char_u *)0L}},
+!     {"modifiable",  "ma",   P_BOOL|P_VI_DEF,
+  			    (char_u *)&p_ma, PV_MA,
+  			    {(char_u *)TRUE, (char_u *)0L}},
+      {"modified",    "mod",  P_BOOL|P_NO_MKRC|P_VI_DEF|P_RSTAT,
+--- 1475,1481 ----
+      {"modelines",   "mls",  P_NUM|P_VI_DEF,
+  			    (char_u *)&p_mls, PV_NONE,
+  			    {(char_u *)5L, (char_u *)0L}},
+!     {"modifiable",  "ma",   P_BOOL|P_VI_DEF|P_NOGLOB,
+  			    (char_u *)&p_ma, PV_MA,
+  			    {(char_u *)TRUE, (char_u *)0L}},
+      {"modified",    "mod",  P_BOOL|P_NO_MKRC|P_VI_DEF|P_RSTAT,
+***************
+*** 1587,1593 ****
+  			    (char_u *)NULL, PV_NONE,
+  #endif
+  			    {(char_u *)12L, (char_u *)0L}},
+!     {"previewwindow", "pvw", P_BOOL|P_VI_DEF|P_RSTAT,
+  #if defined(FEAT_WINDOWS) && defined(FEAT_QUICKFIX)
+  			    (char_u *)VAR_WIN, PV_PVW,
+  #else
+--- 1600,1606 ----
+  			    (char_u *)NULL, PV_NONE,
+  #endif
+  			    {(char_u *)12L, (char_u *)0L}},
+!     {"previewwindow", "pvw", P_BOOL|P_VI_DEF|P_RSTAT|P_NOGLOB,
+  #if defined(FEAT_WINDOWS) && defined(FEAT_QUICKFIX)
+  			    (char_u *)VAR_WIN, PV_PVW,
+  #else
+***************
+*** 1657,1663 ****
+      {"prompt",	    NULL,   P_BOOL|P_VI_DEF,
+  			    (char_u *)NULL, PV_NONE,
+  			    {(char_u *)FALSE, (char_u *)0L}},
+!     {"readonly",    "ro",   P_BOOL|P_VI_DEF|P_RSTAT,
+  			    (char_u *)&p_ro, PV_RO,
+  			    {(char_u *)FALSE, (char_u *)0L}},
+      {"redraw",	    NULL,   P_BOOL|P_VI_DEF,
+--- 1670,1676 ----
+      {"prompt",	    NULL,   P_BOOL|P_VI_DEF,
+  			    (char_u *)NULL, PV_NONE,
+  			    {(char_u *)FALSE, (char_u *)0L}},
+!     {"readonly",    "ro",   P_BOOL|P_VI_DEF|P_RSTAT|P_NOGLOB,
+  			    (char_u *)&p_ro, PV_RO,
+  			    {(char_u *)FALSE, (char_u *)0L}},
+      {"redraw",	    NULL,   P_BOOL|P_VI_DEF,
+***************
+*** 1980,1986 ****
+      {"switchbuf",   "swb",  P_STRING|P_VI_DEF|P_COMMA|P_NODUP,
+  			    (char_u *)&p_swb, PV_NONE,
+  			    {(char_u *)"", (char_u *)0L}},
+!     {"syntax",	    "syn",  P_STRING|P_ALLOCED|P_VI_DEF,
+  #ifdef FEAT_SYN_HL
+  			    (char_u *)&p_syn, PV_SYN,
+  			    {(char_u *)"", (char_u *)0L}
+--- 1993,1999 ----
+      {"switchbuf",   "swb",  P_STRING|P_VI_DEF|P_COMMA|P_NODUP,
+  			    (char_u *)&p_swb, PV_NONE,
+  			    {(char_u *)"", (char_u *)0L}},
+!     {"syntax",	    "syn",  P_STRING|P_ALLOCED|P_VI_DEF|P_NOGLOB,
+  #ifdef FEAT_SYN_HL
+  			    (char_u *)&p_syn, PV_SYN,
+  			    {(char_u *)"", (char_u *)0L}
+***************
+*** 7351,7356 ****
+--- 7364,7374 ----
+  	{
+  	    /* skip global option when only doing locals */
+  	    if (p->indir == PV_NONE && !(opt_flags & OPT_GLOBAL))
++ 		continue;
++ 
++ 	    /* Do not store options like 'bufhidden' and 'syntax' in a vimrc
++ 	     * file, they are always buffer-specific. */
++ 	    if ((opt_flags & OPT_GLOBAL) && (p->flags & P_NOGLOB))
+  		continue;
+  
+  	    /* Global values are only written when not at the default value. */
+*** ../vim-6.2.378/src/version.c	Thu Mar 18 14:39:31 2004
+--- src/version.c	Thu Mar 18 15:21:12 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     379,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+59. Your wife says communication is important in a marriage...so you buy
+    another computer and install a second phone line so the two of you can
+    chat.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

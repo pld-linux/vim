@@ -1,0 +1,69 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.368
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.368
+Problem:    When 'autochdir' is set, closing a window doesn't change to the
+	    directory of the new current window. (Salman Halim)
+Solution:   Handle 'autochdir' always when a window becomes the current one.
+Files:	    src/window.c
+
+
+*** ../vim-6.2.367/src/window.c	Sun Feb 15 13:47:16 2004
+--- src/window.c	Wed Mar 17 09:51:14 2004
+***************
+*** 2871,2883 ****
+      int		undo_sync;
+  {
+      win_enter_ext(wp, undo_sync, FALSE);
+- #if defined(FEAT_NETBEANS_INTG) || defined(FEAT_SUN_WORKSHOP)
+-     /* Change directories when the acd option is set on and after
+-      * switching windows. */
+-     if (p_acd && curbuf->b_ffname != NULL
+- 				     && vim_chdirfile(curbuf->b_ffname) == OK)
+- 	shorten_fnames(TRUE);
+- #endif
+  }
+  
+  /*
+--- 2871,2876 ----
+***************
+*** 2994,2999 ****
+--- 2987,3000 ----
+  
+  #ifdef FEAT_MOUSE
+      setmouse();			/* in case jumped to/from help buffer */
++ #endif
++ 
++ #if defined(FEAT_NETBEANS_INTG) || defined(FEAT_SUN_WORKSHOP)
++     /* Change directories when the acd option is set on and after
++      * switching windows. */
++     if (p_acd && curbuf->b_ffname != NULL
++ 				     && vim_chdirfile(curbuf->b_ffname) == OK)
++ 	shorten_fnames(TRUE);
+  #endif
+  }
+  
+*** ../vim-6.2.367/src/version.c	Tue Mar 16 22:48:43 2004
+--- src/version.c	Wed Mar 17 09:53:43 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     368,
+  /**/
+
+-- 
+It is hard to understand how a cemetery raised its burial
+cost and blamed it on the cost of living.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

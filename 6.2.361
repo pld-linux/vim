@@ -1,0 +1,70 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.361 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.361 (extra)
+Problem:    Win32: Run gvim, ":set go-=m", use Alt-Tab, keep Alt pressed while
+	    pressing Esc, then release Alt: Cursor disappears and typing a key
+	    causes a beep. (Hari Krishna Dara)
+Solution:   Don't ignore the WM_SYSKEYUP event when the menu is disabled.
+Files:	    src/gui_w32.c
+
+
+*** ../vim-6.2.360/src/gui_w32.c	Sun Mar 14 14:37:09 2004
+--- src/gui_w32.c	Mon Mar 15 17:18:17 2004
+***************
+*** 661,674 ****
+  
+      case WM_SYSKEYUP:
+  #ifdef FEAT_MENU
+! 	/* Only when menu is active, ALT key is used for that. */
+! 	if (gui.menu_is_active)
+! 	{
+! 	    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+! 	}
+! 	else
+  #endif
+- 	    return 0;
+  
+      case WM_SIZING:	/* HANDLE_MSG doesn't seem to handle this one */
+  	return _DuringSizing(hwnd, (UINT)wParam, (LPRECT)lParam);
+--- 661,674 ----
+  
+      case WM_SYSKEYUP:
+  #ifdef FEAT_MENU
+! 	/* Thus used to be done only when menu is active: ALT key is used for
+! 	 * that.  But that caused problems when menu is disabled and using
+! 	 * Alt-Tab-Esc: get into a strange state where no mouse-moved events
+! 	 * are received, mouse pointer remains hidden. */
+! 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+! #else
+! 	return 0;
+  #endif
+  
+      case WM_SIZING:	/* HANDLE_MSG doesn't seem to handle this one */
+  	return _DuringSizing(hwnd, (UINT)wParam, (LPRECT)lParam);
+*** ../vim-6.2.360/src/version.c	Mon Mar 15 12:44:12 2004
+--- src/version.c	Mon Mar 15 17:16:45 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     361,
+  /**/
+
+-- 
+Apparently, 1 in 5 people in the world are Chinese.  And there are 5
+people in my family, so it must be one of them.  It's either my mum
+or my dad.  Or my older brother Colin.  Or my younger brother
+Ho-Cha-Chu.  But I think it's Colin.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

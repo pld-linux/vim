@@ -1,0 +1,63 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.380 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.380 (extra)
+Problem:    DOS: "make test" fails when running it again.  Can't "make test"
+	    with Borland C.
+Solution:   Make sure ".out" files are deleted when they get in the way.  Add
+	    a "test" target to the Borland C Makefile.
+Files:	    src/Make_bc5.mak, src/testdir/Make_dos.mak
+
+
+*** ../vim-6.2.379/src/Make_bc5.mak	Thu Mar 11 20:49:02 2004
+--- src/Make_bc5.mak	Thu Mar 18 16:58:03 2004
+***************
+*** 884,889 ****
+--- 884,894 ----
+  !endif
+  |
+  
++ test:
++ 	cd testdir
++ 	$(MAKE) /NOLOGO -f Make_dos.mak win32
++ 	cd ..
++ 
+  $(OBJDIR)\ex_docmd.obj:  ex_docmd.c ex_cmds.h
+  
+  $(OBJDIR)\ex_eval.obj:  ex_eval.c ex_cmds.h
+*** ../vim-6.2.379/src/testdir/Make_dos.mak	Sat May 31 22:32:43 2003
+--- src/testdir/Make_dos.mak	Thu Mar 18 16:52:51 2004
+***************
+*** 56,61 ****
+--- 56,62 ----
+  	copy $*.ok test.ok
+  	$(VIMPROG) -u dos.vim -U NONE --noplugin -s dotest.in $*.in
+  	diff test.out $*.ok
++ 	-del $*.out
+  	rename test.out $*.out
+  	-del X*
+  	-del test.ok
+*** ../vim-6.2.379/src/version.c	Thu Mar 18 15:24:30 2004
+--- src/version.c	Thu Mar 18 17:03:06 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     380,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+64. The remote to the T.V. is missing...and you don't even care.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

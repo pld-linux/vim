@@ -1,0 +1,314 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.372
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.372
+Problem:    When using balloon evaluation, no value is displayed for members
+	    of structures and items of an array.
+Solution:   Include "->", "." and "[*]" in the expression.
+Files:	    src/gui_beval.c, src/normal.c, src/vim.h
+
+
+*** ../vim-6.2.371/src/gui_beval.c	Sun Oct 12 16:42:14 2003
+--- src/gui_beval.c	Wed Mar 17 16:11:56 2004
+***************
+*** 283,289 ****
+  			/* Find the word under the cursor. */
+  			++emsg_off;
+  			len = find_ident_at_pos(wp, lnum, (colnr_T)col, &lbuf,
+! 						    FIND_IDENT + FIND_STRING);
+  			--emsg_off;
+  			if (len == 0)
+  			    return FAIL;
+--- 283,289 ----
+  			/* Find the word under the cursor. */
+  			++emsg_off;
+  			len = find_ident_at_pos(wp, lnum, (colnr_T)col, &lbuf,
+! 					FIND_IDENT + FIND_STRING + FIND_EVAL);
+  			--emsg_off;
+  			if (len == 0)
+  			    return FAIL;
+*** ../vim-6.2.371/src/normal.c	Wed Mar 17 15:27:57 2004
+--- src/normal.c	Wed Mar 17 17:27:09 2004
+***************
+*** 3062,3067 ****
+--- 3062,3110 ----
+  }
+  #endif /* FEAT_VISUAL */
+  
++ #if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
++ static int find_is_eval_item __ARGS((char_u *ptr, int *colp, int *nbp, int dir));
++ 
++ /*
++  * Check for a balloon-eval special item to include when searching for an
++  * identifier.  When "dir" is BACKWARD "ptr[-1]" must be valid!
++  * Returns TRUE if the character at "*ptr" should be included.
++  * "dir" is FORWARD or BACKWARD, the direction of searching.
++  * "*colp" is in/decremented if "ptr[-dir]" should also be included.
++  * "bnp" points to a counter for square brackets.
++  */
++     static int
++ find_is_eval_item(ptr, colp, bnp, dir)
++     char_u	*ptr;
++     int		*colp;
++     int		*bnp;
++     int		dir;
++ {
++     /* Accept everything inside []. */
++     if ((*ptr == ']' && dir == BACKWARD) || (*ptr == '[' && dir == FORWARD))
++ 	++*bnp;
++     if (*bnp > 0)
++     {
++ 	if ((*ptr == '[' && dir == BACKWARD) || (*ptr == ']' && dir == FORWARD))
++ 	    --*bnp;
++ 	return TRUE;
++     }
++ 
++     /* skip over "s.var" */
++     if (*ptr == '.')
++ 	return TRUE;
++ 
++     /* two-character item: s->var */
++     if (ptr[dir == BACKWARD ? 0 : 1] == '>'
++ 	    && ptr[dir == BACKWARD ? -1 : 0] == '-')
++     {
++ 	*colp += dir;
++ 	return TRUE;
++     }
++     return FALSE;
++ }
++ #endif
++ 
+  /*
+   * Find the identifier under or to the right of the cursor.
+   * "find_type" can have one of three values:
+***************
+*** 3111,3116 ****
+--- 3154,3162 ----
+      int		prev_class;
+      int		prevcol;
+  #endif
++ #if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
++     int		bn = 0;	    /* bracket nesting */
++ #endif
+  
+      /*
+       * if i == 0: try to find an identifier
+***************
+*** 3128,3133 ****
+--- 3174,3184 ----
+  	{
+  	    while (ptr[col] != NUL)
+  	    {
++ # if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
++ 		/* Stop at a ']' to evaluate "a[x]". */
++ 		if ((find_type & FIND_EVAL) && ptr[col] == ']')
++ 		    break;
++ # endif
+  		this_class = mb_get_class(ptr + col);
+  		if (this_class != 0 && (i == 1 || this_class != 1))
+  		    break;
+***************
+*** 3136,3145 ****
+  	}
+  	else
+  #endif
+! 	    while (ptr[col] != NUL && (i == 0
+! 			? !vim_iswordc(ptr[col]) : vim_iswhite(ptr[col])))
+  		++col;
+  
+  	/*
+  	 * 2. Back up to start of identifier/string.
+  	 */
+--- 3187,3205 ----
+  	}
+  	else
+  #endif
+! 	    while (ptr[col] != NUL
+! 		    && (i == 0 ? !vim_iswordc(ptr[col]) : vim_iswhite(ptr[col]))
+! # if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
+! 		    && (!(find_type & FIND_EVAL) || ptr[col] != ']')
+! # endif
+! 		    )
+  		++col;
+  
++ #if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
++ 	/* When starting on a ']' count it, so that we include the '['. */
++ 	bn = ptr[col] == ']';
++ #endif
++ 
+  	/*
+  	 * 2. Back up to start of identifier/string.
+  	 */
+***************
+*** 3147,3153 ****
+  	if (has_mbyte)
+  	{
+  	    /* Remember class of character under cursor. */
+! 	    this_class = mb_get_class(ptr + col);
+  	    while (col > 0)
+  	    {
+  		prevcol = col - 1 - (*mb_head_off)(ptr, ptr + col - 1);
+--- 3207,3218 ----
+  	if (has_mbyte)
+  	{
+  	    /* Remember class of character under cursor. */
+! # if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
+! 	    if ((find_type & FIND_EVAL) && ptr[col] == ']')
+! 		this_class = mb_get_class((char_u *)"a");
+! 	    else
+! # endif
+! 		this_class = mb_get_class(ptr + col);
+  	    while (col > 0)
+  	    {
+  		prevcol = col - 1 - (*mb_head_off)(ptr, ptr + col - 1);
+***************
+*** 3155,3161 ****
+  		if (this_class != prev_class
+  			&& (i == 0
+  			    || prev_class == 0
+! 			    || (find_type & FIND_IDENT)))
+  		    break;
+  		col = prevcol;
+  	    }
+--- 3220,3233 ----
+  		if (this_class != prev_class
+  			&& (i == 0
+  			    || prev_class == 0
+! 			    || (find_type & FIND_IDENT))
+! # if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
+! 			&& (!(find_type & FIND_EVAL)
+! 			    || prevcol == 0
+! 			    || !find_is_eval_item(ptr + prevcol, &prevcol,
+! 							       &bn, BACKWARD))
+! # endif
+! 			)
+  		    break;
+  		col = prevcol;
+  	    }
+***************
+*** 3170,3179 ****
+  	else
+  #endif
+  	{
+! 	    while (col > 0 && (i == 0 ? vim_iswordc(ptr[col - 1])
+! 			: (!vim_iswhite(ptr[col - 1])
+! 			    && (!(find_type & FIND_IDENT)
+! 				|| !vim_iswordc(ptr[col - 1])))))
+  		--col;
+  
+  	    /* If we don't want just any old string, or we've found an
+--- 3242,3260 ----
+  	else
+  #endif
+  	{
+! 	    while (col > 0
+! 		    && ((i == 0
+! 			    ? vim_iswordc(ptr[col - 1])
+! 			    : (!vim_iswhite(ptr[col - 1])
+! 				&& (!(find_type & FIND_IDENT)
+! 				    || !vim_iswordc(ptr[col - 1]))))
+! #if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
+! 			|| ((find_type & FIND_EVAL)
+! 			    && col > 1
+! 			    && find_is_eval_item(ptr + col - 1, &col,
+! 							       &bn, BACKWARD))
+! #endif
+! 			))
+  		--col;
+  
+  	    /* If we don't want just any old string, or we've found an
+***************
+*** 3204,3209 ****
+--- 3285,3294 ----
+      /*
+       * 3. Find the end if the identifier/string.
+       */
++ #if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
++     bn = 0;
++     startcol -= col;
++ #endif
+      col = 0;
+  #ifdef FEAT_MBYTE
+      if (has_mbyte)
+***************
+*** 3211,3225 ****
+  	/* Search for point of changing multibyte character class. */
+  	this_class = mb_get_class(ptr);
+  	while (ptr[col] != NUL
+! 		&& i == 0 ? mb_get_class(ptr + col) == this_class
+! 			  : mb_get_class(ptr + col) != 0)
+  	    col += (*mb_ptr2len_check)(ptr + col);
+      }
+      else
+  #endif
+! 	while (i == 0 ? vim_iswordc(*ptr) : (*ptr != NUL && !vim_iswhite(*ptr)))
+  	{
+- 	    ++ptr;
+  	    ++col;
+  	}
+  
+--- 3296,3322 ----
+  	/* Search for point of changing multibyte character class. */
+  	this_class = mb_get_class(ptr);
+  	while (ptr[col] != NUL
+! 		&& ((i == 0 ? mb_get_class(ptr + col) == this_class
+! 			    : mb_get_class(ptr + col) != 0)
+! # if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
+! 		    || ((find_type & FIND_EVAL)
+! 			&& col <= startcol
+! 			&& find_is_eval_item(ptr + col, &col, &bn, FORWARD))
+! # endif
+! 		))
+  	    col += (*mb_ptr2len_check)(ptr + col);
+      }
+      else
+  #endif
+! 	while ((i == 0 ? vim_iswordc(ptr[col])
+! 		       : (ptr[col] != NUL && !vim_iswhite(ptr[col])))
+! # if defined(FEAT_NETBEANS_INTG) && defined(FEAT_BEVAL)
+! 		    || ((find_type & FIND_EVAL)
+! 			&& col <= startcol
+! 			&& find_is_eval_item(ptr + col, &col, &bn, FORWARD))
+! # endif
+! 		)
+  	{
+  	    ++col;
+  	}
+  
+*** ../vim-6.2.371/src/vim.h	Thu Mar 11 21:03:40 2004
+--- src/vim.h	Wed Mar 17 15:58:56 2004
+***************
+*** 691,696 ****
+--- 691,697 ----
+  /* Values for find_ident_under_cursor() */
+  #define FIND_IDENT	1	/* find identifier (word) */
+  #define FIND_STRING	2	/* find any string (WORD) */
++ #define FIND_EVAL	4	/* include "->", "[]" and "." */
+  
+  /* Values for file_name_in_line() */
+  #define FNAME_MESS	1	/* give error message */
+*** ../vim-6.2.371/src/version.c	Wed Mar 17 15:27:57 2004
+--- src/version.c	Wed Mar 17 17:41:17 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     372,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+43. You tell the kids they can't use the computer because "Daddy's got work to
+    do" and you don't even have a job.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

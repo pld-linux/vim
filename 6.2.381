@@ -1,0 +1,92 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.381
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.381
+Problem:    Setting 'fileencoding' to a comma separated list (confusing it
+	    with 'fileencodings') does not result in an error message.
+	    Setting 'fileencoding' in an empty file marks it as modified.
+	    There is no "+" in the title after setting 'fileencoding'.
+Solution:   Check for a comma in 'fileencoding'.  Only consider a non-empty
+	    file modified by changing 'fileencoding'.  Update the title after
+	    changing 'fileencoding'.
+Files:	    src/option.c
+
+
+*** ../vim-6.2.380/src/option.c	Thu Mar 18 15:24:30 2004
+--- src/option.c	Fri Mar 19 11:25:22 2004
+***************
+*** 4799,4807 ****
+      /* 'encoding' and 'fileencoding' */
+      else if (varp == &p_enc || gvarp == &p_fenc || varp == &p_tenc)
+      {
+! 	if (varp == &curbuf->b_p_fenc && !curbuf->b_p_ma)
+! 	    errmsg = e_modifiable;
+! 	else
+  	{
+  	    /* canonize the value, so that STRCMP() can be used on it */
+  	    p = enc_canonize(*varp);
+--- 4811,4831 ----
+      /* 'encoding' and 'fileencoding' */
+      else if (varp == &p_enc || gvarp == &p_fenc || varp == &p_tenc)
+      {
+! 	if (gvarp == &p_fenc)
+! 	{
+! 	    if (!curbuf->b_p_ma)
+! 		errmsg = e_modifiable;
+! 	    else if (vim_strchr(*varp, ',') != NULL)
+! 		/* No comma allowed in 'fileencoding'; catches confusing it
+! 		 * with 'fileencodings'. */
+! 		errmsg = e_invarg;
+! # ifdef FEAT_TITLE
+! 	    else
+! 		/* May show a "+" in the title now. */
+! 		need_maketitle = TRUE;
+! # endif
+! 	}
+! 	if (errmsg == NULL)
+  	{
+  	    /* canonize the value, so that STRCMP() can be used on it */
+  	    p = enc_canonize(*varp);
+***************
+*** 9305,9315 ****
+--- 9329,9344 ----
+   * Return TRUE if 'fileformat' and/or 'fileencoding' has a different value
+   * from when editing started (save_file_ff() called).
+   * Also when 'endofline' was changed and 'binary' is set.
++  * Don't consider a new, empty buffer to be changed.
+   */
+      int
+  file_ff_differs(buf)
+      buf_T	*buf;
+  {
++     if ((buf->b_flags & BF_NEW)
++ 	    && buf->b_ml.ml_line_count == 1
++ 	    && *ml_get_buf(buf, (linenr_T)1, FALSE) == NUL)
++ 	return FALSE;
+      if (buf->b_start_ffc != *buf->b_p_ff)
+  	return TRUE;
+      if (buf->b_p_bin && buf->b_start_eol != buf->b_p_eol)
+*** ../vim-6.2.380/src/version.c	Thu Mar 18 17:11:30 2004
+--- src/version.c	Fri Mar 19 11:42:51 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     381,
+  /**/
+
+-- 
+Q: How many legs does a giraffe have?
+A: Eight: two in front, two behind, two on the left and two on the right
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

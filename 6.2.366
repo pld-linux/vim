@@ -1,0 +1,48 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.366
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.366
+Problem:    When the GUI can't start because no valid font is found, there is
+            no error message. (Ugen)
+Solution:   Add an error message.
+Files:      src/gui.c
+
+
+*** ../vim-6.2.365/src/gui.c	Sat Mar  6 21:06:59 2004
+--- src/gui.c	Tue Mar 16 19:19:35 2004
+***************
+*** 467,473 ****
+--- 467,476 ----
+  #endif
+  	    gui_init_font(*p_guifont == NUL ? hl_get_font_name()
+  						  : p_guifont, FALSE) == FAIL)
++     {
++ 	EMSG(_("E665: Cannot start GUI, no valid font found"));
+  	goto error2;
++     }
+  #ifdef FEAT_MBYTE
+      if (gui_get_wide_font() == FAIL)
+  	EMSG(_("E231: 'guifontwide' invalid"));
+*** ../vim-6.2.365/src/version.c	Tue Mar 16 18:03:23 2004
+--- src/version.c	Tue Mar 16 20:52:49 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     366,
+  /**/
+
+-- 
+I wonder how much deeper the ocean would be without sponges.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

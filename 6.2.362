@@ -1,0 +1,69 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.362 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.362 (extra, after 6.2.347)
+Problem:    Win32: The manifest causes Gvim not to work. (Dave Roberts)
+Solution:   Change "x86" to "X86". (Serge Pirotte)
+Files:	    src/gvim.exe.mnf
+
+
+*** ../vim-6.2.361/src/gvim.exe.mnf	Fri Mar 12 15:26:18 2004
+--- src/gvim.exe.mnf	Tue Mar 16 12:05:07 2004
+***************
+*** 1,7 ****
+  <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+  <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+    <assemblyIdentity
+!     processorArchitecture="x86"
+      version="6.2.0.0"
+      type="win32"
+      name="Vim"
+--- 1,7 ----
+  <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+  <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+    <assemblyIdentity
+!     processorArchitecture="X86"
+      version="6.2.0.0"
+      type="win32"
+      name="Vim"
+***************
+*** 15,21 ****
+          version="6.0.0.0"
+          publicKeyToken="6595b64144ccf1df"
+          language="*"
+!         processorArchitecture="x86"
+        />
+      </dependentAssembly>
+    </dependency>
+--- 15,21 ----
+          version="6.0.0.0"
+          publicKeyToken="6595b64144ccf1df"
+          language="*"
+!         processorArchitecture="X86"
+        />
+      </dependentAssembly>
+    </dependency>
+*** ../vim-6.2.361/src/version.c	Mon Mar 15 17:18:54 2004
+--- src/version.c	Tue Mar 16 14:13:06 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     362,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+33. You name your children Eudora, Mozilla and Dotcom.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

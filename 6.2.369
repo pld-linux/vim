@@ -1,0 +1,555 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.369
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.369
+Problem:    Various memory leaks: when using globpath(), when searching for
+	    help tags files, when defining a function inside a function, when
+	    giving an error message through an exception, for the final "."
+	    line in ":append", in expression "cond ? a : b" that fails and for
+	    missing ")" in an expression.  Using NULL pointer when adding
+	    first user command and for pointer computations with regexp.
+	    (tests by Dominique Pelle)
+Solution:   Fix the leaks by freeing the allocated memory.  Don't use the
+	    array of user commands when there are no entries.  Use a macro
+	    instead of a function call for saving and restoring regexp states.
+Files:	    src/eval.c, src/ex_cmds.c, src/ex_docmd.c, src/ex_getln.c,
+	    src/misc2.c, src/regexp.c, src/screen.c, src/tag.c
+
+
+*** ../vim-6.2.368/src/eval.c	Fri Feb 20 22:11:01 2004
+--- src/eval.c	Wed Mar 17 11:38:47 2004
+***************
+*** 1690,1695 ****
+--- 1690,1697 ----
+  	if ((*arg)[0] != ':')
+  	{
+  	    EMSG(_("E109: Missing ':' after '?'"));
++ 	    if (evaluate && result)
++ 		clear_var(retvar);
+  	    return FAIL;
+  	}
+  
+***************
+*** 1698,1704 ****
+--- 1700,1710 ----
+  	 */
+  	*arg = skipwhite(*arg + 1);
+  	if (eval1(arg, &var2, evaluate && !result) == FAIL) /* recursive! */
++ 	{
++ 	    if (evaluate && result)
++ 		clear_var(retvar);
+  	    return FAIL;
++ 	}
+  	if (evaluate && !result)
+  	    *retvar = var2;
+      }
+***************
+*** 1734,1743 ****
+      /*
+       * Repeat until there is no following "||".
+       */
+      while ((*arg)[0] == '|' && (*arg)[1] == '|')
+      {
+- 	result = FALSE;
+- 	first = TRUE;
+  	if (evaluate && first)
+  	{
+  	    if (get_var_number(retvar) != 0)
+--- 1740,1749 ----
+      /*
+       * Repeat until there is no following "||".
+       */
++     first = TRUE;
++     result = FALSE;
+      while ((*arg)[0] == '|' && (*arg)[1] == '|')
+      {
+  	if (evaluate && first)
+  	{
+  	    if (get_var_number(retvar) != 0)
+***************
+*** 1800,1809 ****
+      /*
+       * Repeat until there is no following "&&".
+       */
+      while ((*arg)[0] == '&' && (*arg)[1] == '&')
+      {
+- 	result = TRUE;
+- 	first = TRUE;
+  	if (evaluate && first)
+  	{
+  	    if (get_var_number(retvar) == 0)
+--- 1806,1815 ----
+      /*
+       * Repeat until there is no following "&&".
+       */
++     first = TRUE;
++     result = TRUE;
+      while ((*arg)[0] == '&' && (*arg)[1] == '&')
+      {
+  	if (evaluate && first)
+  	{
+  	    if (get_var_number(retvar) == 0)
+***************
+*** 2306,2311 ****
+--- 2312,2318 ----
+  		else if (ret == OK)
+  		{
+  		    EMSG(_("E110: Missing ')'"));
++ 		    clear_var(retvar);
+  		    ret = FAIL;
+  		}
+  		break;
+***************
+*** 2331,2337 ****
+--- 2338,2348 ----
+  			 * aborting on error, or when an interrupt occurred or
+  			 * an exception was thrown but not caught. */
+  			if (aborting())
++ 			{
++ 			    if (ret == OK)
++ 				clear_var(retvar);
+  			    ret = FAIL;
++ 			}
+  		    }
+  		    else if (evaluate)
+  			ret = get_var_var(s, len, retvar);
+***************
+*** 2364,2369 ****
+--- 2375,2381 ----
+  	{
+  	    EMSG(_("E111: Missing ']'"));
+  	    clear_var(retvar);
++ 	    clear_var(&var2);
+  	    return FAIL;
+  	}
+  
+***************
+*** 6929,6941 ****
+      int		slen;
+  
+      p = get_var_string(&argvars[0]);
+      n = get_var_number(&argvars[1]);
+      if (argvars[2].var_type != VAR_UNKNOWN)
+  	len = get_var_number(&argvars[2]);
+      else
+! 	len = (int)STRLEN(p) - n;
+  
+-     slen = (int)STRLEN(p);
+      /*
+       * Only return the overlap between the specified part and the actual
+       * string.
+--- 6941,6954 ----
+      int		slen;
+  
+      p = get_var_string(&argvars[0]);
++     slen = (int)STRLEN(p);
++ 
+      n = get_var_number(&argvars[1]);
+      if (argvars[2].var_type != VAR_UNKNOWN)
+  	len = get_var_number(&argvars[2]);
+      else
+! 	len = slen - n;	    /* default len: all bytes that are available. */
+  
+      /*
+       * Only return the overlap between the specified part and the actual
+       * string.
+***************
+*** 8920,8926 ****
+  		p += eval_fname_script(p);
+  		if (ASCII_ISALPHA(*p))
+  		{
+! 		    (void)trans_function_name(&p, TRUE, FALSE);
+  		    if (*skipwhite(p) == '(')
+  		    {
+  			++nesting;
+--- 8933,8939 ----
+  		p += eval_fname_script(p);
+  		if (ASCII_ISALPHA(*p))
+  		{
+! 		    vim_free(trans_function_name(&p, TRUE, FALSE));
+  		    if (*skipwhite(p) == '(')
+  		    {
+  			++nesting;
+*** ../vim-6.2.368/src/ex_cmds.c	Mon Mar 15 12:33:19 2004
+--- src/ex_cmds.c	Wed Mar 17 10:20:59 2004
+***************
+*** 3238,3248 ****
+  #endif
+  		    NUL, eap->cookie, 0);
+  	lines_left = Rows - 1;
+! 	if (theline == NULL || (theline[0] == '.' && theline[1] == NUL))
+  	    break;
+  
+- 	if (!did_undo && u_save(lnum, lnum + 1) == FAIL)
+- 	    break;
+  	did_undo = TRUE;
+  	ml_append(lnum, theline, (colnr_T)0, FALSE);
+  	appended_lines_mark(lnum, 1L);
+--- 3238,3250 ----
+  #endif
+  		    NUL, eap->cookie, 0);
+  	lines_left = Rows - 1;
+! 	if (theline == NULL || (theline[0] == '.' && theline[1] == NUL)
+! 		|| (!did_undo && u_save(lnum, lnum + 1) == FAIL))
+! 	{
+! 	    vim_free(theline);
+  	    break;
++ 	}
+  
+  	did_undo = TRUE;
+  	ml_append(lnum, theline, (colnr_T)0, FALSE);
+  	appended_lines_mark(lnum, 1L);
+*** ../vim-6.2.368/src/ex_docmd.c	Mon Mar  8 15:22:09 2004
+--- src/ex_docmd.c	Tue Mar 16 12:00:49 2004
+***************
+*** 1261,1266 ****
+--- 1261,1267 ----
+  		emsg(p);
+  		vim_free(p);
+  	    }
++ 	    vim_free(sourcing_name);
+  	    sourcing_name = saved_sourcing_name;
+  	    sourcing_lnum = saved_sourcing_lnum;
+  	}
+***************
+*** 2650,2659 ****
+  	    gap = &curbuf->b_ucmds;
+  	    for (;;)
+  	    {
+! 		cmd = USER_CMD_GA(gap, 0);
+! 
+! 		for (j = 0; j < gap->ga_len; ++j, ++cmd)
+  		{
+  		    cp = eap->cmd;
+  		    np = cmd->uc_name;
+  		    k = 0;
+--- 2649,2657 ----
+  	    gap = &curbuf->b_ucmds;
+  	    for (;;)
+  	    {
+! 		for (j = 0; j < gap->ga_len; ++j)
+  		{
++ 		    cmd = USER_CMD_GA(gap, j);
+  		    cp = eap->cmd;
+  		    np = cmd->uc_name;
+  		    k = 0;
+***************
+*** 4579,4585 ****
+      char_u	*compl_arg;
+      int		force;
+  {
+!     ucmd_T	*cmd;
+      char_u	*p;
+      int		i;
+      int		cmp = 1;
+--- 4577,4583 ----
+      char_u	*compl_arg;
+      int		force;
+  {
+!     ucmd_T	*cmd = NULL;
+      char_u	*p;
+      int		i;
+      int		cmp = 1;
+***************
+*** 4607,4619 ****
+      else
+  	gap = &ucmds;
+  
+!     /* Search for the command */
+!     cmd = USER_CMD_GA(gap, 0);
+!     i = 0;
+!     while (i < gap->ga_len)
+      {
+! 	size_t len = STRLEN(cmd->uc_name);
+  
+  	cmp = STRNCMP(name, cmd->uc_name, name_len);
+  	if (cmp == 0)
+  	{
+--- 4605,4617 ----
+      else
+  	gap = &ucmds;
+  
+!     /* Search for the command in the already defined commands. */
+!     for (i = 0; i < gap->ga_len; ++i)
+      {
+! 	size_t len;
+  
++ 	cmd = USER_CMD_GA(gap, i);
++ 	len = STRLEN(cmd->uc_name);
+  	cmp = STRNCMP(name, cmd->uc_name, name_len);
+  	if (cmp == 0)
+  	{
+***************
+*** 4639,4647 ****
+  	/* Stop as soon as we pass the name to add */
+  	if (cmp < 0)
+  	    break;
+- 
+- 	++cmd;
+- 	++i;
+      }
+  
+      /* Extend the array unless we're replacing an existing command */
+--- 4637,4642 ----
+***************
+*** 5124,5143 ****
+      exarg_T	*eap;
+  {
+      int		i = 0;
+!     ucmd_T	*cmd;
+      int		cmp = -1;
+      garray_T	*gap;
+  
+      gap = &curbuf->b_ucmds;
+      for (;;)
+      {
+- 	cmd = USER_CMD_GA(gap, 0);
+  	for (i = 0; i < gap->ga_len; ++i)
+  	{
+  	    cmp = STRCMP(eap->arg, cmd->uc_name);
+  	    if (cmp <= 0)
+  		break;
+- 	    ++cmd;
+  	}
+  	if (gap == &ucmds || cmp == 0)
+  	    break;
+--- 5119,5137 ----
+      exarg_T	*eap;
+  {
+      int		i = 0;
+!     ucmd_T	*cmd = NULL;
+      int		cmp = -1;
+      garray_T	*gap;
+  
+      gap = &curbuf->b_ucmds;
+      for (;;)
+      {
+  	for (i = 0; i < gap->ga_len; ++i)
+  	{
++ 	    cmd = USER_CMD_GA(gap, i);
+  	    cmp = STRCMP(eap->arg, cmd->uc_name);
+  	    if (cmp <= 0)
+  		break;
+  	}
+  	if (gap == &ucmds || cmp == 0)
+  	    break;
+*** ../vim-6.2.368/src/ex_getln.c	Sun Feb 29 21:06:13 2004
+--- src/ex_getln.c	Tue Mar 16 10:41:32 2004
+***************
+*** 2048,2055 ****
+  redrawcmd_preedit()
+  {
+      if ((State & CMDLINE)
+! 	&& xic != NULL && im_get_status() && !p_imdisable
+! 	&& preedit_start_col != MAXCOL)
+      {
+  	int	cmdpos = 0;
+  	int	cmdspos;
+--- 2048,2057 ----
+  redrawcmd_preedit()
+  {
+      if ((State & CMDLINE)
+! 	    && xic != NULL
+! 	    && im_get_status()
+! 	    && !p_imdisable
+! 	    && preedit_start_col != MAXCOL)
+      {
+  	int	cmdpos = 0;
+  	int	cmdspos;
+***************
+*** 4057,4062 ****
+--- 4059,4065 ----
+  		    ga.ga_len += len;
+  		    ga.ga_room -= len;
+  		}
++ 		FreeWild(num_p, p);
+  	    }
+  	}
+      }
+*** ../vim-6.2.368/src/misc2.c	Mon Mar 15 12:44:12 2004
+--- src/misc2.c	Tue Mar 16 11:07:16 2004
+***************
+*** 1500,1506 ****
+      ga_init(gap);
+  }
+  
+- #if defined(FEAT_EVAL) || defined(PROTO)
+  /*
+   * Clear a growing array that contains a list of strings.
+   */
+--- 1500,1505 ----
+***************
+*** 1514,1520 ****
+  	vim_free(((char_u **)(gap->ga_data))[i]);
+      ga_clear(gap);
+  }
+- #endif
+  
+  /*
+   * Initialize a growing array.	Don't forget to set ga_itemsize and
+--- 1513,1518 ----
+*** ../vim-6.2.368/src/regexp.c	Sun Feb 15 13:49:38 2004
+--- src/regexp.c	Tue Mar 16 11:34:06 2004
+***************
+*** 2611,2618 ****
+  static void	reg_save __ARGS((regsave_T *save));
+  static void	reg_restore __ARGS((regsave_T *save));
+  static int	reg_save_equal __ARGS((regsave_T *save));
+! static void	save_se __ARGS((save_se_T *savep, lpos_T *posp, char_u **pp));
+! static void	restore_se __ARGS((save_se_T *savep, lpos_T *posp, char_u **pp));
+  static int	re_num_cmp __ARGS((long_u val, char_u *scan));
+  static int	regmatch __ARGS((char_u *prog));
+  static int	regrepeat __ARGS((char_u *p, long maxcount));
+--- 2611,2630 ----
+  static void	reg_save __ARGS((regsave_T *save));
+  static void	reg_restore __ARGS((regsave_T *save));
+  static int	reg_save_equal __ARGS((regsave_T *save));
+! static void	save_se_multi __ARGS((save_se_T *savep, lpos_T *posp));
+! static void	save_se_one __ARGS((save_se_T *savep, char_u **pp));
+! 
+! /* Save the sub-expressions before attempting a match. */
+! #define save_se(savep, posp, pp) \
+!     REG_MULTI ? save_se_multi((savep), (posp)) : save_se_one((savep), (pp))
+! 
+! /* After a failed match restore the sub-expressions. */
+! #define restore_se(savep, posp, pp) { \
+!     if (REG_MULTI) \
+! 	*(posp) = (savep)->se_u.pos; \
+!     else \
+! 	*(pp) = (savep)->se_u.ptr; }
+! 
+  static int	re_num_cmp __ARGS((long_u val, char_u *scan));
+  static int	regmatch __ARGS((char_u *prog));
+  static int	regrepeat __ARGS((char_u *p, long maxcount));
+***************
+*** 4747,4786 ****
+   * Tentatively set the sub-expression start to the current position (after
+   * calling regmatch() they will have changed).  Need to save the existing
+   * values for when there is no match.
+!  * Use pointer or position, depending on REG_MULTI.
+   */
+      static void
+! save_se(savep, posp, pp)
+      save_se_T	*savep;
+      lpos_T	*posp;
+-     char_u	**pp;
+  {
+!     if (REG_MULTI)
+!     {
+! 	savep->se_u.pos = *posp;
+! 	posp->lnum = reglnum;
+! 	posp->col = (colnr_T)(reginput - regline);
+!     }
+!     else
+!     {
+! 	savep->se_u.ptr = *pp;
+! 	*pp = reginput;
+!     }
+  }
+  
+- /*
+-  * We were wrong, restore the sub-expressions.
+-  */
+      static void
+! restore_se(savep, posp, pp)
+      save_se_T	*savep;
+-     lpos_T	*posp;
+      char_u	**pp;
+  {
+!     if (REG_MULTI)
+! 	*posp = savep->se_u.pos;
+!     else
+! 	*pp = savep->se_u.ptr;
+  }
+  
+  /*
+--- 4759,4784 ----
+   * Tentatively set the sub-expression start to the current position (after
+   * calling regmatch() they will have changed).  Need to save the existing
+   * values for when there is no match.
+!  * Use se_save() to use pointer (save_se_multi()) or position (save_se_one()),
+!  * depending on REG_MULTI.
+   */
+      static void
+! save_se_multi(savep, posp)
+      save_se_T	*savep;
+      lpos_T	*posp;
+  {
+!     savep->se_u.pos = *posp;
+!     posp->lnum = reglnum;
+!     posp->col = (colnr_T)(reginput - regline);
+  }
+  
+      static void
+! save_se_one(savep, pp)
+      save_se_T	*savep;
+      char_u	**pp;
+  {
+!     savep->se_u.ptr = *pp;
+!     *pp = reginput;
+  }
+  
+  /*
+*** ../vim-6.2.368/src/screen.c	Tue Mar 16 15:35:40 2004
+--- src/screen.c	Wed Mar 17 12:40:59 2004
+***************
+*** 1599,1604 ****
+--- 1599,1613 ----
+  				wp->w_lines_valid = wp->w_height;
+  			    for (i = wp->w_lines_valid; i - j >= idx; --i)
+  				wp->w_lines[i] = wp->w_lines[i - j];
++ 
++ 			    /* The w_lines[] entries for inserted lines are
++ 			     * now invalid, but wl_size may be used above.
++ 			     * Reset to zero. */
++ 			    while (i >= idx)
++ 			    {
++ 				wp->w_lines[i].wl_size = 0;
++ 				wp->w_lines[i--].wl_valid = FALSE;
++ 			    }
+  			}
+  		    }
+  		}
+*** ../vim-6.2.368/src/tag.c	Sun Feb 29 21:06:13 2004
+--- src/tag.c	Tue Mar 16 11:06:16 2004
+***************
+*** 2226,2232 ****
+  	     * For a help window find "doc/tags" and "doc/tags-??" in all
+  	     * directories in 'runtimepath'.
+  	     */
+! 	    ga_clear(&tag_fnames);
+  	    ga_init2(&tag_fnames, sizeof(char_u *), 10);
+  	    do_in_runtimepath((char_u *)
+  #ifdef FEAT_MULTI_LANG
+--- 2226,2232 ----
+  	     * For a help window find "doc/tags" and "doc/tags-??" in all
+  	     * directories in 'runtimepath'.
+  	     */
+! 	    ga_clear_strings(&tag_fnames);
+  	    ga_init2(&tag_fnames, sizeof(char_u *), 10);
+  	    do_in_runtimepath((char_u *)
+  #ifdef FEAT_MULTI_LANG
+*** ../vim-6.2.368/src/version.c	Wed Mar 17 09:54:22 2004
+--- src/version.c	Wed Mar 17 13:04:59 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     369,
+  /**/
+
+-- 
+I started out with nothing, and I still have most of it.
+                                -- Michael Davis -- "Tonight Show"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,64 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.386
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.386
+Problem:    Wasting time trying to read marks from the viminfo file for a
+	    buffer without a name.
+Solution:   Skip reading marks when the buffer has no name.
+Files:	    src/fileio.c
+
+
+*** ../vim-6.2.385/src/fileio.c	Sat Mar 20 21:17:12 2004
+--- src/fileio.c	Sat Mar 20 20:02:34 2004
+***************
+*** 2247,2256 ****
+  #endif
+  
+  #ifdef FEAT_VIMINFO
+      static void
+  check_marks_read()
+  {
+!     if (!curbuf->b_marks_read && get_viminfo_parameter('\'') > 0)
+  	read_viminfo(NULL, FALSE, TRUE, FALSE);
+  
+      /* Always set b_marks_read; needed when 'viminfo' is changed to include
+--- 2247,2261 ----
+  #endif
+  
+  #ifdef FEAT_VIMINFO
++ /*
++  * Read marks for the current buffer from the viminfo file, when we support
++  * buffer marks and the buffer has a name.
++  */
+      static void
+  check_marks_read()
+  {
+!     if (!curbuf->b_marks_read && get_viminfo_parameter('\'') > 0
+! 						  && curbuf->b_ffname != NULL)
+  	read_viminfo(NULL, FALSE, TRUE, FALSE);
+  
+      /* Always set b_marks_read; needed when 'viminfo' is changed to include
+*** ../vim-6.2.385/src/version.c	Sat Mar 20 21:17:12 2004
+--- src/version.c	Sat Mar 20 21:20:36 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     386,
+  /**/
+
+-- 
+From "know your smileys":
+ =):-)	Uncle Sam
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

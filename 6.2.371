@@ -1,0 +1,64 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.371
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.371
+Problem:    When 'virtualedit' is set and there is a Tab before the next "x", 
+            "dtx" does not delete the whole Tab. (Ken Hashishi)
+Solution:   Move the cursor to the last position of the Tab.  Also for
+            "df<Tab>".
+Files:      src/normal.c
+
+
+*** ../vim-6.2.370/src/normal.c	Sun Mar 14 20:16:56 2004
+--- src/normal.c	Sun Mar 14 17:42:30 2004
+***************
+*** 5544,5550 ****
+      {
+  	curwin->w_set_curswant = TRUE;
+  #ifdef FEAT_VIRTUALEDIT
+! 	curwin->w_cursor.coladd = 0;
+  #endif
+  #ifdef FEAT_VISUAL
+  	adjust_for_sel(cap);
+--- 5547,5563 ----
+      {
+  	curwin->w_set_curswant = TRUE;
+  #ifdef FEAT_VIRTUALEDIT
+! 	/* Include a Tab for "tx" and for "dfx". */
+! 	if (gchar_cursor() == TAB && virtual_active() && cap->arg == FORWARD
+! 		&& (t_cmd || cap->oap->op_type != OP_NOP))
+! 	{
+! 	    colnr_T	scol, ecol;
+! 
+! 	    getvcol(curwin, &curwin->w_cursor, &scol, NULL, &ecol);
+! 	    curwin->w_cursor.coladd = ecol - scol;
+! 	}
+! 	else
+! 	    curwin->w_cursor.coladd = 0;
+  #endif
+  #ifdef FEAT_VISUAL
+  	adjust_for_sel(cap);
+*** ../vim-6.2.370/src/version.c	Wed Mar 17 15:17:46 2004
+--- src/version.c	Wed Mar 17 15:26:01 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     371,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+39. You move into a new house and decide to Netscape before you landscape.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

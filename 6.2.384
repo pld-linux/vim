@@ -1,0 +1,144 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.384
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.384
+Problem:    ":menu a.&b" ":unmenu a.b" only works if "&b" isn't translated.
+Solution:   Also compare the names without '&' characters.
+Files:	    src/menu.c
+
+
+*** ../vim-6.2.383/src/menu.c	Tue Feb 17 21:08:58 2004
+--- src/menu.c	Sat Mar 20 21:06:51 2004
+***************
+*** 2244,2249 ****
+--- 2244,2250 ----
+  typedef struct
+  {
+      char_u	*from;		/* English name */
++     char_u	*from_noamp;	/* same, without '&' */
+      char_u	*to;		/* translated name */
+  } menutrans_T;
+  
+***************
+*** 2264,2270 ****
+      char_u		*arg = eap->arg;
+      menutrans_T		*tp;
+      int			i;
+!     char_u		*from, *to;
+  
+      if (menutrans_ga.ga_itemsize == 0)
+  	ga_init2(&menutrans_ga, (int)sizeof(menutrans_T), 5);
+--- 2265,2271 ----
+      char_u		*arg = eap->arg;
+      menutrans_T		*tp;
+      int			i;
+!     char_u		*from, *from_noamp, *to;
+  
+      if (menutrans_ga.ga_itemsize == 0)
+  	ga_init2(&menutrans_ga, (int)sizeof(menutrans_T), 5);
+***************
+*** 2278,2283 ****
+--- 2279,2285 ----
+  	for (i = 0; i < menutrans_ga.ga_len; ++i)
+  	{
+  	    vim_free(tp[i].from);
++ 	    vim_free(tp[i].from_noamp);
+  	    vim_free(tp[i].to);
+  	}
+  	ga_clear(&menutrans_ga);
+***************
+*** 2302,2315 ****
+  	    {
+  		tp = (menutrans_T *)menutrans_ga.ga_data;
+  		from = vim_strsave(from);
+  		to = vim_strnsave(to, (int)(arg - to));
+! 		if (from != NULL && to != NULL)
+  		{
+  		    tp[menutrans_ga.ga_len].from = from;
+  		    tp[menutrans_ga.ga_len].to = to;
+  		    ++menutrans_ga.ga_len;
+  		    --menutrans_ga.ga_room;
+  		}
+  	    }
+  	}
+      }
+--- 2304,2325 ----
+  	    {
+  		tp = (menutrans_T *)menutrans_ga.ga_data;
+  		from = vim_strsave(from);
++ 		from_noamp = menu_text(from, NULL, NULL);
+  		to = vim_strnsave(to, (int)(arg - to));
+! 		if (from != NULL && from_noamp != NULL && to != NULL)
+  		{
+  		    tp[menutrans_ga.ga_len].from = from;
++ 		    tp[menutrans_ga.ga_len].from_noamp = from_noamp;
+  		    tp[menutrans_ga.ga_len].to = to;
+  		    ++menutrans_ga.ga_len;
+  		    --menutrans_ga.ga_room;
+  		}
++ 		else
++ 		{
++ 		    vim_free(from);
++ 		    vim_free(from_noamp);
++ 		    vim_free(to);
++ 		}
+  	    }
+  	}
+      }
+***************
+*** 2346,2355 ****
+--- 2356,2385 ----
+  {
+      menutrans_T		*tp = (menutrans_T *)menutrans_ga.ga_data;
+      int			i;
++     char_u		*dname;
++     int			dlen;
+  
+      for (i = 0; i < menutrans_ga.ga_len; ++i)
+  	if (STRNCMP(name, tp[i].from, len) == 0 && tp[i].from[len] == NUL)
+  	    return tp[i].to;
++ 
++     /* Now try again while ignoring '&' characters. */
++     i = name[len];
++     name[len] = NUL;
++     dname = menu_text(name, NULL, NULL);
++     name[len] = i;
++     if (dname != NULL)
++     {
++ 	dlen = STRLEN(dname);
++ 	for (i = 0; i < menutrans_ga.ga_len; ++i)
++ 	    if (STRCMP(dname, tp[i].from_noamp) == 0)
++ 	    {
++ 		vim_free(dname);
++ 		return tp[i].to;
++ 	    }
++ 	vim_free(dname);
++     }
++ 
+      return NULL;
+  }
+  #endif /* FEAT_MULTI_LANG */
+*** ../vim-6.2.383/src/version.c	Sat Mar 20 17:59:44 2004
+--- src/version.c	Sat Mar 20 21:11:33 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     384,
+  /**/
+
+-- 
+From "know your smileys":
+ ...---...   SOS
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
