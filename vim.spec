@@ -43,6 +43,7 @@ Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
 Patch3:		%{name}-ispell.patch
 Patch4:		%{name}-ispell-axp.patch
+Patch5:		%{name}-ac25x.patch
 URL:		http://www.vim.org/
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -414,9 +415,10 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %ifarch alpha
 %{?_with_ispell:%patch4 -p1}
 %endif
+%patch5 -p1
 
 ## # these patches are to "extra" package which we don't need (nor use)
-## rm -f patches/6.0.{027,048,053,064,070,073,093,106,107,115,116,117,119,123,121,122,125,135,161,162,164,165,179,186,188,205,207}
+## rm -f patches/6.0.{ , }
 ## # apply the rest of official patches
 ## for f in patches/6.0.* ; do
 ## 	echo "Applying official patch `basename $f` ..."
@@ -426,6 +428,8 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %build
 cd src
 autoconf
+# needed to prevent deconfiguring
+cp -f configure auto
 %configure \
 	--disable-gui \
 	--without-x \
@@ -446,7 +450,6 @@ autoconf
 
 %{__make} vim
 mv -f vim vim.ncurses
-
 %{__make} xxd/xxd
 
 %if %{!?_without_static:1}%{?_without_static:0}
@@ -656,7 +659,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files rt
 %defattr(644,root,root,755)
-%doc vim2html.pl
 %attr(755,root,root) %{_bindir}/vimtutor
 %dir %{_sysconfdir}/vim
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/vimrc
