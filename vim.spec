@@ -5,11 +5,11 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	5.7
-Release:	7
+Release:	8
 License:	Charityware
 Group:		Applications/Editors/Vim
-Group(pl):	Aplikacje/Edytory/Vim
 Group(de):	Applikationen/Editors/Vim
+Group(pl):	Aplikacje/Edytory/Vim
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-src.tar.gz
 Source1:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-rt.tar.gz
 Source2:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-extra.tar.gz
@@ -35,9 +35,9 @@ BuildRequires:	ncurses-devel
 BuildRequires:	ncurses-static
 BuildRequires:	glibc-static
 BuildRequires:	gpm-devel
-%{!?noathena:BuildRequires:	Xaw3d-devel}
-%{!?nomotif:BuildRequires:	motif-devel}
-%{!?nogtk:BuildRequires:	gtk+-devel}
+%{!?no_athena:BuildRequires:	Xaw3d-devel}
+%{!?no_motif:BuildRequires:	motif-devel}
+%{!?no_gtk:BuildRequires:	gtk+-devel}
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -73,8 +73,8 @@ birden fazla pencere desteði ve blok iþaretleme yetenekleri içerir.
 Summary:	Staticly linked Vim
 Summary(pl):	Statycznie zlinkowany Vim
 Group:		Applications/Editors/Vim
-Group(pl):	Aplikacje/Edytory/Vim
 Group(de):	Applikationen/Editors/Vim
+Group(pl):	Aplikacje/Edytory/Vim
 Provides:	vi
 Obsoletes:	vi
 Obsoletes:	vim-minimal
@@ -94,8 +94,8 @@ zalecana, mo¿e on pomóc Tobie uratowaæ system w czasie awarii.
 Summary:	Vim runtime files
 Summary(pl):	Pliki przydatne edytorowi Vim 
 Group:		Applications/Editors/Vim
-Group(pl):	Aplikacje/Edytory/Vim
 Group(de):	Applikationen/Editors/Vim
+Group(pl):	Aplikacje/Edytory/Vim
 Obsoletes:	vim-common
 
 %description rt
@@ -112,8 +112,8 @@ zaawansowanych mo¿liwo¶ci vim-a, powiniene¶ zainstalowaæ ten pakiet.
 Summary:	Vim for X Window built with arena
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Arena
 Group:		Applications/Editors/Vim
-Group(pl):	Aplikacje/Edytory/Vim
 Group(de):	Applikationen/Editors/Vim
+Group(pl):	Aplikacje/Edytory/Vim
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-X11
 
@@ -129,8 +129,8 @@ biblioteki Athena Widget Set.
 Summary:	Vim for X Window built with Motif
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Motif
 Group:		Applications/Editors/Vim
-Group(pl):	Aplikacje/Edytory/Vim
 Group(de):	Applikationen/Editors/Vim
+Group(pl):	Aplikacje/Edytory/Vim
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-X11
 
@@ -146,8 +146,8 @@ biblioteki Motif.
 Summary:	Vim for X Window built with gtk
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GTK
 Group:		Applications/Editors/Vim
-Group(pl):	Aplikacje/Edytory/Vim
 Group(de):	Applikationen/Editors/Vim
+Group(pl):	Aplikacje/Edytory/Vim
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-X11
 
@@ -252,7 +252,7 @@ mv -f xxd/xxd xxd.static
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_var}/lib/vim,%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim/{doc,tutor}} \
-	$RPM_BUILD_ROOT{/usr/X11R6/bin,%{_applnkdir}/Development/Editors}
+	$RPM_BUILD_ROOT{%{_prefix}/X11R6/bin,%{_applnkdir}/Development/Editors}
 
 install src/vim.ncurses $RPM_BUILD_ROOT%{_bindir}/vim
 
@@ -292,20 +292,18 @@ ln -sf vi $RPM_BUILD_ROOT/bin/ex
 ln -sf vi $RPM_BUILD_ROOT/bin/view
 ln -sf vi $RPM_BUILD_ROOT/bin/rview
 
-%{!?noathena:install src/gvim.athena $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.athena}
-%{!?nomotif: install src/gvim.motif $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.motif}
-%{!?nogtk:   install src/gvim.gtk $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gtk}
+%{!?no_athena:install src/gvim.athena $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.athena}
+%{!?no_motif: install src/gvim.motif $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.motif}
+%{!?no_gtk:   install src/gvim.gtk $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gtk}
 
-%{!?nogtk:ln -sf gvim.gtk $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim}
-%{!?nogtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgvim}
-%{!?nogtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
-%{!?nogtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
+%{!?no_gtk:ln -sf gvim.gtk $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim}
+%{!?no_gtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgvim}
+%{!?no_gtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
+%{!?no_gtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
 
-%{!?noathena:install %{SOURCE3} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?nomotif: install %{SOURCE4} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-%{!?nogtk:   install %{SOURCE5} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
-
-gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man1/*
+%{!?no_athena:install %{SOURCE3} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?no_motif: install %{SOURCE4} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?no_gtk:   install %{SOURCE5} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -351,20 +349,20 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/vim.*
 %{_mandir}/man1/rvim.*
 
-%{!?noathena:%files -n gvim-athena}
-%{!?noathena:%defattr(644,root,root,755)}
-%{!?noathena:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.athena}
-%{!?noathena:%{_applnkdir}/Development/Editors/gvim-athena.desktop}
+%{!?no_athena:%files -n gvim-athena}
+%{!?no_athena:%defattr(644,root,root,755)}
+%{!?no_athena:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.athena}
+%{!?no_athena:%{_applnkdir}/Development/Editors/gvim-athena.desktop}
 
-%{!?nomotif:%files -n gvim-motif}
-%{!?nomotif:%defattr(644,root,root,755)}
-%{!?nomotif:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.motif}
-%{!?nomotif:%{_applnkdir}/Development/Editors/gvim-motif.desktop}
+%{!?no_motif:%files -n gvim-motif}
+%{!?no_motif:%defattr(644,root,root,755)}
+%{!?no_motif:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.motif}
+%{!?no_motif:%{_applnkdir}/Development/Editors/gvim-motif.desktop}
 
-%{!?nogtk:%files -n gvim-gtk}
-%{!?nogtk:%defattr(644,root,root,755)}
-%{!?nogtk:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gtk}
-%{!?nogtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgvim}
-%{!?nogtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgview}
-%{!?nogtk:%attr(755,root,root) %verify(not link) %{_prefix}/X11R6/bin/gvim}
-%{!?nogtk:%{_applnkdir}/Development/Editors/gvim-gtk.desktop}
+%{!?no_gtk:%files -n gvim-gtk}
+%{!?no_gtk:%defattr(644,root,root,755)}
+%{!?no_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gtk}
+%{!?no_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgvim}
+%{!?no_gtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgview}
+%{!?no_gtk:%attr(755,root,root) %verify(not link) %{_prefix}/X11R6/bin/gvim}
+%{!?no_gtk:%{_applnkdir}/Development/Editors/gvim-gtk.desktop}
