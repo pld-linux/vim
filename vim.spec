@@ -314,7 +314,6 @@ cp -a runtime/syntax $RPM_BUILD_ROOT%{_datadir}/vim/syntax
 cp -a runtime/tutor/tutor  $RPM_BUILD_ROOT%{_datadir}/vim/tutor/tutor
 
 install runtime/*.vim $RPM_BUILD_ROOT%{_datadir}/vim
-mv -f $RPM_BUILD_ROOT%{_datadir}/vim/menu.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/menu
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
 
@@ -362,7 +361,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vimtutor
 %dir %{_sysconfdir}/vim
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/menu
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/vimrc
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/gvimrc
 
