@@ -5,7 +5,7 @@ Summary(pl):	Vi IMproved - klon edytora Vi
 Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	5.7
-Release:	11
+Release:	12
 Epoch:		1
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -374,12 +374,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/syntax
 %{_datadir}/vim/tutor
 
-%{_datadir}/vim/bugreport.vim
-%{_datadir}/vim/filetype.vim
-%{_datadir}/vim/scripts.vim
-%{_datadir}/vim/mswin.vim
-%{_datadir}/vim/ftoff.vim
-%{_datadir}/vim/optwin.vim
+%{_datadir}/vim/*.vim
 
 %{_mandir}/man1/vim.*
 %{_mandir}/man1/rvim.*
