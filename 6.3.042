@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.042
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.042
+Problem:    When there is a closed fold at the top of the window, CTRL-X
+	    CTRL-E in Insert mode reduces the size of the fold instead of
+	    scrolling the text up. (Gautam)
+Solution:   Scroll over the closed fold.
+Files:	    src/move.c
+
+
+*** ../vim-6.3.041/src/move.c	Wed Jun  9 14:56:26 2004
+--- src/move.c	Mon Dec  6 11:49:22 2004
+***************
+*** 1551,1557 ****
+--- 1551,1562 ----
+  	    --curwin->w_topfill;
+  	else
+  #endif
++ 	{
++ #ifdef FEAT_FOLDING
++ 	    (void)hasFolding(curwin->w_topline, NULL, &curwin->w_topline);
++ #endif
+  	    ++curwin->w_topline;
++ 	}
+  	++curwin->w_botline;		/* approximate w_botline */
+  	curwin->w_valid &= ~(VALID_WROW|VALID_CROW|VALID_BOTLINE);
+      }
+*** ../vim-6.3.041/src/version.c	Sun Dec  5 16:43:06 2004
+--- src/version.c	Mon Dec  6 11:48:43 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     42,
+  /**/
+
+-- 
+A salesperson says:            Translation:
+"backward compatible"          Old technology
+"Premium"                      Overpriced
+"Can't keep it on the shelf"   Unavailable
+"Stands alone"                 Piece of shit
+"Proprietary"                  Incompatible
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

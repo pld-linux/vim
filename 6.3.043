@@ -1,0 +1,277 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.043
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.043
+Problem:    'hlsearch' highlighting sometimes disappears when inserting text
+	    in PHP code with syntax highlighting. (Marcel Svitalsky)
+Solution:   Don't use pointers to remember where a match was found, use an
+	    index.  The pointers may become invalid when searching in other
+	    lines.
+Files:	    src/screen.c
+
+
+*** ../vim-6.3.042/src/screen.c	Sun Dec  5 14:57:15 2004
+--- src/screen.c	Tue Dec  7 13:09:09 2004
+***************
+*** 110,117 ****
+      int		attr;	/* attributes to be used for a match */
+      int		attr_cur; /* attributes currently active in win_line() */
+      linenr_T	first_lnum;	/* first lnum to search for multi-line pat */
+!     char_u	*startp; /* in win_line() points to char where HL starts */
+!     char_u	*endp;	 /* in win_line() points to char where HL ends */
+  } match_T;
+  
+  static match_T search_hl;	/* used for 'hlsearch' highlight matching */
+--- 110,117 ----
+      int		attr;	/* attributes to be used for a match */
+      int		attr_cur; /* attributes currently active in win_line() */
+      linenr_T	first_lnum;	/* first lnum to search for multi-line pat */
+!     colnr_T	startcol; /* in win_line() points to char where HL starts */
+!     colnr_T	endcol;	 /* in win_line() points to char where HL ends */
+  } match_T;
+  
+  static match_T search_hl;	/* used for 'hlsearch' highlight matching */
+***************
+*** 926,932 ****
+  
+  	/* When a change starts above w_topline and the end is below
+  	 * w_topline, start redrawing at w_topline.
+! 	 * If the end of the change is above w_topline: do like no changes was
+  	 * made, but redraw the first line to find changes in syntax. */
+  	if (mod_top != 0 && mod_top < wp->w_topline)
+  	{
+--- 926,932 ----
+  
+  	/* When a change starts above w_topline and the end is below
+  	 * w_topline, start redrawing at w_topline.
+! 	 * If the end of the change is above w_topline: do like no change was
+  	 * made, but redraw the first line to find changes in syntax. */
+  	if (mod_top != 0 && mod_top < wp->w_topline)
+  	{
+***************
+*** 2896,2903 ****
+      shl = &search_hl;
+      for (;;)
+      {
+! 	shl->startp = NULL;
+! 	shl->endp = NULL;
+  	shl->attr_cur = 0;
+  	if (shl->rm.regprog != NULL)
+  	{
+--- 2896,2903 ----
+      shl = &search_hl;
+      for (;;)
+      {
+! 	shl->startcol = MAXCOL;
+! 	shl->endcol = MAXCOL;
+  	shl->attr_cur = 0;
+  	if (shl->rm.regprog != NULL)
+  	{
+***************
+*** 2912,2936 ****
+  	    if (shl->lnum != 0 && shl->lnum <= lnum)
+  	    {
+  		if (shl->lnum == lnum)
+! 		    shl->startp = line + shl->rm.startpos[0].col;
+  		else
+! 		    shl->startp = line;
+  		if (lnum == shl->lnum + shl->rm.endpos[0].lnum
+  						  - shl->rm.startpos[0].lnum)
+! 		    shl->endp = line + shl->rm.endpos[0].col;
+  		else
+! 		    shl->endp = line + MAXCOL;
+  		/* Highlight one character for an empty match. */
+! 		if (shl->startp == shl->endp)
+  		{
+  #ifdef FEAT_MBYTE
+! 		    if (has_mbyte && *shl->endp != NUL)
+! 			shl->endp += (*mb_ptr2len_check)(shl->endp);
+  		    else
+  #endif
+! 			++shl->endp;
+  		}
+! 		if (shl->startp < ptr)  /* match at leftcol */
+  		{
+  		    shl->attr_cur = shl->attr;
+  		    search_attr = shl->attr;
+--- 2912,2936 ----
+  	    if (shl->lnum != 0 && shl->lnum <= lnum)
+  	    {
+  		if (shl->lnum == lnum)
+! 		    shl->startcol = shl->rm.startpos[0].col;
+  		else
+! 		    shl->startcol = 0;
+  		if (lnum == shl->lnum + shl->rm.endpos[0].lnum
+  						  - shl->rm.startpos[0].lnum)
+! 		    shl->endcol = shl->rm.endpos[0].col;
+  		else
+! 		    shl->endcol = MAXCOL;
+  		/* Highlight one character for an empty match. */
+! 		if (shl->startcol == shl->endcol)
+  		{
+  #ifdef FEAT_MBYTE
+! 		    if (has_mbyte && line[shl->endcol] != NUL)
+! 			shl->endcol += (*mb_ptr2len_check)(line + shl->endcol);
+  		    else
+  #endif
+! 			++shl->endcol;
+  		}
+! 		if ((long)shl->startcol < v)  /* match at leftcol */
+  		{
+  		    shl->attr_cur = shl->attr;
+  		    search_attr = shl->attr;
+***************
+*** 3193,3214 ****
+  		 * Do this first for search_hl, then for match_hl, so that
+  		 * ":match" overrules 'hlsearch'.
+  		 */
+  		shl = &search_hl;
+  		for (;;)
+  		{
+  		    while (shl->rm.regprog != NULL)
+  		    {
+! 			if (shl->startp != NULL
+! 				&& ptr >= shl->startp
+! 				&& ptr < shl->endp)
+  			{
+  			    shl->attr_cur = shl->attr;
+  			}
+! 			else if (ptr == shl->endp)
+  			{
+  			    shl->attr_cur = 0;
+  
+- 			    v = (long)(ptr - line);
+  			    next_search_hl(wp, shl, lnum, (colnr_T)v);
+  
+  			    /* Need to get the line again, a multi-line regexp
+--- 3193,3214 ----
+  		 * Do this first for search_hl, then for match_hl, so that
+  		 * ":match" overrules 'hlsearch'.
+  		 */
++ 		v = (long)(ptr - line);
+  		shl = &search_hl;
+  		for (;;)
+  		{
+  		    while (shl->rm.regprog != NULL)
+  		    {
+! 			if (shl->startcol != MAXCOL
+! 				&& v >= (long)shl->startcol
+! 				&& v < (long)shl->endcol)
+  			{
+  			    shl->attr_cur = shl->attr;
+  			}
+! 			else if (v == (long)shl->endcol)
+  			{
+  			    shl->attr_cur = 0;
+  
+  			    next_search_hl(wp, shl, lnum, (colnr_T)v);
+  
+  			    /* Need to get the line again, a multi-line regexp
+***************
+*** 3218,3240 ****
+  
+  			    if (shl->lnum == lnum)
+  			    {
+! 				shl->startp = line + shl->rm.startpos[0].col;
+  				if (shl->rm.endpos[0].lnum == 0)
+! 				    shl->endp = line + shl->rm.endpos[0].col;
+  				else
+! 				    shl->endp = line + MAXCOL;
+  
+! 				if (shl->startp == shl->endp)
+  				{
+  				    /* highlight empty match, try again after
+  				     * it */
+  #ifdef FEAT_MBYTE
+  				    if (has_mbyte)
+! 					shl->endp +=
+! 					       (*mb_ptr2len_check)(shl->endp);
+  				    else
+  #endif
+! 					++shl->endp;
+  				}
+  
+  				/* Loop to check if the match starts at the
+--- 3218,3240 ----
+  
+  			    if (shl->lnum == lnum)
+  			    {
+! 				shl->startcol = shl->rm.startpos[0].col;
+  				if (shl->rm.endpos[0].lnum == 0)
+! 				    shl->endcol = shl->rm.endpos[0].col;
+  				else
+! 				    shl->endcol = MAXCOL;
+  
+! 				if (shl->startcol == shl->endcol)
+  				{
+  				    /* highlight empty match, try again after
+  				     * it */
+  #ifdef FEAT_MBYTE
+  				    if (has_mbyte)
+! 					shl->endcol += (*mb_ptr2len_check)(line
+! 							       + shl->endcol);
+  				    else
+  #endif
+! 					++shl->endcol;
+  				}
+  
+  				/* Loop to check if the match starts at the
+***************
+*** 3868,3875 ****
+  		    && ((area_attr != 0 && vcol == fromcol)
+  #ifdef FEAT_SEARCH_EXTRA
+  			/* highlight 'hlsearch' match at end of line */
+! 			|| ptr - 1 == search_hl.startp
+! 			|| ptr - 1 == match_hl.startp
+  #endif
+  		       ))
+  	    {
+--- 3868,3875 ----
+  		    && ((area_attr != 0 && vcol == fromcol)
+  #ifdef FEAT_SEARCH_EXTRA
+  			/* highlight 'hlsearch' match at end of line */
+! 			|| (ptr - line) - 1 == (long)search_hl.startcol
+! 			|| (ptr - line) - 1 == (long)match_hl.startcol
+  #endif
+  		       ))
+  	    {
+***************
+*** 3906,3912 ****
+  #ifdef FEAT_SEARCH_EXTRA
+  		if (area_attr == 0)
+  		{
+! 		    if (ptr - 1 == match_hl.startp)
+  			char_attr = match_hl.attr;
+  		    else
+  			char_attr = search_hl.attr;
+--- 3906,3912 ----
+  #ifdef FEAT_SEARCH_EXTRA
+  		if (area_attr == 0)
+  		{
+! 		    if ((ptr - line) - 1 == (long)match_hl.startcol)
+  			char_attr = match_hl.attr;
+  		    else
+  			char_attr = search_hl.attr;
+*** ../vim-6.3.042/src/version.c	Mon Dec  6 11:51:12 2004
+--- src/version.c	Tue Dec  7 12:57:14 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     43,
+  /**/
+
+-- 
+A)bort, R)etry, P)lease don't bother me again
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

@@ -1,0 +1,80 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.046
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.046
+Problem:    ":registers" doesn't show multi-byte characters properly.
+	    (Valery Kondakoff)
+Solution:   Get the length of each character before displaying it.
+Files:	    src/ops.c
+
+
+*** ../vim-6.3.045/src/ops.c	Fri Jul  9 22:21:01 2004
+--- src/ops.c	Sat Dec 11 16:11:42 2004
+***************
+*** 3698,3703 ****
+--- 3698,3708 ----
+      int			name;
+      int			attr;
+      char_u		*arg = eap->arg;
++ #ifdef FEAT_MBYTE
++     int			clen;
++ #else
++ # define clen 1
++ #endif
+  
+      if (arg != NULL && *arg == NUL)
+  	arg = NULL;
+***************
+*** 3745,3754 ****
+  		}
+  		for (p = yb->y_array[j]; *p && (n -= ptr2cells(p)) >= 0; ++p)
+  		{
+- 		    msg_outtrans_len(p, 1);
+  #ifdef FEAT_MBYTE
+! 		    if (has_mbyte)
+! 			p += (*mb_ptr2len_check)(p) - 1;
+  #endif
+  		}
+  	    }
+--- 3750,3761 ----
+  		}
+  		for (p = yb->y_array[j]; *p && (n -= ptr2cells(p)) >= 0; ++p)
+  		{
+  #ifdef FEAT_MBYTE
+! 		    clen = (*mb_ptr2len_check)(p);
+! #endif
+! 		    msg_outtrans_len(p, clen);
+! #ifdef FEAT_MBYTE
+! 		    p += clen - 1;
+  #endif
+  		}
+  	    }
+*** ../vim-6.3.045/src/version.c	Thu Dec  9 16:41:39 2004
+--- src/version.c	Sat Dec 11 16:12:58 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     46,
+  /**/
+
+-- 
+This planet has -- or rather had -- a problem, which was this: most
+of the people living on it were unhappy for pretty much of the time.
+Many solutions were suggested for this problem, but most of these
+were largely concerned with the movements of small green pieces of
+paper, which is odd because on the whole it wasn't the small green
+pieces of paper that were unhappy.
+		-- Douglas Adams, "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

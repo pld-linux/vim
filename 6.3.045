@@ -1,0 +1,363 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.045
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.045
+Problem:    Unusual characters in an option value may cause unexpected
+	    behavior, especially for a modeline. (Ciaran McCreesh)
+Solution:   Don't allow setting termcap options or 'printdevice' or
+	    'titleold' in a modeline.  Don't list options for "termcap"
+	    and "all" in a modeline.  Don't allow unusual characters in
+	    'filetype', 'syntax', 'backupext', 'keymap', 'patchmode' and
+	    'langmenu'.
+Files:	    src/option.c, runtime/doc/options.txt
+
+
+*** ../vim-6.3.044/src/option.c	Mon Sep 13 16:36:12 2004
+--- src/option.c	Thu Dec  9 15:41:03 2004
+***************
+*** 293,298 ****
+--- 293,299 ----
+  #define P_SECURE	0x40000L/* cannot change in modeline or secure mode */
+  #define P_GETTEXT	0x80000L/* expand default value with _() */
+  #define P_NOGLOB       0x100000L/* do not use local value for global vimrc */
++ #define P_NFNAME       0x200000L/* only normal file name chars allowed */
+  
+  /*
+   * options[] is initialized here.
+***************
+*** 413,419 ****
+      {"backupdir",   "bdir", P_STRING|P_EXPAND|P_VI_DEF|P_COMMA|P_NODUP|P_SECURE,
+  			    (char_u *)&p_bdir, PV_NONE,
+  			    {(char_u *)DFLT_BDIR, (char_u *)0L}},
+!     {"backupext",   "bex",  P_STRING|P_VI_DEF,
+  			    (char_u *)&p_bex, PV_NONE,
+  			    {
+  #ifdef VMS
+--- 414,420 ----
+      {"backupdir",   "bdir", P_STRING|P_EXPAND|P_VI_DEF|P_COMMA|P_NODUP|P_SECURE,
+  			    (char_u *)&p_bdir, PV_NONE,
+  			    {(char_u *)DFLT_BDIR, (char_u *)0L}},
+!     {"backupext",   "bex",  P_STRING|P_VI_DEF|P_NFNAME,
+  			    (char_u *)&p_bex, PV_NONE,
+  			    {
+  #ifdef VMS
+***************
+*** 846,852 ****
+      {"fileformats", "ffs",  P_STRING|P_VIM|P_COMMA|P_NODUP,
+  			    (char_u *)&p_ffs, PV_NONE,
+  			    {(char_u *)DFLT_FFS_VI, (char_u *)DFLT_FFS_VIM}},
+!     {"filetype",    "ft",   P_STRING|P_ALLOCED|P_VI_DEF|P_NOGLOB,
+  #ifdef FEAT_AUTOCMD
+  			    (char_u *)&p_ft, PV_FT,
+  			    {(char_u *)"", (char_u *)0L}
+--- 847,853 ----
+      {"fileformats", "ffs",  P_STRING|P_VIM|P_COMMA|P_NODUP,
+  			    (char_u *)&p_ffs, PV_NONE,
+  			    {(char_u *)DFLT_FFS_VI, (char_u *)DFLT_FFS_VIM}},
+!     {"filetype",    "ft",   P_STRING|P_ALLOCED|P_VI_DEF|P_NOGLOB|P_NFNAME,
+  #ifdef FEAT_AUTOCMD
+  			    (char_u *)&p_ft, PV_FT,
+  			    {(char_u *)"", (char_u *)0L}
+***************
+*** 1284,1290 ****
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
+!     {"keymap",	    "kmp",  P_STRING|P_ALLOCED|P_VI_DEF|P_RBUF|P_RSTAT,
+  #ifdef FEAT_KEYMAP
+  			    (char_u *)&p_keymap, PV_KMAP,
+  			    {(char_u *)"", (char_u *)0L}
+--- 1285,1291 ----
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
+!     {"keymap",	    "kmp",  P_STRING|P_ALLOCED|P_VI_DEF|P_RBUF|P_RSTAT|P_NFNAME,
+  #ifdef FEAT_KEYMAP
+  			    (char_u *)&p_keymap, PV_KMAP,
+  			    {(char_u *)"", (char_u *)0L}
+***************
+*** 1330,1336 ****
+  			    {(char_u *)NULL,
+  #endif
+  				(char_u *)0L}},
+!     {"langmenu",    "lm",   P_STRING|P_VI_DEF,
+  #if defined(FEAT_MENU) && defined(FEAT_MULTI_LANG)
+  			    (char_u *)&p_lm, PV_NONE,
+  #else
+--- 1331,1337 ----
+  			    {(char_u *)NULL,
+  #endif
+  				(char_u *)0L}},
+!     {"langmenu",    "lm",   P_STRING|P_VI_DEF|P_NFNAME,
+  #if defined(FEAT_MENU) && defined(FEAT_MULTI_LANG)
+  			    (char_u *)&p_lm, PV_NONE,
+  #else
+***************
+*** 1562,1568 ****
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
+!     {"patchmode",   "pm",   P_STRING|P_VI_DEF,
+  			    (char_u *)&p_pm, PV_NONE,
+  			    {(char_u *)"", (char_u *)0L}},
+      {"path",	    "pa",   P_STRING|P_EXPAND|P_VI_DEF|P_COMMA|P_NODUP,
+--- 1563,1569 ----
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
+!     {"patchmode",   "pm",   P_STRING|P_VI_DEF|P_NFNAME,
+  			    (char_u *)&p_pm, PV_NONE,
+  			    {(char_u *)"", (char_u *)0L}},
+      {"path",	    "pa",   P_STRING|P_EXPAND|P_VI_DEF|P_COMMA|P_NODUP,
+***************
+*** 1595,1601 ****
+  			    (char_u *)NULL, PV_NONE,
+  #endif
+  			    {(char_u *)FALSE, (char_u *)0L}},
+!     {"printdevice", "pdev", P_STRING|P_VI_DEF,
+  #ifdef FEAT_PRINTER
+  			    (char_u *)&p_pdev, PV_NONE,
+  			    {(char_u *)"", (char_u *)0L}
+--- 1596,1602 ----
+  			    (char_u *)NULL, PV_NONE,
+  #endif
+  			    {(char_u *)FALSE, (char_u *)0L}},
+!     {"printdevice", "pdev", P_STRING|P_VI_DEF|P_SECURE,
+  #ifdef FEAT_PRINTER
+  			    (char_u *)&p_pdev, PV_NONE,
+  			    {(char_u *)"", (char_u *)0L}
+***************
+*** 1981,1987 ****
+      {"switchbuf",   "swb",  P_STRING|P_VI_DEF|P_COMMA|P_NODUP,
+  			    (char_u *)&p_swb, PV_NONE,
+  			    {(char_u *)"", (char_u *)0L}},
+!     {"syntax",	    "syn",  P_STRING|P_ALLOCED|P_VI_DEF|P_NOGLOB,
+  #ifdef FEAT_SYN_HL
+  			    (char_u *)&p_syn, PV_SYN,
+  			    {(char_u *)"", (char_u *)0L}
+--- 1982,1988 ----
+      {"switchbuf",   "swb",  P_STRING|P_VI_DEF|P_COMMA|P_NODUP,
+  			    (char_u *)&p_swb, PV_NONE,
+  			    {(char_u *)"", (char_u *)0L}},
+!     {"syntax",	    "syn",  P_STRING|P_ALLOCED|P_VI_DEF|P_NOGLOB|P_NFNAME,
+  #ifdef FEAT_SYN_HL
+  			    (char_u *)&p_syn, PV_SYN,
+  			    {(char_u *)"", (char_u *)0L}
+***************
+*** 2086,2092 ****
+  			    (char_u *)NULL, PV_NONE,
+  #endif
+  			    {(char_u *)85L, (char_u *)0L}},
+!     {"titleold",    NULL,   P_STRING|P_VI_DEF|P_GETTEXT,
+  #ifdef FEAT_TITLE
+  			    (char_u *)&p_titleold, PV_NONE,
+  			    {(char_u *)N_("Thanks for flying Vim"),
+--- 2087,2093 ----
+  			    (char_u *)NULL, PV_NONE,
+  #endif
+  			    {(char_u *)85L, (char_u *)0L}},
+!     {"titleold",    NULL,   P_STRING|P_VI_DEF|P_GETTEXT|P_SECURE,
+  #ifdef FEAT_TITLE
+  			    (char_u *)&p_titleold, PV_NONE,
+  			    {(char_u *)N_("Thanks for flying Vim"),
+***************
+*** 2321,2327 ****
+  			    {(char_u *)0L, (char_u *)0L}},
+  
+  /* terminal output codes */
+! #define p_term(sss, vvv)   {sss, NULL, P_STRING|P_VI_DEF|P_RALL, \
+  			    (char_u *)&vvv, PV_NONE, \
+  			    {(char_u *)"", (char_u *)0L}},
+  
+--- 2322,2328 ----
+  			    {(char_u *)0L, (char_u *)0L}},
+  
+  /* terminal output codes */
+! #define p_term(sss, vvv)   {sss, NULL, P_STRING|P_VI_DEF|P_RALL|P_SECURE, \
+  			    (char_u *)&vvv, PV_NONE, \
+  			    {(char_u *)"", (char_u *)0L}},
+  
+***************
+*** 3310,3316 ****
+  	errmsg = NULL;
+  	startarg = arg;		/* remember for error message */
+  
+! 	if (STRNCMP(arg, "all", 3) == 0 && !isalpha(arg[3]))
+  	{
+  	    /*
+  	     * ":set all"  show all options.
+--- 3311,3318 ----
+  	errmsg = NULL;
+  	startarg = arg;		/* remember for error message */
+  
+! 	if (STRNCMP(arg, "all", 3) == 0 && !isalpha(arg[3])
+! 						&& !(opt_flags & OPT_MODELINE))
+  	{
+  	    /*
+  	     * ":set all"  show all options.
+***************
+*** 3326,3332 ****
+  	    else
+  		showoptions(1, opt_flags);
+  	}
+! 	else if (STRNCMP(arg, "termcap", 7) == 0)
+  	{
+  	    showoptions(2, opt_flags);
+  	    show_termcodes();
+--- 3328,3334 ----
+  	    else
+  		showoptions(1, opt_flags);
+  	}
+! 	else if (STRNCMP(arg, "termcap", 7) == 0 && !(opt_flags & OPT_MODELINE))
+  	{
+  	    showoptions(2, opt_flags);
+  	    show_termcodes();
+***************
+*** 4611,4616 ****
+--- 4613,4627 ----
+  		) && (options[opt_idx].flags & P_SECURE))
+      {
+  	errmsg = e_secure;
++     }
++ 
++     /* Check for a "normal" file name in some options.  Disallow a path
++      * separator (slash and/or backslash), wildcards and characters that are
++      * often illegal in a file name. */
++     else if ((options[opt_idx].flags & P_NFNAME)
++ 				   && vim_strpbrk(*varp, "/\\*?[|<>") != NULL)
++     {
++ 	errmsg = e_invarg;
+      }
+  
+      /* 'term' */
+*** ../vim-6.3.044/runtime/doc/options.txt	Wed Jun  9 14:56:28 2004
+--- runtime/doc/options.txt	Thu Dec  9 16:39:07 2004
+***************
+*** 1,4 ****
+! *options.txt*	For Vim version 6.3.  Last change: 2004 Jun 01
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+--- 1,4 ----
+! *options.txt*	For Vim version 6.3.  Last change: 2004 Dec 09
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+***************
+*** 139,144 ****
+--- 139,147 ----
+  (the ^[ is a real <Esc> here, use CTRL-V <Esc> to enter it)
+  The advantage over a mapping is that it works in all situations.
+  
++ The t_xx options cannot be set from a |modeline| or in the |sandbox|, for
++ security reasons.
++ 
+  The listing from ":set" looks different from Vi.  Long string options are put
+  at the end of the list.  The number of options is quite large.	The output of
+  "set all" probably does not fit on the screen, causing Vim to give the
+***************
+*** 945,950 ****
+--- 948,954 ----
+  	accidentally overwriting existing files with a backup file.  You might
+  	prefer using ".bak", but make sure that you don't have files with
+  	".bak" that you want to keep.
++ 	Only normal file name characters can be used, "/\*?[|<>" are illegal.
+  
+  						*'backupskip'* *'bsk'*
+  'backupskip' 'bsk'	string	(default: "/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*")
+***************
+*** 2407,2412 ****
+--- 2411,2417 ----
+  	type that is actually stored with the file.
+  	This option is not copied to another buffer, independent of the 's' or
+  	'S' flag in 'cpoptions'.
++ 	Only normal file name characters can be used, "/\*?[|<>" are illegal.
+  
+  						*'fillchars'* *'fcs'*
+  'fillchars' 'fcs'	string	(default "vert:|,fold:-")
+***************
+*** 3599,3604 ****
+--- 3604,3610 ----
+  	Setting this option to a valid keymap name has the side effect of
+  	setting 'iminsert' to one, so that the keymap becomes effective.
+  	'imsearch' is also set to one, unless it was -1
++ 	Only normal file name characters can be used, "/\*?[|<>" are illegal.
+  
+  					*'keymodel'* *'km'*
+  'keymodel' 'km'		string	(default "")
+***************
+*** 3690,3695 ****
+--- 3696,3702 ----
+  	matter what $LANG is set to: >
+  		:set langmenu=nl_NL.ISO_8859-1
+  <	When 'langmenu' is empty, |v:lang| is used.
++ 	Only normal file name characters can be used, "/\*?[|<>" are illegal.
+  	If your $LANG is set to a non-English language but you do want to use
+  	the English menus: >
+  		:set langmenu=none
+***************
+*** 4310,4315 ****
+--- 4317,4323 ----
+  	Using 'patchmode' for compressed files appends the extension at the
+  	end (e.g., "file.gz.orig"), thus the resulting name isn't always
+  	recognized as a compressed file.
++ 	Only normal file name characters can be used, "/\*?[|<>" are illegal.
+  
+  					*'path'* *'pa'* *E343* *E345* *E347*
+  'path' 'pa'		string	(default on Unix: ".,/usr/include,,"
+***************
+*** 4424,4429 ****
+--- 4432,4439 ----
+  	in the standard printer dialog.
+  	If the option is empty, then vim will use the system default printer
+  	for ":hardcopy!"
++ 	This option cannot be set from a |modeline| or in the |sandbox|, for
++ 	security reasons.
+  
+  					*'printencoding'* *'penc'* *E620*
+  'printencoding' 'penc'	String	(default empty, except for:
+***************
+*** 5711,5716 ****
+--- 5721,5727 ----
+  	Syntax autocommand event is triggered with the value as argument.
+  	This option is not copied to another buffer, independent of the 's' or
+  	'S' flag in 'cpoptions'.
++ 	Only normal file name characters can be used, "/\*?[|<>" are illegal.
+  
+  					*'tabstop'* *'ts'*
+  'tabstop' 'ts'		number	(default 8)
+***************
+*** 6089,6094 ****
+--- 6100,6107 ----
+  	This option will be used for the window title when exiting Vim if the
+  	original title cannot be restored.  Only happens if 'title' is on or
+  	'titlestring' is not empty.
++ 	This option cannot be set from a |modeline| or in the |sandbox|, for
++ 	security reasons.
+  						*'titlestring'*
+  'titlestring'		string	(default "")
+  			global
+*** ../vim-6.3.044/src/version.c	Wed Dec  8 21:51:39 2004
+--- src/version.c	Thu Dec  9 16:23:34 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     45,
+  /**/
+
+-- 
+How To Keep A Healthy Level Of Insanity:
+7. Finish all your sentences with "in accordance with the prophecy".
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

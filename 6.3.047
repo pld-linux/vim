@@ -1,0 +1,77 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.047 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.047 (extra)
+Problem:    Win32 with Borland C 5.5 on Windows XP: A new file is created with
+	    read-only attributes. (Tony Mechelynck)
+Solution:   Don't use the _wopen() function for Borland.
+Files:	    src/os_win32.c
+
+
+*** ../vim-6.3.046/src/os_win32.c	Wed Jun  9 14:56:26 2004
+--- src/os_win32.c	Wed Dec 15 15:35:41 2004
+***************
+*** 4460,4474 ****
+      int
+  mch_open(char *name, int flags, int mode)
+  {
+      WCHAR	*wn;
+      int		f;
+  
+!     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage
+! # ifdef __BORLANDC__
+! 	    /* Wide functions of Borland C 5.5 do not work on Windows 98. */
+! 	    && g_PlatformId == VER_PLATFORM_WIN32_NT
+! # endif
+!        )
+      {
+  	wn = enc_to_ucs2(name, NULL);
+  	if (wn != NULL)
+--- 4460,4471 ----
+      int
+  mch_open(char *name, int flags, int mode)
+  {
++     /* _wopen() does not work with Borland C 5.5: creates a read-only file. */
++ # ifndef __BORLANDC__
+      WCHAR	*wn;
+      int		f;
+  
+!     if (enc_codepage >= 0 && (int)GetACP() != enc_codepage)
+      {
+  	wn = enc_to_ucs2(name, NULL);
+  	if (wn != NULL)
+***************
+*** 4482,4487 ****
+--- 4479,4485 ----
+  	     * the _wopen() fails for missing wide functions. */
+  	}
+      }
++ # endif
+  
+      return open(name, flags, mode);
+  }
+*** ../vim-6.3.046/src/version.c	Sat Dec 11 16:14:41 2004
+--- src/version.c	Wed Dec 15 15:35:51 2004
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     47,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+60. As your car crashes through the guardrail on a mountain road, your first
+    instinct is to search for the "back" button.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
