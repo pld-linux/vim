@@ -24,7 +24,7 @@ Source0:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-sr
 Source1:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-src2.tar.gz
 Source2:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-rt1.tar.gz
 Source3:	ftp://ftp.vim.org/pub/editors/vim/unreleased/unix/%{name}-%{version}-rt2.tar.gz
-Source4:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
+#Source4:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-extra.tar.gz
 Source5:	ftp://ftp.vim.org/pub/editors/vim/unreleased/extra/%{name}-%{version}-lang.tar.gz
 Source6:	g%{name}-athena.desktop
 Source7:	g%{name}-motif.desktop
@@ -212,7 +212,7 @@ Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 bibliotek GNOME.
 
 %prep
-%setup -q -b1 -b2 -b3 -b4 -b5 -n %{name}%(echo %{version} | sed -e "s#\.##g")
+%setup -q -b1 -b2 -b3 -b5 -n %{name}%(echo %{version} | sed -e "s#\.##g")
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -445,6 +445,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/syntax
 %{_datadir}/vim/v*/tutor
 %{_datadir}/vim/v*/colors
+%{_datadir}/vim/v*/compiler
 %{_datadir}/vim/v*/*.vim
 
 %{_mandir}/man1/vim.*
