@@ -420,7 +420,7 @@ Motif, что позволяет запускать VIM как приложение X Window System - с
 повн╕стю граф╕чним ╕нтерфейсом та п╕дтримкою миш╕.
 
 %package -n kvim
-Summary:	Vim for X Window built with kde
+Summary:	Vim for X Window built with KDE
 Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki KDE
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}
