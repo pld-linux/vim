@@ -633,7 +633,7 @@ element bonobo.
 %patch157 -p0
 %patch158 -p0
 %patch159 -p0
-%patch169 -p0
+%patch160 -p0
 %patch161 -p0
 
 # kvim
