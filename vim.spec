@@ -11,7 +11,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.1
-%define		_patchlevel	357
+%define		_patchlevel	364
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -38,17 +38,17 @@ Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
-Patch0:		%{name}-sysconfdir.patch
-Patch1:		%{name}-visual.patch
-Patch2:		%{name}-paths.patch
-Patch3:		%{name}-ispell.patch
-Patch4:		%{name}-ispell-axp.patch
-Patch5:		%{name}-ac25x.patch
-Patch6:		%{name}-vimrc.patch
-Patch7:		%{name}-no_libelf.patch
-Patch8:		%{name}-egrep.patch
-Patch9:		%{name}-ocaml.patch
-Patch10:	http://regexxer.sourceforge.net/vim/vim-gtk2-20030223-2.patch.gz
+Patch0:	http://regexxer.sourceforge.net/vim/vim-gtk2-20030226-2.patch.gz
+Patch1:		%{name}-sysconfdir.patch
+Patch2:		%{name}-visual.patch
+Patch3:		%{name}-paths.patch
+Patch4:		%{name}-ispell.patch
+Patch5:		%{name}-ispell-axp.patch
+Patch6:		%{name}-ac25x.patch
+Patch7:		%{name}-vimrc.patch
+Patch8:		%{name}-no_libelf.patch
+Patch9:		%{name}-egrep.patch
+Patch10:		%{name}-ocaml.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -441,19 +441,19 @@ for f in patches/6.1.* ; do
 	patch -s -p0 < $f
 done
 
-%patch0 -p1
+%patch0 -p0
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%ifarch alpha
 %patch4 -p1
-%endif
+%ifarch alpha
 %patch5 -p1
+%endif
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p0
+%patch10 -p1
 
 %build
 cd src
