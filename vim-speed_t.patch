@@ -6,7 +6,7 @@
  # ifdef HAVE_TERMCAP_H
 -#  include <termcap.h>
 +#include <termios.h>
-+#include <ncurses/termcap.h>
++#include <termcap.h>
  # endif
  
  /*
