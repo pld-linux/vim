@@ -33,7 +33,6 @@ Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-phphighlight.patch
 Patch3:		%{name}-paths.patch
-#Patch4:		%{name}-speed_t.patch
 URL:		http://www.vim.org/
 BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
@@ -216,7 +215,6 @@ biblioteki GNOME.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-#%patch4 -p1
 
 %build
 cd src
