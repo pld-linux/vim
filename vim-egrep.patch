@@ -1,0 +1,10 @@
+--- vim61/src/configure.in.egrep	Fri Oct 11 12:25:32 2002
++++ vim61/src/configure.in	Fri Oct 11 12:28:52 2002
+@@ -15,6 +15,7 @@
+ AC_PROG_CPP	dnl required by header file checks
+ AC_ISC_POSIX	dnl required by AC_C_CROSS
+ AC_PROG_AWK	dnl required for "make html" in ../doc
++AC_PROG_EGREP
+ 
+ dnl Don't strip if we don't have it
+ AC_CHECK_PROG(STRIP, strip, strip, :)
