@@ -1,19 +1,19 @@
 #
 # Conditional build:
-%bcond_without	static	# without static version
-%bcond_without	athena	# without Athena Widgets-based gvim
-%bcond_without	motif	# without Motif-based gvim
-%bcond_without	gtk	# without gtk+-based gvim support
-%bcond_without	gnome	# without gnome-based gvim support
-%bcond_without	kde	# kvim:)
-%bcond_with	perl	# with perl interp
-%bcond_with	python	# with python interp
-%bcond_with	ruby	# with ruby interp
-%bcond_with	tcl	# with tcl interp
-%bcond_with	bonobo	# with bonobo component (breaks other things)
-%bcond_without	selinux	# without selinux
-%bcond_without	ispell	# disable vim.ispell
-%bcond_without	home_etc # don't use home_etc
+%bcond_without	static		# don't build static version
+%bcond_without	athena		# don't build Athena Widgets-based gvim
+%bcond_without	motif		# don't build Motif-based gvim
+%bcond_without	gtk		# don't build gtk+-based gvim support
+%bcond_without	gnome		# don't build gnome-based gvim support
+%bcond_without	kde		# don't build kvim
+%bcond_with	perl		# with perl interp
+%bcond_with	python		# with python interp
+%bcond_with	ruby		# with ruby interp
+%bcond_with	tcl		# with tcl interp
+%bcond_with	bonobo		# with bonobo component (breaks other things)
+%bcond_without	selinux		# without selinux support
+%bcond_without	ispell		# don't build vim.ispell
+%bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		6.3
 %define		_patchlevel	012
@@ -1017,9 +1017,9 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sr) %{_datadir}/vim/v*/lang/menu_sr*
 %lang(sv) %{_datadir}/vim/v*/lang/menu_sv*
 %lang(uk) %{_datadir}/vim/v*/lang/menu_uk*
+%lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.gb2312*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_*chinese*gb*
-%lang(zh_CN) %{_datadir}/vim/v*/lang/menu_*zh*gb*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 
