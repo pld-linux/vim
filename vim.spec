@@ -11,8 +11,8 @@
 # _with_ruby		- with ruby interp
 # _with_tcl		- with tcl interp
 
-#%define		_ver		6.0
-#%define		_patchlevel	208
+## %define		_ver		6.0
+## %define		_patchlevel	208
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -25,7 +25,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	6.1
-Release:	0.1
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -36,7 +36,7 @@ Source3:	g%{name}-motif.desktop
 Source4:	g%{name}-gtk.desktop
 Source5:	g%{name}-gnome.desktop
 #packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.0.*
-#Source6:	%{name}-patches-%{_ver}.%{_patchlevel}.tar.bz2
+## Source6:	%{name}-patches-%{_ver}.%{_patchlevel}.tar.bz2
 Source7:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
@@ -406,7 +406,7 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 
 %prep
 %setup -q -b1 -n %{name}%(echo %{version} | sed -e "s#\.##g")
-#%setup -q -b1 -a6 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
+## %setup -q -b1 -a6 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
