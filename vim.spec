@@ -1,106 +1,145 @@
 Summary:	Vi IMproved - a Vi clone
+Summary(de):	VIsual editor iMproved
+Summary(fr):	editeur VIM : VIsual editor iMproved
 Summary(pl):	Vi IMproved - klon edytora Vi
+Summary(tr):	Geliþmiþ bir vi sürümü
 Name:		vim
 Version:	5.7
-Release:	2
-Copyright:	Charityware
+Release:	7
+License:	Charityware
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-URL:		http://www.vim.org
+Group(de):	Applikationen/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-src.tar.gz
 Source1:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-rt.tar.gz
 Source2:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{version}-extra.tar.gz
-Source3:	gvim-athena.desktop
-Source4:	gvim-motif.desktop
-Source5:	gvim-gtk.desktop
-Patch0:		vim-fhs.patch
-Patch1:		vim-visual.patch
+Source3:	g%{name}-athena.desktop
+Source4:	g%{name}-motif.desktop
+Source5:	g%{name}-gtk.desktop
+Patch0:		%{name}-fhs.patch
+Patch1:		%{name}-visual.patch
+Patch2:		%{name}-sysconfdir.patch
+Patch3:		%{name}-docpath.patch
+Patch4:		%{name}-speed_t.patch
+Patch5:		ftp://ftp.home.vim.org/pub/vim/patches/5.7.001
+Patch6:		ftp://ftp.home.vim.org/pub/vim/patches/5.7.002
+Patch7:		ftp://ftp.home.vim.org/pub/vim/patches/5.7.003
+Patch8:		ftp://ftp.home.vim.org/pub/vim/patches/5.7.004
+Patch9:		ftp://ftp.home.vim.org/pub/vim/patches/5.7.005
+Patch10:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.006
+Patch11:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.007
+Patch12:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.008
+Patch13:	ftp://ftp.home.vim.org/pub/vim/patches/5.7.009
+URL:		http://www.vim.org/
 BuildRequires:	ncurses-devel
 BuildRequires:	ncurses-static
 BuildRequires:	glibc-static
 BuildRequires:	gpm-devel
-BuildRequires:	Xaw3d-devel
-BuildRequires:	motif-devel
-BuildRequires:	gtk+-devel
+%{!?noathena:BuildRequires:	Xaw3d-devel}
+%{!?nomotif:BuildRequires:	motif-devel}
+%{!?nogtk:BuildRequires:	gtk+-devel}
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
-Text editor similar to Vi. Important improvements: multiple windows, 
-multi-level undo, block highliting, and many other.   
+Text editor similar to Vi. Important improvements: multiple windows,
+multi-level undo, block highliting, and many other.
+
+%description -l de
+Der Visual-Editor iMproved ist ein aktualisierter und erweiterter Klon
+des vi-Editors, der mit praktisch allen UN*X-Systemen ausgeliefert
+wird. Er bringt mehrere Fenster, mehrstufige Widerrufen-Funktion,
+Block-Markierung und viele weitere Zusatzfunktionen im Vergleich zum
+Standard-vi-Programm.
+
+%description -l fr
+L'éditeur VIsuel aMélioré est un clone mis à jour et doté de
+caractéristiques supplémentaires de l'éditeur « vi » fourni avec
+pratiquement tous les systèmes UN*X. Il ajoute les fenêtres
+mutltiples, l'annulation a plusieurs niveaux, la mise en évidence des
+blocs et autres caractéristiques au vi de base.
 
 %description -l pl
-Edytor tekstu podobny do Vi. Wa¿ne ulepszenia: mo¿liwo¶æ pracy w wielu 
-wielopoziomowa opcja 'cofnij', bloki, pod¶wietlanie sk³adni i wiele innych. 
-  
+Edytor tekstu podobny do Vi. Wa¿ne ulepszenia: mo¿liwo¶æ pracy w wielu
+wielopoziomowa opcja 'cofnij', bloki, pod¶wietlanie sk³adni i wiele
+innych.
+
+%description -l tr
+Standart vi metin düzenleyicisinin geliþmiþ hali; daha fazla komut,
+birden fazla pencere desteði ve blok iþaretleme yetenekleri içerir.
+
 %package static
 Summary:	Staticly linked Vim
 Summary(pl):	Statycznie zlinkowany Vim
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
-Provides:       vi
-Obsoletes:      vi
+Group(de):	Applikationen/Editors/Vim
+Provides:	vi
+Obsoletes:	vi
 Obsoletes:	vim-minimal
  
 %description static
-Text editor similar to Vi. This version is build with minimal feature  and 
-is installed in /bin as a rescue tool. The installation of this package  is 
-STRONGLY recommended.      
+Text editor similar to Vi. This version is build with minimal feature
+and is installed in /bin as a rescue tool. The installation of this
+package is STRONGLY recommended.
 
 %description static -l pl
-Edytor tekstu podobny do Vi. Ta wersja zosta³a skompilowana statycznie i 
-posiada minimaln± ilo¶ci± dodatków. Jest instalowana w /bin jako narzêdzie 
-dla administratora. Instalacja tego pakietu jest MOCNO zalecana, mo¿e on 
-pomóc Tobie uratowaæ system w czasie awarii.      
+Edytor tekstu podobny do Vi. Ta wersja zosta³a skompilowana statycznie
+i posiada minimaln± ilo¶ci± dodatków. Jest instalowana w /bin jako
+narzêdzie dla administratora. Instalacja tego pakietu jest MOCNO
+zalecana, mo¿e on pomóc Tobie uratowaæ system w czasie awarii.
 
 %package rt 
 Summary:	Vim runtime files
 Summary(pl):	Pliki przydatne edytorowi Vim 
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(de):	Applikationen/Editors/Vim
 Obsoletes:	vim-common
 
 %description rt
-This package contains macros, documentation, syntax configuration and  
-manual pages for vim. If you want to take advantage of vim more powerful  
-features, you should install this package.      
+This package contains macros, documentation, syntax configuration and
+manual pages for vim. If you want to take advantage of vim more
+powerful features, you should install this package.
 
 %description rt -l pl
-W tym pakiecie znajdziesz dokumentacjê, makra, pliki konfiguracyjne i 
-strony podrêcznika dla edytora vim. Je¿eli chcesz korzystaæ z 
-zaawansowanych mo¿liwo¶ci vim-a, powiniene¶ zainstalowaæ ten pakiet.   
+W tym pakiecie znajdziesz dokumentacjê, makra, pliki konfiguracyjne i
+strony podrêcznika dla edytora vim. Je¿eli chcesz korzystaæ z
+zaawansowanych mo¿liwo¶ci vim-a, powiniene¶ zainstalowaæ ten pakiet.
 
 %package -n gvim-athena
 Summary:	Vim for X Window built with arena
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Arena
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(de):	Applikationen/Editors/Vim
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-X11
 
 %description -n gvim-athena
-The classic Unix text editor now also under X Window System! This version 
-is build with Athena Widget Set.   
+The classic Unix text editor now also under X Window System! This
+version is build with Athena Widget Set.
 
 %description -n gvim-athena -l pl
-Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem 
-biblioteki Athena Widget Set.   
+Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
+biblioteki Athena Widget Set.
 
 %package -n gvim-motif
 Summary:	Vim for X Window built with Motif
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Motif
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(de):	Applikationen/Editors/Vim
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-X11
 
 %description -n gvim-motif
-The classic Unix text editor now also under X Window System! This version 
-is build with Motif.
+The classic Unix text editor now also under X Window System! This
+version is build with Motif.
 
 %description -n gvim-motif -l pl
-Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem 
+Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 biblioteki Motif.
 
 %package -n gvim-gtk
@@ -108,26 +147,37 @@ Summary:	Vim for X Window built with gtk
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GTK
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
+Group(de):	Applikationen/Editors/Vim
 Requires:	%{name}-rt = %{version}
 Obsoletes:	vim-X11
 
 %description -n gvim-gtk
-The classic Unix text editor now also under X Window System! This version 
-is build with GTK.   
+The classic Unix text editor now also under X Window System! This
+version is build with GTK.
 
 %description -n gvim-gtk -l pl
-Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem 
-biblioteki GTK.    
+Wersja edytora vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
+biblioteki GTK.
 
 %prep
 %setup -q -b 1 -b 2
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p2
+%patch6 -p2
+%patch7 -p2
+%patch8 -p2
+%patch9 -p2
+%patch10 -p2
+%patch11 -p2
+%patch12 -p2
+%patch13 -p2
 
 %build
 cd src
-
-LDFLAGS="-s"; export LDFLAGS
 %configure \
 	--disable-gui \
 	--without-x \
@@ -139,10 +189,9 @@ LDFLAGS="-s"; export LDFLAGS
 	--enable-max-features \
 	--with-tlib=ncurses 
 %{__make} vim
-mv vim vim.ncurses
+mv -f vim vim.ncurses
 
 %{__make} distclean
-LDFLAGS="-static -s"; export LDFLAGS
 %configure \
 	--disable-gui \
 	--without-x \
@@ -153,73 +202,64 @@ LDFLAGS="-static -s"; export LDFLAGS
 	--disable-gpm \
 	--disable-multibyte \
 	--enable-min-features \
-	--datadir=/etc \
 	--with-tlib=tinfo
+
 %{__make} vim
 %{__make} xxd/xxd
-mv vim vim.static
-mv xxd/xxd xxd.static
+mv -f vim vim.static
+mv -f xxd/xxd xxd.static
 
-%{__make} distclean
-LDFLAGS="-s"; export LDFLAGS
-%configure \
-        --enable-max-features \
-        --enable-gui=athena \
-        --with-x \
-        --disable-perlinterp \
-        --disable-pythoninterp \
-        --disable-tclinterp \
-        --disable-cscope \
-        --disable-gpm
-%{__make} vim
-mv vim gvim.athena
+%{?noathena:#}%{__make} distclean
+%{?noathena:#}%configure \
+	--enable-max-features \
+	--enable-gui=athena \
+	--with-x \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-tclinterp \
+	--disable-cscope \
+	--disable-gpm
+%{?noathena:#}%{__make} vim
+%{?noathena:#}mv -f vim gvim.athena
 
-%{__make} distclean
-LDFLAGS="-s"; export LDFLAGS
-%configure \
-        --enable-max-features \
-        --enable-gui=motif \
-        --with-x \
-        --disable-perlinterp \
-        --disable-pythoninterp \
-        --disable-tclinterp \
-        --disable-cscope \
-        --disable-gpm
-%{__make} vim
-mv vim gvim.motif
- 
-%{__make} distclean
-LDFLAGS="-s"; export LDFLAGS
-%configure \
-        --enable-max-features \
-        --enable-gui=gtk \
-        --with-x \
-        --disable-perlinterp \
-        --disable-pythoninterp \
-        --disable-tclinterp \
-        --disable-cscope \
-        --disable-gpm
-%{__make} vim
-mv vim gvim.gtk
+%{?nomotif:#}%{__make} distclean
+%{?nomotif:#}%configure \
+	--enable-max-features \
+	--enable-gui=motif \
+	--with-x \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-tclinterp \
+	--disable-cscope \
+	--disable-gpm
+%{?nomotif:#}%{__make} vim
+%{?nomotif:#}mv -f vim gvim.motif
 
-cd ..
+%{?nogtk:#}%{__make} distclean
+%{?nogtk:#}%configure \
+	--enable-max-features \
+	--enable-gui=gtk \
+	--with-x \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-tclinterp \
+	--disable-cscope \
+	--disable-gpm
+%{?nogtk:#}%{__make} vim
+%{?nogtk:#}mv -f vim gvim.gtk
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_var}/lib/vim,%{_sysconfdir},%{_prefix}/{bin,share/{vim/{doc,tutor},man/man1}}} \
-	$RPM_BUILD_ROOT/{bin,usr/X11R6/bin} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors
+install -d $RPM_BUILD_ROOT{%{_var}/lib/vim,%{_sysconfdir}/vim,%{_bindir}} \
+	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim/{doc,tutor}} \
+	$RPM_BUILD_ROOT{/usr/X11R6/bin,%{_applnkdir}/Development/Editors}
 
+install src/vim.ncurses $RPM_BUILD_ROOT%{_bindir}/vim
 
-install -s src/vim.ncurses $RPM_BUILD_ROOT%{_bindir}/vim
+install src/vim.static $RPM_BUILD_ROOT/bin/vi
+install src/xxd.static $RPM_BUILD_ROOT/bin/xxd
 
-install -s src/vim.static  $RPM_BUILD_ROOT/bin/vi
-install -s src/xxd.static  $RPM_BUILD_ROOT/bin/xxd
-
-install -s src/gvim.athena  $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.athena
-install -s src/gvim.motif   $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.motif
-install -s src/gvim.gtk     $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.gtk
- 
-install    src/vimtutor	   $RPM_BUILD_ROOT%{_bindir}/vimtutor
+install src/vimtutor $RPM_BUILD_ROOT%{_bindir}/vimtutor
 
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
 
@@ -239,13 +279,11 @@ cp -a runtime/syntax $RPM_BUILD_ROOT%{_datadir}/vim/syntax
 cp -a runtime/tutor/tutor  $RPM_BUILD_ROOT%{_datadir}/vim/tutor/tutor
 
 install runtime/*.vim $RPM_BUILD_ROOT%{_datadir}/vim
-mv $RPM_BUILD_ROOT%{_datadir}/vim/vimrc_example.vim $RPM_BUILD_ROOT%{_datadir}/vim/vimrc
-mv $RPM_BUILD_ROOT%{_datadir}/vim/gvimrc_example.vim $RPM_BUILD_ROOT%{_datadir}/vim/gvimrc
+mv -f $RPM_BUILD_ROOT%{_datadir}/vim/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
+mv -f $RPM_BUILD_ROOT%{_datadir}/vim/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
 
 install runtime/doc/*.txt $RPM_BUILD_ROOT%{_datadir}/vim/doc
 install runtime/doc/tags  $RPM_BUILD_ROOT%{_datadir}/vim/doc
-
-touch $RPM_BUILD_ROOT/usr/X11R6/bin/gvim
 
 ln -sf vim $RPM_BUILD_ROOT%{_bindir}/rvim
 
@@ -253,14 +291,18 @@ ln -sf vi $RPM_BUILD_ROOT/bin/ex
 ln -sf vi $RPM_BUILD_ROOT/bin/view
 ln -sf vi $RPM_BUILD_ROOT/bin/rview
 
-ln -sf gvim.gtk $RPM_BUILD_ROOT/usr/X11R6/bin/gvim
-ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgvim
-ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/gview
-ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgview
- 
-install %{SOURCE3} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors
-install %{SOURCE4} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors
-install %{SOURCE5} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors
+%{!?noathena:install src/gvim.athena $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.athena}
+%{!?nomotif: install src/gvim.motif $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.motif}
+%{!?nogtk:   install src/gvim.gtk $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim.gtk}
+
+%{!?nogtk:ln -sf gvim.gtk $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gvim}
+%{!?nogtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgvim}
+%{!?nogtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/gview}
+%{!?nogtk:ln -sf gvim $RPM_BUILD_ROOT%{_prefix}/X11R6/bin/rgview}
+
+%{!?noathena:install %{SOURCE3} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?nomotif: install %{SOURCE4} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
+%{!?nogtk:   install %{SOURCE5} $RPM_BUILD_ROOT%{_applnkdir}/Development/Editors}
 
 gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man1/*
 
@@ -282,30 +324,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/view.1*
 %{_mandir}/man1/rview.1*
 
-%files -n gvim-athena
-%defattr(644,root,root,755)
-%attr(755,root,root) /usr/X11R6/bin/gvim.athena
-%{_applnkdir}/Development/Editors/gvim-athena.desktop
-
-%files -n gvim-motif
-%defattr(644,root,root,755)
-%attr(755,root,root) /usr/X11R6/bin/gvim.motif
-%{_applnkdir}/Development/Editors/gvim-motif.desktop
-
-%files -n gvim-gtk
-%defattr(644,root,root,755)
-%attr(755,root,root) /usr/X11R6/bin/gvim.gtk
-%attr(755,root,root) /usr/X11R6/bin/rgvim
-%attr(755,root,root) /usr/X11R6/bin/rgview
-%attr(755,root,root) %verify(not link) /usr/X11R6/bin/gvim
-%{_applnkdir}/Development/Editors/gvim-gtk.desktop
-
 %files rt
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vimtutor
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/vim/menu.vim
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/vim/vimrc
-%config(noreplace) %verify(not size mtime md5) %{_datadir}/vim/gvimrc
+%dit %{_sysconfdir}/vim
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/menu
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/vimrc
+%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/gvimrc
 
 %dir %{_var}/lib/vim
 
@@ -324,3 +349,21 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_mandir}/man1/vim.*
 %{_mandir}/man1/rvim.*
+
+%{!?noathena:%files -n gvim-athena}
+%{!?noathena:%defattr(644,root,root,755)}
+%{!?noathena:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.athena}
+%{!?noathena:%{_applnkdir}/Development/Editors/gvim-athena.desktop}
+
+%{!?nomotif:%files -n gvim-motif}
+%{!?nomotif:%defattr(644,root,root,755)}
+%{!?nomotif:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.motif}
+%{!?nomotif:%{_applnkdir}/Development/Editors/gvim-motif.desktop}
+
+%{!?nogtk:%files -n gvim-gtk}
+%{!?nogtk:%defattr(644,root,root,755)}
+%{!?nogtk:%attr(755,root,root) %{_prefix}/X11R6/bin/gvim.gtk}
+%{!?nogtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgvim}
+%{!?nogtk:%attr(755,root,root) %{_prefix}/X11R6/bin/rgview}
+%{!?nogtk:%attr(755,root,root) %verify(not link) %{_prefix}/X11R6/bin/gvim}
+%{!?nogtk:%{_applnkdir}/Development/Editors/gvim-gtk.desktop}
