@@ -2,7 +2,7 @@ Summary:	Vi IMproved - a Vi clone
 Summary(pl):	Vi IMproved - klon edytora Vi
 Name:		vim
 Version:	5.6
-Release:	3
+Release:	4
 Copyright:	Charityware
 Group:		Applications/Editors/Vim
 Group(pl):	Aplikacje/Edytory/Vim
@@ -202,7 +202,7 @@ cd ..
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_var}/lib/vim,%{_sysconfdir},%{_prefix}/{bin,share/{vim/{doc,tutor},man/man1}}} \
-	$RPM_BUILD_ROOT/{bin,usr/X11R6/{bin,share/applnk/Applications/Editors}}
+	$RPM_BUILD_ROOT/{bin,usr/X11R6/{bin,share/applnk/Office/Editors}}
 
 install -s src/vim.ncurses $RPM_BUILD_ROOT%{_bindir}/vim
 
@@ -251,7 +251,7 @@ ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgvim
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/gview
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgview
  
-install %{SOURCE3} $RPM_BUILD_ROOT/usr/X11R6/share/applnk/Applications/Editors
+install %{SOURCE3} $RPM_BUILD_ROOT/usr/X11R6/share/applnk/Office/Editors
 
 gzip -9nf $RPM_BUILD_ROOT%{_mandir}/man1/*
 
@@ -288,7 +288,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 %attr(755,root,root) %verify(not link) /usr/X11R6/bin/gvim
-/usr/X11R6/share/applnk/Applications/Editors/gvim.desktop
+/usr/X11R6/share/applnk/Office/Editors/gvim.desktop
 
 %files -n gvim-lesstif
 %defattr(644,root,root,755)
@@ -296,7 +296,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 %attr(755,root,root) %verify(not link) /usr/X11R6/bin/gvim
-/usr/X11R6/share/applnk/Applications/Editors/gvim.desktop
+/usr/X11R6/share/applnk/Office/Editors/gvim.desktop
 
 %files -n gvim-gtk
 %defattr(644,root,root,755)
@@ -304,7 +304,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) /usr/X11R6/bin/rgvim
 %attr(755,root,root) /usr/X11R6/bin/rgview
 %attr(755,root,root) %verify(not link) /usr/X11R6/bin/gvim
-/usr/X11R6/share/applnk/Applications/Editors/gvim.desktop
+/usr/X11R6/share/applnk/Office/Editors/gvim.desktop
 
 %files rt
 %defattr(644,root,root,755)
