@@ -6,6 +6,8 @@
 # _without_gtk		- without gtk+-based gvim support
 # _without_gnome	- without gnome-based gvim support
 # _with_ispell		- with spell checking (non-standard feature; disables RIGHTLEFT and FKMAP)
+# _with_python		- with support for pyhon scripts
+# _with_perl		- with support for perl scripts
 
 %define		_ver		6.0
 %define		_patchlevel	158
