@@ -33,7 +33,7 @@ Version:	%{_ver}.%{_patchlevel}
 #%%else
 #Version:        %{_ver}
 #%%endif
-Release:	0.1
+Release:	0.2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -47,6 +47,8 @@ Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-ma
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source5:	http://freenux.org/kvim/kvim-runtime-6.2.14.tar.bz2
 # Source5-md5:	6f633e79bcf5f35918bb0bff6850a971
+Source6:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
+# Source6-md5:	ff96284b1c913d55cf0877839b34d490
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
@@ -876,6 +878,7 @@ install -m755 src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 %endif
 
 bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
+unzip -d $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE6}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -935,8 +938,10 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/v*
 %dir %{_datadir}/vim/v*/doc
 %doc %{_datadir}/vim/v*/doc/*.txt
+%lang(pl) %doc %{_datadir}/vim/v*/doc/*.plx
 %attr(755,root,root) %{_datadir}/vim/v*/doc/*.pl
 %verify(not size mtime md5) %{_datadir}/vim/v*/doc/tags
+%lang(pl) %verify(not size mtime md5) %{_datadir}/vim/v*/doc/tags-pl
 %{_datadir}/vim/v*/ftplugin
 %{_datadir}/vim/v*/indent
 %{_datadir}/vim/v*/keymap
