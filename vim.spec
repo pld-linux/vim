@@ -12,7 +12,7 @@
 # _with_tcl		- with tcl interp
 
 %define		_ver		6.1
-%define		_patchlevel	364
+%define		_patchlevel	365
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -25,15 +25,15 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	5
+Release:	6
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
 Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
 Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
-# packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.*
-Source3:	%{name}-patches-%{_ver}.%{_patchlevel}.tar.bz2
+# packed from	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.3*
+Source3:	%{name}-patches-%{_ver}.301-%{_patchlevel}.tar.bz2
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
@@ -50,6 +50,9 @@ Patch7:		%{name}-vimrc.patch
 Patch8:		%{name}-no_libelf.patch
 Patch9:		%{name}-egrep.patch
 Patch10:		%{name}-ocaml.patch
+Patch100:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.1-100.gz
+Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.101-200.gz
+Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.1.201-300.gz
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -435,6 +438,9 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %prep
 ## setup -q -b1 -b2 -n %{name}%(echo %{version} | sed -e "s#\.##g")
 %setup -q -b1 -b2 -a3 -n %{name}%(echo %{_ver} | sed -e "s#\.##g")
+%patch100 -p0
+%patch101 -p0
+%patch102 -p0
 
 # skiping patches that are for "extra" package and apply the rest of official patches
 for f in patches/6.1.* ; do
