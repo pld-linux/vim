@@ -21,7 +21,7 @@ The classic Unix text editor. This version is build with minimal
 feature and is installed in /bin as a rescue tool. The installation of
 this package is STRONGLY recommended.
 
-%description 
+%description -l pl
 Pakiet zawiera vim - klasyczny (unixowy) edytor tekstowy skompilowany 
 statycznie. Instalacja tego pakietu jest MOCNO zalecana, mo¿e on pomóc
 Tobie uratowaæ system w czasie awarii.
