@@ -418,6 +418,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/plugin
 %{_datadir}/vim/v*/syntax
 %{_datadir}/vim/v*/tutor
+%{_datadir}/vim/v*/colors
 %{_datadir}/vim/v*/*.vim
 
 %{_mandir}/man1/vim.*
