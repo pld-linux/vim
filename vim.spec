@@ -594,8 +594,8 @@ LDFLAGS="%{rpmldflags} -static"
 	--with-features=small \
 	--with-tlib=tinfo \
 	--disable-nls \
-	--with-modifiedby="PLD Linux" \
-	--with-compiledby="PLD Linux"
+	--with-modifiedby="PLD Linux Distribution" \
+	--with-compiledby="PLD Linux Distribution"
 
 %{__make} \
 	SPELL_OBJ= vim
@@ -621,8 +621,8 @@ LDFLAGS="%{rpmldflags}"
 	--enable-multibyte \
 	--with-tlib=ncurses \
 	--enable-nls \
-	--with-modifiedby="PLD Linux" \
-	--with-compiledby="PLD Linux"
+	--with-modifiedby="PLD Linux Distribution" \
+	--with-compiledby="PLD Linux Distribution"
 
 %{__make} \
 	SPELL_OBJ= vim
@@ -649,8 +649,8 @@ mv -f vim vim.ncurses
 	--enable-multibyte \
 	--with-tlib=ncurses \
 	--enable-nls \
-	--with-modifiedby="PLD Linux" \
-	--with-compiledby="PLD Linux"
+	--with-modifiedby="PLD Linux Distribution" \
+	--with-compiledby="PLD Linux Distribution"
 
 %{__make} vim
 mv -f vim vim.ispell
@@ -676,8 +676,8 @@ mv -f vim vim.ispell
 	--disable-gpm \
 	--without-gnome \
 	--enable-nls \
-	--with-modifiedby="PLD Linux" \
-	--with-compiledby="PLD Linux"
+	--with-modifiedby="PLD Linux Distribution" \
+	--with-compiledby="PLD Linux Distribution"
 
 %{__make} vim
 mv -f vim gvim.athena
@@ -705,8 +705,8 @@ mv -f vim gvim.athena
 	--disable-gpm \
 	--without-gnome \
 	--enable-nls \
-	--with-modifiedby="PLD Linux" \
-	--with-compiledby="PLD Linux"
+	--with-modifiedby="PLD Linux Distribution" \
+	--with-compiledby="PLD Linux Distribution"
 	
 %{__make} vim
 mv -f vim gvim.motif
@@ -732,8 +732,8 @@ mv -f vim gvim.motif
 	--disable-gpm \
 	--enable-cscope \
 	--enable-nls \
-	--with-modifiedby="PLD Linux" \
-	--with-compiledby="PLD Linux"
+	--with-modifiedby="PLD Linux Distribution" \
+	--with-compiledby="PLD Linux Distribution"
 
 %{__make} vim
 mv -f vim gvim.gtk
@@ -760,8 +760,8 @@ mv -f vim gvim.gtk
 	--disable-gpm \
 	--enable-cscope \
 	--enable-nls \
-	--with-modifiedby="PLD Linux" \
-	--with-compiledby="PLD Linux"
+	--with-modifiedby="PLD Linux Distribution" \
+	--with-compiledby="PLD Linux Distribution"
 
 %{__make} vim
 mv -f vim gvim.gnome
