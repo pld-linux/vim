@@ -996,12 +996,10 @@ install runtime/kvim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/kvi
 install runtime/kvim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/kvim.png
 install runtime/kvim64x64.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/64x64/apps/kvim.png
 install runtime/KVim.desktop $RPM_BUILD_ROOT%{_desktopdir}/kde
-##mv $RPM_BUILD_ROOT{%{_datadir}/applnk/Editors/KVim.desktop,%{_desktopdir}/kde}
 echo "Categories=Qt;KDE;Utility;TextEditor" >> $RPM_BUILD_ROOT%{_desktopdir}/kde/KVim.desktop
-##mv $RPM_BUILD_ROOT%{_iconsdir}/{hicolor,crystalsvg}
-%endif
 install -d $RPM_BUILD_ROOT%{_datadir}/apps/kvim
 install runtime/kde-tips $RPM_BUILD_ROOT%{_datadir}/apps/kvim/tips
+%endif
 
 # Bonobo
 %if %{with bonobo}
