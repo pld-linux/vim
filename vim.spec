@@ -343,9 +343,9 @@ and is installed in /bin as a rescue tool. The installation of this
 package is STRONGLY recommended.
 
 %description static -l pl
-Edytor tekstu podobny do Vi. Ta wersja zosta³a zlinkowana statycznie i
-posiada minimaln± ilo¶æ dodatków. Jest instalowana w /bin jako
-narzêdzie dla administratora. Instalacja tego pakietu jest MOCNO
+Edytor tekstu podobny do Vi. Ta wersja zosta³a skonsolidowana
+statycznie i posiada minimaln± ilo¶æ dodatków. Jest instalowana w /bin
+jako narzêdzie dla administratora. Instalacja tego pakietu jest MOCNO
 zalecana, mo¿e on pomóc Ci uratowaæ system w czasie awarii.
 
 %description static -l ru
