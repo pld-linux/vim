@@ -26,7 +26,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	0.1
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
