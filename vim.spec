@@ -215,8 +215,9 @@ cd src
 %{__make} vim
 mv -f vim vim.ncurses
 
-%{?_without_static:#}%{__make} distclean
-%{?_without_static:#}%configure \
+%if %{!?_without_static:1}%{?_without_static:0}
+%{__make} distclean
+%configure \
 	--disable-gui \
 	--without-x \
 	--disable-perlinterp \
@@ -229,13 +230,16 @@ mv -f vim vim.ncurses
 	--with-tlib=tinfo \
 	--disable-nls
 
-%{?_without_static:#}%{__make} vim
+%{__make} vim
+mv -f vim vim.static
+%endif
+
 %{__make} xxd/xxd
-%{?_without_static:#}mv -f vim vim.static
 mv -f xxd/xxd xxd.static
 
-%{?_without_athena:#}%{__make} distclean
-%{?_without_athena:#}%configure \
+%if %{!?_without_athena:1}%{?_without_athena:0}
+%{__make} distclean
+%configure \
 	--enable-max-features \
 	--enable-gui=athena \
 	--with-x \
@@ -248,11 +252,13 @@ mv -f xxd/xxd xxd.static
 	--disable-gpm \
 	--without-gnome \
 	--enable-nls
-%{?_without_athena:#}%{__make} vim
-%{?_without_athena:#}mv -f vim gvim.athena
+%{__make} vim
+mv -f vim gvim.athena
+%endif
 
-%{?_without_motif:#}%{__make} distclean
-%{?_without_motif:#}%configure \
+%if %{!?_without_motif:1}%{?_without_motif:0}
+%{__make} distclean
+%configure \
 	--enable-max-features \
 	--enable-gui=motif \
 	--with-x \
@@ -266,11 +272,13 @@ mv -f xxd/xxd xxd.static
 	--disable-gpm \
 	--without-gnome \
 	--enable-nls
-%{?_without_motif:#}%{__make} vim
-%{?_without_motif:#}mv -f vim gvim.motif
+%{__make} vim
+mv -f vim gvim.motif
+%endif
 
-%{?_without_gtk:#}%{__make} distclean
-%{?_without_gtk:#}%configure \
+%if %{!?_without_gtk:1}%{?_without_gtk:0}
+%{__make} distclean
+%configure \
 	--enable-max-features \
 	--enable-gui=gtk \
 	--with-x \
@@ -282,11 +290,13 @@ mv -f xxd/xxd xxd.static
 	--enable-cscope \
 	--enable-fontset \
 	--enable-nls
-%{?_without_gtk:#}%{__make} vim
-%{?_without_gtk:#}mv -f vim gvim.gtk
+%{__make} vim
+mv -f vim gvim.gtk
+%endif
 
-%{?_without_gnome:#}%{__make} distclean
-%{?_without_gnome:#}%configure \
+%if %{!?_without_gnome:1}%{?_without_gnome:0}
+%{__make} distclean
+%configure \
 	--enable-max-features \
 	--enable-gui=gnome \
 	--with-x \
@@ -298,8 +308,9 @@ mv -f xxd/xxd xxd.static
 	--enable-cscope \
 	--enable-fontset \
 	--enable-nls
-%{?_without_gnome:#}%{__make} vim
-%{?_without_gnome:#}mv -f vim gvim.gnome
+%{__make} vim
+mv -f vim gvim.gnome
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
