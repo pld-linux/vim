@@ -189,7 +189,7 @@ rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT/etc/X11/wmconfig
 install -d $RPM_BUILD_ROOT/bin
-install -d $RPM_BUILD_ROOT/usr/{bin,X11R6/bin,share/vim/doc,man/man1}
+install -d $RPM_BUILD_ROOT/usr/{bin,X11R6/bin,share/vim/{doc,tutor},man/man1}
 
 # make prefix=$RPM_BUILD_ROOT/usr install
 
@@ -203,10 +203,13 @@ install -s src/vim.athena  $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.athena
 install -s src/vim.lesstif $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.lesstif
 install -s src/vim.gtk     $RPM_BUILD_ROOT/usr/X11R6/bin/gvim.gtk
 
+install    src/vimtutor	   $RPM_BUILD_ROOT/usr/bin/vimtutor
+
 rm -f $RPM_BUILD_ROOT/usr/man/man1/*.1
 
 install runtime/doc/vim.1 $RPM_BUILD_ROOT/usr/man/man1
 install runtime/doc/xxd.1 $RPM_BUILD_ROOT/usr/man/man1
+install runtime/doc/vimtutor.1 $RPM_BUILD_ROOT/usr/man/man1
 
 echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/vi.1
 echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/ex.1
@@ -220,7 +223,7 @@ echo ".so vim.1" > $RPM_BUILD_ROOT/usr/man/man1/rgview.1
 
 cp -a runtime/macros $RPM_BUILD_ROOT/usr/share/vim/macros
 cp -a runtime/syntax $RPM_BUILD_ROOT/usr/share/vim/syntax
-cp -a runtime/tutor  $RPM_BUILD_ROOT/usr/share/vim/tutor
+cp -a runtime/tutor/tutor  $RPM_BUILD_ROOT/usr/share/vim/tutor/tutor
 
 install runtime/*.vim $RPM_BUILD_ROOT/usr/share/vim
 install runtime/vimrc_example $RPM_BUILD_ROOT/usr/share/vim/vimrc
@@ -241,7 +244,7 @@ ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgvim
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/gview
 ln -sf gvim $RPM_BUILD_ROOT/usr/X11R6/bin/rgview
 
-bzip2 -9 $RPM_BUILD_ROOT/usr/man/man1/*
+gzip -9nf $RPM_BUILD_ROOT/usr/man/man1/*
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -299,7 +302,9 @@ ln -sf /usr/X11R6/bin/gvim.gtk /usr/X11R6/bin/gvim
 %files rt
 %defattr(644,root,root,755)
 
-%attr(644,root,man) /usr/man/man1/*
+%attr(755,root,root) /usr/bin/vimtutor
+
+%attr(644,root,man ) /usr/man/man1/*
 
 %dir /usr/share/vim
 /usr/share/vim/macros
