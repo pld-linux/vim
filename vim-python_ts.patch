@@ -1,0 +1,13 @@
+diff -Nur vim62.orig/runtime/ftplugin/python.vim vim62/runtime/ftplugin/python.vim
+--- vim62.orig/runtime/ftplugin/python.vim	Sat May 24 14:59:06 2003
++++ vim62/runtime/ftplugin/python.vim	Wed Aug 20 00:01:02 2003
+@@ -13,9 +13,6 @@
+ " setlocal comments-=:%
+ setlocal commentstring=#%s
+ 
+-" Python always uses a 'tabstop' of 8.
+-setlocal ts=8
+-
+ set wildignore+=*.pyc
+ 
+ nnoremap <silent> <buffer> ]] :call <SID>Python_jump('/^\(class\\|def\)')<cr>
