@@ -1,8 +1,0 @@
-diff -Nur vim62.orig/runtime/syntax/python.vim vim62/runtime/syntax/python.vim
---- vim62.orig/runtime/syntax/python.vim	Tue Feb 11 10:49:14 2003
-+++ vim62/runtime/syntax/python.vim	Tue Aug 19 23:29:26 2003
-@@ -168,4 +168,3 @@
- 
- let b:current_syntax = "python"
- 
--" vim: ts=8
