@@ -1,0 +1,128 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.021
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.021
+Problem:    The user manual section on exceptions contains small mistakes.
+Solution:   Give a good example of an error that could be missed and other
+	    improvements. (Servatius Brandt)
+Files:	    runtime/doc/usr_41.txt
+
+
+*** ../vim-6.2.020/runtime/doc/usr_41.txt	Sun Jun  1 15:11:52 2003
+--- runtime/doc/usr_41.txt	Tue Jun  3 13:02:15 2003
+***************
+*** 1,4 ****
+! *usr_41.txt*	For Vim version 6.2.  Last change: 2003 Jun 01
+  
+  		     VIM USER MANUAL - by Bram Moolenaar
+  
+--- 1,4 ----
+! *usr_41.txt*	For Vim version 6.2.  Last change: 2003 Jun 03
+  
+  		     VIM USER MANUAL - by Bram Moolenaar
+  
+***************
+*** 819,825 ****
+  
+  	:function
+  <	function Show(start, ...) ~
+! 	function GetVimIndent()~
+  	function SetSyn(name) ~
+  
+  To see what a function does, use its name as an argument for ":function": >
+--- 819,825 ----
+  
+  	:function
+  <	function Show(start, ...) ~
+! 	function GetVimIndent() ~
+  	function SetSyn(name) ~
+  
+  To see what a function does, use its name as an argument for ":function": >
+***************
+*** 863,872 ****
+  nice message instead.
+  
+  For the commands in between ":try" and ":endtry" errors are turned into
+! exceptions.  An exception is a string.  In the case of an error the string is
+! the error message.  And every error message has a number.  In this case, the
+! error we catch contains "E484:".  This number is guaranteed to stay the same
+! (the text may change, e.g., it may be translated).
+  
+  When the ":read" command causes another error, the pattern "E484:" will not
+  match in it.  Thus this exception will not be caught and result in the usual
+--- 863,872 ----
+  nice message instead.
+  
+  For the commands in between ":try" and ":endtry" errors are turned into
+! exceptions.  An exception is a string.  In the case of an error the string
+! contains the error message.  And every error message has a number.  In this
+! case, the error we catch contains "E484:".  This number is guaranteed to stay
+! the same (the text may change, e.g., it may be translated).
+  
+  When the ":read" command causes another error, the pattern "E484:" will not
+  match in it.  Thus this exception will not be caught and result in the usual
+***************
+*** 881,887 ****
+  	:endtry
+  
+  This means all errors are caught.  But then you will not see errors that are
+! useful, such as an invalid modeline.
+  
+  Another useful mechanism is the ":finally" command: >
+  
+--- 881,887 ----
+  	:endtry
+  
+  This means all errors are caught.  But then you will not see errors that are
+! useful, such as "E21: Cannot make changes, 'modifiable' is off".
+  
+  Another useful mechanism is the ":finally" command: >
+  
+***************
+*** 897,905 ****
+  
+  This filters the lines from the cursor until the end of the file through the
+  "filter" command, which takes a file name argument.  No matter if the
+! filtering works or something goes wrong in between ":try" and ":finally", the
+! "call delete(tmp)" is always executed.  This makes sure you don't leave the
+! temporary file behind.
+  
+  More information about exception handling can be found in the reference
+  manual: |exception-handling|.
+--- 897,905 ----
+  
+  This filters the lines from the cursor until the end of the file through the
+  "filter" command, which takes a file name argument.  No matter if the
+! filtering works, something goes wrong in between ":try" and ":finally" or the
+! user cancels the filtering by pressing CTRL-C, the "call delete(tmp)" is
+! always executed.  This makes sure you don't leave the temporary file behind.
+  
+  More information about exception handling can be found in the reference
+  manual: |exception-handling|.
+*** ../vim-6.2.020/src/version.c	Sat Jul  5 19:14:04 2003
+--- src/version.c	Sat Jul  5 19:18:00 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     21,
+  /**/
+
+-- 
+ARTHUR:  I am your king!
+WOMAN:   Well, I didn't vote for you.
+ARTHUR:  You don't vote for kings.
+WOMAN:   Well, 'ow did you become king then?
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

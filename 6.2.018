@@ -1,0 +1,115 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.018
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.018
+Problem:    When using the XSMP protocol and reading from stdin Vim may wait
+            for a key to be pressed.
+Solution:   Avoid that RealWaitForChar() is used recursively.
+Files:      src/os_unix.c
+
+
+*** ../vim-6.2.017/src/os_unix.c	Thu Jun  5 12:24:08 2003
+--- src/os_unix.c	Wed Jul  2 20:59:55 2003
+***************
+*** 3994,3999 ****
+--- 4000,4007 ----
+  {
+      int		ret;
+  #if defined(FEAT_XCLIPBOARD) || defined(USE_XSMP)
++     static int	busy = FALSE;
++ 
+      /* May retry getting characters after an event was handled. */
+  # define MAY_LOOP
+  
+***************
+*** 4016,4021 ****
+--- 4024,4034 ----
+  	    ))
+  	gettimeofday(&start_tv, NULL);
+  # endif
++ 
++     /* Handle being called recursively.  This may happen for the session
++      * manager stuff, it may save the file, which does a breakcheck. */
++     if (busy)
++ 	return 0;
+  #endif
+  
+  #ifdef MAY_LOOP
+***************
+*** 4111,4117 ****
+--- 4124,4134 ----
+  	if (xsmp_idx >= 0 && (fds[xsmp_idx].revents & (POLLIN | POLLHUP)))
+  	{
+  	    if (fds[xsmp_idx].revents & POLLIN)
++ 	    {
++ 		busy = TRUE;
+  		xsmp_handle_requests();
++ 		busy = FALSE;
++ 	    }
+  	    else if (fds[xsmp_idx].revents & POLLHUP)
+  	    {
+  		if (p_verbose > 0)
+***************
+*** 4247,4253 ****
+--- 4264,4272 ----
+  	    }
+  	    else if (FD_ISSET(xsmp_icefd, &rfds))
+  	    {
++ 		busy = TRUE;
+  		xsmp_handle_requests();
++ 		busy = FALSE;
+  		if (--ret == 0)
+  		    finished = FALSE;   /* keep going if event was only one */
+  	    }
+***************
+*** 5793,5799 ****
+      int		interact_style;
+      Bool	fast;
+  {
+!     /* Handle already biung in saveyourself */
+      if (xsmp.save_yourself)
+  	SmcSaveYourselfDone(smc_conn, True);
+      xsmp.save_yourself = True;
+--- 5812,5818 ----
+      int		interact_style;
+      Bool	fast;
+  {
+!     /* Handle already being in saveyourself */
+      if (xsmp.save_yourself)
+  	SmcSaveYourselfDone(smc_conn, True);
+      xsmp.save_yourself = True;
+***************
+*** 5893,5898 ****
+--- 5912,5918 ----
+  xsmp_handle_requests()
+  {
+      Bool rep;
++ 
+      if (IceProcessMessages(xsmp.iceconn, NULL, &rep)
+  						 == IceProcessMessagesIOError)
+      {
+*** ../vim-6.2.017/src/version.c	Mon Jun 30 22:31:05 2003
+--- src/version.c	Wed Jul  2 21:34:38 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     18,
+  /**/
+
+-- 
+GALAHAD: No, please.  Please! I can defeat them!  There's only a hundred.
+GIRLS:   He will beat us easily.  We haven't a chance.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Help AIDS victims, buy here: http://ICCF-Holland.org/click1.html  ///

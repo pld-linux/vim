@@ -1,0 +1,66 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.017
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.017
+Problem:    Test11 sometimes prompts the user, because a file would have been
+	    changed outside of Vim. (Antonio Colombo)
+Solution:   Add a FileChangedShell autocommand to avoid the prompt.
+Files:	    src/testdir/test11.in
+
+
+*** ../vim-6.2.016/src/testdir/test11.in	Sat Dec  2 13:35:22 2000
+--- src/testdir/test11.in	Thu Jun 26 23:43:07 2003
+***************
+*** 10,19 ****
+--- 10,22 ----
+  
+  Note: This test will fail if "gzip" is not available.
+  $GZIP is made empty, "-v" would cause trouble.
++ Use a FileChangedShell autocommand to avoid a prompt for "Xtestfile.gz" being
++ modified outside of Vim (noticed on Solaris).
+  
+  STARTTEST
+  :so small.vim
+  :let $GZIP = ""
++ :au FileChangedShell * echo "caught FileChangedShell"
+  :set bin
+  :au FileWritePre    *.gz   '[,']!gzip
+  :au FileWritePost   *.gz   undo
+***************
+*** 47,52 ****
+--- 50,59 ----
+  :au! FileReadPost   *.gz   '[,']s/l/L/
+  :$r Xtestfile.gz             " Read compressed file
+  :w                           " write it, after filtering
++ :au!             " remove all autocommands
++ :e               " Edit test.out again
++ :set nobin ff&   " use the default fileformat for writing
++ :w
+  :qa!
+  ENDTEST
+  
+*** ../vim-6.2.016/src/version.c	Mon Jun 30 22:27:28 2003
+--- src/version.c	Mon Jun 30 22:29:22 2003
+***************
+*** 632,633 ****
+--- 632,635 ----
+  {   /* Add new patch number below this line */
++ /**/
++     17,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+265. Your reason for not staying in touch with family is that 
+     they do not have e-mail addresses. 
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///          Creator of Vim - Vi IMproved -- http://www.Vim.org          \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Help AIDS victims, buy at Amazon -- http://ICCF.nl/click1.html ///
