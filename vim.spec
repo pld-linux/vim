@@ -1,11 +1,10 @@
 #
 # Conditional build:
 # _without_static	- without static version
-# _without_athena	- without Athena Widgets-based gvim. DOESN'T WORK.
+# _without_athena	- without Athena Widgets-based gvim
 # _without_motif	- without Motif-based gvim
 # _without_gtk		- without gtk+-based gvim support
 # _without_gnome	- without gnome-based gvim support
-# _with_ispell		- with spell checking (non-standard feature; disables RIGHTLEFT and FKMAP)
 # _with_perl		- with perl interp
 # _with_python		- with python interp
 # _with_ruby		- with ruby interp
@@ -25,7 +24,7 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	2
+Release:	3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -224,8 +223,8 @@ Requires:	%{name}-rt = %{version}
 Text editor similar to Vi. This version is built with ispell support.
 
 %description ispell -l pl
-Edytor tekstu podobny do Vi. Ta wersja zosta³a skompilowana ze wsparciem
-dla ispella.
+Edytor tekstu podobny do Vi. Ta wersja zosta³a skompilowana ze
+wsparciem dla ispella.
 
 %package rt
 Summary:	Vim runtime files
@@ -443,6 +442,29 @@ cd src
 autoconf
 # needed to prevent deconfiguring
 cp -f configure auto
+
+%if %{!?_without_static:1}%{?_without_static:0}
+%{__make} distclean
+LDFLAGS="%{rpmldflags} -static"
+%configure \
+	--disable-gui \
+	--without-x \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-rubyinterp \
+	--disable-tclinterp \
+	--disable-cscope \
+	--disable-gpm \
+	--disable-multibyte \
+	--with-features=small \
+	--with-tlib=tinfo \
+	--disable-nls
+
+%{__make} SPELL_OBJ= vim
+mv -f vim vim.static
+LDFLAGS="%{rpmldflags}"
+%endif
+
 %configure \
 	--disable-gui \
 	--without-x \
@@ -486,32 +508,9 @@ mv -f vim vim.ncurses
 
 %{__make} vim
 mv -f vim vim.ispell
-%{__make} xxd/xxd
-
-%if %{!?_without_static:1}%{?_without_static:0}
-%{__make} distclean
-LDFLAGS="%{rpmldflags} -static"
-%configure \
-	--disable-gui \
-	--without-x \
-	--disable-perlinterp \
-	--disable-pythoninterp \
-	--disable-rubyinterp \
-	--disable-tclinterp \
-	--disable-cscope \
-	--disable-gpm \
-	--disable-multibyte \
-	--with-features=small \
-	--with-tlib=tinfo \
-	--disable-nls
-
-%{__make} SPELL_OBJ= vim
-mv -f vim vim.static
-%endif
 
 %if %{!?_without_athena:1}%{?_without_athena:0}
 %{__make} distclean
-LDFLAGS="%{rpmldflags}"
 %configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=athena \
