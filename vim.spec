@@ -1,5 +1,6 @@
 # TODO:
 # - some nice icon
+# - SECURITY: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=289560
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
