@@ -1,0 +1,75 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.312
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.312 (after 6.2.299)
+Problem:    "make install" clears the screen when installing the docs.
+Solution:   Execute ":helptags" in silent mode.
+Files:	    runtime/doc/Makefile
+
+
+*** ../vim-6.2.311/runtime/doc/Makefile	Sun Jan 25 19:28:46 2004
+--- runtime/doc/Makefile	Wed Mar  3 19:23:05 2004
+***************
+*** 6,11 ****
+--- 6,14 ----
+  
+  AWK = awk
+  
++ # Set to $(VIMTARGET) when executed from src/Makefile.
++ VIMEXE = vim
++ 
+  # include the config.mk from the source directory.  It's only needed to set
+  # AWK, used for "make html".  Comment this out if the include gives problems.
+  include ../../src/auto/config.mk
+***************
+*** 251,260 ****
+  all: tags vim.man vimdiff.man vimtutor.man xxd.man
+  
+  # Use Vim to generate the tags file.  Can only be used when Vim has been
+! # compiled and installed.
+  vimtags: $(DOCS)
+! 	vim -c "helptags ." -c quit
+  
+  tags: doctags $(DOCS)
+  	./doctags $(DOCS) | LANG=C LC_ALL=C sort >tags
+  	uniq -d -2 tags
+--- 254,264 ----
+  all: tags vim.man vimdiff.man vimtutor.man xxd.man
+  
+  # Use Vim to generate the tags file.  Can only be used when Vim has been
+! # compiled and installed.  Supports multiple languages.
+  vimtags: $(DOCS)
+! 	$(VIMEXE) -e -s -c "helptags ." -c quit
+  
++ # Use "doctags" to generate the tags file.  Only works for English!
+  tags: doctags $(DOCS)
+  	./doctags $(DOCS) | LANG=C LC_ALL=C sort >tags
+  	uniq -d -2 tags
+*** ../vim-6.2.311/src/version.c	Tue Mar  2 16:04:09 2004
+--- src/version.c	Wed Mar  3 19:21:48 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     312,
+  /**/
+
+-- 
+TIM:    Too late.
+ARTHUR: What?
+TIM:    There he is!
+   [They all turn,, and see a large white RABBIT lollop a few yards out of the
+   cave.  Accompanied by terrifying chord and jarring metallic monster noise.]
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

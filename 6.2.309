@@ -1,0 +1,81 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.309
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.309
+Problem:    "3grx" waits for two ESC to be typed.  (Jens Paulus)
+Solution:   Append the ESC to the stuff buffer when redoing the "gr" insert.
+Files:	    src/edit.c
+
+
+*** ../vim-6.2.308/src/edit.c	Mon Mar  1 16:54:50 2004
+--- src/edit.c	Tue Mar  2 14:50:56 2004
+***************
+*** 6061,6067 ****
+      if (!arrow_used)
+      {
+  	/*
+! 	 * Don't append the ESC for "r<CR>".
+  	 */
+  	if (cmdchar != 'r' && cmdchar != 'v')
+  	    AppendToRedobuff(ESC_STR);
+--- 6060,6066 ----
+      if (!arrow_used)
+      {
+  	/*
+! 	 * Don't append the ESC for "r<CR>" and "grx".
+  	 */
+  	if (cmdchar != 'r' && cmdchar != 'v')
+  	    AppendToRedobuff(ESC_STR);
+***************
+*** 6070,6076 ****
+  	 * Repeating insert may take a long time.  Check for
+  	 * interrupt now and then.
+  	 */
+! 	if (*count)
+  	{
+  	    line_breakcheck();
+  	    if (got_int)
+--- 6069,6075 ----
+  	 * Repeating insert may take a long time.  Check for
+  	 * interrupt now and then.
+  	 */
+! 	if (*count > 0)
+  	{
+  	    line_breakcheck();
+  	    if (got_int)
+***************
+*** 6080,6085 ****
+--- 6079,6086 ----
+  	if (--*count > 0)	/* repeat what was typed */
+  	{
+  	    (void)start_redo_ins();
++ 	    if (cmdchar == 'r' || cmdchar == 'v')
++ 		stuffReadbuff(ESC_STR);	/* no ESC in redo buffer */
+  	    ++RedrawingDisabled;
+  	    disabled_redraw = TRUE;
+  	    return FALSE;	/* repeat the insert */
+*** ../vim-6.2.308/src/version.c	Tue Mar  2 14:15:55 2004
+--- src/version.c	Tue Mar  2 14:53:09 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     309,
+  /**/
+
+-- 
+-rwxr-xr-x  1 root          24 Oct 29  1929 /bin/ed
+-rwxr-xr-t  4 root      131720 Jan  1  1970 /usr/ucb/vi
+-rwxr-xr-x  1 root  5.89824e37 Oct 22  1990 /usr/bin/emacs
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

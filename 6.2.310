@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.310
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.310
+Problem:    When setting 'undolevels' to -1, making a change and setting
+	    'undolevels' to a positive value an "undo list corrupt" error
+	    occurs. (Madoka Machitani)
+Solution:   Sync undo before changing 'undolevels'.
+Files:	    src/option.c
+
+
+*** ../vim-6.2.309/src/option.c	Sun Feb 29 21:06:13 2004
+--- src/option.c	Tue Mar  2 13:05:48 2004
+***************
+*** 6699,6704 ****
+--- 6699,6713 ----
+  	}
+  	if (p_uc && !old_value)
+  	    ml_open_files();
++     }
++ 
++     /* sync undo before 'undolevels' changes */
++     else if (pp == &p_ul)
++     {
++ 	/* use the old value, otherwise u_sync() may not work properly */
++ 	p_ul = old_value;
++ 	u_sync();
++ 	p_ul = value;
+      }
+  
+      /*
+*** ../vim-6.2.309/src/version.c	Tue Mar  2 14:59:39 2004
+--- src/version.c	Tue Mar  2 15:09:43 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     310,
+  /**/
+
+-- 
+FATHER:    You killed eight wedding guests in all!
+LAUNCELOT: Er, Well ... the thing is ... I thought your son was a lady.
+FATHER:    I can understand that.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///

@@ -1,0 +1,350 @@
+To: vim-dev@vim.org
+Subject: Patch 6.2.311
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.2.311 (after 6.2.298)
+Problem:    When making several changes in one line the changelist grows
+            quickly.  There is no error message for reaching the end of the
+            changelist.  Reading changelist marks from viminfo doesn't work
+            properly.
+Solution:   Only make a new entry in the changelist when making a change in
+            another line or 'textwidth' columns away.  Add E662, E663 and E664 
+            error messages.  Put a changelist mark from viminfo one position
+            before the end.
+Files:      runtime/doc/motion.txt, src/mark.c, src/misc1.c, src/normal.c
+
+
+*** ../vim-6.2.310/runtime/doc/motion.txt	Sun Feb 29 20:46:43 2004
+--- runtime/doc/motion.txt	Tue Mar  2 15:29:59 2004
+***************
+*** 1,4 ****
+! *motion.txt*    For Vim version 6.2.  Last change: 2004 Feb 29
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *motion.txt*    For Vim version 6.2.  Last change: 2004 Mar 02
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 960,995 ****
+  stored in the viminfo file and restored when starting Vim.
+  
+  
+! CHANGE LIST JUMPS			*changelist* *change-list-jumps*
+! 
+! For changes the cursor position is remembered.  One position is remembered for
+! every change that can be undone.  Two commands can be used to jump to
+! positions of changes, also those that have been undone.
+  
+! 							*g;*
+! g;			Go to [count] older cursor position in change list
+! 			(not a motion command).
+  			{not in Vi}
+  			{not available without the +jumplist feature}
+  
+! 							*g,*
+! g,			Go to [count] newer cursor position in change list
+! 			(not a motion command).
+  			{not in Vi}
+  			{not available without the +jumplist feature}
+  
+! When you already are at the end or start of the change list you will get an
+! error message.  When using a count you jump as far back or forward as
+! possible.  Thus you can use "999g;" to go to the first change for which the
+! position is still remembered.  The number of entries in the change list is
+! fixed and is the same as for the |jumplist|.
+  
+  Note that when text has been inserted or deleted the cursor position might be
+! a bit different from the position of the change.
+  
+  When the |:keepjumps| command modifier is used the position of a change is not
+  remembered.
+  
+  ==============================================================================
+  9. Various motions				*various-motions*
+  
+--- 968,1040 ----
+  stored in the viminfo file and restored when starting Vim.
+  
+  
+! CHANGE LIST JUMPS			*changelist* *change-list-jumps* *E664*
+  
+! When making a change the cursor position is remembered.  One position is
+! remembered for every change that can be undone, unless it is close to a
+! previous change.  Two commands can be used to jump to positions of changes,
+! also those that have been undone:
+! 
+! 							*g;* *E662*
+! g;			Go to [count] older position in change list.
+! 			If [count] is larger than the number of older change
+! 			positions go to the oldest change.
+! 			If there is no older change an error message is given.
+! 			(not a motion command)
+  			{not in Vi}
+  			{not available without the +jumplist feature}
+  
+! 							*g,* *E663*
+! g,			Go to [count] newer cursor position in change list.
+! 			Just like "g;| but in the opposite direction.
+! 			(not a motion command)
+  			{not in Vi}
+  			{not available without the +jumplist feature}
+  
+! When using a count you jump as far back or forward as possible.  Thus you can
+! use "999g;" to go to the first change for which the position is still
+! remembered.  The number of entries in the change list is fixed and is the same
+! as for the |jumplist|.
+! 
+! When two undo-able changes are in the same line and at a column position less
+! than 'textwidth' apart only the last one is remembered.  This avoids that a
+! sequence of small changes in a line, for example "xxxxx", adds many positions
+! to the change list.  When 'textwidth' is zero 'wrapmargin' is used.  When that
+! also isn't set a fixed number of 79 is used.  Detail: For the computations
+! bytes are used, not characters, to avoid a speed penalty (this only matters
+! for multi-byte encodings).
+  
+  Note that when text has been inserted or deleted the cursor position might be
+! a bit different from the position of the change.  Especially when lines have
+! been deleted.
+  
+  When the |:keepjumps| command modifier is used the position of a change is not
+  remembered.
+  
++ 							*:changes*
++ :changes		Print the change list.  A ">" character indicates the
++ 			current position.  Just after a change it is below the
++ 			newest entry, indicating that "g;" takes you to the
++ 			newest entry position.  The first column indicates the
++ 			count needed to take you to this position.  Example:
++ 
++ 				change line  col text ~
++ 				    3     9    8 bla bla bla
++ 				    2    11   57 foo is a bar
++ 				    1    14   54 the latest changed line
++ 				>
++ 
++ 			The "3g;" command takes you to line 9.  Then the
++ 			output of ":changes is:
++ 
++ 				change line  col text ~
++ 				>   0     9    8 bla bla bla
++ 				    1    11   57 foo is a bar
++ 				    2    14   54 the latest changed line
++ 			
++ 			Now you can use "g," to go to line 11 and "2g," to go
++ 			to line 14.
++ 
+  ==============================================================================
+  9. Various motions				*various-motions*
+  
+*** ../vim-6.2.310/src/mark.c	Sun Feb 29 20:46:43 2004
+--- src/mark.c	Mon Mar  1 22:42:35 2004
+***************
+*** 898,904 ****
+  #ifdef FEAT_JUMPLIST
+  	/* list of change positions */
+  	for (i = 0; i < curbuf->b_changelistlen; ++i)
+! 	    one_adjust(&(curbuf->b_changelist[i].lnum));
+  #endif
+  
+  #ifdef FEAT_VISUAL
+--- 898,904 ----
+  #ifdef FEAT_JUMPLIST
+  	/* list of change positions */
+  	for (i = 0; i < curbuf->b_changelistlen; ++i)
+! 	    one_adjust_nodel(&(curbuf->b_changelist[i].lnum));
+  #endif
+  
+  #ifdef FEAT_VISUAL
+***************
+*** 1470,1476 ****
+  				  else
+  				      ++curbuf->b_changelistlen;
+  				  curbuf->b_changelist[
+! 					       curbuf->b_changelistlen] = pos;
+  #endif
+  				  break;
+  			default:  if ((i = line[1] - 'a') >= 0 && i < NMARKS)
+--- 1470,1476 ----
+  				  else
+  				      ++curbuf->b_changelistlen;
+  				  curbuf->b_changelist[
+! 					   curbuf->b_changelistlen - 1] = pos;
+  #endif
+  				  break;
+  			default:  if ((i = line[1] - 'a') >= 0 && i < NMARKS)
+*** ../vim-6.2.310/src/misc1.c	Sun Feb 29 20:46:43 2004
+--- src/misc1.c	Tue Mar  2 10:48:59 2004
+***************
+*** 2494,2499 ****
+--- 2501,2511 ----
+  {
+      win_T	*wp;
+      int		i;
++ #ifdef FEAT_JUMPLIST
++     int		cols;
++     pos_T	*p;
++     int		add;
++ #endif
+  
+      /* mark the buffer as modified */
+      changed();
+***************
+*** 2505,2539 ****
+  	curbuf->b_last_change.col = col;
+  
+  #ifdef FEAT_JUMPLIST
+! 	if (curbuf->b_new_change)
+  	{
+! 	    /* This is the first of a new sequence of undo-able changes.
+! 	     * Use a new position in the changelist. */
+! 	    curbuf->b_new_change = FALSE;
+! 
+! 	    if (curbuf->b_changelistlen == JUMPLISTSIZE)
+  	    {
+! 		/* changelist is full: remove oldest entry */
+! 		curbuf->b_changelistlen = JUMPLISTSIZE - 1;
+! 		mch_memmove(curbuf->b_changelist, curbuf->b_changelist + 1,
+! 					  sizeof(pos_T) * (JUMPLISTSIZE - 1));
+! 		FOR_ALL_WINDOWS(wp)
+  		{
+! 		    /* Correct position in changelist for other windows on
+! 		     * this buffer. */
+! 		    if (wp->w_buffer == curbuf && wp->w_changelistidx > 0)
+! 			--wp->w_changelistidx;
+  		}
+  	    }
+! 	    FOR_ALL_WINDOWS(wp)
+  	    {
+! 		/* For other windows, if the position in the changelist is at
+! 		 * the end it stays at the end. */
+! 		if (wp->w_buffer == curbuf
+  			    && wp->w_changelistidx == curbuf->b_changelistlen)
+! 		    ++wp->w_changelistidx;
+  	    }
+- 	    ++curbuf->b_changelistlen;
+  	}
+  	curbuf->b_changelist[curbuf->b_changelistlen - 1] =
+  							curbuf->b_last_change;
+--- 2517,2575 ----
+  	curbuf->b_last_change.col = col;
+  
+  #ifdef FEAT_JUMPLIST
+! 	/* Create a new entry if a new undo-able change was started or we
+! 	 * don't have an entry yet. */
+! 	if (curbuf->b_new_change || curbuf->b_changelistlen == 0)
+  	{
+! 	    if (curbuf->b_changelistlen == 0)
+! 		add = TRUE;
+! 	    else
+  	    {
+! 		/* Don't create a new entry when the line number is the same
+! 		 * as the last one and the column is not too far away.  Avoids
+! 		 * creating many entries for typing "xxxxx". */
+! 		p = &curbuf->b_changelist[curbuf->b_changelistlen - 1];
+! 		if (p->lnum != lnum)
+! 		    add = TRUE;
+! 		else
+  		{
+! 		    cols = comp_textwidth(FALSE);
+! 		    if (cols == 0)
+! 			cols = 79;
+! 		    add = (p->col + cols < col || col + cols < p->col);
+  		}
+  	    }
+! 	    if (add)
+  	    {
+! 		/* This is the first of a new sequence of undo-able changes
+! 		 * and it's at some distance of the last change.  Use a new
+! 		 * position in the changelist. */
+! 		curbuf->b_new_change = FALSE;
+! 
+! 		if (curbuf->b_changelistlen == JUMPLISTSIZE)
+! 		{
+! 		    /* changelist is full: remove oldest entry */
+! 		    curbuf->b_changelistlen = JUMPLISTSIZE - 1;
+! 		    mch_memmove(curbuf->b_changelist, curbuf->b_changelist + 1,
+! 					  sizeof(pos_T) * (JUMPLISTSIZE - 1));
+! 		    FOR_ALL_WINDOWS(wp)
+! 		    {
+! 			/* Correct position in changelist for other windows on
+! 			 * this buffer. */
+! 			if (wp->w_buffer == curbuf && wp->w_changelistidx > 0)
+! 			    --wp->w_changelistidx;
+! 		    }
+! 		}
+! 		FOR_ALL_WINDOWS(wp)
+! 		{
+! 		    /* For other windows, if the position in the changelist is
+! 		     * at the end it stays at the end. */
+! 		    if (wp->w_buffer == curbuf
+  			    && wp->w_changelistidx == curbuf->b_changelistlen)
+! 			++wp->w_changelistidx;
+! 		}
+! 		++curbuf->b_changelistlen;
+  	    }
+  	}
+  	curbuf->b_changelist[curbuf->b_changelistlen - 1] =
+  							curbuf->b_last_change;
+*** ../vim-6.2.310/src/normal.c	Mon Mar  1 16:54:50 2004
+--- src/normal.c	Mon Mar  1 22:30:36 2004
+***************
+*** 6549,6555 ****
+  }
+  
+  /*
+!  * Handle CTRL-O and CTRL-I commands.
+   */
+      static void
+  nv_pcmark(cap)
+--- 6549,6555 ----
+  }
+  
+  /*
+!  * Handle CTRL-O, CTRL-I, "g;" and "g," commands.
+   */
+      static void
+  nv_pcmark(cap)
+***************
+*** 6575,6580 ****
+--- 6575,6589 ----
+  	}
+  	else if (pos != NULL)		    /* can jump */
+  	    nv_cursormark(cap, FALSE, pos);
++ 	else if (cap->cmdchar == 'g')
++ 	{
++ 	    if (curbuf->b_changelistlen == 0)
++ 		EMSG(_("E664: changelist is empty"));
++ 	    else if (cap->count1 < 0)
++ 		EMSG(_("E662: At start of changelist"));
++ 	    else
++ 		EMSG(_("E663: At end of changelist"));
++ 	}
+  	else
+  	    clearopbeep(cap->oap);
+  # ifdef FEAT_FOLDING
+*** ../vim-6.2.310/src/version.c	Tue Mar  2 15:10:20 2004
+--- src/version.c	Tue Mar  2 15:30:56 2004
+***************
+*** 639,640 ****
+--- 639,642 ----
+  {   /* Add new patch number below this line */
++ /**/
++     311,
+  /**/
+
+-- 
+The early bird gets the worm. If you want something else for
+breakfast, get up later.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\  Buy at Amazon and help AIDS victims -- http://ICCF.nl/click1.html ///
