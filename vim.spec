@@ -9,8 +9,7 @@
 # _with_python		- with python interp
 # _with_ruby		- with ruby interp
 # _with_tcl		- with tcl interp
-# TODO:
-# - add --with-modifiedby and --with-compiledby
+# _with_bonobo		- with bonobo patch (doesn't work at the moment)
 
 %define		_ver		6.2
 %define		_patchlevel	021
@@ -27,18 +26,18 @@ Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
 #Version:	%{_ver}
-Release:	3
+Release:	4
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
-# Source0-md5:	c49d360bbd069d00e2a57804f2a123d9
 Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
-# Source1-md5:	aa0079938f636d08be71078933477d8b
+# Source0-md5:	c49d360bbd069d00e2a57804f2a123d9
 Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
-# Source2-md5:	db0db37baea01874867d8d2414db104c
+# Source1-md5:	aa0079938f636d08be71078933477d8b
 Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
-# Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
+# Source2-md5:	db0db37baea01874867d8d2414db104c
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
+# Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
@@ -54,7 +53,7 @@ Patch7:		%{name}-egrep.patch
 Patch8:		%{name}-spec-fix.patch
 Patch9:		%{name}-specsyntax.patch
 Patch10:	%{name}-specsyntax-pld.patch
-Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030322.patch
+Patch99:	http://www.opensky.ca/gnome-vim/patches/vim-bonobo-20030726.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.002
 Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.003
@@ -76,6 +75,45 @@ Patch118:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.018
 Patch119:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.019
 Patch120:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.020
 Patch121:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.021
+Patch122:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.022
+Patch123:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.023
+Patch124:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.024
+Patch125:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.025
+Patch126:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.026
+Patch127:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.027
+Patch128:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.028
+Patch129:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.029
+Patch130:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.030
+Patch131:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.031
+Patch132:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.032
+Patch133:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.033
+Patch134:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.034
+Patch135:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.035
+Patch136:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.036
+Patch137:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.037
+Patch138:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.038
+Patch139:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.039
+Patch140:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.040
+Patch141:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.041
+Patch142:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.042
+Patch143:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.043
+Patch144:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.044
+Patch145:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.045
+Patch146:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.046
+Patch147:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.047
+Patch148:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.048
+Patch149:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.049
+Patch150:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.050
+Patch151:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.051
+Patch152:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.052
+Patch153:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.053
+Patch154:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.054
+Patch155:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.055
+Patch156:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.056
+Patch157:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.057
+Patch158:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.058
+Patch159:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.059
+Patch160:	ftp://ftp.vim.org/pub/editors/vim/patches/6.2.060
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -222,9 +260,9 @@ Summary:	Statically linked Vim
 Summary(pl):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
 Provides:	vi
-Obsoletes:	vi
 Obsoletes:	elvis-static
 Obsoletes:	nvi
+Obsoletes:	vi
 Obsoletes:	vim-minimal
 
 %description static
@@ -478,6 +516,45 @@ GNOME, что позволяет запускать VIM как приложение X Window System - с
 %patch119 -p0
 %patch120 -p0
 %patch121 -p0
+%patch122 -p0
+%patch123 -p0
+%patch124 -p0
+%patch125 -p0
+%patch126 -p0
+%patch127 -p0
+%patch128 -p0
+%patch129 -p0
+%patch130 -p0
+%patch131 -p0
+%patch132 -p0
+%patch133 -p0
+%patch134 -p0
+%patch135 -p0
+%patch136 -p0
+%patch137 -p0
+%patch138 -p0
+%patch139 -p0
+%patch140 -p0
+%patch141 -p0
+%patch142 -p0
+%patch143 -p0
+%patch144 -p0
+%patch145 -p0
+%patch146 -p0
+%patch147 -p0
+%patch148 -p0
+%patch149 -p0
+%patch150 -p0
+%patch151 -p0
+%patch152 -p0
+%patch153 -p0
+%patch154 -p0
+%patch155 -p0
+%patch156 -p0
+%patch157 -p0
+%patch158 -p0
+%patch159 -p0
+%patch160 -p0
 
 %patch0 -p1
 %{?_with_bonobo:%patch99 -p1}
@@ -516,9 +593,12 @@ LDFLAGS="%{rpmldflags} -static"
 	%{?_with_bonobo:--disable-bonobo} \
 	--with-features=small \
 	--with-tlib=tinfo \
-	--disable-nls
+	--disable-nls \
+	--with-modifiedby="PLD Linux" \
+	--with-compiledby="PLD Linux"
 
-%{__make} SPELL_OBJ= vim
+%{__make} \
+	SPELL_OBJ= vim
 mv -f vim vim.static
 LDFLAGS="%{rpmldflags}"
 %endif
@@ -540,14 +620,18 @@ LDFLAGS="%{rpmldflags}"
 	--with-features=huge \
 	--enable-multibyte \
 	--with-tlib=ncurses \
-	--enable-nls
+	--enable-nls \
+	--with-modifiedby="PLD Linux" \
+	--with-compiledby="PLD Linux"
 
-%{__make} SPELL_OBJ= vim
+%{__make} \
+	SPELL_OBJ= vim
 mv -f vim vim.ncurses
 %{__make} xxd/xxd
 
 %{__make} distclean
-%configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
+%configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--disable-gui \
 	--without-x \
 	%{!?_with_perl:--disable-perlinterp} \
@@ -564,14 +648,17 @@ mv -f vim vim.ncurses
 	--with-features=huge \
 	--enable-multibyte \
 	--with-tlib=ncurses \
-	--enable-nls
+	--enable-nls \
+	--with-modifiedby="PLD Linux" \
+	--with-compiledby="PLD Linux"
 
 %{__make} vim
 mv -f vim vim.ispell
 
 %if 0%{!?_without_athena:1}
 %{__make} distclean
-%configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
+%configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
@@ -588,14 +675,18 @@ mv -f vim vim.ispell
 	--enable-fontset \
 	--disable-gpm \
 	--without-gnome \
-	--enable-nls
+	--enable-nls \
+	--with-modifiedby="PLD Linux" \
+	--with-compiledby="PLD Linux"
+
 %{__make} vim
 mv -f vim gvim.athena
 %endif
 
 %if 0%{!?_without_motif:1}
 %{__make} distclean
-%configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
+%configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
@@ -613,14 +704,18 @@ mv -f vim gvim.athena
 	--enable-fontset \
 	--disable-gpm \
 	--without-gnome \
-	--enable-nls
+	--enable-nls \
+	--with-modifiedby="PLD Linux" \
+	--with-compiledby="PLD Linux"
+	
 %{__make} vim
 mv -f vim gvim.motif
 %endif
 
 %if 0%{!?_without_gtk:1}
 %{__make} distclean
-%configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
+%configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gtk2 \
 	--enable-gtk2-check \
@@ -636,14 +731,18 @@ mv -f vim gvim.motif
 	%{?_with_bonobo:--disable-bonobo} \
 	--disable-gpm \
 	--enable-cscope \
-	--enable-nls
+	--enable-nls \
+	--with-modifiedby="PLD Linux" \
+	--with-compiledby="PLD Linux"
+
 %{__make} vim
 mv -f vim gvim.gtk
 %endif
 
 %if 0%{!?_without_gnome:1}
 %{__make} distclean
-%configure CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
+%configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	%{?_with_bonobo:--enable-bonobo} \
@@ -660,7 +759,10 @@ mv -f vim gvim.gtk
 	%{?_with_tcl:--enable-tclinterp} \
 	--disable-gpm \
 	--enable-cscope \
-	--enable-nls
+	--enable-nls \
+	--with-modifiedby="PLD Linux" \
+	--with-compiledby="PLD Linux"
+
 %{__make} vim
 mv -f vim gvim.gnome
 %endif
@@ -672,7 +774,8 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT%{_applnkdir}/Editors \
 	$RPM_BUILD_ROOT%{_desktopdir}
 
-%{__make} install DESTDIR=$RPM_BUILD_ROOT
+%{__make} install \
+	DESTDIR=$RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
 
 %{!?_without_static:install src/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim}
@@ -775,7 +878,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim
 %dir %{_datadir}/vim/v*
 %dir %{_datadir}/vim/v*/doc
-%{_datadir}/vim/v*/doc/*.txt
+%{_datadir}/vim/v*/doc/*
 %verify(not size mtime md5) %{_datadir}/vim/v*/doc/tags
 %{_datadir}/vim/v*/ftplugin
 %{_datadir}/vim/v*/indent
@@ -824,6 +927,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/plugin
 %{_datadir}/vim/v*/print
 %{_datadir}/vim/v*/syntax
+%{_datadir}/vim/v*/tools
 %{_datadir}/vim/v*/tutor
 %{_datadir}/vim/v*/colors
 %{_datadir}/vim/v*/compiler
