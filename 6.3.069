@@ -1,0 +1,59 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.069
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.069
+Problem:    When converting text with illegal characters Vim may crash.
+Solution:   Avoid that too much is subtracted from the length. (Da Woon Jung)
+Files:	    src/mbyte.c
+
+
+*** ../vim-6.3.022/src/mbyte.c	Thu Oct  7 20:07:59 2004
+--- src/mbyte.c	Sat Mar 19 18:53:19 2005
+***************
+*** 3039,3045 ****
+  	    *to++ = '?';
+  	    if ((*mb_ptr2cells)((char_u *)from) > 1)
+  		*to++ = '?';
+! 	    l = (*mb_ptr2len_check)((char_u *)from);
+  	    from += l;
+  	    fromlen -= l;
+  	}
+--- 3039,3052 ----
+  	    *to++ = '?';
+  	    if ((*mb_ptr2cells)((char_u *)from) > 1)
+  		*to++ = '?';
+! 	    if (enc_utf8)
+! 		l = utfc_ptr2len_check_len((char_u *)from, fromlen);
+! 	    else
+! 	    {
+! 		l = (*mb_ptr2len_check)((char_u *)from);
+! 		if (l > fromlen)
+! 		    l = fromlen;
+! 	    }
+  	    from += l;
+  	    fromlen -= l;
+  	}
+*** ../vim-6.3.022/src/version.c	Thu Mar 24 11:03:11 2005
+--- src/version.c	Mon Apr 11 11:37:19 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     69,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+99. The hum of a cooling fan and the click of keys is comforting to you.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

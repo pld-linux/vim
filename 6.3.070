@@ -1,0 +1,71 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.070
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.070
+Problem:    After ":set number linebreak wrap" and a vertical split, moving
+	    the vertical separator far left will crash Vim. (Georg Dahn)
+Solution:   Avoid dividing by zero.
+Files:	    src/charset.c
+
+
+*** ../vim-6.3.019/src/charset.c	Wed Jun  9 14:56:26 2004
+--- src/charset.c	Sun Apr 10 17:35:14 2005
+***************
+*** 1005,1010 ****
+--- 1005,1011 ----
+      int		numberextra;
+      char_u	*ps;
+      int		tab_corr = (*s == TAB);
++     int		n;
+  
+      /*
+       * No 'linebreak' and 'showbreak': return quickly.
+***************
+*** 1048,1056 ****
+  	col2 = col;
+  	colmax = W_WIDTH(wp) - numberextra;
+  	if (col >= colmax)
+! 	    colmax += (((col - colmax)
+! 			/ (colmax + win_col_off2(wp))) + 1)
+! 			* (colmax + win_col_off2(wp));
+  	for (;;)
+  	{
+  	    ps = s;
+--- 1049,1060 ----
+  	col2 = col;
+  	colmax = W_WIDTH(wp) - numberextra;
+  	if (col >= colmax)
+! 	{
+! 	    n = colmax + win_col_off2(wp);
+! 	    if (n > 0)
+! 		colmax += (((col - colmax) / n) + 1) * n;
+! 	}
+! 
+  	for (;;)
+  	{
+  	    ps = s;
+*** ../vim-6.3.019/src/version.c	Mon Apr 11 11:38:29 2005
+--- src/version.c	Mon Apr 11 11:40:47 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     70,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+100. The most exciting sporting events you noticed during summer 1996
+    was Netscape vs. Microsoft.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
