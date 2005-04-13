@@ -148,9 +148,9 @@ Patch165:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.065
 Patch166:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.066
 Patch167:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.067
 Patch168:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.068
-Patch169	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.069
+Patch169:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.069
 Patch170:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.070
-Patch171	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.071
+Patch171:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.071
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
