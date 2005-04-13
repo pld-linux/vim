@@ -18,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		6.3
-%define		_patchlevel	068
+%define		_patchlevel	071
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -148,6 +148,9 @@ Patch165:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.065
 Patch166:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.066
 Patch167:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.067
 Patch168:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.068
+Patch169	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.069
+Patch170:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.070
+Patch171	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.071
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
@@ -653,6 +656,10 @@ element bonobo.
 %patch165 -p0
 %patch166 -p0
 %patch167 -p0
+%patch168 -p0
+%patch169 -p0
+%patch170 -p0
+%patch171 -p0
 
 # kvim
 %patch999 -p1
