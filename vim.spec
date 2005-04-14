@@ -78,6 +78,7 @@ Patch17:	%{name}-pl.po.patch
 Patch18:	%{name}-po-syntax.patch
 Patch19:	%{name}-modprobe.patch
 Patch20:	%{name}-CAN-2005-0069.patch
+Patch21:	%{name}-gtkfilechooser.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.001
@@ -158,7 +159,7 @@ BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
-%{?with_gtk:BuildRequires:	gtk+2-devel >= 2:2.2.1}
+%{?with_gtk:BuildRequires:	gtk+2-devel >= 2:2.6.0}
 %{?with_kde:BuildRequires:	kdelibs-devel >= 9:3.0.0}
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %{?with_selinux:BuildRequires:	libselinux-devel}
@@ -688,6 +689,7 @@ element bonobo.
 %patch18 -p1
 %patch19 -p0 -b .modprobe
 %patch20 -p1
+%patch21 -p0
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
