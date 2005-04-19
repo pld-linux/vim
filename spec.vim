@@ -28,7 +28,7 @@ syn region specMacroIdentifier oneline matchgroup=Special start='%{' skip='\\}' 
 syn match specBcond contained '%{with\(out\)\?\s\+[a-zA-Z0-9_-]\+}'
 
 syn match specSpecialVariables contained '\$[0-9]\|\${[0-9]}'
-syn match specCommandOpts      contained '\s\(-\w\+\|--\w[a-zA-Z_-]\+\)'ms=s+1
+syn match specCommandOpts      contained '\s\(-\w\+\|--\w[a-zA-Z0-9_-]\+\)'ms=s+1
 syn match specComment '^\s*#.*$'
 
 
