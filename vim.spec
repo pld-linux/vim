@@ -31,7 +31,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1.1
+Release:	1.2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -56,6 +56,7 @@ Source14:	%{name}.desktop
 Source15:	php.vim
 # http://www.vim.org/scripts/script.php?script_id=415 (1.13)
 Source16:	zenburn.vim
+Source17:	spec.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -65,13 +66,10 @@ Patch5:		%{name}-%{name}rc.patch
 Patch6:		%{name}-no_libelf.patch
 Patch7:		%{name}-egrep.patch
 Patch8:		k%{name}-desktop.patch
-Patch9:		%{name}-specsyntax.patch
-Patch10:	%{name}-specsyntax-pld.patch
 Patch11:	%{name}-bonobo.patch
 Patch12:	%{name}-home_etc.patch
 #Patch12:	%{name}-dynamic_python.patch
 Patch13:	%{name}-selinux.patch
-Patch14:	%{name}-specsyntax4.patch
 Patch15:	%{name}-po.patch
 Patch16:	%{name}-filetype_vim-perl_tests.patch
 Patch17:	%{name}-pl.po.patch
@@ -677,12 +675,9 @@ element bonobo.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
-%patch9 -p1
-%patch10 -p1
 %{?with_bonobo:%patch11 -p1}
 %{?with_home_etc:%patch12 -p1}
 %{?with_selinux:%patch13 -p1}
-%patch14 -p1
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
@@ -693,6 +688,7 @@ element bonobo.
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
+install %{SOURCE17} runtime/syntax
 
 %build
 cd src
