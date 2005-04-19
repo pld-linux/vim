@@ -64,9 +64,10 @@ syn cluster specListedFiles contains=specListedFilesBin,specListedFilesLib,specL
 "specComands
 syn match   specConfigure  contained '\./configure'
 syn match   specTarCommand contained '\<tar\s\+[cxvpzIf]\{,5}\s*'
+syn match   specMacro contained '%\(\(group\|user\)\(add\|remove\)\|banner\)'
 syn keyword specCommandSpecial contained root
 syn keyword specCommand		contained make xmkmf mkdir chmod ln find sed rm strip moc echo grep ls rm mv mkdir install cp pwd cat tail then else elif cd gzip rmdir ln eval export touch
-syn cluster specCommands contains=specCommand,specTarCommand,specConfigure,specCommandSpecial
+syn cluster specCommands contains=specCommand,specTarCommand,specConfigure,specCommandSpecial,specMacro
 
 "frequently used rpm env vars
 syn keyword specSpecialVariablesNames contained RPM_BUILD_ROOT RPM_BUILD_DIR RPM_SOURCE_DIR RPM_OPT_FLAGS LDFLAGS CC CC_FLAGS CPPNAME CFLAGS CXX CXXFLAGS CPPFLAGS
@@ -84,7 +85,7 @@ syn keyword specMacroNameLocal contained _aclocaldir _applnkdir _arch _binary_pa
 "   Scripts, Files and Changelog
 
 "One line macros - valid in all ScriptAreas
-"tip: remember do include new itens on specScriptArea's skip section
+"tip: remember do include new items on specScriptArea's skip section
 syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(\(un\)\?define\|dump\|trace\|patch\d*\|setup\|configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\|bcond_with\(out\)\?\|include\)\>' end='$' contains=specCommandOpts,specMacroIdentifier,specSectionMacroBcondArea
 syn region specSectionMacroBracketArea oneline matchgroup=specSectionMacro start='^%{\(configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\)}' end='$' contains=specCommandOpts,specMacroIdentifier
 syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??\(with\(out\)\?_[a-zA-Z0-9_]\+\|debug\):' skip='\\}' end='}' contains=ALLBUT,shCase
@@ -93,7 +94,7 @@ syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??\
 "TODO %config valid parameters: missingok\|noreplace
 "TODO %verify valid parameters: \(not\)\= \(md5\|atime\|...\)
 syn region specFilesArea matchgroup=specSection start='^%[Ff][Ii][Ll][Ee][Ss]\>' skip='%\(attrib\|defattr\|attr\|dir\|config\|docdir\|doc\|lang\|verify\|ghost\|exclude\|dev\)\>' end='^%[a-zA-Z]'me=e-2 contains=specFilesOpts,specFilesDirective,@specListedFiles,specComment,specCommandSpecial,specMacroIdentifier
-"tip: remember to include new itens in specFilesArea above
+"tip: remember to include new items in specFilesArea above
 syn match  specFilesDirective contained '%\(attrib\|defattr\|attr\|dir\|config\|docdir\|doc\|lang\|verify\|ghost\|exclude\|dev\)\>'
 
 "valid options for certain section headers
@@ -108,7 +109,7 @@ syn case ignore
 "%% PreAmble Section %%
 "Copyright and Serial were deprecated by License and Epoch
 syn region specPreAmbleDeprecated oneline matchgroup=specError start='^\(Copyright\|Serial\)' end='$' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier
-syn region specPreAmble oneline matchgroup=specCommand start='\(^\|\(^%{!\??with\(out\)\?_[a-zA-Z0-9_]\+:\)\@<=\)\(Prereq\|Summary\|Name\|Version\|Packager\|Requires\|Icon\|URL\|Source\d*\|Patch\d*\|Prefix\|Packager\|Group\|License\|Release\|BuildRoot\|Distribution\|Vendor\|Provides\|ExclusiveArch\|ExcludeArch\|ExclusiveOS\|Obsoletes\|BuildArch\|BuildArchitectures\|BuildRequires\|BuildConflicts\|BuildPreReq\|Conflicts\|AutoRequires\|AutoReqProv\|AutoReq\|AutoProv\|Epoch\|NoSource\)' end='$\|}\@=' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
+syn region specPreAmble oneline matchgroup=specCommand start='\(^\|\(^%{!\??\(with\(out\)\?_[a-zA-Z0-9_]\+\|debug\):\)\@<=\)\(Prereq\|Summary\|Name\|Version\|Packager\|Requires\|Icon\|URL\|Source\d*\|Patch\d*\|Prefix\|Packager\|Group\|License\|Release\|BuildRoot\|Distribution\|Vendor\|Provides\|ExclusiveArch\|ExcludeArch\|ExclusiveOS\|Obsoletes\|BuildArch\|BuildArchitectures\|BuildRequires\|BuildConflicts\|BuildPreReq\|Conflicts\|AutoRequires\|AutoReqProv\|AutoReq\|AutoProv\|Epoch\|NoSource\)' end='$\|}\@=' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
 
 "%% Description Section %%
 syn region specDescriptionArea matchgroup=specSection start='^%description' end='^%'me=e-1 contains=specDescriptionOpts,specEmail,specURL,specNumber,specMacroIdentifier,specComment
@@ -117,7 +118,11 @@ syn region specDescriptionArea matchgroup=specSection start='^%description' end=
 syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e-1 contains=specPackageOpts,specPreAmble,specComment
 
 "%% Scripts Section %%
-syn region specScriptArea matchgroup=specSection start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\)\>' skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\)\>' end='^%'me=e-1 contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
+syn region specScriptArea matchgroup=specSection
+	\ start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\)\>'
+	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|useradd\|groupadd\)\>'
+	\ end='^%'me=e-1
+	\ contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
 
 "%% Changelog Section %%
 syn region specChangelogArea matchgroup=specSection start='^%changelog' end='^%'me=e-1 contains=specEmail,specURL,specWeekday,specMonth,specNumber,specComment,specLicense
@@ -131,7 +136,7 @@ syn region specChangelogArea matchgroup=specSection start='^%changelog' end='^%'
 syn case match
 
 
-"sh-like comment stile, only valid in script part
+"sh-like comment style, only valid in script part
 syn match shComment contained '#.*$'
 
 syn region shQuote1 contained matchgroup=shQuoteDelim start=+'+ skip=+\\'+ end=+'+ contains=specMacroIdentifier
@@ -221,6 +226,7 @@ if version >= 508 || !exists("did_spec_syntax_inits")
   HiLink specSpecialVariables		specGlobalMacro
   HiLink specSpecialVariablesNames	specGlobalMacro
   HiLink specTarCommand			specCommand
+  HiLink specMacro			Macro
   HiLink specURL			specWWWlink
   HiLink specURLMacro			specWWWlink
   HiLink specVariables			Identifier
