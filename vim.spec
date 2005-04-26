@@ -77,6 +77,7 @@ Patch18:	%{name}-po-syntax.patch
 Patch19:	%{name}-modprobe.patch
 Patch20:	%{name}-CAN-2005-0069.patch
 Patch21:	%{name}-gtkfilechooser.patch
+Patch22:	%{name}-doubleparenthesis.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.001
@@ -685,6 +686,7 @@ element bonobo.
 %patch19 -p0 -b .modprobe
 %patch20 -p1
 %patch21 -p0
+%patch22 -p1 
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
@@ -1020,11 +1022,16 @@ ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 
+install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,32x32,48x48}/apps
+install runtime/vim16x16.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/16x16/apps/vim.png
+install runtime/vim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/vim.png
+install runtime/vim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/vim.png
+
 %if %{with kde}
 install -m755 src/bin/kvim $RPM_BUILD_ROOT%{_bindir}/kvim
 install -d $RPM_BUILD_ROOT%{_desktopdir}/kde
 install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,22x22}/actions
-install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{32x32,48x48,64x64}/apps
+install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{64x64}/apps
 install runtime/hi16-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/16x16/actions
 install runtime/hi22-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/22x22/actions
 install runtime/kvim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/kvim.png
@@ -1055,6 +1062,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/rvim
 %{_desktopdir}/%{name}.desktop
+%{_iconsdir}/hicolor/16x16/apps/vim.png
+%{_iconsdir}/hicolor/32x32/apps/vim.png
+%{_iconsdir}/hicolor/48x48/apps/vim.png
 
 %if %{with static}
 %files static
