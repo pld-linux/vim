@@ -1031,7 +1031,7 @@ install runtime/vim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/vim.
 install -m755 src/bin/kvim $RPM_BUILD_ROOT%{_bindir}/kvim
 install -d $RPM_BUILD_ROOT%{_desktopdir}/kde
 install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,22x22}/actions
-install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{64x64}/apps
+install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/64x64/apps
 install runtime/hi16-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/16x16/actions
 install runtime/hi22-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/22x22/actions
 install runtime/kvim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/kvim.png
