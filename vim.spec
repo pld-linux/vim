@@ -1062,9 +1062,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/rvim
 %{_desktopdir}/%{name}.desktop
-%{_iconsdir}/hicolor/16x16/apps/vim.png
-%{_iconsdir}/hicolor/32x32/apps/vim.png
-%{_iconsdir}/hicolor/48x48/apps/vim.png
 
 %if %{with static}
 %files static
@@ -1211,6 +1208,10 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_mandir}/pl/man1/rvim.*
 %lang(pl) %{_mandir}/pl/man1/gvi*
 %lang(pl) %{_mandir}/pl/man1/rgv*
+
+%{_iconsdir}/hicolor/16x16/apps/vim.png
+%{_iconsdir}/hicolor/32x32/apps/vim.png
+%{_iconsdir}/hicolor/48x48/apps/vim.png
 
 %if %{with athena}
 %files -n gvim-athena
