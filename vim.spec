@@ -1,5 +1,3 @@
-# TODO:
-# - some nice icon
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -9,7 +7,7 @@
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	kde		# don't build kvim
 %bcond_without	perl		# without Perl interp
-%bcond_with	python		# with Python interp
+%bcond_without	python		# with Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
 %bcond_with	bonobo		# with bonobo component (breaks other things)
@@ -31,7 +29,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	5
+Release:	6
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -68,7 +66,6 @@ Patch7:		%{name}-egrep.patch
 Patch8:		k%{name}-desktop.patch
 Patch11:	%{name}-bonobo.patch
 Patch12:	%{name}-home_etc.patch
-#Patch12:	%{name}-dynamic_python.patch
 Patch13:	%{name}-selinux.patch
 Patch15:	%{name}-po.patch
 Patch16:	%{name}-filetype_vim-perl_tests.patch
@@ -1056,6 +1053,36 @@ install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{syntax,ftdetec
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%post
+[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_post
+
+%postun
+[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_postun
+
+%post -n gvim-athena
+[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_post
+
+%postun -n gvim-athena
+[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_postun
+
+%post -n gvim-motif
+[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_post
+
+%postun -n gvim-motif
+[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_postun
+
+%post -n gvim-gtk
+[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_post
+
+%postun -n gvim-gtk
+[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_postun
+
+%post -n gvim-gnome
+[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_post
+
+%postun -n gvim-gnome
+[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_postun
 
 %files
 %defattr(644,root,root,755)
