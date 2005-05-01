@@ -29,7 +29,7 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	6
+Release:	7
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -171,6 +171,7 @@ BuildRequires:	ORBit2-devel
 BuildRequires:	libbonoboui-devel >= 2.2.0
 BuildRequires:	nautilus-devel >= 2.2.0
 %endif
+BuildRequires:	rpmbuild(macros) >= 1.210
 %if %{with static}
 BuildRequires:	acl-static
 BuildRequires:	attr-static
