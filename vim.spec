@@ -29,7 +29,7 @@ Summary(tr):	Gelişmiş bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	7
+Release:	8
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -1056,34 +1056,34 @@ install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{syntax,ftdetec
 rm -rf $RPM_BUILD_ROOT
 
 %post
-[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_post
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
 
 %postun
-[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_postun
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
 
 %post -n gvim-athena
-[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_post
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
 
 %postun -n gvim-athena
-[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_postun
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
 
 %post -n gvim-motif
-[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_post
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
 
 %postun -n gvim-motif
-[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_postun
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
 
 %post -n gvim-gtk
-[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_post
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
 
 %postun -n gvim-gtk
-[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_postun
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
 
 %post -n gvim-gnome
-[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_post
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
 
 %postun -n gvim-gnome
-[ -x /usr/bin/update-desktop-database ] && %update_desktop_database_postun
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
 
 %files
 %defattr(644,root,root,755)
