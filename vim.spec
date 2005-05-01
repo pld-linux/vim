@@ -7,7 +7,7 @@
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	kde		# don't build kvim
 %bcond_without	perl		# without Perl interp
-%bcond_without	python		# with Python interp
+%bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
 %bcond_with	bonobo		# with bonobo component (breaks other things)
