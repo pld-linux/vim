@@ -129,12 +129,11 @@ syn region specScriptArea matchgroup=specSection
 	\ contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
 
 "%% Changelog Section %%
-syn region specChangelogArea matchgroup=specSection start='^%changelog' end='^%'me=e-1 
-	\ contains=specEmail,specURL,specWeekday,specMonth,specNumber,specComment,specLicense,specRevision,specLogMessage,specLogTag,specLogError
+syn region specChangelogArea matchgroup=specSection start='^%changelog' end='^%'me=e-1
+	\ contains=specEmail,specURL,specWeekday,specMonth,specNumber,specComment,specLicense,specRevision,specLogMessage,specLogError
 
 syn match specRevision contained "^Revision [.0-9]\+  [/0-9]\+ [:0-9]\+  [a-zA-Z0-9]\+$"
 syn region specLogMessage contained start="^[- ] " end="$" contains=specLogError,specURL,specEmail
-syn region specLogTag contained start="^\$Log" end="\$$"
 syn match specLogError contained "%%"
 
 "------------------------------------------------------------------------------
@@ -248,7 +247,6 @@ if version >= 508 || !exists("did_spec_syntax_inits")
 
   HiLink specRevision			Number
   HiLink specLogMessage			Identifier
-  HiLink specLogTag			NONE
   HiLink specLogError			Error
 
   delcommand HiLink
