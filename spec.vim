@@ -73,12 +73,12 @@ syn cluster specCommands contains=specCommand,specTarCommand,specConfigure,specC
 syn keyword specSpecialVariablesNames contained RPM_BUILD_ROOT RPM_BUILD_DIR RPM_SOURCE_DIR RPM_OPT_FLAGS LDFLAGS CC CC_FLAGS CPPNAME CFLAGS CXX CXXFLAGS CPPFLAGS
 
 "valid macro names from /usr/lib/rpm/macros
-syn keyword specMacroNameOther contained buildroot buildsubdir debugcflags debuginfocflags date distribution disturl ix86 kgcc kgcc_package name nil optflags packager perl_archlib perl_privlib perl_sitearch perl_sitelib perl_vendorarch perl_vendorlib release requires_eq rpmcflags rpmcxxflags rpmldflags tmpdir vendor version epoch
+syn keyword specMacroNameOther contained buildroot buildsubdir debugcflags debuginfocflags date distribution disturl ix86 kgcc kgcc_package name nil optflags packager perl_archlib perl_privlib perl_sitearch perl_sitelib perl_vendorarch perl_vendorlib py_sitedir release requires_eq rpmcflags rpmcxxflags rpmldflags tmpdir vendor version epoch
 syn match   specMacroNameOther contained '\<\(PATCH\|SOURCE\)\d*\>'
 
 "valid _macro names from /usr/lib/rpm/macros
 syn keyword specMacroNameLocal contained _aclocaldir _applnkdir _arch _binary_payload _bindir _build _build_arch _build_alias _build_cpu _builddir _build_os _buildshell _buildsubdir _build_vendor _bzip2bin _datadir _dbpath _dbpath_rebuild _defaultdocdir _desktopdir _docdir _examplesdir _excludedocs _exec_prefix _fixgroup _fixowner _fixperms _fontsdir _ftpport _ftpproxy _gnu _gpg_name _gpg_path _gtkdocdir _gzipbin _host _host_alias _host_cpu _host_os _host_vendor _httpport _httpproxy _iconsdir _includedir _infodir _initrddir _install_langs _install_script_path _instchangelog _javaclasspath _javadir _javadocdir _kernelsrcdir _kernel_ver _kernel_ver_str _langpatt _lib _libdir _libexecdir _localstatedir _mandir _netsharedpath _oldincludedir _omf_dest_dir _os _package_version _pgpbin _pgp_name _pgp_path _pixmapsdir _pkgconfigdir _prefix _preScriptEnvironment _provides _rpmdir _rpmfilename _sbindir _sharedstatedir _signature _smp_mflags _sourcedir _source_payload _specdir _srcrpmdir _sysconfdir _target _target_alias _target_cpu _target_os _target_platform _target_vendor _timecheck _tmppath _topdir _usr _usrsrc _var _vendor
-syn keyword specMacroNameLocal contained __cxx __cc __make __perl __libtoolize __aclocal __autoconf __automake __autoheader __gettextize
+syn keyword specMacroNameLocal contained __cxx __cc __make __perl __libtoolize __aclocal __autoconf __automake __autoheader __gettextize __sed
 
 
 "------------------------------------------------------------------------------
@@ -124,7 +124,7 @@ syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e
 "%% Scripts Section %%
 syn region specScriptArea matchgroup=specSection
 	\ start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\)\>'
-	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|useradd\|groupadd\|addusertogroup\)\>'
+	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|useradd\|groupadd\|addusertogroup\|py_comp\|py_ocomp\)\>'
 	\ end='^%'me=e-1
 	\ contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
 
