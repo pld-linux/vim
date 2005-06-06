@@ -64,7 +64,7 @@ syn cluster specListedFiles contains=specListedFilesBin,specListedFilesLib,specL
 "specComands
 syn match   specConfigure  contained '\./configure'
 syn match   specTarCommand contained '\<tar\s\+[cxvpzjf]\{,5}\s*'
-syn match   specMacro contained '%\(\(group\|user\)\(add\|remove\)\|banner\|addusertogroup\)'
+syn match   specMacro contained '%\(\(group\|user\)\(add\|remove\)\|banner\|addusertogroup\|apache_config_\(un\)\?install\|depmod\)'
 syn keyword specCommandSpecial contained root
 syn keyword specCommand		contained make xmkmf mkdir chmod find sed rm strip moc echo grep ls rm mv mkdir chown install cp pwd cat tail then else elif cd gzip rmdir ln eval export touch unzip bzip2
 syn cluster specCommands contains=specCommand,specTarCommand,specConfigure,specCommandSpecial,specMacro
@@ -73,7 +73,7 @@ syn cluster specCommands contains=specCommand,specTarCommand,specConfigure,specC
 syn keyword specSpecialVariablesNames contained RPM_BUILD_ROOT RPM_BUILD_DIR RPM_SOURCE_DIR RPM_OPT_FLAGS LDFLAGS CC CC_FLAGS CPPNAME CFLAGS CXX CXXFLAGS CPPFLAGS
 
 "valid macro names from /usr/lib/rpm/macros
-syn keyword specMacroNameOther contained buildroot buildsubdir debugcflags debuginfocflags date distribution disturl ix86 kgcc kgcc_package name nil optflags packager perl_archlib perl_privlib perl_sitearch perl_sitelib perl_vendorarch perl_vendorlib py_sitedir release requires_eq rpmcflags rpmcxxflags rpmldflags tmpdir vendor version epoch
+syn keyword specMacroNameOther contained buildroot buildsubdir debugcflags debuginfocflags date distribution disturl ix86 kgcc kgcc_package name nil optflags packager perl_archlib perl_privlib perl_sitearch perl_sitelib perl_vendorarch perl_vendorlib py_sitedir py_sitescriptdir release requires_eq rpmcflags rpmcxxflags rpmldflags tmpdir vendor version epoch
 syn match   specMacroNameOther contained '\<\(PATCH\|SOURCE\)\d*\>'
 
 "valid _macro names from /usr/lib/rpm/macros
@@ -124,7 +124,7 @@ syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e
 "%% Scripts Section %%
 syn region specScriptArea matchgroup=specSection
 	\ start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\)\>'
-	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|useradd\|groupadd\|addusertogroup\|py_comp\|py_ocomp\)\>'
+	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|useradd\|groupadd\|addusertogroup\|py_comp\|py_ocomp\|apache_config_\(un\)\?install\|depmod\)\>'
 	\ end='^%'me=e-1
 	\ contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
 
