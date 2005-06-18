@@ -16,7 +16,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		6.3
-%define		_patchlevel	071
+%define		_patchlevel	078
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -29,7 +29,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	8
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -148,6 +148,13 @@ Patch168:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.068
 Patch169:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.069
 Patch170:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.070
 Patch171:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.071
+Patch172:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.072
+Patch173:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.073
+Patch174:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.074
+Patch175:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.075
+Patch176:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.076
+Patch177:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.077
+Patch178:       ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.078
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
