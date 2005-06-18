@@ -1,0 +1,76 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.078 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.078 (extra, after 6.3.077)
+Problem:    VMS: Performance issue after patch 6.3.077
+Solution:   Add a timeout in the itemlist.  (Zoltan Arpadffy)
+Files:	    src/os_vms.c
+
+
+*** ../vim-6.3.077/src/os_vms.c	Tue Jun 14 14:04:07 2005
+--- src/os_vms.c	Tue Jun 14 19:03:58 2005
+***************
+*** 300,306 ****
+  {
+      int		status, function, len;
+      TT_MODE	tt_mode;
+!     ITEM	itmlst[2];
+      static long trm_mask[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
+  
+      /* whatever happened earlier we need an iochan here */
+--- 300,306 ----
+  {
+      int		status, function, len;
+      TT_MODE	tt_mode;
+!     ITEM	itmlst[3];
+      static long trm_mask[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
+  
+      /* whatever happened earlier we need an iochan here */
+***************
+*** 308,317 ****
+  	tt_mode = get_tty();
+  
+      vul_item(&itmlst[0], 0, TRM$_MODIFIERS,
+! 	     (char *)( TRM$M_TM_ESCAPE  | TRM$M_TM_TIMED    | TRM$M_TM_NOECHO |
+!                        TRM$M_TM_NOEDIT  | TRM$M_TM_NOFILTR  |
+!                        TRM$M_TM_NORECALL| TRM$M_TM_TRMNOECHO), 0);
+!     vul_item(&itmlst[1], sizeof(trm_mask), TRM$_TERM, (char *)&trm_mask, 0);
+  
+      function = (IO$_READLBLK | IO$M_EXTEND);
+      memset(inbuf, 0, nbytes);
+--- 308,318 ----
+  	tt_mode = get_tty();
+  
+      vul_item(&itmlst[0], 0, TRM$_MODIFIERS,
+! 	     (char *)( TRM$M_TM_ESCAPE	| TRM$M_TM_TIMED    | TRM$M_TM_NOECHO |
+! 		       TRM$M_TM_NOEDIT	| TRM$M_TM_NOFILTR  |
+! 		       TRM$M_TM_NORECALL| TRM$M_TM_TRMNOECHO), 0);
+!     vul_item(&itmlst[1], 0, TRM$_TIMEOUT, (char *) 1, 0 );
+!     vul_item(&itmlst[2], sizeof(trm_mask), TRM$_TERM, (char *)&trm_mask, 0);
+  
+      function = (IO$_READLBLK | IO$M_EXTEND);
+      memset(inbuf, 0, nbytes);
+*** ../vim-6.3.077/src/version.c	Tue Jun 14 14:04:07 2005
+--- src/version.c	Tue Jun 14 19:05:34 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     78,
+  /**/
+
+-- 
+From "know your smileys":
+ O:-)	Saint
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

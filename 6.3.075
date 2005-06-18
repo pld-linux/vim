@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.075
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.075
+Problem:    After unloading another buffer, syntax highlighting in the current
+	    buffer may be wrong when it uses "containedin". (Eric Arnold)
+Solution:   Use "buf" intead of "curbuf" in syntax_clear().
+Files:	    src/syntax.c
+
+
+*** ../vim-6.3.074/src/syntax.c	Tue Oct  5 17:02:41 2004
+--- src/syntax.c	Tue May 31 21:27:42 2005
+***************
+*** 3063,3070 ****
+  {
+      int i;
+  
+!     curbuf->b_syn_ic = FALSE;	    /* Use case, by default */
+!     curbuf->b_syn_containedin = FALSE;
+  
+      /* free the keywords */
+      free_keywtab(buf->b_keywtab);
+--- 3063,3070 ----
+  {
+      int i;
+  
+!     buf->b_syn_ic = FALSE;	    /* Use case, by default */
+!     buf->b_syn_containedin = FALSE;
+  
+      /* free the keywords */
+      free_keywtab(buf->b_keywtab);
+*** ../vim-6.3.074/src/version.c	Sun May 22 12:17:33 2005
+--- src/version.c	Tue May 31 21:29:36 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     75,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+15. Your heart races faster and beats irregularly each time you see a new WWW
+    site address in print or on TV, even though you've never had heart
+    problems before.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

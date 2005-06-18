@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.073
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.073
+Problem:    Win32 GUI: When the Vim window is partly above or below the
+	    screen, scrolling causes display errors when the taskbar is not on
+	    that side.
+Solution:   Use the SW_INVALIDATE flag when the Vim window is partly below or
+	    above the screen.
+Files:	    src/gui_w48.c
+
+
+*** ../vim-6.3.016/src/gui_w48.c	Thu Dec 16 14:26:44 2004
+--- src/gui_w48.c	Sun May 22 12:06:07 2005
+***************
+*** 2504,2509 ****
+--- 2504,2517 ----
+      RECT	rcVim, rcOther, rcDest;
+  
+      GetWindowRect(s_hwnd, &rcVim);
++ 
++     /* Check if the window is partly above or below the screen.  We don't care
++      * about partly left or right of the screen, it is not relevant when
++      * scrolling up or down. */
++     if (rcVim.top < 0 || rcVim.bottom > GetSystemMetrics(SM_CYFULLSCREEN))
++ 	return SW_INVALIDATE;
++ 
++     /* Check if there is an window (partly) on top of us. */
+      for (hwnd = s_hwnd; (hwnd = GetWindow(hwnd, GW_HWNDPREV)) != (HWND)0; )
+  	if (IsWindowVisible(hwnd))
+  	{
+*** ../vim-6.3.016/src/version.c	Fri May 20 13:18:31 2005
+--- src/version.c	Sun May 22 12:08:44 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     73,
+  /**/
+
+-- 
+TERRY GILLIAM PLAYED: PATSY (ARTHUR'S TRUSTY STEED), THE GREEN KNIGHT
+                      SOOTHSAYER, BRIDGEKEEPER, SIR GAWAIN (THE FIRST TO BE
+                      KILLED BY THE RABBIT)
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
