@@ -1,0 +1,114 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.080 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.080 (extra)
+Problem:    Win32: With 'encoding' set to utf-8 while the current codepage is
+	    Chinese editing a file with some specific characters in the name
+	    fails.
+Solution:   Use _wfullpath() instead of _fullpath() when necessary.
+Files:	    src/os_mswin.c
+
+
+*** ../vim-6.3.079/src/os_mswin.c	Sun Dec  5 16:43:06 2004
+--- src/os_mswin.c	Sat Jul  2 13:07:35 2005
+***************
+*** 367,385 ****
+  	nResult = mch_dirname(buf, len);
+      else
+  #endif
+- 	if (_fullpath(buf, fname, len - 1) == NULL)
+      {
+! 	STRNCPY(buf, fname, len);   /* failed, use the relative path name */
+! 	buf[len - 1] = NUL;
+! #ifndef USE_FNAME_CASE
+! 	slash_adjust(buf);
+  #endif
+      }
+-     else
+- 	nResult = OK;
+  
+  #ifdef USE_FNAME_CASE
+      fname_case(buf, len);
+  #endif
+  
+      return nResult;
+--- 367,421 ----
+  	nResult = mch_dirname(buf, len);
+      else
+  #endif
+      {
+! #ifdef FEAT_MBYTE
+! 	if (enc_codepage >= 0 && (int)GetACP() != enc_codepage
+! # ifdef __BORLANDC__
+! 		/* Wide functions of Borland C 5.5 do not work on Windows 98. */
+! 		&& g_PlatformId == VER_PLATFORM_WIN32_NT
+! # endif
+! 	   )
+! 	{
+! 	    WCHAR	*wname;
+! 	    WCHAR	wbuf[MAX_PATH];
+! 	    char_u	*cname = NULL;
+! 
+! 	    /* Use the wide function:
+! 	     * - convert the fname from 'encoding' to UCS2.
+! 	     * - invoke _wfullpath()
+! 	     * - convert the result from UCS2 to 'encoding'.
+! 	     */
+! 	    wname = enc_to_ucs2(fname, NULL);
+! 	    if (wname != NULL && _wfullpath(wbuf, wname, MAX_PATH - 1) != NULL)
+! 	    {
+! 		cname = ucs2_to_enc((short_u *)wbuf, NULL);
+! 		if (cname != NULL)
+! 		{
+! 		    STRNCPY(buf, cname, len);
+! 		    buf[len - 1] = NUL;
+! 		    nResult = OK;
+! 		}
+! 	    }
+! 	    vim_free(wname);
+! 	    vim_free(cname);
+! 	}
+! 	if (nResult == FAIL)	    /* fall back to non-wide function */
+  #endif
++ 	{
++ 	    if (_fullpath(buf, fname, len - 1) == NULL)
++ 	    {
++ 		STRNCPY(buf, fname, len);   /* failed, use relative path name */
++ 		buf[len - 1] = NUL;
++ 	    }
++ 	    else
++ 		nResult = OK;
++ 	}
+      }
+  
+  #ifdef USE_FNAME_CASE
+      fname_case(buf, len);
++ #else
++     slash_adjust(buf);
+  #endif
+  
+      return nResult;
+*** ../vim-6.3.079/src/version.c	Fri Jul  1 11:20:39 2005
+--- src/version.c	Mon Jul  4 12:18:34 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     80,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+225. You sign up for free subscriptions for all the computer magazines
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

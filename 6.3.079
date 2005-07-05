@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.079
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.079
+Problem:    Crash when executing a command in the command line window while 
+            syntax highlighting is enabled. (Pero Brbora)
+Solution:   Don't use a pointer to a buffer that has been deleted.
+Files:      src/syntax.c
+
+
+*** ../vim-6.3.078/src/syntax.c	Tue May 31 21:30:24 2005
+--- src/syntax.c	Fri Jul  1 11:12:05 2005
+***************
+*** 1158,1164 ****
+      prev = NULL;
+      for (p = buf->b_sst_first; p != NULL; )
+      {
+! 	if (p->sst_lnum + syn_buf->b_syn_sync_linebreaks > buf->b_mod_top)
+  	{
+  	    n = p->sst_lnum + buf->b_mod_xlines;
+  	    if (n <= buf->b_mod_bot)
+--- 1158,1164 ----
+      prev = NULL;
+      for (p = buf->b_sst_first; p != NULL; )
+      {
+! 	if (p->sst_lnum + buf->b_syn_sync_linebreaks > buf->b_mod_top)
+  	{
+  	    n = p->sst_lnum + buf->b_mod_xlines;
+  	    if (n <= buf->b_mod_bot)
+*** ../vim-6.3.078/src/version.c	Tue Jun 14 19:08:07 2005
+--- src/version.c	Fri Jul  1 11:20:27 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     79,
+  /**/
+
+-- 
+Some of the well know MS-Windows errors:
+	EMEMORY		Memory error caused by..., eh...
+	ELICENSE	Your license has expired, give us more money!
+	EMOUSE		Mouse moved, reinstall Windows
+	EILLEGAL	Illegal error, you are not allowed to see this
+	EVIRUS		Undetectable virus found
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
