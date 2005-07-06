@@ -75,6 +75,7 @@ Patch19:	%{name}-modprobe.patch
 Patch20:	%{name}-CAN-2005-0069.patch
 Patch21:	%{name}-gtkfilechooser.patch
 Patch22:	%{name}-doubleparenthesis.patch
+Patch23:	%{name}-lib64.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.001
@@ -702,7 +703,10 @@ element bonobo.
 %patch19 -p0 -b .modprobe
 %patch20 -p1
 %patch21 -p0
-%patch22 -p1 
+%patch22 -p1
+%if "%{_lib}" == "lib64"
+%patch23 -p1
+%endif
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
