@@ -1,0 +1,51 @@
+diff -urN vim63.orig/src/option.c vim63.new/src/option.c
+--- vim63.orig/src/option.c	2005-07-05 20:58:20.000000000 +0200
++++ vim63.new/src/option.c	2005-07-05 20:59:44.981064920 +0200
+@@ -1952,7 +1952,7 @@
+     {"spelldirectory",  "spelldir", P_STRING|P_ALLOCED|P_VI_DEF|P_EXPAND,
+ #ifdef FEAT_SPELL_HL
+ 			    (char_u *)&p_spelldirectory, PV_SPELL_DIR,
+-			    {(char_u *)"/usr/lib/ispell", (char_u *)0L}},
++			    {(char_u *)"/usr/lib64/ispell", (char_u *)0L}},
+ #else
+ 			    (char_u *)NULL, PV_NONE,
+ 			    {(char_u *)"", (char_u *)0L}},
+diff -urN vim63.orig/src/spell/config.h vim63.new/src/spell/config.h
+--- vim63.orig/src/spell/config.h	2005-07-05 20:58:20.000000000 +0200
++++ vim63.new/src/spell/config.h	2005-07-05 21:00:02.452408872 +0200
+@@ -101,10 +101,10 @@
+ #define BINDIR	"/usr/bin"
+ #endif
+ #ifndef LIBDIR
+-#define LIBDIR	"/usr/lib/ispell"
++#define LIBDIR	"/usr/lib64/ispell"
+ #endif
+ #ifndef ELISPDIR
+-#define ELISPDIR "/usr/lib/emacs/site-lisp"
++#define ELISPDIR "/usr/lib64/emacs/site-lisp"
+ #endif
+ #ifndef TEXINFODIR
+ #define TEXINFODIR "/usr/share/info"
+diff -urN vim63.orig/src/spell/local.h vim63.new/src/spell/local.h
+--- vim63.orig/src/spell/local.h	2005-07-05 20:58:20.000000000 +0200
++++ vim63.new/src/spell/local.h	2005-07-05 21:00:29.314325240 +0200
+@@ -54,8 +54,8 @@
+ ** names can be constructed for the -d option without conflict.
+ */
+ #define BINDIR      "/usr/bin"
+-#define LIBDIR      "/usr/lib/ispell"
+-#define ELISPDIR    "/usr/lib/emacs/site-lisp"
++#define LIBDIR      "/usr/lib64/ispell"
++#define ELISPDIR    "/usr/lib64/emacs/site-lisp"
+ #define TEXINFODIR  "/usr/share/info"
+ #define MAN1DIR     "/usr/share/man/man1"
+ #define MAN4DIR     "/usr/share/man/man4"
+@@ -112,7 +112,7 @@
+ ** !!! If you don't have this file, make EXTRADICT empty             !!!
+ ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ */
+-#define LANGUAGES "{american,MASTERDICTS=americax.med,HASHFILES=amermedx.hash,EXTRADICT=/usr/lib/ispell/words}"
++#define LANGUAGES "{american,MASTERDICTS=americax.med,HASHFILES=amermedx.hash,EXTRADICT=/usr/lib64/ispell/words}"
+ 
+ /*
+ ** Master hash file for DEFHASH.  This is the name of a hash file
