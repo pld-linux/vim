@@ -1073,6 +1073,7 @@ bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 unzip -d $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE6}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{syntax,ftdetect,plugin,ftplugin}}
+> $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
 
 %clean
 rm -rf $RPM_BUILD_ROOT
