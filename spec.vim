@@ -64,7 +64,7 @@ syn cluster specListedFiles contains=specListedFilesBin,specListedFilesLib,specL
 " specComands
 syn match   specConfigure  contained '\./configure'
 syn match   specTarCommand contained '\<tar\s\+[cxvpzjf]\{,5}\s*'
-syn match   specMacro contained '%\(\(group\|user\)\(add\|remove\)\|banner\|addusertogroup\|apache_config_\(un\)\?install\|depmod\)'
+syn match   specMacro contained '%\(\(group\|user\)\(add\|remove\)\|banner\|service\|addusertogroup\|apache_config_\(un\)\?install\|depmod\)'
 syn keyword specCommandSpecial contained root
 syn keyword specCommand		contained make xmkmf mkdir chmod find sed rm strip moc echo grep ls rm mv mkdir chown install cp pwd cat tail then else elif cd gzip rmdir ln eval export touch unzip bzip2
 syn cluster specCommands contains=specCommand,specTarCommand,specConfigure,specCommandSpecial,specMacro
