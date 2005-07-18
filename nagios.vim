@@ -64,7 +64,7 @@ syn keyword nagiosDirective  flap_detection_enabled freshness_threshold failure_
 syn keyword nagiosDirective  friday high_flap_threshold host_name
 syn keyword nagiosDirective  host_notification_commands
 syn keyword nagiosDirective  host_notification_options
-syn keyword nagiosDirective  host_notification_period hostgroup_name servicegroup_name hostgroups
+syn keyword nagiosDirective  host_notification_period hostgroup_name servicegroup_name hostgroups servicegroups
 syn keyword nagiosDirective  is_volatile last_notification
 syn keyword nagiosDirective  low_flap_threshold max_check_attempts
 syn keyword nagiosDirective  members monday normal_check_interval
