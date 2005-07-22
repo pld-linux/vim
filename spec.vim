@@ -77,7 +77,8 @@ syn keyword specSpecialVariablesNames contained RPM_BUILD_ROOT RPM_BUILD_DIR RPM
 syn keyword specMacroNameOther contained buildroot buildsubdir debugcflags debuginfocflags date distribution disturl ix86
 syn keyword specMacroNameOther contained kgcc kgcc_package name nil optflags packager perl_archlib perl_privlib perl_sitearch
 syn keyword specMacroNameOther contained perl_sitelib perl_vendorarch perl_vendorlib py_sitedir py_sitescriptdir release
-syn keyword specMacroNameOther contained requires_eq rpmcflags rpmcxxflags rpmldflags tmpdir vendor version epoch
+syn keyword specMacroNameOther contained rpmcflags rpmcxxflags rpmldflags tmpdir vendor version epoch
+syn keyword specMacroNameOther contained requires_eq requires_releq_kernel_up requires_releq_kernel_smp releq_kernel_up releq_kernel_smp __kernel_ver
 syn match   specMacroNameOther contained '\<\(PATCH\|SOURCE\)\d*\>'
 
 " valid _macro names from /usr/lib/rpm/macros
