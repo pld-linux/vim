@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.081
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.081
+Problem:    Unix: glob() may execute a shell command when it's not wanted.
+	    (Georgi Guninski)
+Solution:   Verify the sandbox flag is not set.
+Files:	    src/os_unix.c
+
+
+*** ../vim-6.3.080/src/os_unix.c	Sat Jan 29 16:14:42 2005
+--- src/os_unix.c	Tue Jul 19 22:29:34 2005
+***************
+*** 4700,4706 ****
+      /*
+       * Don't allow the use of backticks in secure and restricted mode.
+       */
+!     if (secure || restricted)
+  	for (i = 0; i < num_pat; ++i)
+  	    if (vim_strchr(pat[i], '`') != NULL
+  		    && (check_restricted() || check_secure()))
+--- 4700,4710 ----
+      /*
+       * Don't allow the use of backticks in secure and restricted mode.
+       */
+!     if (secure || restricted
+! # ifdef HAVE_SANDBOX
+! 	    || sandbox != 0
+! # endif
+! 	    )
+  	for (i = 0; i < num_pat; ++i)
+  	    if (vim_strchr(pat[i], '`') != NULL
+  		    && (check_restricted() || check_secure()))
+*** ../vim-6.3.080/src/version.c	Mon Jul  4 12:19:01 2005
+--- src/version.c	Tue Jul 19 22:26:32 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     81,
+  /**/
+
+-- 
+    With sufficient thrust, pigs fly just fine.
+                   -- RFC 1925
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

@@ -1,0 +1,126 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.085
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.085
+Problem:    Crash in syntax highlighting code. (Marc Espie)
+Solution:   Prevent current_col going past the end of the line.
+Files:	    src/syntax.c
+
+
+*** ../vim-6.3.084/src/syntax.c	Fri Jul  1 11:20:39 2005
+--- src/syntax.c	Sun Jul 24 19:39:04 2005
+***************
+*** 659,664 ****
+--- 659,665 ----
+      linenr_T	found_current_lnum = 0;
+      int		found_current_col= 0;
+      lpos_T	found_m_endpos;
++     colnr_T	prev_current_col;
+  
+      /*
+       * Clear any current state that might be hanging around.
+***************
+*** 829,838 ****
+  			    ++current_col;
+  
+  			/* syn_current_attr() will have skipped the check for
+! 			 * an item that ends here, need to do that now. */
+! 			++current_col;
+  			check_state_ends();
+! 			--current_col;
+  		    }
+  		    else
+  			break;
+--- 830,842 ----
+  			    ++current_col;
+  
+  			/* syn_current_attr() will have skipped the check for
+! 			 * an item that ends here, need to do that now.  Be
+! 			 * careful not to go past the NUL. */
+! 			prev_current_col = current_col;
+! 			if (syn_getcurline()[current_col] != NUL)
+! 			    ++current_col;
+  			check_state_ends();
+! 			current_col = prev_current_col;
+  		    }
+  		    else
+  			break;
+***************
+*** 1635,1640 ****
+--- 1639,1645 ----
+      int	    syncing;		/* called for syncing */
+  {
+      stateitem_T	*cur_si;
++     colnr_T	prev_current_col;
+  
+      if (!current_finished)
+      {
+***************
+*** 1656,1665 ****
+  		    return TRUE;
+  
+  		/* syn_current_attr() will have skipped the check for an item
+! 		 * that ends here, need to do that now. */
+! 		++current_col;
+  		check_state_ends();
+! 		--current_col;
+  	    }
+  	    ++current_col;
+  	}
+--- 1661,1673 ----
+  		    return TRUE;
+  
+  		/* syn_current_attr() will have skipped the check for an item
+! 		 * that ends here, need to do that now.  Be careful not to go
+! 		 * past the NUL. */
+! 		prev_current_col = current_col;
+! 		if (syn_getcurline()[current_col] != NUL)
+! 		    ++current_col;
+  		check_state_ends();
+! 		current_col = prev_current_col;
+  	    }
+  	    ++current_col;
+  	}
+***************
+*** 2178,2184 ****
+  	if (!syncing)
+  	{
+  	    check_state_ends();
+! 	    if (current_state.ga_len > 0)
+  	    {
+  		++current_col;
+  		check_state_ends();
+--- 2186,2193 ----
+  	if (!syncing)
+  	{
+  	    check_state_ends();
+! 	    if (current_state.ga_len > 0
+! 				      && syn_getcurline()[current_col] != NUL)
+  	    {
+  		++current_col;
+  		check_state_ends();
+*** ../vim-6.3.084/src/version.c	Thu Jul 21 13:49:11 2005
+--- src/version.c	Sun Jul 24 19:42:30 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     85,
+  /**/
+
+-- 
+BEDEVERE: How do you know so much about swallows?
+ARTHUR:   Well you have to know these things when you're a king, you know.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

@@ -1,0 +1,270 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.084 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.084 (extra)
+Problem:    Cygwin: compiling with DEBUG doesn't work.  Perl path was ignored.
+	    Failure when $(OUTDIR) already exists.  "po" makefile is missing.
+Solution:   Use changes tested in Vim 7. (Tony Mechelynck)
+Files:	    src/Make_cyg.mak, src/po/Make_cyg.mak
+
+
+*** ../vim-6.3.083/src/Make_cyg.mak	Wed Jun  9 14:56:27 2004
+--- src/Make_cyg.mak	Thu Jul 21 13:48:38 2005
+***************
+*** 1,6 ****
+  #
+  # Makefile for VIM on Win32, using Cygnus gcc
+! # Last updated by Dan Sharp.  Last Change: 2004 Apr 23
+  #
+  # This compiles Vim as a Windows application.  If you want Vim to run as a
+  # Cygwin application use the Makefile (just like on Unix).
+--- 1,7 ----
+  #
+  # Makefile for VIM on Win32, using Cygnus gcc
+! # Updated by Dan Sharp and Bram Moolenaar.
+! # Last Change: 2005 Jul 21
+  #
+  # This compiles Vim as a Windows application.  If you want Vim to run as a
+  # Cygwin application use the Makefile (just like on Unix).
+***************
+*** 298,304 ****
+  EXTRA_OBJS += $(OUTDIR)/netbeans.o $(OUTDIR)/gui_beval.o
+  EXTRA_LIBS += -lwsock32
+  
+! ifeq (yes, $(DEBUG))
+  DEFINES += -DNBDEBUG
+  NBDEBUG_DEP = nbdebug.h nbdebug.c
+  endif
+--- 299,305 ----
+  EXTRA_OBJS += $(OUTDIR)/netbeans.o $(OUTDIR)/gui_beval.o
+  EXTRA_LIBS += -lwsock32
+  
+! ifeq (yes, $(NBDEBUG))
+  DEFINES += -DNBDEBUG
+  NBDEBUG_DEP = nbdebug.h nbdebug.c
+  endif
+***************
+*** 336,344 ****
+--- 337,347 ----
+  ##############################
+  ifneq (sh.exe, $(SHELL))
+  DEL = rm
++ MKDIR = mkdir -p
+  DIRSLASH = /
+  else
+  DEL = del
++ MKDIR = mkdir
+  DIRSLASH = \\
+  endif
+  
+***************
+*** 421,427 ****
+  	$(CC) $(CFLAGS) -o uninstal.exe uninstal.c $(LIBS)
+  
+  $(OUTDIR):
+! 	mkdir $(OUTDIR)
+  
+  tags:
+  	command /c ctags *.c $(INCL)
+--- 424,430 ----
+  	$(CC) $(CFLAGS) -o uninstal.exe uninstal.c $(LIBS)
+  
+  $(OUTDIR):
+! 	$(MKDIR) $(OUTDIR)
+  
+  tags:
+  	command /c ctags *.c $(INCL)
+***************
+*** 429,435 ****
+  clean:
+  	-$(DEL) $(OUTDIR)$(DIRSLASH)*.o
+  	-rmdir $(OUTDIR)
+! 	-$(DEL) *.exe
+  ifdef PERL
+  	-$(DEL) if_perl.c
+  endif
+--- 432,438 ----
+  clean:
+  	-$(DEL) $(OUTDIR)$(DIRSLASH)*.o
+  	-rmdir $(OUTDIR)
+! 	-$(DEL) $(EXE) vimrun.exe install.exe uninstal.exe
+  ifdef PERL
+  	-$(DEL) if_perl.c
+  endif
+***************
+*** 455,462 ****
+  	$(CC) -c $(CFLAGS) -D__IID_DEFINED__ if_ole.cpp -o $(OUTDIR)/if_ole.o
+  
+  if_perl.c: if_perl.xs typemap
+! 	perl $(PERL)/lib/ExtUtils/xsubpp -prototypes -typemap \
+! 	     $(PERL)/lib/ExtUtils/typemap if_perl.xs > $@
+  
+  $(OUTDIR)/if_perl.o:	if_perl.c $(INCL)
+  ifeq (yes, $(USEDLL))
+--- 458,466 ----
+  	$(CC) -c $(CFLAGS) -D__IID_DEFINED__ if_ole.cpp -o $(OUTDIR)/if_ole.o
+  
+  if_perl.c: if_perl.xs typemap
+! 	$(PERL)/bin/perl `cygpath -d $(PERL)/lib/ExtUtils/xsubpp` \
+! 		-prototypes -typemap \
+! 		`cygpath -d $(PERL)/lib/ExtUtils/typemap` if_perl.xs > $@
+  
+  $(OUTDIR)/if_perl.o:	if_perl.c $(INCL)
+  ifeq (yes, $(USEDLL))
+*** ../vim-6.3.083/src/po/Make_cyg.mak	Thu Jul 21 13:47:58 2005
+--- src/po/Make_cyg.mak	Thu Jul 21 13:46:39 2005
+***************
+*** 0 ****
+--- 1,128 ----
++ # Makefile for the Vim message translations for Cygwin
++ # by Tony Mechelynck <antoine.mechelynck@skynet.be>
++ # after Make_ming.mak by
++ # Eduardo F. Amatria <eferna1@platea.pntic.mec.es>
++ #
++ # Read the README_ming.txt file before using it.
++ #
++ # Use at your own risk but with care, it could even kill your canary.
++ #
++ 
++ ifndef VIMRUNTIME
++ VIMRUNTIME = ../../runtime
++ endif
++ 
++ LANGUAGES =	af \
++ 		ca \
++ 		cs \
++ 		cs.cp1250 \
++ 		de \
++ 		en_GB \
++ 		es \
++ 		fr \
++ 		it \
++ 		ja \
++ 		ja.sjis \
++ 		ko \
++ 		no \
++ 		pl \
++ 		pl.cp1250 \
++ 		ru \
++ 		ru.cp1251 \
++ 		sk \
++ 		sk.cp1250 \
++ 		sv \
++ 		uk \
++ 		zh_CN \
++ 		zh_CN.UTF-8 \
++ 		zh_CN.cp936 \
++ 		zh_TW \
++ 		zh_TW.UTF-8 \
++ 
++ MOFILES =	af.mo \
++ 		ca.mo \
++ 		cs.cp1250.mo \
++ 		cs.mo \
++ 		de.mo \
++ 		en_GB.mo \
++ 		es.mo \
++ 		fr.mo \
++ 		it.mo \
++ 		ja.mo \
++ 		ja.sjis.mo \
++ 		ko.mo \
++ 		no.mo \
++ 		pl.cp1250.mo \
++ 		pl.mo \
++ 		ru.cp1251.mo \
++ 		ru.mo \
++ 		sk.cp1250.mo \
++ 		sk.mo \
++ 		sv.mo \
++ 		uk.mo \
++ 		zh_CN.UTF-8.mo \
++ 		zh_CN.cp936.mo \
++ 		zh_CN.mo \
++ 		zh_TW.UTF-8.mo \
++ 		zh_TW.mo \
++ 
++ PACKAGE = vim
++ 
++ # Uncomment one of the lines below or modify it to put the path to your
++ # gettext binaries
++ ifndef GETTEXT_PATH
++ #GETTEXT_PATH = C:/gettext.win32/bin/
++ #GETTEXT_PATH = C:/gettext-0.10.35-w32/win32/Release/
++ GETTEXT_PATH = /bin/
++ endif
++ 
++ # The OLD_PO_FILE_INPUT and OLD_PO_FILE_OUTPUT are for the new GNU gettext
++ # tools 0.10.37, which use a slightly different .po file format that is not
++ # compatible with Solaris (and old gettext implementations) unless these are
++ # set.  gettext 0.10.36 will not work!
++ MSGFMT = OLD_PO_FILE_INPUT=yes $(GETTEXT_PATH)msgfmt -v
++ XGETTEXT = OLD_PO_FILE_INPUT=yes OLD_PO_FILE_OUTPUT=yes $(GETTEXT_PATH)xgettext
++ MSGMERGE = OLD_PO_FILE_INPUT=yes OLD_PO_FILE_OUTPUT=yes $(GETTEXT_PATH)msgmerge
++ 
++ # MV = move
++ # CP = copy
++ # RM = del
++ # MKD = mkdir
++ MV = mv -f
++ CP = cp -f
++ RM = rm -f
++ MKD = mkdir -p
++ 
++ .SUFFIXES:
++ .SUFFIXES: .po .mo .pot
++ .PHONY: first_time all install clean $(LANGUAGES)
++ 
++ .po.mo:
++ 	$(MSGFMT) -o $@ $<
++ 
++ all: $(MOFILES)
++ 
++ first_time:
++ 	$(XGETTEXT) --default-domain=$(LANGUAGE) \
++ 		--add-comments --keyword=_ --keyword=N_ $(wildcard ../*.c) ../if_perl.xs $(wildcard ../globals.h)
++ 
++ $(LANGUAGES):
++ 	$(XGETTEXT) --default-domain=$(PACKAGE) \
++ 		--add-comments --keyword=_ --keyword=N_ $(wildcard ../*.c) ../if_perl.xs $(wildcard ../globals.h)
++ 	$(MV) $(PACKAGE).po $(PACKAGE).pot
++ 	$(CP) $@.po $@.po.orig
++ 	$(MV) $@.po $@.po.old
++ 	$(MSGMERGE) $@.po.old $(PACKAGE).pot -o $@.po
++ 	$(RM) $@.po.old
++ 
++ install: $(MOFILES)
++ 	for TARGET in $(LANGUAGES); do \
++ 		$(MKD) $(VIMRUNTIME)/lang/$$TARGET/LC_MESSAGES ; \
++ 		$(CP) $$TARGET.mo $(VIMRUNTIME)/lang/$$TARGET/LC_MESSAGES/$(PACKAGE).mo ; \
++ 	done
++ 
++ clean:
++ 	$(RM) *.mo
++ 	$(RM) *.pot
++ 
++ 
+*** ../vim-6.3.083/src/version.c	Thu Jul 21 13:02:06 2005
+--- src/version.c	Thu Jul 21 13:47:15 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     84,
+  /**/
+
+-- 
+Michael: There is no such thing as a dump question.
+Bernard: Sure there is.  For example "what is a core dump?"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

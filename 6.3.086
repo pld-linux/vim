@@ -1,0 +1,355 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.086 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.086 (extra)
+Problem:    Can't produce message translation file with msgfmt that checks
+	    printf strings.
+Solution:   Fix the Russian translation.
+Files:	    src/po/ru.po, src/po/ru.cp1251.po
+
+
+*** ../vim-6.3.085/src/po/ru.po	Wed Jun  9 14:56:24 2004
+--- src/po/ru.po	Fri Jul 29 09:51:52 2005
+***************
+*** 9,18 ****
+  #
+  msgid ""
+  msgstr ""
+! "Project-Id-Version: Vim 6.3a\n"
+  "Report-Msgid-Bugs-To: \n"
+! "POT-Creation-Date: 2004-05-10 21:37+0400\n"
+! "PO-Revision-Date: 2004-05-10 21:37+0400\n"
+  "Last-Translator: vassily ragosin <vrr@users.sourceforge.net>\n"
+  "Language-Team: vassily ragosin <vrr@users.sourceforge.net>\n"
+  "MIME-Version: 1.0\n"
+--- 9,18 ----
+  #
+  msgid ""
+  msgstr ""
+! "Project-Id-Version: Vim 6.3.15\n"
+  "Report-Msgid-Bugs-To: \n"
+! "POT-Creation-Date: 2004-08-06 09:06+0400\n"
+! "PO-Revision-Date: 2004-08-06 09:06+0400\n"
+  "Last-Translator: vassily ragosin <vrr@users.sourceforge.net>\n"
+  "Language-Team: vassily ragosin <vrr@users.sourceforge.net>\n"
+  "MIME-Version: 1.0\n"
+***************
+*** 880,889 ****
+  msgid "E670: Mix of help file encodings within a language: %s"
+  msgstr "E670: Файлы справки используют разные кодировки для одного языка: %s"
+  
+! #: ex_cmds.c:5445
+  #, c-format
+! msgid "E154: Duplicate tag \"%s\" in file %s"
+! msgstr "E154: Повторяющаяся метка \"%s\" в файле %s"
+  
+  #: ex_cmds.c:5557
+  #, c-format
+--- 880,889 ----
+  msgid "E670: Mix of help file encodings within a language: %s"
+  msgstr "E670: Файлы справки используют разные кодировки для одного языка: %s"
+  
+! #: ex_cmds.c:5492
+  #, c-format
+! msgid "E154: Duplicate tag \"%s\" in file %s/%s"
+! msgstr "E154: Повторяющаяся метка \"%s\" в файле %s/%s"
+  
+  #: ex_cmds.c:5557
+  #, c-format
+***************
+*** 1236,1245 ****
+  msgid "E173: 1 more file to edit"
+  msgstr "E173: 1 файл ожидает редактирования."
+  
+! #: ex_docmd.c:4581
+  #, c-format
+  msgid "E173: %ld more files to edit"
+! msgstr "E173: Есть неотредактированные файлы (%d)."
+  
+  #: ex_docmd.c:4676
+  msgid "E174: Command already exists: add ! to replace it"
+--- 1236,1245 ----
+  msgid "E173: 1 more file to edit"
+  msgstr "E173: 1 файл ожидает редактирования."
+  
+! #: ex_docmd.c:4584
+  #, c-format
+  msgid "E173: %ld more files to edit"
+! msgstr "E173: Есть неотредактированные файлы (%ld)."
+  
+  #: ex_docmd.c:4676
+  msgid "E174: Command already exists: add ! to replace it"
+***************
+*** 2303,2314 ****
+  "\n"
+  "Отправка сообщения для уничтожения процесса-потомка.\n"
+  
+! #: gui_w32.c:829
+  #, c-format
+  msgid "E243: Argument not supported: \"-%s\"; Use the OLE version."
+  msgstr "E243: Параметр не поддерживается: \"-%s\"; используйте версию OLE."
+  
+! #: gui_w48.c:2090
+  msgid "Find string (use '\\\\' to find  a '\\')"
+  msgstr "Поиск строки (используйте '\\\\' для поиска '\\')"
+  
+--- 2303,2323 ----
+  "\n"
+  "Отправка сообщения для уничтожения процесса-потомка.\n"
+  
+! #: gui_w32.c:839
+! #, c-format
+! msgid "E671: Cannot find window title \"%s\""
+! msgstr "E671: Невозможно найти заголовок окна \"%s\""
+! 
+! #: gui_w32.c:847
+  #, c-format
+  msgid "E243: Argument not supported: \"-%s\"; Use the OLE version."
+  msgstr "E243: Параметр не поддерживается: \"-%s\"; используйте версию OLE."
+  
+! #: gui_w32.c:1100
+! msgid "E672: Unable to open window inside MDI application"
+! msgstr "E672: Невозможно открыть окно внутри приложения MDI"
+! 
+! #: gui_w48.c:2163
+  msgid "Find string (use '\\\\' to find  a '\\')"
+  msgstr "Поиск строки (используйте '\\\\' для поиска '\\')"
+  
+***************
+*** 2353,2358 ****
+--- 2362,2368 ----
+  msgstr "Font1: %s\n"
+  
+  #: gui_x11.c:2184
++ #, c-format
+  msgid "Font%ld width is not twice that of font0\n"
+  msgstr "Ширина шрифта font%ld должна быть вдвое больше ширины шрифта font0\n"
+  
+***************
+*** 2437,2443 ****
+  #: if_cscope.c:589
+  #, c-format
+  msgid "E262: error reading cscope connection %ld"
+! msgstr "E262: ошибка получения информации от соединения cscope %d"
+  
+  #: if_cscope.c:694
+  msgid "E561: unknown cscope search type"
+--- 2447,2453 ----
+  #: if_cscope.c:589
+  #, c-format
+  msgid "E262: error reading cscope connection %ld"
+! msgstr "E262: ошибка получения информации от соединения cscope %ld"
+  
+  #: if_cscope.c:694
+  msgid "E561: unknown cscope search type"
+***************
+*** 2515,2521 ****
+  #: if_cscope.c:1458
+  #, c-format
+  msgid "cscope connection %s closed"
+! msgstr "соединение с cscope закрыто"
+  
+  #. should not reach here
+  #: if_cscope.c:1598
+--- 2525,2531 ----
+  #: if_cscope.c:1458
+  #, c-format
+  msgid "cscope connection %s closed"
+! msgstr "соединение %s с cscope закрыто"
+  
+  #. should not reach here
+  #: if_cscope.c:1598
+***************
+*** 6654,6658 ****
+  msgid "E463: Region is guarded, cannot modify"
+  msgstr "E463: Невозможно изменить охраняемую область"
+  
+- #~ msgid "\"\n"
+- #~ msgstr "\"\n"
+--- 6664,6666 ----
+*** ../vim-6.3.085/src/po/ru.cp1251.po	Wed Jun  9 14:56:25 2004
+--- src/po/ru.cp1251.po	Fri Jul 29 09:51:58 2005
+***************
+*** 9,18 ****
+  #
+  msgid ""
+  msgstr ""
+! "Project-Id-Version: Vim 6.3a\n"
+  "Report-Msgid-Bugs-To: \n"
+! "POT-Creation-Date: 2004-05-10 21:37+0400\n"
+! "PO-Revision-Date: 2004-05-10 21:37+0400\n"
+  "Last-Translator: vassily ragosin <vrr@users.sourceforge.net>\n"
+  "Language-Team: vassily ragosin <vrr@users.sourceforge.net>\n"
+  "MIME-Version: 1.0\n"
+--- 9,18 ----
+  #
+  msgid ""
+  msgstr ""
+! "Project-Id-Version: Vim 6.3.15\n"
+  "Report-Msgid-Bugs-To: \n"
+! "POT-Creation-Date: 2004-08-06 09:06+0400\n"
+! "PO-Revision-Date: 2004-08-06 09:06+0400\n"
+  "Last-Translator: vassily ragosin <vrr@users.sourceforge.net>\n"
+  "Language-Team: vassily ragosin <vrr@users.sourceforge.net>\n"
+  "MIME-Version: 1.0\n"
+***************
+*** 880,889 ****
+  msgid "E670: Mix of help file encodings within a language: %s"
+  msgstr "E670: тЮИКШ ЯОПЮБЙХ ХЯОНКЭГСЧР ПЮГМШЕ ЙНДХПНБЙХ ДКЪ НДМНЦН ЪГШЙЮ: %s"
+  
+! #: ex_cmds.c:5445
+  #, c-format
+! msgid "E154: Duplicate tag \"%s\" in file %s"
+! msgstr "E154: оНБРНПЪЧЫЮЪЯЪ ЛЕРЙЮ \"%s\" Б ТЮИКЕ %s"
+  
+  #: ex_cmds.c:5557
+  #, c-format
+--- 880,889 ----
+  msgid "E670: Mix of help file encodings within a language: %s"
+  msgstr "E670: тЮИКШ ЯОПЮБЙХ ХЯОНКЭГСЧР ПЮГМШЕ ЙНДХПНБЙХ ДКЪ НДМНЦН ЪГШЙЮ: %s"
+  
+! #: ex_cmds.c:5492
+  #, c-format
+! msgid "E154: Duplicate tag \"%s\" in file %s/%s"
+! msgstr "E154: оНБРНПЪЧЫЮЪЯЪ ЛЕРЙЮ \"%s\" Б ТЮИКЕ %s/%s"
+  
+  #: ex_cmds.c:5557
+  #, c-format
+***************
+*** 1236,1245 ****
+  msgid "E173: 1 more file to edit"
+  msgstr "E173: 1 ТЮИК НФХДЮЕР ПЕДЮЙРХПНБЮМХЪ."
+  
+! #: ex_docmd.c:4581
+  #, c-format
+  msgid "E173: %ld more files to edit"
+! msgstr "E173: еЯРЭ МЕНРПЕДЮЙРХПНБЮММШЕ ТЮИКШ (%d)."
+  
+  #: ex_docmd.c:4676
+  msgid "E174: Command already exists: add ! to replace it"
+--- 1236,1245 ----
+  msgid "E173: 1 more file to edit"
+  msgstr "E173: 1 ТЮИК НФХДЮЕР ПЕДЮЙРХПНБЮМХЪ."
+  
+! #: ex_docmd.c:4584
+  #, c-format
+  msgid "E173: %ld more files to edit"
+! msgstr "E173: еЯРЭ МЕНРПЕДЮЙРХПНБЮММШЕ ТЮИКШ (%ld)."
+  
+  #: ex_docmd.c:4676
+  msgid "E174: Command already exists: add ! to replace it"
+***************
+*** 2303,2314 ****
+  "\n"
+  "нРОПЮБЙЮ ЯННАЫЕМХЪ ДКЪ СМХВРНФЕМХЪ ОПНЖЕЯЯЮ-ОНРНЛЙЮ.\n"
+  
+! #: gui_w32.c:829
+  #, c-format
+  msgid "E243: Argument not supported: \"-%s\"; Use the OLE version."
+  msgstr "E243: оЮПЮЛЕРП МЕ ОНДДЕПФХБЮЕРЯЪ: \"-%s\"; ХЯОНКЭГСИРЕ БЕПЯХЧ OLE."
+  
+! #: gui_w48.c:2090
+  msgid "Find string (use '\\\\' to find  a '\\')"
+  msgstr "оНХЯЙ ЯРПНЙХ (ХЯОНКЭГСИРЕ '\\\\' ДКЪ ОНХЯЙЮ '\\')"
+  
+--- 2303,2323 ----
+  "\n"
+  "нРОПЮБЙЮ ЯННАЫЕМХЪ ДКЪ СМХВРНФЕМХЪ ОПНЖЕЯЯЮ-ОНРНЛЙЮ.\n"
+  
+! #: gui_w32.c:839
+! #, c-format
+! msgid "E671: Cannot find window title \"%s\""
+! msgstr "E671: мЕБНГЛНФМН МЮИРХ ГЮЦНКНБНЙ НЙМЮ \"%s\""
+! 
+! #: gui_w32.c:847
+  #, c-format
+  msgid "E243: Argument not supported: \"-%s\"; Use the OLE version."
+  msgstr "E243: оЮПЮЛЕРП МЕ ОНДДЕПФХБЮЕРЯЪ: \"-%s\"; ХЯОНКЭГСИРЕ БЕПЯХЧ OLE."
+  
+! #: gui_w32.c:1100
+! msgid "E672: Unable to open window inside MDI application"
+! msgstr "E672: мЕБНГЛНФМН НРЙПШРЭ НЙМН БМСРПХ ОПХКНФЕМХЪ MDI"
+! 
+! #: gui_w48.c:2163
+  msgid "Find string (use '\\\\' to find  a '\\')"
+  msgstr "оНХЯЙ ЯРПНЙХ (ХЯОНКЭГСИРЕ '\\\\' ДКЪ ОНХЯЙЮ '\\')"
+  
+***************
+*** 2353,2358 ****
+--- 2362,2368 ----
+  msgstr "Font1: %s\n"
+  
+  #: gui_x11.c:2184
++ #, c-format
+  msgid "Font%ld width is not twice that of font0\n"
+  msgstr "ьХПХМЮ ЬПХТРЮ font%ld ДНКФМЮ АШРЭ БДБНЕ АНКЭЬЕ ЬХПХМШ ЬПХТРЮ font0\n"
+  
+***************
+*** 2437,2443 ****
+  #: if_cscope.c:589
+  #, c-format
+  msgid "E262: error reading cscope connection %ld"
+! msgstr "E262: НЬХАЙЮ ОНКСВЕМХЪ ХМТНПЛЮЖХХ НР ЯНЕДХМЕМХЪ cscope %d"
+  
+  #: if_cscope.c:694
+  msgid "E561: unknown cscope search type"
+--- 2447,2453 ----
+  #: if_cscope.c:589
+  #, c-format
+  msgid "E262: error reading cscope connection %ld"
+! msgstr "E262: НЬХАЙЮ ОНКСВЕМХЪ ХМТНПЛЮЖХХ НР ЯНЕДХМЕМХЪ cscope %ld"
+  
+  #: if_cscope.c:694
+  msgid "E561: unknown cscope search type"
+***************
+*** 2515,2521 ****
+  #: if_cscope.c:1458
+  #, c-format
+  msgid "cscope connection %s closed"
+! msgstr "ЯНЕДХМЕМХЕ Я cscope ГЮЙПШРН"
+  
+  #. should not reach here
+  #: if_cscope.c:1598
+--- 2525,2531 ----
+  #: if_cscope.c:1458
+  #, c-format
+  msgid "cscope connection %s closed"
+! msgstr "ЯНЕДХМЕМХЕ %s Я cscope ГЮЙПШРН"
+  
+  #. should not reach here
+  #: if_cscope.c:1598
+***************
+*** 6654,6658 ****
+  msgid "E463: Region is guarded, cannot modify"
+  msgstr "E463: мЕБНГЛНФМН ХГЛЕМХРЭ НУПЮМЪЕЛСЧ НАКЮЯРЭ"
+  
+- #~ msgid "\"\n"
+- #~ msgstr "\"\n"
+--- 6664,6666 ----
+*** ../vim-6.3.085/src/version.c	Sun Jul 24 19:43:13 2005
+--- src/version.c	Fri Jul 29 09:53:51 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     86,
+  /**/
+
+-- 
+DENNIS: Oh, very nice. King, eh!  I expect you've got a palace and fine
+        clothes and courtiers and plenty of food.  And how d'you get that?  By
+        exploiting the workers! By hanging on to outdated imperialist dogma
+        which perpetuates the social and economic differences in our society!
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
