@@ -29,7 +29,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -76,6 +76,7 @@ Patch20:	%{name}-CAN-2005-0069.patch
 Patch21:	%{name}-gtkfilechooser.patch
 Patch22:	%{name}-doubleparenthesis.patch
 Patch23:	%{name}-lib64.patch
+Patch23:	%{name}-syntax-fstab.patch
 
 Patch99:	http://www.opensky.ca/gnome-vim/vim-patches/%{name}-bonobo-20040115.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.001
@@ -719,6 +720,7 @@ element bonobo.
 %if "%{_lib}" == "lib64"
 %patch23 -p1
 %endif
+%patch24 -p1
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
