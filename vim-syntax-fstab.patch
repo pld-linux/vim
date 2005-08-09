@@ -1,0 +1,20 @@
+--- vim63/runtime/syntax/fstab.vim~	2003-04-30 15:36:32.000000000 +0200
++++ vim63/runtime/syntax/fstab.vim	2005-08-09 19:09:15.996162056 +0200
+@@ -32,7 +32,7 @@
+ " Type
+ syn cluster fsTypeCluster contains=fsTypeKeyword,fsTypeError
+ syn match fsTypeError /\s\+\zs\w\+/ contained
+-syn keyword fsTypeKeyword contained adfs affs auto autofs cd9660 coda cramfs devfs devpts efs ext2 ext3 fdesc hfs hpfs iso9660 kernfs linprocfs mfs minix msdos ncpfs nfs ntfs nwfs null portal proc procfs qnx4 reiserfs romfs smbfs std sysv swap tmpfs udf ufs umap umsdos union vfat xfs
++syn keyword fsTypeKeyword contained adfs affs auto autofs cd9660 coda cramfs devfs devpts efs ext2 ext3 fdesc hfs hpfs iso9660 kernfs linprocfs mfs minix msdos ncpfs nfs ntfs nwfs null portal proc procfs qnx4 reiserfs romfs smbfs std sysv swap tmpfs udf ufs umap umsdos union vfat xfs sysfs usbfs cpuset none
+ 
+ " Options
+ " -------
+@@ -44,7 +44,7 @@
+ syn keyword fsOptionsYesNo yes no
+ syn cluster fsOptionsCheckCluster contains=fsOptionsExt2Check,fsOptionsFatCheck
+ syn keyword fsOptionsSize 512 1024 2048
+-syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user supermount
++syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user supermount bind
+ syn match fsOptionsGeneral /_netdev/
+ 
+ " Options: adfs
