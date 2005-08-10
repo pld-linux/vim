@@ -64,6 +64,7 @@ Patch5:		%{name}-%{name}rc.patch
 Patch6:		%{name}-no_libelf.patch
 Patch7:		%{name}-egrep.patch
 Patch8:		k%{name}-desktop.patch
+Patch9:		%{name}-awk.patch
 Patch11:	%{name}-bonobo.patch
 Patch12:	%{name}-home_etc.patch
 Patch13:	%{name}-selinux.patch
@@ -706,6 +707,7 @@ element bonobo.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 %{?with_bonobo:%patch11 -p1}
 %{?with_home_etc:%patch12 -p1}
 %{?with_selinux:%patch13 -p1}
