@@ -64,7 +64,7 @@ syn cluster specListedFiles contains=specListedFilesBin,specListedFilesLib,specL
 " specComands
 syn match   specConfigure  contained '\./configure'
 syn match   specTarCommand contained '\<tar\s\+[cxvpzjf]\{,5}\s*'
-syn match   specMacro contained '%\(\(group\|user\)\(add\|remove\)\|banner\|service\|addusertogroup\|apache_config_\(un\)\?install\|depmod\|py_o\?comp\)'
+syn match   specMacro contained '%\(\(group\|user\)\(add\|remove\)\|banner\|service\|addusertogroup\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|depmod\|py_o\?comp\)'
 " XXX don't forget to update specScriptArea when updating specMacro
 syn keyword specCommandSpecial contained root
 syn keyword specCommand		contained make xmkmf mkdir chmod find sed rm strip moc echo grep ls rm mv mkdir chown install cp pwd cat tail then else elif cd gzip rmdir ln eval export touch unzip bzip2
@@ -141,7 +141,7 @@ syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e
 " %% Scripts Section %%
 syn region specScriptArea matchgroup=specSection
 	\ start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\)\>'
-	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|useradd\|groupadd\|addusertogroup\|banner\|service\|py_o\?comp\|apache_config_\(un\)\?install\|depmod\)\>'
+	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|useradd\|groupadd\|addusertogroup\|banner\|service\|py_o\?comp\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|depmod\)\>'
 	\ end='^%'me=e-1
 	\ contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
 " XXX don't forget to update specMacro when updating specScriptArea
