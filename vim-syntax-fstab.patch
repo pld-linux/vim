@@ -14,7 +14,7 @@
  syn cluster fsOptionsCheckCluster contains=fsOptionsExt2Check,fsOptionsFatCheck
  syn keyword fsOptionsSize 512 1024 2048
 -syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user supermount
-+syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user supermount bind
++syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user supermount bind tagxid
  syn match fsOptionsGeneral /_netdev/
  
  " Options: adfs
