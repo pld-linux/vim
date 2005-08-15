@@ -140,7 +140,7 @@ syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e
 
 " %% Scripts Section %%
 syn region specScriptArea matchgroup=specSection
-	\ start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\)\>'
+	\ start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\|pretrans\|posttrans\)\>'
 	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|useradd\|groupadd\|addusertogroup\|banner\|service\|py_o\?comp\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|depmod\)\>'
 	\ end='^%'me=e-1
 	\ contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
