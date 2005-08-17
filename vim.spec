@@ -19,7 +19,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	065
+%define		_patchlevel	131
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -37,7 +37,7 @@ Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unstable/snapshot/%{name}-%{_ver}%{_patchlevel}.zip
-# Source0-md5:	abc14d4f000fa37281b0d77469560c9e
+# Source0-md5:	6370b55c42af6d78afd33ee42b6849b8
 #Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
 # Source1-md5:	5395c4dacbf1c5008b22c4b86794e8a7
 #Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
@@ -924,10 +924,10 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fi) %{_mandir}/fi/man1/ex.1*
 %lang(fi) %{_mandir}/fi/man1/view.1*
 %lang(fi) %{_mandir}/fi/man1/rview.1*
-%lang(fr) %{_mandir}/fr/man1/vi.1*
-%lang(fr) %{_mandir}/fr/man1/ex.1*
-%lang(fr) %{_mandir}/fr/man1/view.1*
-%lang(fr) %{_mandir}/fr/man1/rview.1*
+%lang(fr) %{_mandir}/fr*/man1/vi.1*
+%lang(fr) %{_mandir}/fr*/man1/ex.1*
+%lang(fr) %{_mandir}/fr*/man1/view.1*
+%lang(fr) %{_mandir}/fr*/man1/rview.1*
 %lang(id) %{_mandir}/id/man1/vi.1*
 %lang(id) %{_mandir}/id/man1/ex.1*
 %lang(id) %{_mandir}/id/man1/view.1*
@@ -953,6 +953,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/xxd
 %{_mandir}/man1/xxd.1*
+%lang(fr) %{_mandir}/fr*/man1/xxd.1*
 %lang(it) %{_mandir}/it*/man1/xxd.1*
 %lang(ru) %{_mandir}/ru*/man1/xxd.1*
 
@@ -982,19 +983,24 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/vimfiles/ftdetect
 
 %lang(af) %{_datadir}/vim/v*/lang/af
+%lang(ca) %{_datadir}/vim/v*/lang/ca
 %lang(en_GB) %{_datadir}/vim/v*/lang/en_GB
 %lang(cs) %{_datadir}/vim/v*/lang/cs
 %lang(de) %{_datadir}/vim/v*/lang/de
 %lang(es) %{_datadir}/vim/v*/lang/es
 %lang(fr) %{_datadir}/vim/v*/lang/fr
+%lang(ga) %{_datadir}/vim/v*/lang/ga
 %lang(it) %{_datadir}/vim/v*/lang/it
 %lang(ja) %{_datadir}/vim/v*/lang/ja*
 %lang(ko) %{_datadir}/vim/v*/lang/ko
 %lang(pl) %{_datadir}/vim/v*/lang/pl
+%lang(ru) %{_datadir}/vim/v*/lang/ru
 %lang(sk) %{_datadir}/vim/v*/lang/sk
+%lang(sv) %{_datadir}/vim/v*/lang/sv
 %lang(nb) %{_datadir}/vim/v*/lang/no
 #%lang(tr) %{_datadir}/vim/v*/lang/tr
 %lang(uk) %{_datadir}/vim/v*/lang/uk
+%lang(vi) %{_datadir}/vim/v*/lang/vi
 %lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW*
 
@@ -1024,6 +1030,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sr) %{_datadir}/vim/v*/lang/menu_sr*
 %lang(sv) %{_datadir}/vim/v*/lang/menu_sv*
 %lang(uk) %{_datadir}/vim/v*/lang/menu_uk*
+%lang(vi) %{_datadir}/vim/v*/lang/menu_vi*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.cp936*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.gb2312*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
@@ -1033,6 +1040,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 
+%lang(en_GB) %{_datadir}/vim/v*/spell/en.*.spl
+
 %{_datadir}/vim/v*/macros
 %{_datadir}/vim/v*/plugin
 %{_datadir}/vim/v*/print
@@ -1041,6 +1050,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/tutor
 %{_datadir}/vim/v*/colors
 %{_datadir}/vim/v*/compiler
+%{_datadir}/vim/v*/autoload
 %{_datadir}/vim/v*/*.vim
 
 %{_mandir}/man1/vim*
