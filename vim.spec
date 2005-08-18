@@ -924,10 +924,10 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fi) %{_mandir}/fi/man1/ex.1*
 %lang(fi) %{_mandir}/fi/man1/view.1*
 %lang(fi) %{_mandir}/fi/man1/rview.1*
-%lang(fr) %{_mandir}/fr*/man1/vi.1*
-%lang(fr) %{_mandir}/fr*/man1/ex.1*
-%lang(fr) %{_mandir}/fr*/man1/view.1*
-%lang(fr) %{_mandir}/fr*/man1/rview.1*
+%lang(fr) %{_mandir}/fr/man1/vi.1*
+%lang(fr) %{_mandir}/fr/man1/ex.1*
+%lang(fr) %{_mandir}/fr/man1/view.1*
+%lang(fr) %{_mandir}/fr/man1/rview.1*
 %lang(id) %{_mandir}/id/man1/vi.1*
 %lang(id) %{_mandir}/id/man1/ex.1*
 %lang(id) %{_mandir}/id/man1/view.1*
@@ -953,7 +953,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/xxd
 %{_mandir}/man1/xxd.1*
-%lang(fr) %{_mandir}/fr*/man1/xxd.1*
+%lang(fr) %{_mandir}/fr/man1/xxd.1*
 %lang(it) %{_mandir}/it*/man1/xxd.1*
 %lang(ru) %{_mandir}/ru*/man1/xxd.1*
 
