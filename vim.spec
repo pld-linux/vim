@@ -1002,17 +1002,17 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
 
 %if %{with static}
-install -m755 src/bin/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim
-install -m755 src/bin/vim.static	$RPM_BUILD_ROOT/bin/vi
+install src/bin/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim
+install src/bin/vim.static	$RPM_BUILD_ROOT/bin/vi
 %else
-install -m755 src/bin/vim.ncurses	$RPM_BUILD_ROOT/bin/vi
+install src/bin/vim.ncurses	$RPM_BUILD_ROOT/bin/vi
 ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
 %endif
 %if %{with ispell}
-install -m755 src/bin/vim.ispell	$RPM_BUILD_ROOT%{_bindir}/vim.ispell
+install src/bin/vim.ispell	$RPM_BUILD_ROOT%{_bindir}/vim.ispell
 %endif
-install -m755 src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
-install -m755 src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
+install src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
+install src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
 
@@ -1038,19 +1038,19 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 install %{SOURCE14}	$RPM_BUILD_ROOT%{_desktopdir}
 
 %if %{with athena}
-install -m755 src/bin/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena
+install src/bin/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena
 install %{SOURCE10}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with motif}
-install -m755 src/bin/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif
+install src/bin/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif
 install %{SOURCE11}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with gnome}
-install -m755 src/bin/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome
+install src/bin/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome
 install %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with gtk}
-install -m755 src/bin/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
+install src/bin/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
 ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_bindir}/gvim
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
@@ -1064,7 +1064,7 @@ install runtime/vim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/vim.
 install runtime/vim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/vim.png
 
 %if %{with kde}
-install -m755 src/bin/kvim $RPM_BUILD_ROOT%{_bindir}/kvim
+install src/bin/kvim $RPM_BUILD_ROOT%{_bindir}/kvim
 install -d $RPM_BUILD_ROOT%{_desktopdir}/kde
 install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,22x22}/actions
 install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/64x64/apps
@@ -1082,7 +1082,7 @@ install runtime/kde-tips $RPM_BUILD_ROOT%{_datadir}/apps/kvim/tips
 %if %{with bonobo}
 install -d $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
 install src/bin/Vim_Control.server $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
-install -m755 src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
+install src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 %endif
 
 bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
@@ -1173,8 +1173,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vimtutor
 %dir %{_sysconfdir}/vim
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/vimrc
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/vim/gvimrc
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vim/vimrc
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vim/gvimrc
 
 %dir %{_datadir}/vim
 %dir %{_datadir}/vim/v*
@@ -1182,8 +1182,8 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/vim/v*/doc/*.txt
 %lang(pl) %doc %{_datadir}/vim/v*/doc/*.plx
 %attr(755,root,root) %{_datadir}/vim/v*/doc/*.pl
-%verify(not size mtime md5) %{_datadir}/vim/v*/doc/tags
-%lang(pl) %verify(not size mtime md5) %{_datadir}/vim/v*/doc/tags-pl
+%verify(not md5 mtime size) %{_datadir}/vim/v*/doc/tags
+%lang(pl) %verify(not md5 mtime size) %{_datadir}/vim/v*/doc/tags-pl
 %{_datadir}/vim/v*/ftplugin
 %{_datadir}/vim/v*/indent
 %{_datadir}/vim/v*/keymap
