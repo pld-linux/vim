@@ -870,7 +870,7 @@ mv -f vim bin/vim.ispell
 	--enable-kde-toolbar \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} vim
+%{__make} -j1 vim
 mv -f vim bin/kvim
 %endif
 
