@@ -1,3 +1,5 @@
+# TODO
+# - [00:17:58] < arekm> glen: kvim should be dropped [FN]
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
