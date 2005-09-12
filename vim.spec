@@ -77,12 +77,12 @@ Patch18:	%{name}-po-syntax.patch
 Patch19:	%{name}-modprobe.patch
 Patch20:	%{name}-CAN-2005-0069.patch
 Patch21:	%{name}-gtkfilechooser.patch
-Patch22:	%{name}-gtkfilechooser-bonobo.patch
+%{?with_bonobo:Patch22:	%{name}-gtkfilechooser-bonobo.patch}
 Patch23:	%{name}-doubleparenthesis.patch
 Patch24:	%{name}-lib64.patch
 Patch25:	%{name}-syntax-fstab.patch
 
-Patch99:	%{name}-bonobo-20050909.patch
+%{?with_bonobo:Patch99:	%{name}-bonobo-20050909.patch}
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.002
 Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.003
@@ -1136,7 +1136,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with static}
 %files static
-%defattr(644,root,root,755)
 %endif
 %defattr(644,root,root,755)
 %attr(755,root,root) /bin/*
