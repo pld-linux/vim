@@ -19,7 +19,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	131
+%define		_patchlevel	148
 
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
@@ -37,7 +37,7 @@ Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unstable/snapshot/%{name}-%{_ver}%{_patchlevel}.zip
-# Source0-md5:	6370b55c42af6d78afd33ee42b6849b8
+# Source0-md5:	63609a2653b49411899575444e1c4cc1
 #Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
 # Source1-md5:	5395c4dacbf1c5008b22c4b86794e8a7
 #Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
