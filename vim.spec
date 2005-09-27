@@ -209,6 +209,7 @@ Obsoletes:	vim-minimal
 %endif
 BuildRequires:	unzip
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Provides:	vi
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -403,6 +404,7 @@ Summary(zh_CN):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
 Requires:	mktemp
 Requires:	which
+Requires:	%{name} = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-common
 
 %description rt
