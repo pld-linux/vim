@@ -210,6 +210,7 @@ Obsoletes:	vim-minimal
 BuildRequires:	unzip
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi
+Provides:	vi-editor
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -341,6 +342,7 @@ Summary:	Statically linked Vim
 Summary(pl):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
 Provides:	vi
+Provides:	vi-editor
 Obsoletes:	elvis-static
 Obsoletes:	nvi
 Obsoletes:	vi
@@ -371,6 +373,7 @@ Summary:	Vim with ispell support
 Summary(pl):	Vim z wsparciem dla ispella
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Provides:	vi-editor
 Conflicts:	ispell < 3.2.06
 Conflicts:	ispell-pl < 20021127-2
 
@@ -404,7 +407,7 @@ Summary(zh_CN):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
 Requires:	mktemp
 Requires:	which
-Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	vi-editor
 Obsoletes:	vim-common
 
 %description rt
@@ -475,6 +478,7 @@ Summary(pl):	Vim dla X Window korzystaj眂y z biblioteki Athena
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	vi-editor
 Obsoletes:	vim-X11
 
 %description -n gvim-athena
@@ -501,6 +505,7 @@ Summary(pl):	Vim dla X Window korzystaj眂y z biblioteki Motif
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	vi-editor
 Obsoletes:	vim-X11
 
 %description -n gvim-motif
@@ -527,6 +532,7 @@ Summary(pl):	Vim dla X Window korzystaj眂y z biblioteki KDE
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	vi-editor
 Obsoletes:	vim-X11
 
 %description -n kvim
@@ -543,6 +549,7 @@ Summary(pl):	Vim dla X Window korzystaj眂y z biblioteki GTK
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	vi-editor
 Obsoletes:	vim-X11
 
 %description -n gvim-gtk
@@ -570,6 +577,7 @@ Summary(pl):	Vim dla X Window korzystaj眂y z biblioteki GNOME
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	vi-editor
 Obsoletes:	vim-X11
 
 %description -n gvim-gnome
@@ -596,6 +604,7 @@ Summary(pl):	Vim dla X Window zbudowany jako element bonobo
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	vi-editor
 Obsoletes:	vim-X11
 
 %description -n gvim-bonobo
