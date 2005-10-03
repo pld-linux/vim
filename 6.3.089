@@ -1,0 +1,75 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.089
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.089
+Problem:    A session file doesn't work when created while the current
+	    directory contains a space or the directory of the session files
+	    contains a space. (Paolo Giarrusso)
+Solution:   Escape spaces with a backslash.
+Files:	    src/ex_docmd.c
+
+
+*** ../vim-6.3.088/src/ex_docmd.c	Sun Feb 13 20:46:05 2005
+--- src/ex_docmd.c	Wed Sep 28 14:54:14 2005
+***************
+*** 8631,8645 ****
+       */
+      if (ssop_flags & SSOP_SESDIR)
+      {
+! 	if (put_line(fd, "exe \"cd \" . expand(\"<sfile>:p:h\")") == FAIL)
+  	    return FAIL;
+      }
+      else if (ssop_flags & SSOP_CURDIR)
+      {
+  	sname = home_replace_save(NULL, globaldir != NULL ? globaldir : dirnow);
+  	if (sname == NULL
+! 		|| fprintf(fd, "cd %s", sname) < 0 || put_eol(fd) == FAIL)
+  	    return FAIL;
+  	vim_free(sname);
+      }
+  
+--- 8631,8650 ----
+       */
+      if (ssop_flags & SSOP_SESDIR)
+      {
+! 	if (put_line(fd, "exe \"cd \" . escape(expand(\"<sfile>:p:h\"), ' ')") == FAIL)
+  	    return FAIL;
+      }
+      else if (ssop_flags & SSOP_CURDIR)
+      {
+  	sname = home_replace_save(NULL, globaldir != NULL ? globaldir : dirnow);
+  	if (sname == NULL
+! 		|| fputs("cd ", fd) < 0
+! 		|| ses_put_fname(fd, sname, &ssop_flags) == FAIL
+! 		|| put_eol(fd) == FAIL)
+! 	{
+! 	    vim_free(sname);
+  	    return FAIL;
++ 	}
+  	vim_free(sname);
+      }
+  
+*** ../vim-6.3.088/src/version.c	Sun Sep 25 15:09:52 2005
+--- src/version.c	Wed Sep 28 14:56:23 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     89,
+  /**/
+
+-- 
+Permission is granted to read this message out aloud on Kings Cross Road,
+London, under the condition that the orator is properly dressed.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///

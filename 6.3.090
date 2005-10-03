@@ -1,0 +1,50 @@
+To: vim-dev@vim.org
+Subject: Patch 6.3.090
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.3.090
+Problem:    A very big value for 'columns' or 'lines' may cause a crash.
+Solution:   Limit the values to 10000 and 1000.
+Files:	    src/option.c
+
+
+*** ../vim-6.3.089/src/option.c	Thu Dec 16 12:05:19 2004
+--- src/option.c	Fri Sep 30 15:02:26 2005
+***************
+*** 6821,6826 ****
+--- 6821,6831 ----
+  	}
+  	Columns = MIN_COLUMNS;
+      }
++     /* Limit the values to avoid an overflow in Rows * Columns. */
++     if (Columns > 10000)
++ 	Columns = 10000;
++     if (Rows > 1000)
++ 	Rows = 1000;
+  
+  #ifdef DJGPP
+      /* avoid a crash by checking for a too large value of 'columns' */
+*** ../vim-6.3.089/src/version.c	Wed Sep 28 14:58:09 2005
+--- src/version.c	Fri Sep 30 15:03:19 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     90,
+  /**/
+
+-- 
+It is illegal to rob a bank and then shoot at the bank teller with a water
+pistol.
+		[real standing law in Louisana, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
