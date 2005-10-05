@@ -349,7 +349,6 @@ Provides:	vi
 Provides:	vi-editor
 Obsoletes:	elvis-static
 Obsoletes:	nvi
-Obsoletes:	vi
 Obsoletes:	vim-minimal
 
 %description static
