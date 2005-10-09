@@ -31,7 +31,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	2
+Release:	3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -81,6 +81,14 @@ Patch21:	%{name}-gtkfilechooser.patch
 Patch23:	%{name}-doubleparenthesis.patch
 Patch24:	%{name}-lib64.patch
 Patch25:	%{name}-syntax-fstab.patch
+Patch26:	010_all_vim-6.3-vixie.patch
+Patch27:	013_all_vim-7.0-cron-vars-79981.patch
+Patch28:	014_all_vim-6.3-dns-syntax.patch
+Patch29:	015_all_vim-6.3-screen.linux-is-dark-83416.patch
+Patch30:	020_all_vim-7.0-fstab-tmpfs-size.patch
+Patch31:	021_all_vim-7.0-fstab-bogus-errors.patch
+Patch32:	024_all_vim-6.3-bash-83565.patch
+Patch33:	027_all_vim-7.0-automake-substitutions-93378.patch
 
 %{?with_bonobo:Patch99:	%{name}-bonobo-20050909.patch}
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.3/6.3.001
@@ -745,6 +753,15 @@ element bonobo.
 %patch24 -p1
 %endif
 %patch25 -p1
+
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p0
+%patch30 -p1
+%patch31 -p1
+%patch32 -p0
+%patch33 -p0
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors

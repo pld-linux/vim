@@ -1,0 +1,28 @@
+# foo=bar highlighting in crontab files. Gentoo bug 79981.
+
+--- vim70aa/runtime/syntax/crontab.vim.orig	2005-01-29 19:47:38.639175808 +0000
++++ vim70aa/runtime/syntax/crontab.vim	2005-01-29 19:51:58.631650944 +0000
+@@ -35,6 +35,11 @@
+ syntax region crontabCmd  start="\S" end="$" nextgroup=crontabCmnt skipwhite contained contains=crontabCmnt,crontabCmdSpecial keepend
+ syntax match  crontabCmnt /#.*/
+ 
++syntax match crontabVar /^[A-Za-z][A-Za-z0-9\-\_]*/ nextgroup=crontabVarEq skipwhite
++syntax match crontabVarEq contained /=/ nextgroup=CrontabVarValQ,CrontabVarVal skipwhite
++syntax match crontabVarValQ contained /\(["']\).*\1/ skipwhite
++syntax match crontabVarVal contained /["']\@!\S\+/ skipwhite
++
+ " Define the default highlighting.
+ " For version 5.7 and earlier: only when not done already
+ " For version 5.8 and later: only when an item doesn't have highlighting yet
+@@ -66,6 +71,11 @@
+   HiLink crontabCmd		Type
+   HiLink crontabCmdSpecial	Special
+ 
++  HiLink crontabVar		Identifier
++  HiLink crontabVarEq		Special
++  HiLink crontabVarVal		Constant
++  HiLink crontabVarValQ		String
++
+   HiLink crontabCmnt		Comment
+ 
+   delcommand HiLink

@@ -1,0 +1,51 @@
+# Support for vixie-cron style @SPECS in crontab syntax highlighting.
+
+--- vim70aa/runtime/syntax/crontab.vim	2004-08-03 08:15:48.000000000 +0100
++++ vim70aa/runtime/syntax/crontab.vim	2004-08-27 04:08:40.677471216 +0100
+@@ -16,19 +16,23 @@
+   finish
+ endif
+ 
+-syntax match  crontabMin     "\_^[0-9\-\/\,\.]\{}\>\|\*"  nextgroup=crontabHr   skipwhite
+-syntax match  crontabHr       "\<[0-9\-\/\,\.]\{}\>\|\*"  nextgroup=crontabDay  skipwhite contained
+-syntax match  crontabDay      "\<[0-9\-\/\,\.]\{}\>\|\*"  nextgroup=crontabMnth skipwhite contained
++syntax match  crontabMin     "\_^[0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?"  nextgroup=crontabHr   skipwhite
++syntax match  crontabHr       "\<[0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?"  nextgroup=crontabDay  skipwhite contained
++syntax match  crontabDay      "\<[0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?"  nextgroup=crontabMnth skipwhite contained
+ 
+-syntax match  crontabMnth  "\<[a-z0-9\-\/\,\.]\{}\>\|\*"  nextgroup=crontabDow  skipwhite contained
++syntax match  crontabMnth  "\<[a-z0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?"  nextgroup=crontabDow  skipwhite contained
+ syntax keyword crontabMnth12 contained   jan feb mar apr may jun jul aug sep oct nov dec
+ 
+-syntax match  crontabDow   "\<[a-z0-9\-\/\,\.]\{}\>\|\*"  nextgroup=crontabCmd  skipwhite contained
++syntax match  crontabDow   "\<[a-z0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?"  nextgroup=crontabCmd  skipwhite contained
+ syntax keyword crontabDow7   contained    sun mon tue wed thu fri sat
+ 
++syntax match crontabSpecial  "@\w\+" nextgroup=crontabCmd skipwhite
++
+ "  syntax region crontabCmd  start="\<[a-z0-9\/\(]" end="$" nextgroup=crontabCmnt skipwhite contained contains=crontabCmnt keepend
+ 
+-syntax region crontabCmd  start="\S" end="$" nextgroup=crontabCmnt skipwhite contained contains=crontabCmnt keepend
++syntax match crontabCmdSpecial contained /\\.\|%/
++
++syntax region crontabCmd  start="\S" end="$" nextgroup=crontabCmnt skipwhite contained contains=crontabCmnt,crontabCmdSpecial keepend
+ syntax match  crontabCmnt /#.*/
+ 
+ " Define the default highlighting.
+@@ -51,6 +55,8 @@
+   HiLink crontabMnthS		Number
+   HiLink crontabMnthN		Number
+ 
++  HiLink crontabSpecial		PreProc
++
+   HiLink crontabDow		PreProc
+   HiLink crontabDow7		PreProc
+   HiLink crontabDowS		PreProc
+@@ -58,6 +64,7 @@
+ 
+ " comment out next line for to suppress unix commands coloring.
+   HiLink crontabCmd		Type
++  HiLink crontabCmdSpecial	Special
+ 
+   HiLink crontabCmnt		Comment
+ 

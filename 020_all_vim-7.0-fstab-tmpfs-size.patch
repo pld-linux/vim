@@ -1,0 +1,13 @@
+# Handle size= in fstab highlighting properly.
+--- vim7/runtime/syntax/fstab.vim.orig	2005-03-19 16:14:59.057091856 +0000
++++ vim7/runtime/syntax/fstab.vim	2005-03-19 16:17:17.036115856 +0000
+@@ -120,6 +120,9 @@
+ syn keyword fsOptionsReiserHash contained rupasov tea r5 detect
+ syn keyword fsOptionsKeywords contained hashed_relocation noborder nolog notail no_unhashed_relocation replayonly
+ 
++" Options: tmpfs
++syn match fsOptionsKeywords contained /size=/ nextgroup=fsOptionsString
++
+ " Options: udf
+ syn match fsOptionsKeywords contained /\%(anchor\|partition\|lastblock\|fileset\|rootdir\)=/ nextgroup=fsOptionsString
+ syn keyword fsOptionsKeywords contained unhide undelete strict novrs

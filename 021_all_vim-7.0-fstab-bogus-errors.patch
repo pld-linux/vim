@@ -1,0 +1,20 @@
+# Remove some bogus 'error' indications in fstab highlighting.
+--- vim7/runtime/syntax/fstab.vim.orig	2005-03-19 16:17:17.036115856 +0000
++++ vim7/runtime/syntax/fstab.vim	2005-03-19 16:27:35.364115712 +0000
+@@ -19,14 +19,14 @@
+ 
+ " Device
+ syn cluster fsDeviceCluster contains=fsOperator,fsDeviceKeyword,fsDeviceError
+-syn match fsDeviceError /\%([^a-zA-Z0-9_\/#@]\|^\w\{-}\ze\W\)/ contained
++syn match fsDeviceError /\%([^a-zA-Z0-9_\/#@\-:]\)/ contained
+ syn keyword fsDeviceKeyword contained none proc linproc tmpfs
+ syn keyword fsDeviceKeyword contained LABEL nextgroup=fsDeviceLabel
+ syn match fsDeviceLabel contained /=[^ \t]\+/hs=s+1 contains=fsOperator
+ 
+ " Mount Point
+ syn cluster fsMountPointCluster contains=fsMountPointKeyword,fsMountPointError
+-syn match fsMountPointError /\%([^ \ta-zA-Z0-9_\/#@]\|\s\+\zs\w\{-}\ze\s\)/ contained
++syn match fsMountPointError /\%([^ \ta-zA-Z0-9_\/#@\-]\)/ contained
+ syn keyword fsMountPointKeyword contained none swap
+ 
+ " Type
