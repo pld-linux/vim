@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: Patch 6.4.001 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Note: This only changes the code for Global IME, none of the 6.4
+executables are affected.
+
+
+Patch 6.4.001 (extra)
+Problem:    Win32: Can't compile the Global IME code.
+Solution:   Change "hwnd" to "hWnd". (Yongwei)
+Files:	    src/glbl_ime.cpp
+
+
+*** ../vim-6.4.000/src/glbl_ime.cpp	Tue May 11 22:29:41 2004
+--- src/glbl_ime.cpp	Mon Oct 17 11:03:43 2005
+***************
+*** 136,142 ****
+      {
+  #if defined(WIN3264) && defined(FEAT_MBYTE)
+  	if (wide_WindowProc)
+! 	    lResult = DefWindowProcW(hwnd, Msg, wParam, lParam);
+  	else
+  #endif
+  	    lResult = DefWindowProc(hWnd, Msg, wParam, lParam);
+--- 136,142 ----
+      {
+  #if defined(WIN3264) && defined(FEAT_MBYTE)
+  	if (wide_WindowProc)
+! 	    lResult = DefWindowProcW(hWnd, Msg, wParam, lParam);
+  	else
+  #endif
+  	    lResult = DefWindowProc(hWnd, Msg, wParam, lParam);
+*** ../vim-6.4.000/src/version.c	Sat Oct 15 13:23:40 2005
+--- src/version.c	Mon Oct 17 11:08:25 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     1,
+  /**/
+
+-- 
+Well, you come from nothing, you go back to nothing...  What have you
+lost?  Nothing!
+				-- Monty Python: The life of Brian
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        Sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\              Project leader for A-A-P -- http://www.A-A-P.org        ///
+ \\\     Buy LOTR 3 and help AIDS victims -- http://ICCF.nl/lotr.html   ///
