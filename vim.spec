@@ -545,7 +545,7 @@ element bonobo.
 
 # kvim
 %if %{with kde}
-# FIXME
+# FIXME kvim
 %patch999 -p1
 %patch8 -p1
 %endif
@@ -566,8 +566,7 @@ element bonobo.
 %{?with_home_etc:%patch12 -p1}
 %{?with_selinux:%patch13 -p1}
 %patch16 -p1
-# still needed?
-# %patch18 -p1
+%patch18 -p1
 %patch19 -p0 -b .modprobe
 %patch20 -p1
 %{!?with_bonobo:%patch21 -p0}
@@ -577,8 +576,7 @@ element bonobo.
 %patch24 -p1
 %endif
 %patch25 -p1
-# FIXME
-# %patch26 -p1
+%patch26 -p0
 %patch27 -p1
 %patch28 -p1
 %patch29 -p0
