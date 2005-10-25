@@ -1,7 +1,3 @@
-# TODO
-# - kvim should be dropped since it's no longer developed
-#   (due to being broken by design)
-# - update patches (kvim, see FIXME)
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -9,7 +5,7 @@
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
-%bcond_without	kde		# don't build kvim
+%bcond_with	kde		# build kvim
 %bcond_without	perl		# without Perl interp
 %bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
@@ -33,7 +29,7 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	0.1
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -100,7 +96,11 @@ BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 %{?with_gtk:BuildRequires:	gtk+2-devel >= 2:2.6.0}
-%{?with_kde:BuildRequires:	kdelibs-devel >= 9:3.0.0}
+%if %{with kde}
+BuildRequires:	kdelibs-devel >= 9:3.0.0
+%else
+Obsoletes:	kvim
+%endif
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %{?with_selinux:BuildRequires:	libselinux-devel}
 %{?with_motif:BuildRequires:	openmotif-devel}
