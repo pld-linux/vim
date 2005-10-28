@@ -130,3 +130,28 @@
  /*
   * Return a pointer to the ACL of file "fname" in allocated memory.
   * Return NULL if the ACL is not available for whatever reason.
+--- vim64/src/po/pl.po.orig	2004-06-11 10:58:45.000000000 +0200
++++ vim64/src/po/pl.po	2005-10-28 23:34:15.523950872 +0200
+@@ -4826,6 +4826,22 @@
+ msgid "Opening the X display timed out"
+ msgstr "Próba otwarcia ekranu X trwa³a zbyt d³ugo"
+ 
++#: os_unix.c:2354
++msgid ""
++"\n"
++"Could not get security context for "
++msgstr ""
++"\n"
++"Nie mogê pobraæ kontekstu bezpieczeñstwa dla "
++
++#: os_unix.c:2361
++msgid ""
++"\n"
++"Could not set security context for "
++msgstr ""
++"\n"
++"Nie mogê ustawiæ kontekstu bezpieczeñstwa dla "
++
+ #: os_unix.c:3227 os_unix.c:3907
+ msgid ""
+ "\n"
