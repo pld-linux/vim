@@ -74,7 +74,7 @@ Patch18:	%{name}-po-syntax.patch
 Patch19:	%{name}-modprobe.patch
 Patch20:	%{name}-CAN-2005-0069.patch
 Patch21:	%{name}-gtkfilechooser.patch
-%{?with_bonobo:Patch22:	%{name}-gtkfilechooser-bonobo.patch}
+Patch22:	%{name}-gtkfilechooser-bonobo.patch
 Patch23:	%{name}-doubleparenthesis.patch
 Patch24:	%{name}-lib64.patch
 Patch25:	%{name}-syntax-fstab.patch
@@ -86,8 +86,7 @@ Patch30:	020_all_vim-7.0-fstab-tmpfs-size.patch
 Patch31:	021_all_vim-7.0-fstab-bogus-errors.patch
 Patch32:	024_all_vim-6.3-bash-83565.patch
 Patch33:	027_all_vim-7.0-automake-substitutions-93378.patch
-
-%{?with_bonobo:Patch99:	%{name}-bonobo-20050909.patch}
+Patch99:	%{name}-bonobo-20050909.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.001
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
