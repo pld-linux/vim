@@ -950,7 +950,7 @@ install src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 unzip -d $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE6}
 
-install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{syntax,ftdetect,plugin,ftplugin}}
+install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
 
 %clean
@@ -1051,7 +1051,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/v*/lang
 %doc %{_datadir}/vim/v*/lang/README*
 
-# just add after/ and ftdetect/ separately, other dirs catched by glob above
+# just add after/ and ftdetect/ separately, other dirs caught by globs above or below
 %{_datadir}/vim/vimfiles/after
 %{_datadir}/vim/vimfiles/ftdetect
 
