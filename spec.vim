@@ -79,6 +79,7 @@ syn keyword specMacroNameOther contained kgcc kgcc_package name nil optflags pac
 syn keyword specMacroNameOther contained perl_sitelib perl_vendorarch perl_vendorlib py_sitedir py_sitescriptdir release
 syn keyword specMacroNameOther contained rpmcflags rpmcxxflags rpmldflags tmpdir vendor version epoch php_pear_dir
 syn keyword specMacroNameOther contained requires_eq requires_releq_kernel_up requires_releq_kernel_smp releq_kernel_up releq_kernel_smp __kernel_ver
+syn keyword specMacroNameOther contained requires_php_extension requires_zend_extension pear_package_setup pear_package_install
 syn match   specMacroNameOther contained '\<\(PATCH\|SOURCE\)\d*\>'
 
 " valid _macro names from /usr/lib/rpm/macros
