@@ -96,7 +96,7 @@ syn keyword specMacroNameLocal contained _pgp_path _pixmapsdir _pkgconfigdir _pr
 syn keyword specMacroNameLocal contained _rpmfilename _sbindir _sharedstatedir _signature _smp_mflags _sourcedir _source_payload
 syn keyword specMacroNameLocal contained _specdir _srcrpmdir _sysconfdir _target _target_alias _target_cpu _target_os _target_platform
 syn keyword specMacroNameLocal contained _target_vendor _target_base_arch _timecheck _tmppath _topdir _usr _usrsrc _var _vendor
-syn keyword specMacroNameLocal contained __cxx __cc __make __perl __libtoolize __aclocal __autoconf __automake __autoheader __gettextize __sed
+syn keyword specMacroNameLocal contained __cxx __cc __make __perl __libtoolize __autopoint __aclocal __autoconf __automake __autoheader __gettextize __sed
 
 
 " ------------------------------------------------------------------------------
