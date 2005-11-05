@@ -172,7 +172,7 @@ syn region shQuote2 contained matchgroup=shQuoteDelim start=+"+ skip=+\\"+ end=+
 syn match shOperator contained '[><|!&;]\|[!=]='
 syn region shDo transparent matchgroup=specBlock start="\<do\>" end="\<done\>" contains=ALLBUT,shFunction,shDoError,shCase,specPreAmble,@specListedFiles
 
-syn region specIf  matchgroup=specBlock start="%ifosf\|%ifos\|%ifnos\|%ifarch\|%ifnarch\|ifdef\|ifndef\|%if\|%else"  end='%endif'  contains=ALLBUT, specIfError, shCase
+syn region specIf  matchgroup=specBlock start="%ifosf\|%ifos\|%ifnos\|%ifarch\|%ifnarch\|ifdef\|ifndef\|%if\|%else"  end='%endif'  contains=ALLBUT, specIfError, shCase, shComment
 
 syn region shIf transparent matchgroup=specBlock start="\<if\>" end="\<fi\>" contains=ALLBUT,shFunction,shIfError,shCase,@specListedFiles
 
