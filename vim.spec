@@ -327,6 +327,7 @@ Summary(sv):	De gemensamma filerna som behövs av alla versioner av redigeraren V
 Summary(uk):	æÁÊÌÉ, ĞÏÔÒ¦ÂÎ¦ ÄÌÑ ÂÕÄØ-ÑËÏ§ ×ÅÒÓ¦§ ÒÅÄÁËÔÏÒÕ vim
 Summary(zh_CN):	ÈÎºÎ°æ±¾µÄ VIM ±à¼­Æ÷ËùĞèµÄ¹«ÓÃÎÄ¼ş¡£
 Group:		Applications/Editors/Vim
+# mktemp and which are for vimtutor
 Requires:	mktemp
 Requires:	which
 Requires:	vi-editor
@@ -348,10 +349,6 @@ order to run.
 %description rt -l de
 Das Paket vim-rt enthält Dateien, die jede VIM-Binärdatei für die
 Ausführung benötigt.
-
-%description rt -l es
-The vim-rt package contains files which every VIM binary will need in
-order to run.
 
 %description rt -l fr
 Le paquetage vim-rt contient des fichiers dont chaque fichier binaire
