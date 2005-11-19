@@ -80,6 +80,7 @@ syn keyword specMacroNameOther contained pear_package_install pear_package_setup
 syn keyword specMacroNameOther contained perl_vendorarch perl_vendorlib php_pear_dir py_sitedir py_scriptdir py_sitescriptdir releq_kernel_smp
 syn keyword specMacroNameOther contained releq_kernel_up requires_php_extension requires_releq_kernel_smp requires_releq_kernel_up
 syn keyword specMacroNameOther contained requires_zend_extension rpmcflags rpmcxxflags rpmldflags tmpdir x8664
+syn keyword specMacroNameOther contained ruby_archdir ruby_rubylibdir ruby_ridir ruby_sitearchdir ruby_version
 
 syn match   specMacroNameOther contained '\<\(PATCH\|SOURCE\)\d*\>'
 
@@ -97,7 +98,8 @@ syn keyword specMacroNameLocal contained _pgp_path _pixmapsdir _pkgconfigdir _pr
 syn keyword specMacroNameLocal contained _rpmfilename _sbindir _sharedstatedir _signature _smp_mflags _sourcedir _source_payload
 syn keyword specMacroNameLocal contained _specdir _srcrpmdir _sysconfdir _target _target_alias _target_cpu _target_os _target_platform
 syn keyword specMacroNameLocal contained _target_vendor _target_base_arch _timecheck _tmppath _topdir _usr _usrsrc _var _vendor
-syn keyword specMacroNameLocal contained __cxx __cc __make __perl __libtoolize __autopoint __aclocal __autoconf __automake __autoheader __gettextize __sed __intltoolize
+syn keyword specMacroNameLocal contained __cxx __cc __make __perl __libtoolize __autopoint __aclocal __autoconf __automake __autoheader
+syn keyword specMacroNameLocal contained __gettextize __sed __intltoolize __install
 
 
 " ------------------------------------------------------------------------------
