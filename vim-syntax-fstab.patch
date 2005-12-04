@@ -18,3 +18,35 @@
  syn match fsOptionsGeneral /_netdev/
  
  " Options: adfs
+--- vim64/runtime/syntax/fstab.vim	2005-12-04 22:37:13.000000000 +0200
++++ /tmp/fstab.vim	2005-12-04 22:35:12.000000000 +0200
+@@ -44,7 +44,7 @@
+ syn keyword fsOptionsYesNo yes no
+ syn cluster fsOptionsCheckCluster contains=fsOptionsExt2Check,fsOptionsFatCheck
+ syn keyword fsOptionsSize 512 1024 2048
+-syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user supermount bind tagxid
++syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user users supermount bind tagxid
+ syn match fsOptionsGeneral /_netdev/
+ 
+ " Options: adfs
+@@ -134,6 +134,10 @@
+ syn match fsOptionsUfsType contained /nextstep-cd/
+ syn keyword fsOptionsUfsError contained panic lock umount repair
+ 
++" Options: usbfs
++syn match fsOptionsKeywords contained /devmode=/ nextgroup=fsOptionsNumberOctal
++syn match fsOptionsKeywords contained /devgid=/ nextgroup=fsOptionsNumber
++
+ " Options: vfat
+ syn keyword fsOptionsKeywords contained nonumtail posix utf8
+ syn match fsOptionsKeywords contained /shortname=/ nextgroup=fsOptionsVfatShortname
+@@ -143,6 +147,9 @@
+ syn match fsOptionsKeywords contained /\%(biosize\|logbufs\|logbsize\|logdev\|rtdev\|sunit\|swidth\)=/ nextgroup=fsOptionsString
+ syn keyword fsOptionsKeywords contained dmapi xdsm noalign noatime norecovery osyncisdsync quota usrquota uquoenforce grpquota gquoenforce
+ 
++" Options: swap
++syn match fsOptionsKeywords contained /pri=/ nextgroup=fsOptionsNumber
++
+ " Frequency / Pass No.
+ syn cluster fsFreqPassCluster contains=fsFreqPassNumber,fsFreqPassError
+ syn match fsFreqPassError /\s\+\zs\%(\D.*\|\S.*\|\d\+\s\+[^012]\)\ze/ contained
