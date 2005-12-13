@@ -41,7 +41,7 @@ Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
 # Source2-md5:	5f4489776cafcb3588223f79eb26e287
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
-Source5:	http://freenux.org/kvim/kvim-runtime-6.2.14.tar.bz2
+Source5:	http://freenux.org/kvim/k%{name}-runtime-6.2.14.tar.bz2
 # Source5-md5:	6f633e79bcf5f35918bb0bff6850a971
 Source6:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
 # Source6-md5:	ff96284b1c913d55cf0877839b34d490
@@ -51,10 +51,10 @@ Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
 Source14:	%{name}.desktop
 # http://www.vim.org/scripts/script.php?script_id=1120
-Source15:	php.vim
+Source15:	php.%{name}
 # http://www.vim.org/scripts/script.php?script_id=415 (1.13)
-Source16:	zenburn.vim
-Source17:	spec.vim
+Source16:	zenburn.%{name}
+Source17:	spec.%{name}
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -78,14 +78,14 @@ Patch22:	%{name}-gtkfilechooser-bonobo.patch
 Patch23:	%{name}-doubleparenthesis.patch
 Patch24:	%{name}-lib64.patch
 Patch25:	%{name}-syntax-fstab.patch
-Patch26:	010_all_vim-6.3-vixie.patch
-Patch27:	013_all_vim-7.0-cron-vars-79981.patch
-Patch28:	014_all_vim-6.3-dns-syntax.patch
-Patch29:	015_all_vim-6.3-screen.linux-is-dark-83416.patch
-Patch30:	020_all_vim-7.0-fstab-tmpfs-size.patch
-Patch31:	021_all_vim-7.0-fstab-bogus-errors.patch
-Patch32:	024_all_vim-6.3-bash-83565.patch
-Patch33:	027_all_vim-7.0-automake-substitutions-93378.patch
+Patch26:	010_all_%{name}-6.3-vixie.patch
+Patch27:	013_all_%{name}-7.0-cron-vars-79981.patch
+Patch28:	014_all_%{name}-6.3-dns-syntax.patch
+Patch29:	015_all_%{name}-6.3-screen.linux-is-dark-83416.patch
+Patch30:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
+Patch31:	021_all_%{name}-7.0-fstab-bogus-errors.patch
+Patch32:	024_all_%{name}-6.3-bash-83565.patch
+Patch33:	027_all_%{name}-7.0-automake-substitutions-93378.patch
 Patch99:	%{name}-bonobo-20050909.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.002
@@ -105,16 +105,16 @@ Obsoletes:	kvim
 %endif
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %{?with_selinux:BuildRequires:	libselinux-devel}
-%{?with_motif:BuildRequires:	openmotif-devel}
 BuildRequires:	ncurses-devel
+%{?with_motif:BuildRequires:	openmotif-devel}
 %{?with_perl:BuildRequires:	perl-devel}
 %{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby}
 %{?with_tcl:BuildRequires:	tcl-devel}
 %if %{with bonobo}
-BuildRequires:	libgnomeui-devel >= 2.2.0.1
 BuildRequires:	ORBit2-devel
 BuildRequires:	libbonoboui-devel >= 2.2.0
+BuildRequires:	libgnomeui-devel >= 2.2.0.1
 BuildRequires:	nautilus-devel >= 2.2.0
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.210
@@ -331,8 +331,8 @@ Summary(zh_CN):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
 # mktemp and which are for vimtutor
 Requires:	mktemp
-Requires:	which
 Requires:	vi-editor
+Requires:	which
 Obsoletes:	vim-common
 
 %description rt
