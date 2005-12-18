@@ -29,7 +29,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -70,6 +70,7 @@ Patch11:	%{name}-bonobo.patch
 Patch12:	%{name}-home_etc.patch
 Patch13:	%{name}-selinux.patch
 Patch16:	%{name}-filetype_vim-perl_tests.patch
+Patch17:	%{name}-apache.patch
 Patch18:	%{name}-po-syntax.patch
 Patch19:	%{name}-modprobe.patch
 Patch20:	%{name}-CAN-2005-0069.patch
@@ -568,6 +569,7 @@ element bonobo.
 %{?with_home_etc:%patch12 -p1}
 %{?with_selinux:%patch13 -p1}
 %patch16 -p1
+%patch17 -p1
 %patch18 -p1
 %patch19 -p0 -b .modprobe
 %patch20 -p1
