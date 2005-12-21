@@ -149,10 +149,12 @@ syn region specPreAmble oneline matchgroup=specCommand
 	\ contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
 
 " %% Description Section %%
-syn region specDescriptionArea matchgroup=specSection start='^%description' end='^%'me=e-1 contains=specDescriptionOpts,specEmail,specURL,specNumber,specMacroIdentifier,specComment
+syn region specDescriptionArea matchgroup=specSection start='^%description' end='^%'me=e-1
+	\ contains=specDescriptionOpts,specEmail,specURL,specNumber,specMacroIdentifier,specComment
 
 " %% Package Section %%
-syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e-1 contains=specPackageOpts,specPreAmble,specComment
+syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e-1
+	\ contains=specPackageOpts,specPreAmble,specComment,specMacroNameOther
 
 " %% Scripts Section %%
 syn region specScriptArea matchgroup=specSection
