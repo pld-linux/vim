@@ -105,7 +105,7 @@ syn keyword specMacroNameLocal contained _pgp_path _pixmapsdir _pkgconfigdir _pr
 syn keyword specMacroNameLocal contained _rpmfilename _sbindir _sharedstatedir _signature _smp_mflags _sourcedir _source_payload
 syn keyword specMacroNameLocal contained _specdir _srcrpmdir _sysconfdir _target _target_alias _target_cpu _target_os _target_platform
 syn keyword specMacroNameLocal contained _target_vendor _target_base_arch _timecheck _tmppath _topdir _usr _usrsrc _var _vendor
-syn keyword specMacroNameLocal contained __cxx __cc __make __perl __libtoolize __autopoint __aclocal __autoconf __automake __autoheader
+syn keyword specMacroNameLocal contained __cxx __cc __make __perl __python __libtoolize __autopoint __aclocal __autoconf __automake __autoheader
 syn keyword specMacroNameLocal contained __gettextize __sed __intltoolize __install
 
 
@@ -122,7 +122,11 @@ syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??\
 " %% Files Section %%
 " TODO %config valid parameters: missingok\|noreplace
 " TODO %verify valid parameters: \(not\)\= \(md5\|atime\|...\)
-syn region specFilesArea matchgroup=specSection start='^%[Ff][Ii][Ll][Ee][Ss]\>' skip='%\(attrib\|defattr\|attr\|dir\|config\|docdir\|doc\|lang\|verify\|ghost\|exclude\|dev\|if\|else\|endif\)\>' end='^%[a-zA-Z]'me=e-2 contains=specFilesOpts,specFilesDirective,@specListedFiles,specComment,specCommandSpecial,specMacroIdentifier,specSectionMacroBcondArea,specIf
+syn region specFilesArea matchgroup=specSection start='^%[Ff][Ii][Ll][Ee][Ss]\>'
+	\ skip='%\(attrib\|defattr\|attr\|dir\|config\|docdir\|doc\|lang\|verify\|ghost\|exclude\|dev\|if\|else\|endif\)\>'
+	\ end='^%[a-zA-Z]'me=e-2
+	\ contains=specFilesOpts,specFilesDirective,@specListedFiles,specComment,specCommandSpecial,specMacroIdentifier,specSectionMacroBcondArea,specIf
+
 " tip: remember to include new items in specFilesArea above
 syn match  specFilesDirective contained '%\(attrib\|defattr\|attr\|dir\|config\|docdir\|doc\|lang\|verify\|ghost\|exclude\|dev\)\>'
 
