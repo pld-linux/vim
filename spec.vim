@@ -22,7 +22,7 @@ syn match specPercent     contained '%'
 syn match specVariables   contained '\$\h\w*' contains=specSpecialVariablesNames,specSpecialChar
 syn match specVariables   contained '\${\w*}' contains=specSpecialVariablesNames,specSpecialChar
 
-syn match specMacroIdentifier contained '%\h\w*' contains=specMacroNameLocal,specMacroNameOther,specPercent
+syn match specMacroIdentifier contained '%\h\w*' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
 "syn match specMacroIdentifier contained '%{\w*}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
 syn region specMacroIdentifier oneline matchgroup=Special start='%{' skip='\\}' end='}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
 syn match specBcond contained '%{with\(out\)\?\s\+[a-zA-Z0-9_-]\+}'
@@ -40,7 +40,7 @@ syn match specNoNumberHilite 'X11\|X11R6\|[a-zA-Z]*\.\d\|[a-zA-Z][-/]\d'
 syn match specManpageFile '[a-zA-Z]\.1'
 
 " Day, Month and most used license acronyms
-syn keyword specLicense contained GPL LGPL BSD MIT GNU
+syn keyword specLicense contained GPL LGPL BSD MIT GNU Apache PHP
 syn keyword specWeekday contained Mon Tue Wed Thu Fri Sat Sun
 syn keyword specMonth   contained Jan Feb Mar Apr Jun Jul Aug Sep Oct Nov Dec
 syn keyword specMonth   contained January February March April May June July August September October November December
@@ -141,9 +141,10 @@ syn case ignore
 
 " %% PreAmble Section %%
 " Copyright and Serial were deprecated by License and Epoch
-syn region specPreAmbleDeprecated oneline matchgroup=specError start='^\(Copyright\|Serial\)' end='$' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier
+" PreReq and BuildPreReq deprecated by Requires ans BuildRequires
+syn region specPreAmbleDeprecated oneline matchgroup=specError start='^\(Copyright\|Serial\|PreReq\|BuildPreReq\(uires\)\?\)' end='$' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier
 syn region specPreAmble oneline matchgroup=specCommand
-	\ start='\(^\|\(^%{!\??\(with\(out\)\?_[a-zA-Z0-9_]\+\|debug\):\)\@<=\)\(Prereq\|Summary\|Name\|Version\|Packager\|Requires\|Icon\|URL\|Source\d*\|Patch\d*\|Prefix\|Packager\|Group\|License\|Release\|BuildRoot\|Distribution\|Vendor\|Provides\|ExclusiveArch\|ExcludeArch\|ExclusiveOS\|Obsoletes\|BuildArch\|BuildArchitectures\|BuildRequires\|BuildConflicts\|BuildPreReq\|Conflicts\|AutoRequires\|AutoReqProv\|AutoReq\|AutoProv\|Epoch\|NoSource\)'
+	\ start='\(^\|\(^%{!\??\(with\(out\)\?_[a-zA-Z0-9_]\+\|debug\):\)\@<=\)\(Summary\|Name\|Version\|Packager\|Requires\|Icon\|URL\|Source\d*\|Patch\d*\|Prefix\|Packager\|Group\|License\|Release\|BuildRoot\|Distribution\|Vendor\|Provides\|ExclusiveArch\|ExcludeArch\|ExclusiveOS\|Obsoletes\|BuildArch\|BuildArchitectures\|BuildRequires\|BuildConflicts\|Conflicts\|AutoRequires\|AutoReqProv\|AutoReq\|AutoProv\|Epoch\|NoSource\)'
 	\ end='$\|}\@='
 	\ contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
 
