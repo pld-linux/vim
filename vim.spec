@@ -110,7 +110,7 @@ BuildRequires:	ncurses-devel
 %{?with_motif:BuildRequires:	openmotif-devel}
 %{?with_perl:BuildRequires:	perl-devel}
 %{?with_python:BuildRequires:	python-devel}
-%{?with_ruby:BuildRequires:	ruby}
+%{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
 %if %{with bonobo}
 BuildRequires:	ORBit2-devel
