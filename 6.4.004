@@ -1,0 +1,51 @@
+To: vim-dev@vim.org
+Subject: Patch 6.4.004
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.4.004
+Problem:    "go" does not work correctly in combination with 'virtualedit'.
+	    (Alojz Motesicky)
+Solution:   Reset the "coladd" field.
+Files:	    src/memline.c
+
+
+*** ../vim-6.4.003/src/memline.c	Thu Feb 17 11:02:53 2005
+--- src/memline.c	Thu Dec  1 16:07:04 2005
+***************
+*** 4368,4373 ****
+--- 4368,4376 ----
+      {
+  	curwin->w_cursor.lnum = lnum;
+  	curwin->w_cursor.col = (colnr_T)boff;
++ # ifdef FEAT_VIRTUALEDIT
++ 	curwin->w_cursor.coladd = 0;
++ # endif
+  	curwin->w_set_curswant = TRUE;
+      }
+      check_cursor();
+*** ../vim-6.4.003/src/version.c	Wed Nov 30 12:38:32 2005
+--- src/version.c	Thu Dec  1 16:07:55 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     4,
+  /**/
+
+-- 
+       Bravely bold Sir Robin, rode forth from Camelot,
+       He was not afraid to die, Oh Brave Sir Robin,
+       He was not at all afraid to be killed in nasty ways
+       Brave, brave, brave, brave Sir Robin.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://www.ICCF.nl         ///

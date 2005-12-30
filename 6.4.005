@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 6.4.005
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 6.4.005
+Problem:    When truncating a message with multi-byte characters the '<' may
+	    be written before the buffer. (Pawel S. Veselov)
+Solution:   Don't write the '<' when there is sufficient room.
+Files:	    src/message.c
+
+
+*** ../vim-6.4.004/src/message.c	Sun Jun 13 12:15:03 2004
+--- src/message.c	Thu Dec 22 22:26:05 2005
+***************
+*** 718,723 ****
+--- 718,727 ----
+  	{
+  	    int	size = vim_strsize(s);
+  
++ 	    /* There may be room anyway when there are multibyte chars. */
++ 	    if (size <= room)
++ 		return s;
++ 
+  	    for (n = 0; size >= room; )
+  	    {
+  		size -= (*mb_ptr2cells)(s + n);
+*** ../vim-6.4.004/src/version.c	Thu Dec  1 16:08:05 2005
+--- src/version.c	Thu Dec 22 22:33:27 2005
+***************
+*** 643,644 ****
+--- 643,646 ----
+  {   /* Add new patch number below this line */
++ /**/
++     5,
+  /**/
+
+-- 
+ARTHUR: Old woman!
+DENNIS: Man!
+ARTHUR: Man.  I'm sorry.  Old man, What knight live in that castle over there?
+DENNIS: I'm thirty-seven.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://www.ICCF.nl         ///
