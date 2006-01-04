@@ -46,7 +46,7 @@ syn match nagiosMacro  '\$SERVICE\(DESC\|STATE\|OUTPUT\|PERFDATA\|LATENCY\|EXECU
 syn match nagiosMacro  '\$\(OUTPUT\|PERFDATA\|EXECUTIONTIME\|LATENCY\)\$'
 syn match nagiosMacro  '\$NOTIFICATION\(TYPE\|NUMBER\)\$'
 syn match nagiosMacro  '\$\(\(SHORT\|LONG\)\?DATETIME\|DATE\|TIME\|TIMET\)\$'
-syn match nagiosMacro  '\$\(LASTSTATECHANGE\|STATETYPE\)\$'
+syn match nagiosMacro  '\$LASTSTATECHANGE\$'
 syn match nagiosMacro  '\$ADMIN\(EMAIL\|PAGER\)\$'
 syn match nagiosMacro  '\$\(SERVICE\|HOST\)ATTEMPT\$'
 syn match nagiosMacro  '\$LAST\(HOST\|SERVICE\)CHECK\$'
