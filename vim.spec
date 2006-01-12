@@ -87,6 +87,7 @@ Patch30:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
 Patch31:	021_all_%{name}-7.0-fstab-bogus-errors.patch
 Patch32:	024_all_%{name}-6.3-bash-83565.patch
 Patch33:	027_all_%{name}-7.0-automake-substitutions-93378.patch
+Patch34:	%{name}-smarty.patch
 Patch99:	%{name}-bonobo-20050909.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.002
@@ -594,6 +595,7 @@ element bonobo.
 %patch31 -p1
 %patch32 -p0
 %patch33 -p0
+%patch34 -p1
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors

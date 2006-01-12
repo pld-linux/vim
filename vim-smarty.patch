@@ -1,0 +1,22 @@
+--- ./runtime/filetype.vim	2006-01-12 17:26:15.000000000 +0200
++++ /tmp/filetype.vim	2006-01-12 17:25:53.000000000 +0200
+@@ -590,6 +590,9 @@
+ " HEX (Intel)
+ au BufNewFile,BufRead *.hex,*.h32		setf hex
+ 
++" Smarty templates (must be before HTML)
++au BufNewFile,BufRead *.tpl.html,*.tpl			setf smarty
++
+ " Tilde (must be before HTML)
+ au BufNewFile,BufRead *.t.html			setf tilde
+ 
+@@ -1396,9 +1399,6 @@
+ 	\  setf st |
+ 	\ endif
+ 
+-" Smarty templates
+-au BufNewFile,BufRead *.tpl			setf smarty
+-
+ " SMIL or XML
+ au BufNewFile,BufRead *.smil
+ 	\ if getline(1) =~ '<?\s*xml.*?>' |
