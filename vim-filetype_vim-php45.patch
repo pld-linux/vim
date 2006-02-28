@@ -1,0 +1,13 @@
+--- vim64/runtime/filetype.vim~	2006-02-28 10:53:41.000000000 +0100
++++ vim64/runtime/filetype.vim	2006-02-28 10:55:04.367164896 +0100
+@@ -1008,8 +1008,8 @@
+ " Perl POD
+ au BufNewFile,BufRead *.pod			setf pod
+ 
+-" Php3
+-au BufNewFile,BufRead *.php,*.php3		setf php
++" PHP 3/4/5
++au BufNewFile,BufRead *.php,*.php3,*.php4,*.php5	setf php
+ 
+ " Phtml
+ au BufNewFile,BufRead *.phtml			setf phtml
