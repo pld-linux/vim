@@ -107,7 +107,7 @@ syn keyword specMacroNameLocal contained _rpmfilename _sbindir _sharedstatedir _
 syn keyword specMacroNameLocal contained _specdir _srcrpmdir _sysconfdir _target _target_alias _target_cpu _target_os _target_platform
 syn keyword specMacroNameLocal contained _target_vendor _target_base_arch _timecheck _tmppath _topdir _usr _usrsrc _var _vendor
 syn keyword specMacroNameLocal contained __cxx __cc __make __perl __python __libtoolize __autopoint __aclocal __autoconf __automake __autoheader
-syn keyword specMacroNameLocal contained __gettextize __sed __intltoolize __install
+syn keyword specMacroNameLocal contained __gettextize __glib_gettextize __sed __intltoolize __install
 
 
 " ------------------------------------------------------------------------------
