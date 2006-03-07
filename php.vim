@@ -2,13 +2,30 @@
 " Language:	PHP
 " Author:	John Wellesz <John.wellesz (AT) teaser (DOT) fr>
 " URL:		http://www.2072productions.com/vim/indent/php.vim
-" Last Change: 2005 Nobember 21st
-" Version: 1.20
+" Last Change:  2006 January 15th
+" Newsletter:   http://www.2072productions.com/?to=php-indent-for-vim-newsletter.php
+" Version:	1.23
+" 
+" Changes: 1.23		- <script> html tags are now correctly indented the same
+"			  way their content is.
+"			- <?.*?> (on a single line) php declarations are now
+"			  always considered as non-php code and let untouched.
+"
+" Changes: 1.22		- PHPDoc comments are now indented according to the
+"			  surrounding code.
+"			- This is also true for '/* */' multi-line comments
+"			  when the second line begins by a '*'.
+"			- Single line '/* */' comments are also indented.
+"
+"
+" Changes: 1.21		- 'try' and 'catch' were not registered as block starters so the '{'
+"			  after a 'try' or 'catch' could be wrongly indented...
+"			  (thanks to Gert Muller for finding this issue)
 "
 " Changes: 1.20		- Line beginning by a single or double quote followed
 "			  by a space would cause problems... this was related
 "			  to the bug correction of version 1.10 - Thanks to
-"			  David F. for finding this (he was lucky).
+"			  David Fishburn for finding this (he was lucky).
 "			- Changed the way this script set the 'formatoptions'
 "			  setting, now it uses '-=' and '+='
 "			- New option: PHP_autoformatcomment (defaults to 1),
@@ -18,15 +35,14 @@
 "			  setting is set to the type of comments that PHP
 "			  supports.
 "
-"
 " Changes: 1.19		- Indentation of '*/' delimiter of '/**/' won't be broken by
 "			  strings or '//' comments containing the "/*" character sequence.
 "
 " Changes: 1.182	- I Forgot to register 'interface' and 'abstract' as block starters so the '{'
-"					  after them could be wrongly indented...
+"			  after them could be wrongly indented...
 "
 " Changes: 1.181	- I Forgot to register 'class' as a block starter so the '{'
-"					  after a 'class' could be wrongly indented...
+"			  after a 'class' could be wrongly indented...
 "
 " Changes: 1.18		- No more problems with Vim 6.3 and UTF-8.
 "			- Opening braces "{" are always indented according to their block starter.
@@ -164,7 +180,7 @@
 "		      That will be corrected in the next version.
 " 
 "  If you find a bug, please e-mail me at John.wellesz (AT) teaser (DOT) fr
-"  with an example of code that break the algorithm.
+"  with an example of code that breaks the algorithm.
 "
 "
 "	Thanks a lot for using this script.
@@ -297,7 +313,7 @@ endif
 
 " Only define the functions once per Vim session.
 if exists("*GetPhpIndent")
-   finish " XXX
+    finish " XXX
 endif
 
 let s:endline= '\s*\%(//.*\|#.*\|/\*.*\*/\s*\)\=$'
@@ -307,7 +323,14 @@ let s:PHP_startindenttag = '<?\%(.*?>\)\@!\|<script[^>]*>\%(.*<\/script>\)\@!'
 
 function! GetLastRealCodeLNum(startline) " {{{
     "Inspired from the function SkipJavaBlanksAndComments by Toby Allsopp for indent/java.vim 
+    
     let lnum = a:startline
+    
+    " Used to indent <script.*> html tag correctly
+    if b:GetLastRealCodeLNum_ADD && b:GetLastRealCodeLNum_ADD == lnum + 1
+	let lnum = b:GetLastRealCodeLNum_ADD
+    endif
+    
     let old_lnum = lnum
 
     while lnum > 1
@@ -495,7 +518,7 @@ function! IslinePHP (lnum, tofind) " {{{
 endfunction " }}}
 
 let s:notPhpHereDoc = '\%(break\|return\|continue\|exit\);'
-let s:blockstart = '\%(\%(\%(}\s*\)\=else\%(\s\+\)\=\)\=if\>\|else\>\|while\>\|switch\>\|for\%(each\)\=\>\|declare\>\|class\>\|interface\>\|abstract\>\|[|&]\)'
+let s:blockstart = '\%(\%(\%(}\s*\)\=else\%(\s\+\)\=\)\=if\>\|else\>\|while\>\|switch\>\|for\%(each\)\=\>\|declare\>\|class\>\|interface\>\|abstract\>\|try\>\|catch\>\|[|&]\)'
 
 " make sure the options needed for this script to work correctly are set here
 " for the last time. They could have been overriden by any 'onevent'
@@ -536,6 +559,9 @@ function! GetPhpIndent()
     "##############################################
     "########### MAIN INDENT FUNCTION #############
     "##############################################
+
+    " variable added on 2005-01-15 to make <script> tags really indent correctly (not pretty at all :-/ )
+    let b:GetLastRealCodeLNum_ADD = 0
 
     " This detect if the user is currently typing text between each call
     let UserIsEditing=0
@@ -593,8 +619,11 @@ function! GetPhpIndent()
     if !b:InPHPcode_checked " {{{ One time check
 	let b:InPHPcode_checked = 1
 
-	" the line could be blank (if the user presses 'return')
-	let synname = IslinePHP (prevnonblank(v:lnum), "")
+	let synname = ""
+	if cline !~ '<?.*?>'
+	    " the line could be blank (if the user presses 'return')
+	    let synname = IslinePHP (prevnonblank(v:lnum), "")
+	endif
 
 	if synname!=""
 	    if synname != "phpHereDoc"
@@ -669,6 +698,10 @@ function! GetPhpIndent()
 	    elseif cline =~? '<script\>'
 		" a more accurate test is useless since there isn't any other possibility
 		let b:InPHPcode_and_script = 1
+		" this will make GetLastRealCodeLNum to add one line to its
+		" given argument so it can detect the <script> easily (that is
+		" simpler/quicker than using a regex...)
+		let b:GetLastRealCodeLNum_ADD = v:lnum
 	    endif
 	endif
     endif
@@ -691,7 +724,7 @@ function! GetPhpIndent()
 	    let b:InPHPcode_tofind = substitute( last_line, '^.*<<<\(\a\w*\)\c', '^\\s*\1;$', '')
 
 	    " Skip /* \n+ */ comments execept when the user is currently
-	    " writting them
+	    " writting them or when it is a comment (ie: not a code put in comment)
 	elseif !UserIsEditing && cline =~ '^\s*/\*\%(.*\*/\)\@!' && getline(v:lnum + 1) !~ '^\s*\*'
 	    let b:InPHPcode = 0
 	    let b:InPHPcode_tofind = '\*/'
@@ -701,14 +734,16 @@ function! GetPhpIndent()
 	elseif cline =~? '^\s*</script>'
 	    let b:InPHPcode = 0
 	    let b:InPHPcode_tofind = s:PHP_startindenttag
+	    " Note that b:InPHPcode_and_script is still true so that the
+	    " </script> can be indented correctly
 	endif
     endif " }}}
 
+    
     " Non PHP code is let as it is
     if !b:InPHPcode && !b:InPHPcode_and_script
 	return -1
     endif
-
     " Align correctly multi // or # lines
 
     " Indent successive // or # comment the same way the first is {{{
@@ -739,10 +774,12 @@ function! GetPhpIndent()
 	endif
     endif
 
-    if !b:PHP_InsideMultilineComment && cline =~ '^\s*/\*'
+    if !b:PHP_InsideMultilineComment && cline =~ '^\s*/\*' && cline !~ '\*/\s*$'
 	" if cline == '/*'
+	if getline(v:lnum + 1) !~ '^\s*\*'
+	    return -1
+	endif
 	let b:PHP_InsideMultilineComment = 1
-	return -1
     endif " }}}
 
     " Some tags are always indented to col 1
@@ -769,6 +806,7 @@ function! GetPhpIndent()
 
     " Find an executable php code line above the current line.
     let lnum = GetLastRealCodeLNum(v:lnum - 1)
+
     " last line
     let last_line = getline(lnum)
     " by default
