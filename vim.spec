@@ -16,7 +16,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		6.4
-%define		_patchlevel	006
+%define		_patchlevel	008
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -32,7 +32,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	3
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -100,6 +100,8 @@ Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.003
 Patch104:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.004
 Patch105:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.005
 Patch106:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.006
+Patch107:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.007
+Patch108:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.008
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
@@ -555,6 +557,8 @@ element bonobo.
 %patch104 -p0
 %patch105 -p0
 %patch106 -p0
+%patch107 -p0
+%patch108 -p0
 
 # kvim
 %if %{with kde}
