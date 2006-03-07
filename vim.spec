@@ -18,6 +18,9 @@
 %define		_ver		6.4
 %define		_patchlevel	006
 
+# cflags get changed while configuring
+%undefine	configure_cache
+#
 Summary:	Vi IMproved - a Vi clone
 Summary(de):	VIsual editor iMproved
 Summary(es):	Editor visual incrementado
@@ -29,7 +32,7 @@ Summary(tr):	Gelişmiş bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	2
+Release:	3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -89,6 +92,7 @@ Patch32:	024_all_%{name}-6.3-bash-83565.patch
 Patch33:	027_all_%{name}-7.0-automake-substitutions-93378.patch
 Patch34:	%{name}-smarty.patch
 Patch35:	%{name}-filetype_vim-php45.patch
+Patch36:	%{name}-tutor-lessdeps.patch
 Patch99:	%{name}-bonobo-20050909.patch
 Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.001
 Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.002
@@ -132,16 +136,16 @@ BuildRequires:	glibc-static
 BuildRequires:	ncurses-static
 %else
 Provides:	%{name}-static = %{epoch}:%{version}-%{release}
-Obsoletes:	%{name}-static
 Obsoletes:	elvis-static
 Obsoletes:	nvi
 Obsoletes:	vi
 Obsoletes:	vim-minimal
+Obsoletes:	vim-static
 %endif
 BuildRequires:	unzip
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
-Provides:	vi
 Provides:	vi-editor
+Provides:	vi
 Obsoletes:	vim-enhanced
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -272,8 +276,8 @@ wyj¶cie. Co wiêcej, mo¿e byæ u¿yty do modyfikowania plików binarnych.
 Summary:	Statically linked Vim
 Summary(pl):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
-Provides:	vi
 Provides:	vi-editor
+Provides:	vi
 Obsoletes:	elvis-static
 Obsoletes:	nvi
 Obsoletes:	vim-minimal
@@ -335,10 +339,9 @@ Summary(sv):	De gemensamma filerna som behövs av alla versioner av redigeraren V
 Summary(uk):	æÁÊÌÉ, ĞÏÔÒ¦ÂÎ¦ ÄÌÑ ÂÕÄØ-ÑËÏ§ ×ÅÒÓ¦§ ÒÅÄÁËÔÏÒÕ vim
 Summary(zh_CN):	ÈÎºÎ°æ±¾µÄ VIM ±à¼­Æ÷ËùĞèµÄ¹«ÓÃÎÄ¼ş¡£
 Group:		Applications/Editors/Vim
-# mktemp and which are for vimtutor
+# mktemp is for vimtutor
 Requires:	mktemp
 Requires:	vi-editor
-Requires:	which
 Obsoletes:	vim-common
 
 %description rt
@@ -598,6 +601,7 @@ element bonobo.
 %patch33 -p0
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
