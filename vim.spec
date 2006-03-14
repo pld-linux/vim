@@ -32,7 +32,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -58,6 +58,8 @@ Source15:	php.%{name}
 # http://www.vim.org/scripts/script.php?script_id=415 (1.13)
 Source16:	zenburn.%{name}
 Source17:	spec.%{name}
+# http://www.vim.org/scripts/script.php?script_id=1491
+Source18:	javascript.%{name}
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -610,6 +612,7 @@ element bonobo.
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
 install %{SOURCE17} runtime/syntax
+install %{SOURCE18} runtime/syntax
 
 %build
 cd src
