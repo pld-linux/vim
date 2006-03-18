@@ -106,8 +106,12 @@ syn keyword specMacroNameLocal contained _pgp_path _pixmapsdir _pkgconfigdir _pr
 syn keyword specMacroNameLocal contained _rpmfilename _sbindir _sharedstatedir _signature _smp_mflags _sourcedir _source_payload
 syn keyword specMacroNameLocal contained _specdir _srcrpmdir _sysconfdir _target _target_alias _target_cpu _target_os _target_platform
 syn keyword specMacroNameLocal contained _target_vendor _target_base_arch _timecheck _tmppath _topdir _usr _usrsrc _var _vendor
-syn keyword specMacroNameLocal contained __cxx __cc __make __perl __python __libtoolize __autopoint __aclocal __autoconf __automake __autoheader
-syn keyword specMacroNameLocal contained __gettextize __glib_gettextize __sed __intltoolize __install
+syn keyword specMacroNameLocal contained __cxx __cc __libtoolize __autopoint __aclocal __autoconf __automake __autoheader
+syn keyword specMacroNameLocal contained __gettextize __glib_gettextize __intltoolize
+syn keyword specMacroNameLocal contained __bzip2 __cat __chgrp __chmod __chown __cp   __cpio __file __gpg __grep __gzip
+syn keyword specMacroNameLocal contained __id  __install __ld   __make   __mkdir __mkdir_p __mv __nm  __objcopy __objdump
+syn keyword specMacroNameLocal contained __patch __perl __pgp __python __rm __rsh  __sed __ssh __strip  __tar __unzip
+
 
 
 " ------------------------------------------------------------------------------
