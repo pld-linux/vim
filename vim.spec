@@ -1,6 +1,5 @@
 # TODO:
 # - some nice icon
-# - %%files
 # - fix perl build
 # - patches cleanup
 #
@@ -1013,22 +1012,32 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fi) %{_mandir}/fi/man1/ex.1*
 %lang(fi) %{_mandir}/fi/man1/view.1*
 %lang(fi) %{_mandir}/fi/man1/rview.1*
-%lang(fr) %{_mandir}/fr/man1/vi.1*
-%lang(fr) %{_mandir}/fr/man1/ex.1*
-%lang(fr) %{_mandir}/fr/man1/view.1*
-%lang(fr) %{_mandir}/fr/man1/rview.1*
+%lang(fr) %{_mandir}/fr*/man1/vi.1*
+%lang(fr) %{_mandir}/fr*/man1/evim.1*
+%lang(fr) %{_mandir}/fr*/man1/vim.1*
+%lang(fr) %{_mandir}/fr*/man1/vimdiff.1*
+%lang(fr) %{_mandir}/fr*/man1/vimtutor.1*
+%lang(fr) %{_mandir}/fr*/man1/ex.1*
+%lang(fr) %{_mandir}/fr*/man1/view.1*
+%lang(fr) %{_mandir}/fr*/man1/rview.1*
 %lang(id) %{_mandir}/id/man1/vi.1*
 %lang(id) %{_mandir}/id/man1/ex.1*
 %lang(id) %{_mandir}/id/man1/view.1*
 %lang(id) %{_mandir}/id/man1/rview.1*
 %lang(it) %{_mandir}/it*/man1/ex.1*
+%lang(it) %{_mandir}/it*/man1/evim.1*
 %lang(it) %{_mandir}/it*/man1/view.1*
 %lang(it) %{_mandir}/it*/man1/rview.1*
-%lang(pl) %{_mandir}/pl/man1/vi.1*
-%lang(pl) %{_mandir}/pl/man1/ex.1*
-%lang(pl) %{_mandir}/pl/man1/view.1*
-%lang(pl) %{_mandir}/pl/man1/rview.1*
+%lang(pl) %{_mandir}/pl*/man1/vi.1*
+%lang(pl) %{_mandir}/pl*/man1/evim.1*
+%lang(pl) %{_mandir}/pl*/man1/vim.1*
+%lang(pl) %{_mandir}/pl*/man1/vimdiff.1*
+%lang(pl) %{_mandir}/pl*/man1/vimtutor.1*
+%lang(pl) %{_mandir}/pl*/man1/ex.1*
+%lang(pl) %{_mandir}/pl*/man1/view.1*
+%lang(pl) %{_mandir}/pl*/man1/rview.1*
 %lang(ru) %{_mandir}/ru*/man1/ex.1*
+%lang(ru) %{_mandir}/ru*/man1/evim.1*
 %lang(ru) %{_mandir}/ru*/man1/view.1*
 %lang(ru) %{_mandir}/ru*/man1/rview.1*
 
@@ -1042,8 +1051,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/xxd
 %{_mandir}/man1/xxd.1*
-%lang(fr) %{_mandir}/fr/man1/xxd.1*
+%lang(fr) %{_mandir}/fr*/man1/xxd.1*
 %lang(it) %{_mandir}/it*/man1/xxd.1*
+%lang(pl) %{_mandir}/pl*/man1/xxd.1*
 %lang(ru) %{_mandir}/ru*/man1/xxd.1*
 
 %files rt
@@ -1073,10 +1083,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %lang(af) %{_datadir}/vim/v*/lang/af
 %lang(ca) %{_datadir}/vim/v*/lang/ca
-%lang(en_GB) %{_datadir}/vim/v*/lang/en_GB
-%lang(ca) %{_datadir}/vim/v*/lang/ca
 %lang(cs) %{_datadir}/vim/v*/lang/cs
 %lang(de) %{_datadir}/vim/v*/lang/de
+%lang(en_GB) %{_datadir}/vim/v*/lang/en_GB
 %lang(es) %{_datadir}/vim/v*/lang/es
 %lang(fr) %{_datadir}/vim/v*/lang/fr
 %lang(ga) %{_datadir}/vim/v*/lang/ga
@@ -1130,7 +1139,10 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 
-%lang(en_GB) %{_datadir}/vim/v*/spell/en.*.spl
+%{_datadir}/vim/v*/spell/cleanadd.vim
+%lang(en_GB) %{_datadir}/vim/v*/spell/en.*.*
+%lang(he) %{_datadir}/vim/v*/spell/he.*
+%lang(yi) %{_datadir}/vim/v*/spell/yi.*
 
 %{_datadir}/vim/v*/macros
 %{_datadir}/vim/v*/plugin
