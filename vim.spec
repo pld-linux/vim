@@ -1,6 +1,5 @@
 # TODO:
 # - some nice icon
-# - fix perl build
 # - patches cleanup
 #
 # Conditional build:
@@ -9,14 +8,12 @@
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
-%bcond_with	kde		# build kvim
 %bcond_without	perl		# without Perl interp
 %bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
 %bcond_with	bonobo		# with bonobo component (breaks other things)
 %bcond_without	selinux		# without selinux support
-%bcond_without	ispell		# don't build vim.ispell
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
@@ -67,14 +64,11 @@ Source18:	javascript.%{name}
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
-Patch3:		%{name}-ispell.patch
-Patch4:		%{name}-ispell-axp.patch
 Patch5:		%{name}-%{name}rc.patch
 Patch6:		%{name}-no_libelf.patch
 Patch7:		%{name}-egrep.patch
 Patch8:		k%{name}-desktop.patch
 Patch9:		%{name}-awk.patch
-Patch10:	%{name}-pl.po.patch
 Patch11:	%{name}-bonobo.patch
 Patch12:	%{name}-home_etc.patch
 Patch13:	%{name}-selinux.patch
@@ -85,12 +79,9 @@ Patch19:	%{name}-modprobe.patch
 Patch21:	%{name}-gtkfilechooser.patch
 Patch22:	%{name}-gtkfilechooser-bonobo.patch
 Patch23:	%{name}-doubleparenthesis.patch
-Patch24:	%{name}-lib64.patch
 Patch25:	%{name}-syntax-fstab.patch
 Patch26:	010_all_%{name}-6.3-vixie.patch
 Patch27:	013_all_%{name}-7.0-cron-vars-79981.patch
-Patch28:	014_all_%{name}-6.3-dns-syntax.patch
-Patch29:	015_all_%{name}-6.3-screen.linux-is-dark-83416.patch
 Patch30:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
 Patch31:	021_all_%{name}-7.0-fstab-bogus-errors.patch
 Patch32:	024_all_%{name}-6.3-bash-83565.patch
@@ -99,7 +90,6 @@ Patch34:	%{name}-smarty.patch
 Patch35:	%{name}-filetype_vim-php45.patch
 Patch36:	%{name}-tutor-lessdeps.patch
 Patch99:	%{name}-bonobo-20050909.patch
-Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 BuildRequires:	acl-devel
@@ -107,11 +97,7 @@ BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 %{?with_gtk:BuildRequires:	gtk+2-devel >= 2:2.6.0}
-%if %{with kde}
-BuildRequires:	kdelibs-devel >= 9:3.0.0
-%else
 Obsoletes:	kvim
-%endif
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %{?with_selinux:BuildRequires:	libselinux-devel}
 BuildRequires:	ncurses-devel
@@ -146,6 +132,7 @@ Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
 Obsoletes:	vim-enhanced
+Obsoletes:	vim-ispell
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # that's example script
@@ -300,22 +287,6 @@ zalecana, mo©e on pomСc Ci uratowaФ system w czasie awarii.
 %description static -l uk
 Пакет vim-static встановлю╓ р╕зновид vim як /bin/vi, що зручно для
 запуску нав╕ть тод╕, коли змонтована т╕льки корньова файлова система.
-
-%package ispell
-Summary:	Vim with ispell support
-Summary(pl):	Vim z wsparciem dla ispella
-Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
-Provides:	vi-editor
-Conflicts:	ispell < 3.2.06
-Conflicts:	ispell-pl < 20021127-2
-
-%description ispell
-Text editor similar to Vi. This version is built with ispell support.
-
-%description ispell -l pl
-Edytor tekstu podobny do Vi. Ta wersja zostaЁa skompilowana ze
-wsparciem dla ispella.
 
 %package rt
 Summary:	Vim runtime files
@@ -547,27 +518,17 @@ element bonobo.
 %prep
 %setup -q -c -a5
 
-# kvim
-#%patch999 -p1
-
 %patch0 -p1
 %{?with_bonobo:%patch99 -p1}
 %patch1 -p1
 %patch2 -p1
-#%patch3 -p1
-%ifarch alpha
-%patch4 -p1
-%endif
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
 %patch9 -p1
-#%patch10 -p1
 %{?with_bonobo:%patch11 -p1}
 %{?with_home_etc:%patch12 -p1}
 %{?with_selinux:%patch13 -p1}
-#%patch14 -p1
-#%patch15 -p1
 %patch16 -p1
 #%patch17 -p1
 #%patch18 -p1
@@ -575,14 +536,9 @@ element bonobo.
 #%{!?with_bonobo:%patch21 -p0}
 %{?with_bonobo:%patch22 -p1}
 %patch23 -p1
-%if "%{_lib}" == "lib64"
-#%patch24 -p1
-%endif
 #%patch25 -p1
 %patch26 -p0
 %patch27 -p1
-#%patch28 -p1
-#%patch29 -p0
 %patch30 -p1
 %patch31 -p1
 %patch32 -p0
@@ -683,64 +639,6 @@ LDFLAGS="%{rpmldflags}"
 %{__make} vim \
 	SPELL_OBJ=
 mv -f vim bin/vim.ncurses
-%if %{with ispell}
-%{__make} distclean
-%configure \
-	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
-	--disable-gui \
-	--without-x \
-	%{!?with_perl:--disable-perlinterp} \
-	%{?with_perl:--enable-perlinterp} \
-	%{!?with_python:--disable-pythoninterp} \
-	%{?with_python:--enable-pythoninterp} \
-	%{!?with_ruby:--disable-rubyinterp} \
-	%{?with_ruby:--enable-rubyinterp} \
-	%{!?with_tcl:--disable-tclinterp} \
-	%{?with_tcl:--enable-tclinterp} \
-	%{?with_bonobo:--disable-bonobo} \
-	--enable-cscope \
-	--enable-gpm \
-	--with-features=huge \
-	--enable-multibyte \
-	--with-tlib=ncurses \
-	--enable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--with-compiledby="PLD Linux Distribution"
-
-%{__make} vim
-mv -f vim bin/vim.ispell
-%endif
-%if %{with kde}
-%{__make} distclean
-%configure \
-	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
-	--with-features=huge \
-	--enable-gui=kde \
-	--with-x \
-	%{!?with_perl:--disable-perlinterp} \
-	%{?with_perl:--enable-perlinterp} \
-	%{!?with_python:--disable-pythoninterp} \
-	%{?with_python:--enable-pythoninterp} \
-	%{!?with_ruby:--disable-rubyinterp} \
-	%{?with_ruby:--enable-rubyinterp} \
-	%{!?with_tcl:--disable-tclinterp} \
-	%{?with_tcl:--enable-tclinterp} \
-	%{?with_bonobo:--disable-bonobo} \
-	--enable-cscope \
-	--with-qt-dir=%{_prefix} \
-	--with-qt-includes=%{_includedir}/qt \
-	--with-qt-libs=%{_libdir} \
-	--enable-fontset \
-	--disable-gpm \
-	--without-gnome \
-	--enable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--enable-kde-toolbar \
-	--with-compiledby="PLD Linux Distribution"
-
-%{__make} -j1 vim
-mv -f vim bin/kvim
-%endif
 
 %if %{with athena}
 %{__make} distclean
@@ -876,9 +774,6 @@ install src/bin/vim.static	$RPM_BUILD_ROOT/bin/vi
 install src/bin/vim.ncurses	$RPM_BUILD_ROOT/bin/vi
 ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
 %endif
-%if %{with ispell}
-install src/bin/vim.ispell	$RPM_BUILD_ROOT%{_bindir}/vim.ispell
-%endif
 install src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
 install src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
@@ -930,21 +825,6 @@ install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,32x32,48x48}/apps
 install runtime/vim16x16.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/16x16/apps/vim.png
 install runtime/vim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/vim.png
 install runtime/vim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/vim.png
-
-%if %{with kde}
-install src/bin/kvim $RPM_BUILD_ROOT%{_bindir}/kvim
-install -d $RPM_BUILD_ROOT%{_desktopdir}/kde
-install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,22x22}/actions
-install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/64x64/apps
-install runtime/hi16-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/16x16/actions
-install runtime/hi22-action-make.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/22x22/actions
-install runtime/kvim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/kvim.png
-install runtime/kvim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/kvim.png
-install runtime/kvim64x64.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/64x64/apps/kvim.png
-install runtime/KVim.desktop $RPM_BUILD_ROOT%{_desktopdir}/kde
-install -d $RPM_BUILD_ROOT%{_datadir}/apps/kvim
-install runtime/kde-tips $RPM_BUILD_ROOT%{_datadir}/apps/kvim/tips
-%endif
 
 # Bonobo
 %if %{with bonobo}
@@ -1040,12 +920,6 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ru) %{_mandir}/ru*/man1/evim.1*
 %lang(ru) %{_mandir}/ru*/man1/view.1*
 %lang(ru) %{_mandir}/ru*/man1/rview.1*
-
-%if %{with ispell}
-%files ispell
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/vim.ispell
-%endif
 
 %files -n xxd
 %defattr(644,root,root,755)
@@ -1193,17 +1067,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/gvim.motif
 %{_desktopdir}/gvim-motif.desktop
 %endif
-
-%if %{with kde}
-%files -n kvim
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/kvim
-%{_desktopdir}/kde/KVim.desktop
-%{_iconsdir}/hicolor/*/apps/kvim.png
-%{_iconsdir}/hicolor/*/actions/*make*.png
-%{_datadir}/apps/kvim
-%endif
-
 
 %if %{with gtk}
 %files -n gvim-gtk
