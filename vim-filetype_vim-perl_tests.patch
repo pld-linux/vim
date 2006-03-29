@@ -7,6 +7,6 @@
 +" tests for perl modules
 +au BufNewFile,BufRead t/*.t			call FTCheck_pl()
 +
- " Tads (or Nroff)
- au BufNewFile,BufRead *.t
- 	\ if !<SID>FTnroff() | setf tads | endif
+ " Sysctl
+ au BufNewFile,BufRead /etc/sysctl.conf          setf sysctl
+ 
