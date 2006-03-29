@@ -1,3 +1,8 @@
+# TODO:
+# - some nice icon
+# - %%files
+# - fix perl build
+# - patches cleanup
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -15,8 +20,8 @@
 %bcond_without	ispell		# don't build vim.ispell
 %bcond_without	home_etc	# without home_etc support
 #
-%define		_ver		6.4
-%define		_patchlevel	008
+%define		_ver		7.0
+%define		_patchlevel	c02
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -31,17 +36,17 @@ Summary(ru):	Visual editor IMproved - Âƒ…Œ”‘◊≈ŒŒœ “¡◊…ÃÿŒŸ  Ú≈ƒ¡À‘œ“ :)
 Summary(tr):	Geli˛mi˛ bir vi s¸r¸m¸
 Summary(uk):	Visual editor IMproved - ¥ƒ…Œœ ˜¶“Œ…  Ú≈ƒ¡À‘œ“ :)
 Name:		vim
-Version:	%{_ver}.%{_patchlevel}
-Release:	2
+Version:	%{_ver}
+Release:	0.%{_patchlevel}.1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
-Source0:	ftp://ftp.vim.org/pub/editors/vim/unix/%{name}-%{_ver}.tar.bz2
-# Source0-md5:	774c14d93ce58674b3b2c880edd12d77
-Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
-# Source1-md5:	3cca6128fe5439e89d3828b5e708bddb
-Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
-# Source2-md5:	5f4489776cafcb3588223f79eb26e287
+Source0:	ftp://ftp.vim.org/pub/vim/unstable/snapshot/%{name}-%{_ver}%{_patchlevel}.zip
+# Source0-md5:	fea526483d53fffc013a9dddf5c6787c
+#Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
+# Source1-md5:	5395c4dacbf1c5008b22c4b86794e8a7
+#Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
+# Source2-md5:	6e4bd6c8122bcb9dc576514bdb52484e
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source5:	http://freenux.org/kvim/k%{name}-runtime-6.2.14.tar.bz2
@@ -78,7 +83,6 @@ Patch16:	%{name}-filetype_vim-perl_tests.patch
 Patch17:	%{name}-apache.patch
 Patch18:	%{name}-po-syntax.patch
 Patch19:	%{name}-modprobe.patch
-Patch20:	%{name}-CAN-2005-0069.patch
 Patch21:	%{name}-gtkfilechooser.patch
 Patch22:	%{name}-gtkfilechooser-bonobo.patch
 Patch23:	%{name}-doubleparenthesis.patch
@@ -96,17 +100,9 @@ Patch34:	%{name}-smarty.patch
 Patch35:	%{name}-filetype_vim-php45.patch
 Patch36:	%{name}-tutor-lessdeps.patch
 Patch99:	%{name}-bonobo-20050909.patch
-Patch101:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.001
-Patch102:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.002
-Patch103:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.003
-Patch104:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.004
-Patch105:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.005
-Patch106:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.006
-Patch107:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.007
-Patch108:	ftp://ftp.vim.org/pub/editors/vim/patches/6.4/6.4.008
 Patch999:	http://freenux.org/vim/%{name}2kvim-6.3b.diff.bz2
 URL:		http://www.vim.org/
-%{?with_athena:BuildRequires:	XFree86-devel}
+%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -550,30 +546,16 @@ Wersja edytora Vim pracuj±ca w ∂rodowisku X Window, zbudowana jako
 element bonobo.
 
 %prep
-%setup -q -b1 -b2 -a5 -n %{name}%(echo %{_ver} | tr -d .)
-
-# official patches
-%patch101 -p0
-%patch102 -p0
-%patch103 -p0
-%patch104 -p0
-%patch105 -p0
-%patch106 -p0
-%patch107 -p0
-%patch108 -p0
+%setup -q -c -a5
 
 # kvim
-%if %{with kde}
-# FIXME kvim
-%patch999 -p1
-%patch8 -p1
-%endif
+#%patch999 -p1
 
 %patch0 -p1
 %{?with_bonobo:%patch99 -p1}
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
+#%patch3 -p1
 %ifarch alpha
 %patch4 -p1
 %endif
@@ -581,26 +563,27 @@ element bonobo.
 %patch6 -p1
 %patch7 -p1
 %patch9 -p1
-%patch10 -p1
+#%patch10 -p1
 %{?with_bonobo:%patch11 -p1}
 %{?with_home_etc:%patch12 -p1}
 %{?with_selinux:%patch13 -p1}
+#%patch14 -p1
+#%patch15 -p1
 %patch16 -p1
-%patch17 -p1
-%patch18 -p1
+#%patch17 -p1
+#%patch18 -p1
 %patch19 -p0 -b .modprobe
-%patch20 -p1
-%{!?with_bonobo:%patch21 -p0}
+#%{!?with_bonobo:%patch21 -p0}
 %{?with_bonobo:%patch22 -p1}
 %patch23 -p1
 %if "%{_lib}" == "lib64"
-%patch24 -p1
+#%patch24 -p1
 %endif
-%patch25 -p1
+#%patch25 -p1
 %patch26 -p0
 %patch27 -p1
-%patch28 -p1
-%patch29 -p0
+#%patch28 -p1
+#%patch29 -p0
 %patch30 -p1
 %patch31 -p1
 %patch32 -p0
@@ -1038,10 +1021,16 @@ rm -rf $RPM_BUILD_ROOT
 %lang(id) %{_mandir}/id/man1/ex.1*
 %lang(id) %{_mandir}/id/man1/view.1*
 %lang(id) %{_mandir}/id/man1/rview.1*
+%lang(it) %{_mandir}/it*/man1/ex.1*
+%lang(it) %{_mandir}/it*/man1/view.1*
+%lang(it) %{_mandir}/it*/man1/rview.1*
 %lang(pl) %{_mandir}/pl/man1/vi.1*
 %lang(pl) %{_mandir}/pl/man1/ex.1*
 %lang(pl) %{_mandir}/pl/man1/view.1*
 %lang(pl) %{_mandir}/pl/man1/rview.1*
+%lang(ru) %{_mandir}/ru*/man1/ex.1*
+%lang(ru) %{_mandir}/ru*/man1/view.1*
+%lang(ru) %{_mandir}/ru*/man1/rview.1*
 
 %if %{with ispell}
 %files ispell
@@ -1053,6 +1042,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/xxd
 %{_mandir}/man1/xxd.1*
+%lang(fr) %{_mandir}/fr/man1/xxd.1*
+%lang(it) %{_mandir}/it*/man1/xxd.1*
+%lang(ru) %{_mandir}/ru*/man1/xxd.1*
 
 %files rt
 %defattr(644,root,root,755)
@@ -1080,6 +1072,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/vimfiles/ftdetect
 
 %lang(af) %{_datadir}/vim/v*/lang/af
+%lang(ca) %{_datadir}/vim/v*/lang/ca
 %lang(en_GB) %{_datadir}/vim/v*/lang/en_GB
 %lang(ca) %{_datadir}/vim/v*/lang/ca
 %lang(cs) %{_datadir}/vim/v*/lang/cs
@@ -1097,6 +1090,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(nb) %{_datadir}/vim/v*/lang/no
 #%lang(tr) %{_datadir}/vim/v*/lang/tr
 %lang(uk) %{_datadir}/vim/v*/lang/uk
+%lang(vi) %{_datadir}/vim/v*/lang/vi
 %lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW*
 
@@ -1126,6 +1120,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sr) %{_datadir}/vim/v*/lang/menu_sr*
 %lang(sv) %{_datadir}/vim/v*/lang/menu_sv*
 %lang(uk) %{_datadir}/vim/v*/lang/menu_uk*
+%lang(vi) %{_datadir}/vim/v*/lang/menu_vi*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.cp936*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.gb2312*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
@@ -1135,6 +1130,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 
+%lang(en_GB) %{_datadir}/vim/v*/spell/en.*.spl
+
 %{_datadir}/vim/v*/macros
 %{_datadir}/vim/v*/plugin
 %{_datadir}/vim/v*/print
@@ -1143,6 +1140,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/tutor
 %{_datadir}/vim/v*/colors
 %{_datadir}/vim/v*/compiler
+%{_datadir}/vim/v*/autoload
 %{_datadir}/vim/v*/*.vim
 
 %{_mandir}/man1/vim*
@@ -1159,11 +1157,12 @@ rm -rf $RPM_BUILD_ROOT
 %lang(id) %{_mandir}/id/man1/rvim.*
 %lang(id) %{_mandir}/id/man1/gvi*
 %lang(id) %{_mandir}/id/man1/rgv*
-%lang(it) %{_mandir}/it/man1/vim*
+%lang(it) %{_mandir}/it*/man1/vim*
 %lang(pl) %{_mandir}/pl/man1/vim*
 %lang(pl) %{_mandir}/pl/man1/rvim.*
 %lang(pl) %{_mandir}/pl/man1/gvi*
 %lang(pl) %{_mandir}/pl/man1/rgv*
+%lang(ru) %{_mandir}/ru*/man1/vim*
 
 %{_iconsdir}/hicolor/16x16/apps/vim.png
 %{_iconsdir}/hicolor/32x32/apps/vim.png
