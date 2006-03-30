@@ -18,6 +18,7 @@
 #
 %define		_ver		7.0
 %define		_patchlevel	c02
+%define		_rel		1.2
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -33,7 +34,7 @@ Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
 Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
 Name:		vim
 Version:	%{_ver}
-Release:	0.%{_patchlevel}.1
+Release:	0.%{_patchlevel}.%{_rel}
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -61,6 +62,8 @@ Source16:	zenburn.%{name}
 Source17:	spec.%{name}
 # http://www.vim.org/scripts/script.php?script_id=1491
 Source18:	javascript.%{name}
+Source19:	nagios.vim
+Source20:	vim-ftplugin-spec.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -89,6 +92,7 @@ Patch33:	027_all_%{name}-7.0-automake-substitutions-93378.patch
 Patch34:	%{name}-smarty.patch
 Patch35:	%{name}-filetype_vim-php45.patch
 Patch36:	%{name}-tutor-lessdeps.patch
+Patch37:	%{name}-nagios.patch
 Patch99:	%{name}-bonobo-20050909.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
@@ -546,11 +550,14 @@ element bonobo.
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
 install %{SOURCE17} runtime/syntax
 install %{SOURCE18} runtime/syntax
+install %{SOURCE19} runtime/syntax
+install %{SOURCE20} runtime/ftplugin/spec.vim
 
 %build
 cd src
