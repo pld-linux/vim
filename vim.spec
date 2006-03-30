@@ -91,13 +91,11 @@ Patch35:	%{name}-filetype_vim-php45.patch
 Patch36:	%{name}-tutor-lessdeps.patch
 Patch99:	%{name}-bonobo-20050909.patch
 URL:		http://www.vim.org/
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
 %{?with_gtk:BuildRequires:	gtk+2-devel >= 2:2.6.0}
-Obsoletes:	kvim
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %{?with_selinux:BuildRequires:	libselinux-devel}
 BuildRequires:	ncurses-devel
@@ -106,6 +104,8 @@ BuildRequires:	ncurses-devel
 %{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
+%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
+Obsoletes:	kvim
 %if %{with bonobo}
 BuildRequires:	ORBit2-devel
 BuildRequires:	libbonoboui-devel >= 2.2.0
