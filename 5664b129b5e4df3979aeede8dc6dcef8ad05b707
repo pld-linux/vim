@@ -1,0 +1,2 @@
+- updated (ispell dropped - there is builtin spell check; drop kvim; it's no
+  longer maintainer + broken by design)
