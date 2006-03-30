@@ -18,7 +18,7 @@
 #
 %define		_ver		7.0
 %define		_patchlevel	c02
-%define		_rel		1.2
+%define		_rel		1.3
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -40,16 +40,14 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unstable/snapshot/%{name}-%{_ver}%{_patchlevel}.zip
 # Source0-md5:	fea526483d53fffc013a9dddf5c6787c
-#Source1:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-lang.tar.gz
-# Source1-md5:	5395c4dacbf1c5008b22c4b86794e8a7
-#Source2:	ftp://ftp.vim.org/pub/editors/vim/extra/%{name}-%{_ver}-extra.tar.gz
-# Source2-md5:	6e4bd6c8122bcb9dc576514bdb52484e
+Source1:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}c-lang.tar.gz
+# Source1-md5:	7e05c56768e07149e9158dfa2349e344
+Source2:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}c-extra.tar.gz
+# Source2-md5:	853d5fb8441382907265122c1d8c148f
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
-Source5:	http://freenux.org/kvim/k%{name}-runtime-6.2.14.tar.bz2
-# Source5-md5:	6f633e79bcf5f35918bb0bff6850a971
-Source6:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
-# Source6-md5:	ff96284b1c913d55cf0877839b34d490
+Source5:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
+# Source5-md5:	ff96284b1c913d55cf0877839b34d490
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
@@ -430,23 +428,6 @@ Motif, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
 ÄÏÚ×ÏÌÑ¤ ÚÁÐÕÓËÁÔÉ VIM ÑË ÐÒÉËÌÁÄÎÕ ÐÒÏÇÒÁÍÕ X Window System - Ú
 ÐÏ×Î¦ÓÔÀ ÇÒÁÆ¦ÞÎÉÍ ¦ÎÔÅÒÆÅÊÓÏÍ ÔÁ Ð¦ÄÔÒÉÍËÏÀ ÍÉÛ¦.
 
-%package -n kvim
-Summary:	Vim for X Window built with KDE
-Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki KDE
-Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
-Requires:	iconv
-Provides:	vi-editor
-Obsoletes:	vim-X11
-
-%description -n kvim
-The classic Unix text editor now also under X Window System! This
-version is built with KDE.
-
-%description -n kvim -l pl
-Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
-biblioteki KDE.
-
 %package -n gvim-gtk
 Summary:	Vim for X Window built with gtk
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GTK
@@ -520,7 +501,7 @@ Wersja edytora Vim pracuj±ca w ¶rodowisku X Window, zbudowana jako
 element bonobo.
 
 %prep
-%setup -q -c -a5
+%setup -q -c
 
 %patch0 -p1
 %{?with_bonobo:%patch99 -p1}
@@ -841,7 +822,7 @@ install src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 %endif
 
 bzip2 -dc %{SOURCE4} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
-unzip -d $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE6}
+unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE5}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
