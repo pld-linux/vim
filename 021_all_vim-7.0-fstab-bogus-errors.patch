@@ -1,13 +1,12 @@
-# Remove some bogus 'error' indications in fstab highlighting.
---- vim7/runtime/syntax/fstab.vim.orig	2005-03-19 16:17:17.036115856 +0000
-+++ vim7/runtime/syntax/fstab.vim	2005-03-19 16:27:35.364115712 +0000
-@@ -19,14 +19,14 @@
+--- vim-7.0/runtime/syntax/fstab.vim~	2006-04-18 15:19:57.000000000 +0200
++++ vim-7.0/runtime/syntax/fstab.vim	2006-04-18 15:21:28.990442500 +0200
+@@ -23,14 +23,14 @@
  
  " Device
  syn cluster fsDeviceCluster contains=fsOperator,fsDeviceKeyword,fsDeviceError
--syn match fsDeviceError /\%([^a-zA-Z0-9_\/#@]\|^\w\{-}\ze\W\)/ contained
+-syn match fsDeviceError /\%([^a-zA-Z0-9_\/#@:]\|^\w\{-}\ze\W\)/ contained
 +syn match fsDeviceError /\%([^a-zA-Z0-9_\/#@\-:]\)/ contained
- syn keyword fsDeviceKeyword contained none proc linproc tmpfs
+ syn keyword fsDeviceKeyword contained none proc linproc tmpfs devpts sysfs usbfs
  syn keyword fsDeviceKeyword contained LABEL nextgroup=fsDeviceLabel
  syn match fsDeviceLabel contained /=[^ \t]\+/hs=s+1 contains=fsOperator
  

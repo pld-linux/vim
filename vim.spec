@@ -17,8 +17,8 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	c02
-%define		_rel		1.3
+%define		_patchlevel	e
+%define		_rel		1
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -39,7 +39,7 @@ Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unstable/snapshot/%{name}-%{_ver}%{_patchlevel}.zip
-# Source0-md5:	fea526483d53fffc013a9dddf5c6787c
+# Source0-md5:	cbae1e7a32ffc8ed75433707a5085049
 Source1:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}c-lang.tar.gz
 # Source1-md5:	7e05c56768e07149e9158dfa2349e344
 Source2:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}c-extra.tar.gz
