@@ -40,10 +40,10 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unstable/snapshot/%{name}-%{_ver}%{_patchlevel}.zip
 # Source0-md5:	cbae1e7a32ffc8ed75433707a5085049
-Source1:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}c-lang.tar.gz
-# Source1-md5:	7e05c56768e07149e9158dfa2349e344
-Source2:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}c-extra.tar.gz
-# Source2-md5:	853d5fb8441382907265122c1d8c148f
+Source1:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}e-lang.tar.gz
+# Source1-md5:	c6de9954b67a8bc28ffaf495d76d4ca8
+Source2:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}e-extra.tar.gz
+# Source2-md5:	9df1064d65b1479393dcefdf686427af
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source5:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
