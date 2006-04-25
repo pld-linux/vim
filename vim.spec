@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	e
+%define		_patchlevel	f
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -39,11 +39,11 @@ Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unstable/snapshot/%{name}-%{_ver}%{_patchlevel}.zip
-# Source0-md5:	cbae1e7a32ffc8ed75433707a5085049
-Source1:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}e-lang.tar.gz
-# Source1-md5:	c6de9954b67a8bc28ffaf495d76d4ca8
-Source2:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}e-extra.tar.gz
-# Source2-md5:	9df1064d65b1479393dcefdf686427af
+# Source0-md5:	3a7102bcbd3243d58b37f626296c2e60
+Source1:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}%{_patchlevel}-lang.tar.gz
+# Source1-md5:	e389ef8a5d6662a92c97dd34bcfb195d
+Source2:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}%{_patchlevel}-extra.tar.gz
+# Source2-md5:	abb56c3572be6ad27b21de22cc922e6c
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source5:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -53,12 +53,12 @@ Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
 Source14:	%{name}.desktop
-# http://www.vim.org/scripts/script.php?script_id=1120
+# http://www.vim.org/scripts/script.php?script_id=1120 (1.23)
 Source15:	php.%{name}
 # http://www.vim.org/scripts/script.php?script_id=415 (1.13)
 Source16:	zenburn.%{name}
 Source17:	spec.%{name}
-# http://www.vim.org/scripts/script.php?script_id=1491
+# http://www.vim.org/scripts/script.php?script_id=1491 (0.5)
 Source18:	javascript.%{name}
 Source19:	nagios.vim
 Source20:	vim-ftplugin-spec.vim
@@ -68,7 +68,6 @@ Patch2:		%{name}-paths.patch
 Patch5:		%{name}-%{name}rc.patch
 Patch6:		%{name}-no_libelf.patch
 Patch7:		%{name}-egrep.patch
-Patch8:		k%{name}-desktop.patch
 Patch9:		%{name}-awk.patch
 Patch11:	%{name}-bonobo.patch
 Patch12:	%{name}-home_etc.patch
@@ -522,7 +521,7 @@ element bonobo.
 %{?with_bonobo:%patch22 -p1}
 %patch23 -p1
 #%patch25 -p1
-%patch26 -p0
+%patch26 -p1
 %patch27 -p1
 %patch30 -p1
 %patch31 -p1
