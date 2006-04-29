@@ -5,7 +5,7 @@
  
  " Apache style config file
 -au BufNewFile,BufRead proftpd.conf*		call s:StarSetf('apachestyle')
-+au BufNewFile,BufRead /etc/ftpd/conf.d/*.conf,proftpd.conf*		call s:StarSetf('apachestyle')
++au BufNewFile,BufRead /etc/ftpd/conf.d/*.conf,proftpd*.conf*		call s:StarSetf('apachestyle')
  
  " Apache config file
  au BufNewFile,BufRead .htaccess			 setf apache
