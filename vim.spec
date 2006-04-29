@@ -90,6 +90,7 @@ Patch34:	%{name}-smarty.patch
 Patch35:	%{name}-filetype_vim-php45.patch
 Patch36:	%{name}-tutor-lessdeps.patch
 Patch37:	%{name}-nagios.patch
+Patch38:	%{name}-filetypes.patch
 Patch99:	%{name}-bonobo-20050909.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
@@ -531,6 +532,7 @@ element bonobo.
 %patch35 -p1
 %patch36 -p1
 %patch37 -p1
+%patch38 -p1
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
