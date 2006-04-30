@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	f
+%define		_patchlevel	g
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -39,11 +39,11 @@ Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unstable/snapshot/%{name}-%{_ver}%{_patchlevel}.zip
-# Source0-md5:	3a7102bcbd3243d58b37f626296c2e60
+# Source0-md5:	424082c4e1bb8bef580902c0bb7fb42b
 Source1:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}%{_patchlevel}-lang.tar.gz
-# Source1-md5:	e389ef8a5d6662a92c97dd34bcfb195d
+# Source1-md5:	1e7c6b38cf522293a7339288f8bbf687
 Source2:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}%{_patchlevel}-extra.tar.gz
-# Source2-md5:	abb56c3572be6ad27b21de22cc922e6c
+# Source2-md5:	200bfe4553a455c5e0bcdeea52ad29f7
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source5:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -87,7 +87,6 @@ Patch31:	021_all_%{name}-7.0-fstab-bogus-errors.patch
 Patch32:	024_all_%{name}-6.3-bash-83565.patch
 Patch33:	027_all_%{name}-7.0-automake-substitutions-93378.patch
 Patch34:	%{name}-smarty.patch
-Patch35:	%{name}-filetype_vim-php45.patch
 Patch36:	%{name}-tutor-lessdeps.patch
 Patch37:	%{name}-nagios.patch
 Patch38:	%{name}-filetypes.patch
@@ -529,7 +528,6 @@ element bonobo.
 %patch32 -p0
 %patch33 -p0
 %patch34 -p1
-%patch35 -p1
 %patch36 -p1
 %patch37 -p1
 %patch38 -p1
