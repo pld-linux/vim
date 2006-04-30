@@ -1,5 +1,5 @@
---- ./runtime/syntax/po.vim	2004-11-19 16:34:55.000000000 +0200
-+++ /tmp/po.vim	2005-10-25 20:50:45.000000000 +0300
+--- vim-7.0/runtime/syntax/po.vim~	2005-06-22 13:57:45.000000000 +0200
++++ vim-7.0/runtime/syntax/po.vim	2006-05-01 00:19:51.041176750 +0200
 @@ -43,6 +43,7 @@
  syn match     poCommentAutomatic "^#\..*$" 
  syn match     poCommentSources	"^#:.*$"
@@ -12,7 +12,7 @@
    HiLink poCommentFlags      Special
    HiLink poCopyrightUnset    Todo
    HiLink poFlagFuzzy         Todo
-+  HiLink poUntranslated	     Todo
++  HiLink poUntranslated      Todo
    HiLink poObsolete         Comment
  
    HiLink poStatementMsgid   Statement
