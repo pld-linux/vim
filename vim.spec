@@ -1,6 +1,6 @@
 # TODO:
 # - some nice icon
-# - patches cleanup
+# - bonobo patches need update
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -69,28 +69,28 @@ Patch3:		%{name}-%{name}rc.patch
 Patch4:		%{name}-no_libelf.patch
 Patch5:		%{name}-egrep.patch
 Patch6:		%{name}-awk.patch
-Patch7:		%{name}-bonobo.patch
-Patch8:		%{name}-home_etc.patch
-Patch9:		%{name}-selinux.patch
-Patch10:	%{name}-filetype_vim-perl_tests.patch
-Patch11:	%{name}-apache.patch
-Patch12:	%{name}-po-syntax.patch
-Patch13:	%{name}-modprobe.patch
-Patch14:	%{name}-gtkfilechooser.patch
-Patch15:	%{name}-gtkfilechooser-bonobo.patch
-Patch16:	%{name}-doubleparenthesis.patch
-Patch17:	%{name}-syntax-fstab.patch
-Patch18:	010_all_%{name}-6.3-vixie.patch
-Patch19:	013_all_%{name}-7.0-cron-vars-79981.patch
-Patch20:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
-Patch21:	021_all_%{name}-7.0-fstab-bogus-errors.patch
-Patch22:	024_all_%{name}-6.3-bash-83565.patch
-Patch23:	027_all_%{name}-7.0-automake-substitutions-93378.patch
-Patch24:	%{name}-smarty.patch
-Patch25:	%{name}-tutor-lessdeps.patch
-Patch26:	%{name}-nagios.patch
-Patch27:	%{name}-filetypes.patch
-Patch99:	%{name}-bonobo-20050909.patch
+Patch7:		%{name}-filetype_vim-perl_tests.patch
+Patch8:		%{name}-apache.patch
+Patch9:		%{name}-po-syntax.patch
+Patch10:	%{name}-modprobe.patch
+Patch11:	%{name}-doubleparenthesis.patch
+Patch12:	%{name}-syntax-fstab.patch
+Patch13:	010_all_%{name}-6.3-vixie.patch
+Patch14:	013_all_%{name}-7.0-cron-vars-79981.patch
+Patch15:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
+Patch16:	021_all_%{name}-7.0-fstab-bogus-errors.patch
+Patch17:	024_all_%{name}-6.3-bash-83565.patch
+Patch18:	027_all_%{name}-7.0-automake-substitutions-93378.patch
+Patch19:	%{name}-smarty.patch
+Patch20:	%{name}-tutor-lessdeps.patch
+Patch21:	%{name}-nagios.patch
+Patch22:	%{name}-filetypes.patch
+Patch100:	%{name}-bonobo-20050909.patch
+Patch101:	%{name}-bonobo.patch
+Patch102:	%{name}-gtkfilechooser.patch
+Patch103:	%{name}-gtkfilechooser-bonobo.patch
+Patch104:	%{name}-home_etc.patch
+Patch105:	%{name}-selinux.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -501,36 +501,43 @@ element bonobo.
 
 %prep
 %setup -q -c
-
 %patch0 -p1
-%{?with_bonobo:%patch99 -p1}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%{?with_bonobo:%patch7 -p1}
-%{?with_home_etc:%patch8 -p1}
-%{?with_selinux:%patch9 -p1}
-%patch10 -p1
-#%patch11 -p1
-%patch12 -p1
-%patch13 -p0
-#%{!?with_bonobo:%patch14 -p0}
-%{?with_bonobo:%patch15 -p1}
+%patch7 -p1
+#%patch8 -p1
+%patch9 -p1
+%patch10 -p0
+%patch11 -p1
+#%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
 %patch16 -p1
-#%patch17 -p1
-%patch18 -p1
+%patch17 -p0
+%patch18 -p0
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
-%patch22 -p0
-%patch23 -p0
-%patch24 -p1
-%patch25 -p1
-%patch26 -p1
-%patch27 -p1
+%patch22 -p1
+
+# bonobo
+%if %{with bonobo}
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%endif
+
+# home etc
+%{?with_home_etc:%patch104 -p1}
+
+# selinux
+%{?with_selinux:%patch105 -p1}
 
 install %{SOURCE15} runtime/indent
 install %{SOURCE16} runtime/colors
