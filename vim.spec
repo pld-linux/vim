@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	g
+%define		_patchlevel	%{nil}
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -34,16 +34,16 @@ Summary(tr):	Geliþmiþ bir vi sürümü
 Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}
-Release:	0.%{_patchlevel}.%{_rel}
+Release:	0%{_patchlevel}.%{_rel}
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
-Source0:	ftp://ftp.vim.org/pub/vim/unstable/snapshot/%{name}-%{_ver}%{_patchlevel}.zip
-# Source0-md5:	424082c4e1bb8bef580902c0bb7fb42b
-Source1:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}%{_patchlevel}-lang.tar.gz
-# Source1-md5:	1e7c6b38cf522293a7339288f8bbf687
-Source2:	ftp://ftp.vim.org/pub/vim/unstable/extra/vim-%{_ver}%{_patchlevel}-extra.tar.gz
-# Source2-md5:	200bfe4553a455c5e0bcdeea52ad29f7
+Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{_ver}%{_patchlevel}.tar.bz2
+# Source0-md5:	4ca69757678272f718b1041c810d82d8
+Source1:	ftp://ftp.vim.org/pub/vim/extra/vim-%{_ver}%{_patchlevel}-lang.tar.gz
+# Source1-md5:	6d43efaff570b5c86e76b833ea0c6a04
+Source2:	ftp://ftp.vim.org/pub/vim/extra/vim-%{_ver}%{_patchlevel}-extra.tar.gz
+# Source2-md5:	200f741ecc2a896fca25486764fa18a2
 Source4:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source4-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source5:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -501,6 +501,7 @@ element bonobo.
 
 %prep
 %setup -q -c
+cd vim[0-9]*
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -547,7 +548,7 @@ install %{SOURCE19} runtime/syntax
 install %{SOURCE20} runtime/ftplugin/spec.vim
 
 %build
-cd src
+cd vim[0-9]*/src
 %{__autoconf}
 # needed to prevent deconfiguring
 cp -f configure auto
@@ -752,6 +753,8 @@ mv -f vim bin/gvim.gnome
 
 %install
 rm -rf $RPM_BUILD_ROOT
+cd vim[0-9]*
+
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
 	$RPM_BUILD_ROOT%{_desktopdir}
@@ -948,28 +951,6 @@ rm -rf $RPM_BUILD_ROOT
 # just add after/ and ftdetect/ separately, other dirs caught by globs above or below
 %{_datadir}/vim/vimfiles/after
 %{_datadir}/vim/vimfiles/ftdetect
-
-%lang(af) %{_datadir}/vim/v*/lang/af
-%lang(ca) %{_datadir}/vim/v*/lang/ca
-%lang(cs) %{_datadir}/vim/v*/lang/cs
-%lang(de) %{_datadir}/vim/v*/lang/de
-%lang(en_GB) %{_datadir}/vim/v*/lang/en_GB
-%lang(es) %{_datadir}/vim/v*/lang/es
-%lang(fr) %{_datadir}/vim/v*/lang/fr
-%lang(ga) %{_datadir}/vim/v*/lang/ga
-%lang(it) %{_datadir}/vim/v*/lang/it
-%lang(ja) %{_datadir}/vim/v*/lang/ja*
-%lang(ko) %{_datadir}/vim/v*/lang/ko
-%lang(pl) %{_datadir}/vim/v*/lang/pl
-%lang(ru) %{_datadir}/vim/v*/lang/ru
-%lang(sk) %{_datadir}/vim/v*/lang/sk
-%lang(sv) %{_datadir}/vim/v*/lang/sv
-%lang(nb) %{_datadir}/vim/v*/lang/no
-#%lang(tr) %{_datadir}/vim/v*/lang/tr
-%lang(uk) %{_datadir}/vim/v*/lang/uk
-%lang(vi) %{_datadir}/vim/v*/lang/vi
-%lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN*
-%lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW*
 
 %lang(af) %{_datadir}/vim/v*/lang/menu_af*
 %lang(ca) %{_datadir}/vim/v*/lang/menu_ca*
