@@ -1,52 +1,20 @@
---- vim63/runtime/syntax/fstab.vim~	2003-04-30 15:36:32.000000000 +0200
-+++ vim63/runtime/syntax/fstab.vim	2005-08-09 19:09:15.996162056 +0200
-@@ -32,7 +32,7 @@
+--- vim70/runtime/syntax/fstab.vim~	2006-04-16 18:01:27.000000000 +0200
++++ vim70/runtime/syntax/fstab.vim	2006-05-15 10:10:46.774730250 +0200
+@@ -36,7 +36,7 @@
  " Type
- syn cluster fsTypeCluster contains=fsTypeKeyword,fsTypeError
- syn match fsTypeError /\s\+\zs\w\+/ contained
--syn keyword fsTypeKeyword contained adfs affs auto autofs cd9660 coda cramfs devfs devpts efs ext2 ext3 fdesc hfs hpfs iso9660 kernfs linprocfs mfs minix msdos ncpfs nfs ntfs nwfs null portal proc procfs qnx4 reiserfs romfs smbfs std sysv swap tmpfs udf ufs umap umsdos union vfat xfs
-+syn keyword fsTypeKeyword contained adfs affs auto autofs cd9660 coda cramfs devfs devpts efs ext2 ext3 fdesc hfs hpfs iso9660 kernfs linprocfs mfs minix msdos ncpfs nfs ntfs nwfs null portal proc procfs qnx4 reiserfs romfs smbfs std sysv swap tmpfs udf ufs umap umsdos union vfat xfs sysfs usbfs cpuset none
+ syn cluster fsTypeCluster contains=fsTypeKeyword,fsTypeUnknown
+ syn match fsTypeUnknown /\s\+\zs\w\+/ contained
+-syn keyword fsTypeKeyword contained adfs affs atfs audiofs auto autofs befs bfs cd9660 cfs cifs coda cramfs devfs devpts e2compr efs ext2 ext3 fdesc hfs hpfs iso9660 jffs jffs2 jfs kernfs linprocfs mfs minix msdos ncpfs nfs none none ntfs null nwfs ovlfs portal proc procfs qnx4 reiserfs romfs shm smbfs std subfs swap sysfs sysv tcfs tmpfs udf ufs umap umsdos union usbfs userfs vfat vs3fs vxfs wrapfs wvfs xfs zisofs
++syn keyword fsTypeKeyword contained adfs affs atfs audiofs auto autofs befs bfs cd9660 cfs cifs coda cpuset cramfs devfs devpts e2compr efs ext2 ext3 fdesc hfs hpfs iso9660 jffs jffs2 jfs kernfs linprocfs mfs minix msdos ncpfs nfs none none ntfs null nwfs ovlfs portal proc procfs qnx4 reiserfs romfs shm smbfs std subfs swap sysfs sysv tcfs tmpfs udf ufs umap umsdos union usbfs userfs vfat vs3fs vxfs wrapfs wvfs xfs zisofs
  
  " Options
  " -------
-@@ -44,7 +44,7 @@
+@@ -48,7 +48,7 @@
  syn keyword fsOptionsYesNo yes no
  syn cluster fsOptionsCheckCluster contains=fsOptionsExt2Check,fsOptionsFatCheck
  syn keyword fsOptionsSize 512 1024 2048
--syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user supermount
-+syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user supermount bind tagxid
+-syn keyword fsOptionsGeneral async atime auto bind current defaults dev devgid devmode devuid dirsync exec force fstab kudzu loop mand move noatime noauto noclusterr noclusterw nodev nodiratime noexec nomand nosuid nosymfollow nouser owner rbind rdonly remount ro rq rw suid suiddir supermount sw sync union update user[s] xx
++syn keyword fsOptionsGeneral async atime auto bind current defaults dev devgid devmode devuid dirsync exec force fstab kudzu loop mand move noatime noauto noclusterr noclusterw nodev nodiratime noexec nomand nosuid nosymfollow nouser owner rbind rdonly remount ro rq rw suid suiddir supermount sw sync tagxid union update user[s] xx
  syn match fsOptionsGeneral /_netdev/
  
  " Options: adfs
---- vim64/runtime/syntax/fstab.vim	2005-12-04 22:37:13.000000000 +0200
-+++ /tmp/fstab.vim	2005-12-04 22:35:12.000000000 +0200
-@@ -44,7 +44,7 @@
- syn keyword fsOptionsYesNo yes no
- syn cluster fsOptionsCheckCluster contains=fsOptionsExt2Check,fsOptionsFatCheck
- syn keyword fsOptionsSize 512 1024 2048
--syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user supermount bind tagxid
-+syn keyword fsOptionsGeneral async atime auto current defaults dev exec force fstab noatime noauto noclusterr noclusterw nodev noexec nosuid nosymfollow nouser owner ro rdonly rw rq sw xx suid suiddir sync kudzu union update user users supermount bind tagxid
- syn match fsOptionsGeneral /_netdev/
- 
- " Options: adfs
-@@ -134,6 +134,10 @@
- syn match fsOptionsUfsType contained /nextstep-cd/
- syn keyword fsOptionsUfsError contained panic lock umount repair
- 
-+" Options: usbfs
-+syn match fsOptionsKeywords contained /devmode=/ nextgroup=fsOptionsNumberOctal
-+syn match fsOptionsKeywords contained /devgid=/ nextgroup=fsOptionsNumber
-+
- " Options: vfat
- syn keyword fsOptionsKeywords contained nonumtail posix utf8
- syn match fsOptionsKeywords contained /shortname=/ nextgroup=fsOptionsVfatShortname
-@@ -143,6 +147,9 @@
- syn match fsOptionsKeywords contained /\%(biosize\|logbufs\|logbsize\|logdev\|rtdev\|sunit\|swidth\)=/ nextgroup=fsOptionsString
- syn keyword fsOptionsKeywords contained dmapi xdsm noalign noatime norecovery osyncisdsync quota usrquota uquoenforce grpquota gquoenforce
- 
-+" Options: swap
-+syn match fsOptionsKeywords contained /pri=/ nextgroup=fsOptionsNumber
-+
- " Frequency / Pass No.
- syn cluster fsFreqPassCluster contains=fsFreqPassNumber,fsFreqPassError
- syn match fsFreqPassError /\s\+\zs\%(\D.*\|\S.*\|\d\+\s\+[^012]\)\ze/ contained

@@ -1,11 +1,11 @@
---- ./runtime/filetype.vim	2005-12-18 15:58:56.000000000 +0200
-+++ /usr/share/vim/vim64/filetype.vim	2005-12-18 15:03:14.000000000 +0200
-@@ -88,6 +88,8 @@
- au BufNewFile,BufRead proftpd.conf*		setf apachestyle
+--- vim70/runtime/filetype.vim~	2006-05-13 15:24:24.000000000 +0200
++++ vim70/runtime/filetype.vim	2006-05-15 10:02:34.491964500 +0200
+@@ -102,6 +102,8 @@
+ au BufNewFile,BufRead /etc/ftpd/conf.d/*.conf,proftpd*.conf*		call s:StarSetf('apachestyle')
  
  " Apache config file
 +au BufNewFile,BufRead */etc/httpd/*.conf,apache-*.conf,*-apache.conf	let apache_version="2.2" | setf apache
 +au BufNewFile,BufRead */etc/apache/*.conf,apache1-*.conf,*-apache1.conf	let apache_version="1.3" | setf apache
- au BufNewFile,BufRead httpd.conf*,srm.conf*,access.conf*,.htaccess,apache.conf* setf apache
+ au BufNewFile,BufRead .htaccess			 setf apache
+ au BufNewFile,BufRead httpd.conf*,srm.conf*,access.conf*,apache.conf*,apache2.conf*,/etc/apache2/*.conf* call s:StarSetf('apache')
  
- " XA65 MOS6510 cross assembler
