@@ -119,7 +119,7 @@ BuildRequires:	ncurses-devel
 %{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
+%{?with_athena:BuildRequires:	XFree86-devel}
 Obsoletes:	kvim
 %if %{with bonobo}
 BuildRequires:	ORBit2-devel
