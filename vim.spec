@@ -51,15 +51,13 @@ Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
 Source14:	%{name}.desktop
-# http://www.vim.org/scripts/script.php?script_id=1120 (1.23)
-Source15:	php.%{name}
 # http://www.vim.org/scripts/script.php?script_id=415 (1.13)
-Source16:	zenburn.%{name}
-Source17:	spec.%{name}
+Source15:	zenburn.%{name}
+Source16:	spec.%{name}
 # http://www.vim.org/scripts/script.php?script_id=1491 (0.5)
-Source18:	javascript.%{name}
-Source19:	nagios.vim
-Source20:	vim-ftplugin-spec.vim
+Source17:	javascript.%{name}
+Source18:	nagios.vim
+Source19:	vim-ftplugin-spec.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -525,11 +523,11 @@ element bonobo.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-#%patch8 -p1
+%patch8 -p1
 %patch9 -p1
 %patch10 -p0
 %patch11 -p1
-#%patch12 -p1
+%patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -575,12 +573,12 @@ element bonobo.
 # selinux
 %{?with_selinux:%patch105 -p1}
 
-install %{SOURCE15} runtime/indent
-install %{SOURCE16} runtime/colors
+install %{SOURCE14} runtime/indent
+install %{SOURCE15} runtime/colors
+install %{SOURCE16} runtime/syntax
 install %{SOURCE17} runtime/syntax
 install %{SOURCE18} runtime/syntax
-install %{SOURCE19} runtime/syntax
-install %{SOURCE20} runtime/ftplugin/spec.vim
+install %{SOURCE19} runtime/ftplugin/spec.vim
 
 %build
 cd src
