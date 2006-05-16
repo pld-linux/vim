@@ -1037,6 +1037,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW/
 
+%dir %{_datadir}/vim/v*/spell
 %{_datadir}/vim/v*/spell/cleanadd.vim
 %lang(en_GB) %{_datadir}/vim/v*/spell/en.*.*
 %lang(he) %{_datadir}/vim/v*/spell/he.*
