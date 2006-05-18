@@ -18,7 +18,7 @@
 #
 %define		_ver		7.0
 %define		_patchlevel	017
-%define		_rel		1
+%define		_rel		2
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -51,15 +51,13 @@ Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
 Source14:	%{name}.desktop
-# http://www.vim.org/scripts/script.php?script_id=1120 (1.23)
-Source15:	php.%{name}
 # http://www.vim.org/scripts/script.php?script_id=415 (1.13)
-Source16:	zenburn.%{name}
-Source17:	spec.%{name}
+Source15:	zenburn.%{name}
+Source16:	spec.%{name}
 # http://www.vim.org/scripts/script.php?script_id=1491 (0.5)
-Source18:	javascript.%{name}
-Source19:	nagios.vim
-Source20:	vim-ftplugin-spec.vim
+Source17:	javascript.%{name}
+Source18:	nagios.vim
+Source19:	vim-ftplugin-spec.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -121,7 +119,7 @@ BuildRequires:	ncurses-devel
 %{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
+%{?with_athena:BuildRequires:	XFree86-devel}
 Obsoletes:	kvim
 %if %{with bonobo}
 BuildRequires:	ORBit2-devel
@@ -525,11 +523,11 @@ element bonobo.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-#%patch8 -p1
+%patch8 -p1
 %patch9 -p1
 %patch10 -p0
 %patch11 -p1
-#%patch12 -p1
+%patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -575,12 +573,12 @@ element bonobo.
 # selinux
 %{?with_selinux:%patch105 -p1}
 
-install %{SOURCE15} runtime/indent
-install %{SOURCE16} runtime/colors
+install %{SOURCE14} runtime/indent
+install %{SOURCE15} runtime/colors
+install %{SOURCE16} runtime/syntax
 install %{SOURCE17} runtime/syntax
 install %{SOURCE18} runtime/syntax
-install %{SOURCE19} runtime/syntax
-install %{SOURCE20} runtime/ftplugin/spec.vim
+install %{SOURCE19} runtime/ftplugin/spec.vim
 
 %build
 cd src
@@ -867,7 +865,7 @@ install src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 bzip2 -dc %{SOURCE2} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE3}
 
-install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,syntax}}
+install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
 
 %clean
@@ -1039,6 +1037,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW/
 
+%dir %{_datadir}/vim/v*/spell
 %{_datadir}/vim/v*/spell/cleanadd.vim
 %lang(en_GB) %{_datadir}/vim/v*/spell/en.*.*
 %lang(he) %{_datadir}/vim/v*/spell/he.*
