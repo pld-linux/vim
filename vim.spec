@@ -18,7 +18,7 @@
 #
 %define		_ver		7.0
 %define		_patchlevel	017
-%define		_rel		1
+%define		_rel		2
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -865,7 +865,7 @@ install src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 bzip2 -dc %{SOURCE2} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE3}
 
-install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,syntax}}
+install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
 
 %clean
@@ -1037,6 +1037,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW/
 
+%dir %{_datadir}/vim/v*/spell
 %{_datadir}/vim/v*/spell/cleanadd.vim
 %lang(en_GB) %{_datadir}/vim/v*/spell/en.*.*
 %lang(he) %{_datadir}/vim/v*/spell/he.*
