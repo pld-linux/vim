@@ -591,7 +591,6 @@ install -d bin
 %if %{with bonobo}
 %{__make} distclean
 %configure \
-	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	--enable-bonobo \
@@ -636,8 +635,8 @@ LDFLAGS="%{rpmldflags} -static"
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} vim \
-	SPELL_OBJ=
+%{__make} vim
+
 mv -f vim bin/vim.static
 LDFLAGS="%{rpmldflags}"
 %endif
@@ -664,14 +663,13 @@ LDFLAGS="%{rpmldflags}"
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} vim \
-	SPELL_OBJ=
+%{__make} vim
+
 mv -f vim bin/vim.ncurses
 
 %if %{with athena}
 %{__make} distclean
 %configure \
-	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
@@ -700,7 +698,6 @@ mv -f vim bin/gvim.athena
 %if %{with motif}
 %{__make} distclean
 %configure \
-	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
@@ -729,7 +726,6 @@ mv -f vim bin/gvim.motif
 %if %{with gtk}
 %{__make} distclean
 %configure \
-	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gtk2 \
 	--enable-gtk2-check \
@@ -756,7 +752,6 @@ mv -f vim bin/gvim.gtk
 %if %{with gnome}
 %{__make} distclean
 %configure \
-	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	%{?with_bonobo:--disable-bonobo} \
@@ -780,7 +775,6 @@ mv -f vim bin/gvim.gtk
 %{__make} vim
 mv -f vim bin/gvim.gnome
 %endif
-
 
 %{__make} xxd/xxd languages
 
