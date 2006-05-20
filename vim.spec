@@ -1,4 +1,5 @@
 # TODO:
+# - fix man dirs (encodings in paths - such dirs don't exist in system)
 # - some nice icon
 # - bonobo patches need update
 #
