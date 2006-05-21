@@ -1,5 +1,6 @@
 # TODO:
 # - fix man dirs (encodings in paths - such dirs don't exist in system)
+# - separate vim-spell-en
 # - some nice icon
 # - bonobo patches need update
 #
@@ -1037,9 +1038,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %dir %{_datadir}/vim/v*/spell
 %{_datadir}/vim/v*/spell/cleanadd.vim
-%lang(en_GB) %{_datadir}/vim/v*/spell/en.*.*
-%lang(he) %{_datadir}/vim/v*/spell/he.*
-%lang(yi) %{_datadir}/vim/v*/spell/yi.*
+# XXX: separate vim-spell-en
+%{_datadir}/vim/v*/spell/en.*.*
+%{_datadir}/vim/v*/spell/he.*
+%{_datadir}/vim/v*/spell/yi.*
 
 %{_datadir}/vim/v*/macros
 %{_datadir}/vim/v*/plugin
