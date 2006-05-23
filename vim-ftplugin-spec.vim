@@ -6,7 +6,7 @@
 "
 " This sets up filetype specific options for RPM spec files.
 
-setlocal tw=70
+"setlocal tw=70
 
 map <F8> :!rpmbuild -bb %<CR>
 map <F6> :!./adapter %<CR>
