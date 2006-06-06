@@ -18,7 +18,7 @@
 #
 %define		_ver		7.0
 %define		_patchlevel	017
-%define		_rel		3
+%define		_rel		3.1
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -81,6 +81,7 @@ Patch19:	%{name}-smarty.patch
 Patch20:	%{name}-tutor-lessdeps.patch
 Patch21:	%{name}-nagios.patch
 Patch22:	%{name}-filetypes.patch
+Patch23:	%{name}-man_installation.patch
 Patch100:	%{name}-bonobo-20050909.patch
 Patch101:	%{name}-bonobo.patch
 Patch102:	%{name}-gtkfilechooser.patch
@@ -538,6 +539,7 @@ element bonobo.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 
 # official patches
 %patch201 -p0
@@ -806,18 +808,18 @@ ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
 install src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
 install src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
-rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
+# Moved into patch
+#
+# rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
+# install runtime/doc/vim.1 $RPM_BUILD_ROOT%{_mandir}/man1
+# install runtime/doc/xxd.1 $RPM_BUILD_ROOT%{_mandir}/man1
+# install runtime/doc/vimtutor.1 $RPM_BUILD_ROOT%{_mandir}/man1
+# echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/ex.1
+# echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rview.1
+# echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rvim.1
+# echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 
-install runtime/doc/vim.1 $RPM_BUILD_ROOT%{_mandir}/man1
-install runtime/doc/xxd.1 $RPM_BUILD_ROOT%{_mandir}/man1
-
-install runtime/doc/vimtutor.1 $RPM_BUILD_ROOT%{_mandir}/man1
-
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/ex.1
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rview.1
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rvim.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
@@ -921,43 +923,43 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fi) %{_mandir}/fi/man1/ex.1*
 %lang(fi) %{_mandir}/fi/man1/view.1*
 %lang(fi) %{_mandir}/fi/man1/rview.1*
-%lang(fr) %{_mandir}/fr*/man1/vi.1*
-%lang(fr) %{_mandir}/fr*/man1/evim.1*
-%lang(fr) %{_mandir}/fr*/man1/vim.1*
-%lang(fr) %{_mandir}/fr*/man1/vimdiff.1*
-%lang(fr) %{_mandir}/fr*/man1/vimtutor.1*
-%lang(fr) %{_mandir}/fr*/man1/ex.1*
-%lang(fr) %{_mandir}/fr*/man1/view.1*
-%lang(fr) %{_mandir}/fr*/man1/rview.1*
+%lang(fr) %{_mandir}/fr/man1/vi.1*
+%lang(fr) %{_mandir}/fr/man1/evim.1*
+%lang(fr) %{_mandir}/fr/man1/vim.1*
+%lang(fr) %{_mandir}/fr/man1/vimdiff.1*
+%lang(fr) %{_mandir}/fr/man1/vimtutor.1*
+%lang(fr) %{_mandir}/fr/man1/ex.1*
+%lang(fr) %{_mandir}/fr/man1/view.1*
+%lang(fr) %{_mandir}/fr/man1/rview.1*
 %lang(id) %{_mandir}/id/man1/vi.1*
 %lang(id) %{_mandir}/id/man1/ex.1*
 %lang(id) %{_mandir}/id/man1/view.1*
 %lang(id) %{_mandir}/id/man1/rview.1*
-%lang(it) %{_mandir}/it*/man1/ex.1*
-%lang(it) %{_mandir}/it*/man1/evim.1*
-%lang(it) %{_mandir}/it*/man1/view.1*
-%lang(it) %{_mandir}/it*/man1/rview.1*
-%lang(pl) %{_mandir}/pl*/man1/vi.1*
-%lang(pl) %{_mandir}/pl*/man1/evim.1*
-%lang(pl) %{_mandir}/pl*/man1/vim.1*
-%lang(pl) %{_mandir}/pl*/man1/vimdiff.1*
-%lang(pl) %{_mandir}/pl*/man1/vimtutor.1*
-%lang(pl) %{_mandir}/pl*/man1/ex.1*
-%lang(pl) %{_mandir}/pl*/man1/view.1*
-%lang(pl) %{_mandir}/pl*/man1/rview.1*
-%lang(ru) %{_mandir}/ru*/man1/ex.1*
-%lang(ru) %{_mandir}/ru*/man1/evim.1*
-%lang(ru) %{_mandir}/ru*/man1/view.1*
-%lang(ru) %{_mandir}/ru*/man1/rview.1*
+%lang(it) %{_mandir}/it/man1/ex.1*
+%lang(it) %{_mandir}/it/man1/evim.1*
+%lang(it) %{_mandir}/it/man1/view.1*
+%lang(it) %{_mandir}/it/man1/rview.1*
+%lang(pl) %{_mandir}/pl/man1/vi.1*
+%lang(pl) %{_mandir}/pl/man1/evim.1*
+%lang(pl) %{_mandir}/pl/man1/vim.1*
+%lang(pl) %{_mandir}/pl/man1/vimdiff.1*
+%lang(pl) %{_mandir}/pl/man1/vimtutor.1*
+%lang(pl) %{_mandir}/pl/man1/ex.1*
+%lang(pl) %{_mandir}/pl/man1/view.1*
+%lang(pl) %{_mandir}/pl/man1/rview.1*
+%lang(ru) %{_mandir}/ru/man1/ex.1*
+%lang(ru) %{_mandir}/ru/man1/evim.1*
+%lang(ru) %{_mandir}/ru/man1/view.1*
+%lang(ru) %{_mandir}/ru/man1/rview.1*
 
 %files -n xxd
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/xxd
 %{_mandir}/man1/xxd.1*
-%lang(fr) %{_mandir}/fr*/man1/xxd.1*
-%lang(it) %{_mandir}/it*/man1/xxd.1*
-%lang(pl) %{_mandir}/pl*/man1/xxd.1*
-%lang(ru) %{_mandir}/ru*/man1/xxd.1*
+%lang(fr) %{_mandir}/fr/man1/xxd.1*
+%lang(it) %{_mandir}/it/man1/xxd.1*
+%lang(pl) %{_mandir}/pl/man1/xxd.1*
+%lang(ru) %{_mandir}/ru/man1/xxd.1*
 
 %files rt
 %defattr(644,root,root,755)
@@ -1068,12 +1070,12 @@ rm -rf $RPM_BUILD_ROOT
 %lang(id) %{_mandir}/id/man1/rvim.*
 %lang(id) %{_mandir}/id/man1/gvi*
 %lang(id) %{_mandir}/id/man1/rgv*
-%lang(it) %{_mandir}/it*/man1/vim*
+%lang(it) %{_mandir}/it/man1/vim*
 %lang(pl) %{_mandir}/pl/man1/vim*
 %lang(pl) %{_mandir}/pl/man1/rvim.*
 %lang(pl) %{_mandir}/pl/man1/gvi*
 %lang(pl) %{_mandir}/pl/man1/rgv*
-%lang(ru) %{_mandir}/ru*/man1/vim*
+%lang(ru) %{_mandir}/ru/man1/vim*
 
 %{_iconsdir}/hicolor/16x16/apps/vim.png
 %{_iconsdir}/hicolor/32x32/apps/vim.png
