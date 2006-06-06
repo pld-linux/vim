@@ -1,0 +1,235 @@
+--- vim70/src/installml.sh~	2006-06-06 14:49:21.000000000 +0200
++++ vim70/src/installml.sh	2006-06-06 14:49:21.000000000 +0200
+@@ -55,25 +55,25 @@
+    # ex
+    if test ! -f $destdir/$exname.1 -a -f $destdir/$vimname.1; then
+       echo creating link $destdir/$exname.1
+-      cd $destdir; ln -s $vimname.1 $exname.1
++      cd $destdir; echo ".so $vimname.1" > $exname.1
+    fi
+ 
+    # view
+    if test ! -f $destdir/$viewname.1 -a -f $destdir/$vimname.1; then
+       echo creating link $destdir/$viewname.1
+-      cd $destdir; ln -s $vimname.1 $viewname.1
++      cd $destdir; echo ".so $vimname.1" > $viewname.1
+    fi
+ 
+    # rvim
+    if test ! -f $destdir/$rvimname.1 -a -f $destdir/$vimname.1; then
+       echo creating link $destdir/$rvimname.1
+-      cd $destdir; ln -s $vimname.1 $rvimname.1
++      cd $destdir; echo ".so $vimname.1" > $rvimname.1
+    fi
+ 
+    # rview
+    if test ! -f $destdir/$rviewname.1 -a -f $destdir/$vimname.1; then
+       echo creating link $destdir/$rviewname.1
+-      cd $destdir; ln -s $vimname.1 $rviewname.1
++      cd $destdir; echo ".so $vimname.1" > $rviewname.1
+    fi
+ 
+    # GUI targets are optional
+@@ -81,37 +81,37 @@
+       # gvim
+       if test ! -f $destdir/$gvimname.1 -a -f $destdir/$vimname.1; then
+ 	 echo creating link $destdir/$gvimname.1
+-	 cd $destdir; ln -s $vimname.1 $gvimname.1
++	 cd $destdir; echo ".so $vimname.1" > $gvimname.1
+       fi
+ 
+       # gview
+       if test ! -f $destdir/$gviewname.1 -a -f $destdir/$vimname.1; then
+ 	 echo creating link $destdir/$gviewname.1
+-	 cd $destdir; ln -s $vimname.1 $gviewname.1
++	 cd $destdir; echo ".so $vimname.1" > $gviewname.1
+       fi
+ 
+       # rgvim
+       if test ! -f $destdir/$rgvimname.1 -a -f $destdir/$vimname.1; then
+ 	 echo creating link $destdir/$rgvimname.1
+-	 cd $destdir; ln -s $vimname.1 $rgvimname.1
++	 cd $destdir; echo ".so $vimname.1" > $rgvimname.1
+       fi
+ 
+       # rgview
+       if test ! -f $destdir/$rgviewname.1 -a -f $destdir/$vimname.1; then
+ 	 echo creating link $destdir/$rgviewname.1
+-	 cd $destdir; ln -s $vimname.1 $rgviewname.1
++	 cd $destdir; echo ".so $vimname.1" > $rgviewname.1
+       fi
+ 
+       # gvimdiff
+       if test ! -f $destdir/$gvimdiffname.1 -a -f $destdir/$vimdiffname.1; then
+ 	 echo creating link $destdir/$gvimdiffname.1
+-	 cd $destdir; ln -s $vimdiffname.1 $gvimdiffname.1
++	 cd $destdir; echo ".so $vimdiffname.1" > $gvimdiffname.1
+       fi
+ 
+       # eview
+       if test ! -f $destdir/$eviewname.1 -a -f $destdir/$evimname.1; then
+ 	 echo creating link $destdir/$eviewname.1
+-	 cd $destdir; ln -s $evimname.1 $eviewname.1
++	 cd $destdir; echo ".so $evimname.1" > $eviewname.1
+       fi
+    fi
+ fi
+--- vim70/src/Makefile~	2006-06-06 14:56:14.000000000 +0200
++++ vim70/src/Makefile	2006-06-06 14:56:14.000000000 +0200
+@@ -1325,7 +1325,8 @@
+ DEST_MAN_PL = $(DEST_MAN_TOP)/pl$(MAN1DIR)
+ DEST_MAN_PL_I = $(DEST_MAN_TOP)/pl.ISO8859-2$(MAN1DIR)
+ DEST_MAN_PL_U = $(DEST_MAN_TOP)/pl.UTF-8$(MAN1DIR)
+-DEST_MAN_RU = $(DEST_MAN_TOP)/ru.KOI8-R$(MAN1DIR)
++DEST_MAN_RU = $(DEST_MAN_TOP)/ru$(MAN1DIR)
++DEST_MAN_RU_K = $(DEST_MAN_TOP)/ru.KOI8-R$(MAN1DIR)
+ DEST_MAN_RU_U = $(DEST_MAN_TOP)/ru.UTF-8$(MAN1DIR)
+ 
+ #	     BASIC_SRC: files that are always used
+@@ -1912,6 +1913,7 @@
+ 	-$(SHELL) ./installman.sh xxd $(DEST_MAN_PL_I) "-pl" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh xxd $(DEST_MAN_PL_U) "-pl.UTF-8" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh xxd $(DEST_MAN_RU) "-ru" $(INSTALLMANARGS)
++	-$(SHELL) ./installman.sh xxd $(DEST_MAN_RU_K) "-ru" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh xxd $(DEST_MAN_RU_U) "-ru.UTF-8" $(INSTALLMANARGS)
+ 
+ # install the language specific files, if they were unpacked
+@@ -1926,6 +1928,7 @@
+ 	-$(SHELL) ./installman.sh install $(DEST_MAN_PL_I) "-pl" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh install $(DEST_MAN_PL_U) "-pl.UTF-8" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh install $(DEST_MAN_RU) "-ru" $(INSTALLMANARGS)
++	-$(SHELL) ./installman.sh install $(DEST_MAN_RU_K) "-ru" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh install $(DEST_MAN_RU_U) "-ru.UTF-8" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_FR) $(INSTALLMLARGS)
+@@ -1948,6 +1951,8 @@
+ 	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_RU) $(INSTALLMLARGS)
+ 	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
++		$(DEST_MAN_RU_K) $(INSTALLMLARGS)
++	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_RU_U) $(INSTALLMLARGS)
+ 	if test -n "$(MAKEMO)" -a -f $(PODIR)/Makefile; then \
+ 	   cd $(PODIR); $(MAKE) prefix=$(DESTDIR)$(prefix) LOCALEDIR=$(DEST_LANG) \
+@@ -2088,6 +2093,7 @@
+ 	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_PL_I) "" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_PL_U) "" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_RU) "" $(INSTALLMANARGS)
++	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_RU_K) "" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_RU_U) "" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN) $(INSTALLMLARGS)
+@@ -2112,12 +2118,14 @@
+ 	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_RU) $(INSTALLMLARGS)
+ 	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
++		$(DEST_MAN_RU_K) $(INSTALLMLARGS)
++	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_RU_U) $(INSTALLMLARGS)
+ 	-rm -f $(DEST_MAN)/xxd.1
+ 	-rm -f $(DEST_MAN_FR)/xxd.1 $(DEST_MAN_FR_I)/xxd.1 $(DEST_MAN_FR_U)/xxd.1
+ 	-rm -f $(DEST_MAN_IT)/xxd.1 $(DEST_MAN_IT_I)/xxd.1 $(DEST_MAN_IT_U)/xxd.1
+ 	-rm -f $(DEST_MAN_PL)/xxd.1 $(DEST_MAN_PL_I)/xxd.1 $(DEST_MAN_PL_U)/xxd.1
+-	-rm -f $(DEST_MAN_RU)/xxd.1 $(DEST_MAN_RU_U)/xxd.1
++	-rm -f $(DEST_MAN_RU)/xxd.1 $(DEST_MAN_RU_K)/xxd.1 $(DEST_MAN_RU_U)/xxd.1
+ 	-rm -f $(DEST_HELP)/*.txt $(DEST_HELP)/tags $(DEST_HELP)/*.pl
+ 	-rm -f $(DEST_HELP)/*.??x $(DEST_HELP)/tags-??
+ 	-rm -f $(SYS_MENU_FILE) $(SYS_SYNMENU_FILE) $(SYS_DELMENU_FILE)
+--- vim70/src/main.aap~	2006-06-06 14:59:26.000000000 +0200
++++ vim70/src/main.aap	2006-06-06 14:59:26.000000000 +0200
+@@ -658,9 +658,11 @@
+ DEST_MAN_IT = $(DEST_MAN_TOP)/it$(MAN1DIR)
+ DEST_MAN_IT_I = $(DEST_MAN_TOP)/it.ISO8859-1$(MAN1DIR)
+ DEST_MAN_IT_U = $(DEST_MAN_TOP)/it.UTF-8$(MAN1DIR)
+-DEST_MAN_PL = $(DEST_MAN_TOP)/pl.ISO8859-2$(MAN1DIR)
++DEST_MAN_PL = $(DEST_MAN_TOP)/pl$(MAN1DIR)
++DEST_MAN_PL_I = $(DEST_MAN_TOP)/pl.ISO8859-2$(MAN1DIR)
+ DEST_MAN_PL_U = $(DEST_MAN_TOP)/pl.UTF-8$(MAN1DIR)
+-DEST_MAN_RU = $(DEST_MAN_TOP)/ru.KOI8-R$(MAN1DIR)
++DEST_MAN_RU = $(DEST_MAN_TOP)/ru$(MAN1DIR)
++DEST_MAN_RU_K = $(DEST_MAN_TOP)/ru.KOI8-R$(MAN1DIR)
+ DEST_MAN_RU_U = $(DEST_MAN_TOP)/ru.UTF-8$(MAN1DIR)
+ 
+ # These are directories, create them when needed.
+@@ -671,8 +673,8 @@
+                 $DEST_SCRIPT $DEST_PRINT $DEST_MAN $DEST_SPELL
+                 $DEST_MAN_FR $DEST_MAN_FR_I $DEST_MAN_FR_U $DEST_MAN_IT
+                 $DEST_MAN_IT_I $DEST_MAN_IT_U
+-                $DEST_MAN_PL $DEST_MAN_PL_U
+-                $DEST_MAN_RU $DEST_MAN_RU_U
++                $DEST_MAN_PL $DEST_MAN_PL_I $DEST_MAN_PL_U
++                $DEST_MAN_RU $DEST_MAN_RU_K $DEST_MAN_RU_U
+ 
+ #
+ # I N S T A L L
+@@ -904,8 +906,10 @@
+ 	:sys ./installman.sh xxd $(DEST_MAN_IT_I) "-it" $(INSTALLMANARGS)
+ 	:sys ./installman.sh xxd $(DEST_MAN_IT_U) "-it.UTF-8" $(INSTALLMANARGS)
+ 	:sys ./installman.sh xxd $(DEST_MAN_PL) "-pl" $(INSTALLMANARGS)
++	:sys ./installman.sh xxd $(DEST_MAN_PL_I) "-pl" $(INSTALLMANARGS)
+ 	:sys ./installman.sh xxd $(DEST_MAN_PL_U) "-pl.UTF-8" $(INSTALLMANARGS)
+ 	:sys ./installman.sh xxd $(DEST_MAN_RU) "-ru" $(INSTALLMANARGS)
++	:sys ./installman.sh xxd $(DEST_MAN_RU_K) "-ru" $(INSTALLMANARGS)
+ 	:sys ./installman.sh xxd $(DEST_MAN_RU_U) "-ru.UTF-8" $(INSTALLMANARGS)
+ 
+ # install the language specific files, if they were unpacked
+@@ -918,8 +922,10 @@
+ 	:sys ./installman.sh install $(DEST_MAN_IT_I) "-it" $(INSTALLMANARGS)
+ 	:sys ./installman.sh install $(DEST_MAN_IT_U) "-it.UTF-8" $(INSTALLMANARGS)
+ 	:sys ./installman.sh install $(DEST_MAN_PL) "-pl" $(INSTALLMANARGS)
++	:sys ./installman.sh install $(DEST_MAN_PL_I) "-pl" $(INSTALLMANARGS)
+ 	:sys ./installman.sh install $(DEST_MAN_PL_U) "-pl.UTF-8" $(INSTALLMANARGS)
+ 	:sys ./installman.sh install $(DEST_MAN_RU) "-ru" $(INSTALLMANARGS)
++	:sys ./installman.sh install $(DEST_MAN_RU_K) "-ru" $(INSTALLMANARGS)
+ 	:sys ./installman.sh install $(DEST_MAN_RU_U) "-ru.UTF-8" $(INSTALLMANARGS)
+         :chmod 755 installml.sh
+ 	:sys ./installml.sh install "$(GUI_MAN_TARGETS)" \
+@@ -937,10 +943,14 @@
+         :sys ./installml.sh install "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_PL) $(INSTALLMLARGS)
+         :sys ./installml.sh install "$(GUI_MAN_TARGETS)" \
++		$(DEST_MAN_PL_I) $(INSTALLMLARGS)
++        :sys ./installml.sh install "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_PL_U) $(INSTALLMLARGS)
+         :sys ./installml.sh install "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_RU) $(INSTALLMLARGS)
+         :sys ./installml.sh install "$(GUI_MAN_TARGETS)" \
++		$(DEST_MAN_RU_K) $(INSTALLMLARGS)
++        :sys ./installml.sh install "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_RU_U) $(INSTALLMLARGS)
+ 
+         @if _no.MAKEMO:
+@@ -1072,8 +1082,10 @@
+     :sys ./installman.sh uninstall $(DEST_MAN_IT_I) "" $(INSTALLMANARGS)
+     :sys ./installman.sh uninstall $(DEST_MAN_IT_U) "" $(INSTALLMANARGS)
+     :sys ./installman.sh uninstall $(DEST_MAN_PL) "" $(INSTALLMANARGS)
++    :sys ./installman.sh uninstall $(DEST_MAN_PL_I) "" $(INSTALLMANARGS)
+     :sys ./installman.sh uninstall $(DEST_MAN_PL_U) "" $(INSTALLMANARGS)
+     :sys ./installman.sh uninstall $(DEST_MAN_RU) "" $(INSTALLMANARGS)
++    :sys ./installman.sh uninstall $(DEST_MAN_RU_K) "" $(INSTALLMANARGS)
+     :sys ./installman.sh uninstall $(DEST_MAN_RU_U) "" $(INSTALLMANARGS)
+     :chmod 755 installml.sh
+     :sys ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+@@ -1093,16 +1105,20 @@
+     :sys ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+             $(DEST_MAN_PL) $(INSTALLMLARGS)
+     :sys ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
++            $(DEST_MAN_PL_I) $(INSTALLMLARGS)
++    :sys ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+             $(DEST_MAN_PL_U) $(INSTALLMLARGS)
+     :sys ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+             $(DEST_MAN_RU) $(INSTALLMLARGS)
+     :sys ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
++            $(DEST_MAN_RU_K) $(INSTALLMLARGS)
++    :sys ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+             $(DEST_MAN_RU_U) $(INSTALLMLARGS)
+     :del {force} $DEST_MAN/xxd.1
+     :del {force} $(DEST_MAN_FR)/xxd.1 $(DEST_MAN_FR_I)/xxd.1 $(DEST_MAN_FR_U)/xxd.1
+     :del {force} $(DEST_MAN_IT)/xxd.1 $(DEST_MAN_IT_I)/xxd.1 $(DEST_MAN_IT_U)/xxd.1
+-    :del {force} $(DEST_MAN_PL)/xxd.1 $(DEST_MAN_PL_U)/xxd.1
+-    :del {force} $(DEST_MAN_RU)/xxd.1 $(DEST_MAN_RU_U)/xxd.1
++    :del {force} $(DEST_MAN_PL)/xxd.1 $(DEST_MAN_PL_I)/xxd.1 $(DEST_MAN_PL_U)/xxd.1
++    :del {force} $(DEST_MAN_RU)/xxd.1 $(DEST_MAN_RU_K)/xxd.1 $(DEST_MAN_RU_U)/xxd.1
+ 
+     :del {force} $DEST_HELP/*.txt $DEST_HELP/tags $DEST_HELP/*.pl
+     :del {force} $SYS_MENU_FILE $SYS_SYNMENU_FILE $SYS_DELMENU_FILE
