@@ -18,7 +18,7 @@
 #
 %define		_ver		7.0
 %define		_patchlevel	017
-%define		_rel		3.1
+%define		_rel		4
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -821,6 +821,10 @@ install src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
 
+
+# not supported directories
+rm -rf $RPM_BUILD_ROOT%{_mandir}/??.*/
+
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
 
@@ -865,6 +869,9 @@ install src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 %endif
 
 bzip2 -dc %{SOURCE2} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
+# non-existent binaries
+rm -rf $RPM_BUILD_ROOT%{_mandir}/*/man1/{evim,{,g}vimdiff}.1
+
 unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE3}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
@@ -907,6 +914,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/rvim
+%{_mandir}/man1/rvim.*
+%lang(fi) %{_mandir}/fi/man1/rvim.*
+%lang(fr) %{_mandir}/fr/man1/rvim.*
+%lang(id) %{_mandir}/id/man1/rvim.*
+%lang(pl) %{_mandir}/pl/man1/rvim.*
 %{_desktopdir}/%{name}.desktop
 
 %if %{with static}
@@ -914,7 +926,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %defattr(644,root,root,755)
 %attr(755,root,root) /bin/*
-
 %{_mandir}/man1/vi.1*
 %{_mandir}/man1/ex.1*
 %{_mandir}/man1/view.1*
@@ -924,10 +935,6 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fi) %{_mandir}/fi/man1/view.1*
 %lang(fi) %{_mandir}/fi/man1/rview.1*
 %lang(fr) %{_mandir}/fr/man1/vi.1*
-%lang(fr) %{_mandir}/fr/man1/evim.1*
-%lang(fr) %{_mandir}/fr/man1/vim.1*
-%lang(fr) %{_mandir}/fr/man1/vimdiff.1*
-%lang(fr) %{_mandir}/fr/man1/vimtutor.1*
 %lang(fr) %{_mandir}/fr/man1/ex.1*
 %lang(fr) %{_mandir}/fr/man1/view.1*
 %lang(fr) %{_mandir}/fr/man1/rview.1*
@@ -935,20 +942,16 @@ rm -rf $RPM_BUILD_ROOT
 %lang(id) %{_mandir}/id/man1/ex.1*
 %lang(id) %{_mandir}/id/man1/view.1*
 %lang(id) %{_mandir}/id/man1/rview.1*
+#%lang(it) %{_mandir}/it/man1/vi.1*
 %lang(it) %{_mandir}/it/man1/ex.1*
-%lang(it) %{_mandir}/it/man1/evim.1*
 %lang(it) %{_mandir}/it/man1/view.1*
 %lang(it) %{_mandir}/it/man1/rview.1*
 %lang(pl) %{_mandir}/pl/man1/vi.1*
-%lang(pl) %{_mandir}/pl/man1/evim.1*
-%lang(pl) %{_mandir}/pl/man1/vim.1*
-%lang(pl) %{_mandir}/pl/man1/vimdiff.1*
-%lang(pl) %{_mandir}/pl/man1/vimtutor.1*
 %lang(pl) %{_mandir}/pl/man1/ex.1*
 %lang(pl) %{_mandir}/pl/man1/view.1*
 %lang(pl) %{_mandir}/pl/man1/rview.1*
+#%lang(ru) %{_mandir}/ru/man1/vi.1*
 %lang(ru) %{_mandir}/ru/man1/ex.1*
-%lang(ru) %{_mandir}/ru/man1/evim.1*
 %lang(ru) %{_mandir}/ru/man1/view.1*
 %lang(ru) %{_mandir}/ru/man1/rview.1*
 
@@ -1038,7 +1041,6 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW/
-
 %dir %{_datadir}/vim/v*/spell
 %{_datadir}/vim/v*/spell/cleanadd.vim
 %lang(en_GB) %{_datadir}/vim/v*/spell/en.*.*
@@ -1055,28 +1057,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/compiler
 %{_datadir}/vim/v*/autoload
 %{_datadir}/vim/v*/*.vim
-
 %{_mandir}/man1/vim*
-%{_mandir}/man1/rvim.*
 %lang(fi) %{_mandir}/fi/man1/vim*
-%lang(fi) %{_mandir}/fi/man1/rvim.*
-%lang(fi) %{_mandir}/fi/man1/gvi*
-%lang(fi) %{_mandir}/fi/man1/rgv*
 %lang(fr) %{_mandir}/fr/man1/vim*
-%lang(fr) %{_mandir}/fr/man1/rvim.*
-%lang(fr) %{_mandir}/fr/man1/gvi*
-%lang(fr) %{_mandir}/fr/man1/rgv*
 %lang(id) %{_mandir}/id/man1/vim*
-%lang(id) %{_mandir}/id/man1/rvim.*
-%lang(id) %{_mandir}/id/man1/gvi*
-%lang(id) %{_mandir}/id/man1/rgv*
 %lang(it) %{_mandir}/it/man1/vim*
 %lang(pl) %{_mandir}/pl/man1/vim*
-%lang(pl) %{_mandir}/pl/man1/rvim.*
-%lang(pl) %{_mandir}/pl/man1/gvi*
-%lang(pl) %{_mandir}/pl/man1/rgv*
 %lang(ru) %{_mandir}/ru/man1/vim*
-
 %{_iconsdir}/hicolor/16x16/apps/vim.png
 %{_iconsdir}/hicolor/32x32/apps/vim.png
 %{_iconsdir}/hicolor/48x48/apps/vim.png
@@ -1098,10 +1085,19 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gtk}
 %files -n gvim-gtk
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/gview
 %attr(755,root,root) %{_bindir}/gvim.gtk
 %attr(755,root,root) %{_bindir}/rgvim
 %attr(755,root,root) %{_bindir}/rgview
 %attr(755,root,root) %verify(not link) %{_bindir}/gvim
+%lang(fi) %{_mandir}/fi/man1/gvi*
+%lang(fi) %{_mandir}/fi/man1/rgv*
+%lang(fr) %{_mandir}/fr/man1/gvi*
+%lang(fr) %{_mandir}/fr/man1/rgv*
+%lang(id) %{_mandir}/id/man1/gvi*
+%lang(id) %{_mandir}/id/man1/rgv*
+%lang(pl) %{_mandir}/pl/man1/gvi*
+%lang(pl) %{_mandir}/pl/man1/rgv*
 %{_desktopdir}/gvim-gtk.desktop
 %endif
 
