@@ -19,8 +19,8 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	017
-%define		_rel		3
+%define		_patchlevel	022
+%define		_rel		1
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -107,6 +107,11 @@ Patch214:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.014
 Patch215:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.015
 Patch216:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.016
 Patch217:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.017
+Patch218:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.018
+Patch219:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.019
+Patch220:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.020
+Patch221:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.021
+Patch222:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.022
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -560,6 +565,11 @@ element bonobo.
 %patch215 -p0
 %patch216 -p0
 %patch217 -p0
+%patch218 -p0
+%patch219 -p0
+%patch220 -p0
+%patch221 -p0
+%patch222 -p0
 
 # bonobo
 %if %{with bonobo}
