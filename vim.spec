@@ -18,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	022
+%define		_patchlevel	035
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -112,6 +112,21 @@ Patch219:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.019
 Patch220:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.020
 Patch221:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.021
 Patch222:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.022
+Patch223:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.023
+Patch224:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.024
+Patch225:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.025
+Patch226:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.026
+# patches for -extra
+#Patch227:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.027
+#Patch228:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.028
+Patch229:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.029
+Patch230:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.030
+Patch231:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.031
+# patch for -extra
+#Patch232:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.032
+Patch233:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.033
+Patch234:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.034
+Patch235:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.035
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -573,6 +588,21 @@ element bonobo.
 %patch220 -p0
 %patch221 -p0
 %patch222 -p0
+%patch223 -p0
+%patch224 -p0
+%patch225 -p0
+%patch226 -p0
+# patches for -extra
+#%patch227 -p0
+#%patch228 -p0
+%patch229 -p0
+%patch230 -p0
+%patch231 -p0
+# patch for -extra
+#%patch232 -p0
+%patch233 -p0
+%patch234 -p0
+%patch235 -p0
 
 # bonobo
 %if %{with bonobo}
