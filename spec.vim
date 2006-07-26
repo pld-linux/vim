@@ -41,6 +41,7 @@ syn match specManpageFile '[a-zA-Z]\.1'
 
 " Day, Month and most used license acronyms
 syn keyword specLicense contained GPL LGPL BSD MIT GNU Apache PHP
+syn keyword specLicenseWarning contained unknown
 syn keyword specWeekday contained Mon Tue Wed Thu Fri Sat Sun
 syn keyword specMonth   contained Jan Feb Mar Apr Jun Jul Aug Sep Oct Nov Dec
 syn keyword specMonth   contained January February March April May June July August September October November December
@@ -151,7 +152,7 @@ syn region specPreAmbleDeprecated oneline matchgroup=specError start='^\(Copyrig
 syn region specPreAmble oneline matchgroup=specCommand
 	\ start='\(^\|\(^%{!\??\(with\(out\)\?_[a-zA-Z0-9_]\+\|debug\):\)\@<=\)\(Summary\|Name\|Version\|Packager\|Requires\|Icon\|URL\|Source\d*\|Patch\d*\|Prefix\|Packager\|Group\|License\|Release\|BuildRoot\|Distribution\|Vendor\|Provides\|ExclusiveArch\|ExcludeArch\|ExclusiveOS\|Obsoletes\|BuildArch\|BuildArchitectures\|BuildRequires\|BuildConflicts\|Conflicts\|AutoRequires\|AutoReqProv\|AutoReq\|AutoProv\|Epoch\|NoSource\)'
 	\ end='$\|}\@='
-	\ contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
+	\ contains=specEmail,specURL,specURLMacro,specLicense,specLicenseWarning,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
 
 " %% Description Section %%
 syn region specDescriptionArea matchgroup=specSection start='^%description' end='^%'me=e-1
@@ -262,6 +263,7 @@ if version >= 508 || !exists("did_spec_syntax_inits")
   HiLink specFilesDirective		specSectionMacro
   HiLink specFilesOpts			specOpts
   HiLink specLicense			String
+  HiLink specLicenseWarning		specError
   HiLink specMacroNameLocal		specGlobalMacro
   HiLink specMacroNameOther		specGlobalMacro
   HiLink specManpageFile		NONE
