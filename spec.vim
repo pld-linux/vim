@@ -42,6 +42,7 @@ syn match specManpageFile '[a-zA-Z]\.1'
 " Day, Month and most used license acronyms
 syn keyword specLicense contained GPL LGPL BSD MIT GNU Apache PHP
 syn keyword specLicenseWarning contained unknown
+syn match specLicenseWarning contained /same as perl/
 syn keyword specWeekday contained Mon Tue Wed Thu Fri Sat Sun
 syn keyword specMonth   contained Jan Feb Mar Apr Jun Jul Aug Sep Oct Nov Dec
 syn keyword specMonth   contained January February March April May June July August September October November December
