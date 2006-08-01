@@ -18,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	039
+%define		_patchlevel	042
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -131,6 +131,9 @@ Patch236:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.036
 Patch237:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.037
 Patch238:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.038
 Patch239:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.039
+Patch240:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.040
+Patch241:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.041
+Patch242:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.042
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -683,7 +686,7 @@ LDFLAGS="%{rpmldflags} -static"
 	--disable-multibyte \
 	%{?with_bonobo:--disable-bonobo} \
 	--with-features=small \
-	--with-tlib=tinfo \
+	--with-tlib="ncurses -ltinfo" \
 	--disable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
@@ -739,6 +742,7 @@ mv -f vim bin/vim.ncurses
 	--enable-fontset \
 	--disable-gpm \
 	--without-gnome \
+	--with-tlib="ncurses -ltinfo" \
 	--enable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
@@ -768,6 +772,7 @@ mv -f vim bin/gvim.athena
 	--enable-fontset \
 	--disable-gpm \
 	--without-gnome \
+	--with-tlib="ncurses -ltinfo" \
 	--enable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
@@ -794,6 +799,7 @@ mv -f vim bin/gvim.motif
 	%{?with_bonobo:--disable-bonobo} \
 	--disable-gpm \
 	--enable-cscope \
+	--with-tlib="ncurses -ltinfo" \
 	--enable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
@@ -821,6 +827,7 @@ mv -f vim bin/gvim.gtk
 	%{?with_tcl:--enable-tclinterp} \
 	--disable-gpm \
 	--enable-cscope \
+	--with-tlib="ncurses -ltinfo" \
 	--enable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
