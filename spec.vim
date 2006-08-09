@@ -41,9 +41,6 @@ syn match specManpageFile '[a-zA-Z]\.1'
 
 " Day, Month and most used license acronyms
 syn keyword specLicense contained GPL LGPL BSD MIT GNU Apache PHP
-syn keyword specLicenseWarning contained unknown
-syn match specLicenseWarning contained /same as perl/
-syn match specLicenseWarning contained "(enter GPL/LGPL/BSD/BSD-like/Artistic/other license name here)"
 syn keyword specWeekday contained Mon Tue Wed Thu Fri Sat Sun
 syn keyword specMonth   contained Jan Feb Mar Apr Jun Jul Aug Sep Oct Nov Dec
 syn keyword specMonth   contained January February March April May June July August September October November December
@@ -72,7 +69,7 @@ syn match   specTarCommand contained '\<tar\s\+[cxvpzjf]\{,5}\s*'
 syn match   specMacro contained '%\(group\|user\)\(add\|remove\)'
 syn match   specMacro contained '%\(depmod\|banner\|service\|addusertogroup\)'
 syn match   specMacro contained '%\(\(nsplugin\|apache_config\)_\(un\)\?install\)'
-syn match   specMacro contained '%\(\(openldap_schema\|webapp\)_\(un\)\?register\)'
+syn match   specMacro contained '%\(webapp_\(un\)\?register\)'
 syn match   specMacro contained '%\(pear_package_\(setup\|install\)\)'
 syn match   specMacro contained '%\(py_o\?comp\|py_postclean\)'
 
@@ -154,7 +151,7 @@ syn region specPreAmbleDeprecated oneline matchgroup=specError start='^\(Copyrig
 syn region specPreAmble oneline matchgroup=specCommand
 	\ start='\(^\|\(^%{!\??\(with\(out\)\?_[a-zA-Z0-9_]\+\|debug\):\)\@<=\)\(Summary\|Name\|Version\|Packager\|Requires\|Icon\|URL\|Source\d*\|Patch\d*\|Prefix\|Packager\|Group\|License\|Release\|BuildRoot\|Distribution\|Vendor\|Provides\|ExclusiveArch\|ExcludeArch\|ExclusiveOS\|Obsoletes\|BuildArch\|BuildArchitectures\|BuildRequires\|BuildConflicts\|Conflicts\|AutoRequires\|AutoReqProv\|AutoReq\|AutoProv\|Epoch\|NoSource\)'
 	\ end='$\|}\@='
-	\ contains=specEmail,specURL,specURLMacro,specLicense,specLicenseWarning,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
+	\ contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
 
 " %% Description Section %%
 syn region specDescriptionArea matchgroup=specSection start='^%description' end='^%'me=e-1
@@ -167,7 +164,7 @@ syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e
 " %% Scripts Section %%
 syn region specScriptArea matchgroup=specSection
 	\ start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\|pretrans\|posttrans\|verifyscript\|check\)\>'
-	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|cmake\|useradd\|groupadd\|addusertogroup\|banner\|service\|py_o\?comp\|py_postclean\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|\(openldap_schema\|webapp\)_\(un\)\?register\|depmod\|pear_package_\(setup\|install\)\)\>'
+	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|cmake\|useradd\|groupadd\|addusertogroup\|banner\|service\|py_o\?comp\|py_postclean\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|webapp_\(un\)\?register\|depmod\|pear_package_\(setup\|install\)\)\>'
 	\ end='^%'me=e-1
 	\ contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
 " XXX don't forget to update specMacro when updating specScriptArea skip definition
@@ -265,7 +262,6 @@ if version >= 508 || !exists("did_spec_syntax_inits")
   HiLink specFilesDirective		specSectionMacro
   HiLink specFilesOpts			specOpts
   HiLink specLicense			String
-  HiLink specLicenseWarning		specError
   HiLink specMacroNameLocal		specGlobalMacro
   HiLink specMacroNameOther		specGlobalMacro
   HiLink specManpageFile		NONE
