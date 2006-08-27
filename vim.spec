@@ -149,7 +149,8 @@ Patch253:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.053
 Patch254:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.054
 Patch255:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.055
 Patch256:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.056
-Patch257:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.057
+# patch for -extra
+#Patch257:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.057
 Patch258:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.058
 Patch259:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.059
 Patch260:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.060
@@ -157,7 +158,8 @@ Patch261:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.061
 Patch262:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.062
 Patch263:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.063
 Patch264:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.064
-Patch265:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.065
+# patch for -extra
+#Patch265:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.065
 Patch266:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.066
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
