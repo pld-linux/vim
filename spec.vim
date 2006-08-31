@@ -70,7 +70,7 @@ syn match   specTarCommand contained '\<tar\s\+[cxvpzjf]\{,5}\s*'
 
 " XXX don't forget to update specScriptArea when updating specMacro
 syn match   specMacro contained '%\(group\|user\)\(add\|remove\)'
-syn match   specMacro contained '%\(depmod\|banner\|service\|addusertogroup\)'
+syn match   specMacro contained '%\(depmod\|banner\|service\|addusertogroup\|env_update\)'
 syn match   specMacro contained '%\(\(nsplugin\|apache_config\)_\(un\)\?install\)'
 syn match   specMacro contained '%\(\(openldap_schema\|webapp\)_\(un\)\?register\)'
 syn match   specMacro contained '%\(pear_package_\(setup\|install\)\)'
@@ -167,7 +167,7 @@ syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e
 " %% Scripts Section %%
 syn region specScriptArea matchgroup=specSection
 	\ start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\|pretrans\|posttrans\|verifyscript\|check\)\>'
-	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|cmake\|useradd\|groupadd\|addusertogroup\|banner\|service\|py_o\?comp\|py_postclean\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|\(openldap_schema\|webapp\)_\(un\)\?register\|depmod\|pear_package_\(setup\|install\)\)\>'
+	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|GNUconfigure\|setup\|find_lang\|makeinstall\|cmake\|useradd\|groupadd\|addusertogroup\|banner\|service\|env_update\|py_o\?comp\|py_postclean\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|\(openldap_schema\|webapp\)_\(un\)\?register\|depmod\|pear_package_\(setup\|install\)\)\>'
 	\ end='^%'me=e-1
 	\ contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
 " XXX don't forget to update specMacro when updating specScriptArea skip definition
