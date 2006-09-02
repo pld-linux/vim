@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	063
+%define		_patchlevel	078
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -156,6 +156,23 @@ Patch260:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.060
 Patch261:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.061
 Patch262:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.062
 Patch263:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.063
+Patch264:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.064
+# patch for -extra
+#Patch265:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.065
+Patch266:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.066
+Patch267:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.067
+Patch268:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.068
+Patch269:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.069
+Patch270:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.070
+Patch271:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.071
+Patch272:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.072
+Patch273:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.073
+# patch for -extra
+#Patch274:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.074
+Patch275:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.075
+Patch276:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.076
+Patch277:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.077
+Patch278:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.078
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -660,6 +677,23 @@ element bonobo.
 %patch261 -p0
 %patch262 -p0
 %patch263 -p0
+%patch264 -p0
+# patch for -extra
+#%patch265 -p0
+%patch266 -p0
+%patch267 -p0
+%patch268 -p0
+%patch269 -p0
+%patch270 -p0
+%patch271 -p0
+%patch272 -p0
+%patch273 -p0
+# patch for -extra
+#%patch274 -p0
+%patch275 -p0
+%patch276 -p0
+%patch277 -p0
+%patch278 -p0
 
 
 # bonobo
