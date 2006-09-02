@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	078
+%define		_patchlevel	081
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -173,6 +173,9 @@ Patch275:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.075
 Patch276:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.076
 Patch277:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.077
 Patch278:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.078
+Patch279:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.079
+Patch280:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.080
+Patch281:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.081
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -694,6 +697,9 @@ element bonobo.
 %patch276 -p0
 %patch277 -p0
 %patch278 -p0
+%patch279 -p0
+%patch280 -p0
+%patch281 -p0
 
 
 # bonobo
@@ -928,7 +934,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
 	$RPM_BUILD_ROOT%{_desktopdir}
 
-%{__make} install \
+%{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
