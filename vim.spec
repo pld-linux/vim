@@ -182,7 +182,7 @@ BuildRequires:	libbonoboui-devel >= 2.2.0
 BuildRequires:	libgnomeui-devel >= 2.2.0.1
 BuildRequires:	nautilus-devel >= 2.2.0
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.210
+BuildRequires:	rpmbuild(macros) >= 1.311
 %if %{with static}
 BuildRequires:	acl-static
 BuildRequires:	attr-static
@@ -1024,19 +1024,19 @@ rm -rf $RPM_BUILD_ROOT
 
 %post -n gvim-gtk
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
-gtk-update-icon-cache -qf %{_datadir}/icons/hicolor
+%update_icon_cache hicolor
 
 %postun -n gvim-gtk
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
-gtk-update-icon-cache -qf %{_datadir}/icons/hicolor
+%update_icon_cache hicolor
 
 %post -n gvim-gnome
 %update_desktop_database_post
-gtk-update-icon-cache -qf %{_datadir}/icons/hicolor
+%update_icon_cache hicolor
 
 %postun -n gvim-gnome
 %update_desktop_database_postun
-gtk-update-icon-cache -qf %{_datadir}/icons/hicolor
+%update_icon_cache hicolor
 
 %files
 %defattr(644,root,root,755)
