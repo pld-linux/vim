@@ -802,7 +802,7 @@ LDFLAGS="%{rpmldflags}"
 	--enable-gpm \
 	--with-features=huge \
 	--enable-multibyte \
-	--with-tlib=ncurses \
+	--with-tlib="ncurses -ltinfo" \
 	--enable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
