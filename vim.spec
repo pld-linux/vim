@@ -203,6 +203,7 @@ Provides:	vi-editor
 Provides:	vi
 Obsoletes:	vim-enhanced
 Obsoletes:	vim-ispell
+Obsoletes:	vim-plugin-multvals
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # that's example script
