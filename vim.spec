@@ -18,7 +18,7 @@
 #
 %define		_ver		7.0
 %define		_patchlevel	081
-%define		_rel		1
+%define		_rel		2
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -88,6 +88,7 @@ Patch102:	%{name}-gtkfilechooser.patch
 Patch103:	%{name}-gtkfilechooser-bonobo.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-selinux.patch
+Patch106:	%{name}-fstab-uuid.patch
 Patch201:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.001
 Patch202:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.002
 Patch203:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.003
@@ -715,6 +716,8 @@ element bonobo.
 
 # selinux
 %{?with_selinux:%patch105 -p1}
+
+%patch106 -p1
 
 install %{SOURCE14} runtime/indent
 install %{SOURCE15} runtime/colors
