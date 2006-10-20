@@ -40,7 +40,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{_ver}.tar.bz2
 # Source0-md5:	4ca69757678272f718b1041c810d82d8
-Source1:	ftp://ftp.vim.org/pub/vim/extra/vim-%{_ver}-lang.tar.gz
+Source1:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{_ver}-lang.tar.gz
 # Source1-md5:	6d43efaff570b5c86e76b833ea0c6a04
 Source2:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source2-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
@@ -56,8 +56,8 @@ Source15:	zenburn.%{name}
 Source16:	spec.%{name}
 # http://www.vim.org/scripts/script.php?script_id=1491 (0.5)
 Source17:	javascript.%{name}
-Source18:	nagios.vim
-Source19:	vim-ftplugin-spec.vim
+Source18:	nagios.%{name}
+Source19:	%{name}-ftplugin-spec.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -88,95 +88,96 @@ Patch102:	%{name}-gtkfilechooser.patch
 Patch103:	%{name}-gtkfilechooser-bonobo.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-selinux.patch
-Patch201:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.001
-Patch202:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.002
-Patch203:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.003
-Patch204:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.004
+Patch201:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.001
+Patch202:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.002
+Patch203:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.003
+Patch204:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.004
 # patch for -extra
-#Patch205:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.005
-Patch206:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.006
-Patch207:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.007
-Patch208:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.008
-Patch209:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.009
-Patch210:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.010
-Patch211:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.011
-Patch212:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.012
-Patch213:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.013
-Patch214:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.014
-Patch215:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.015
-Patch216:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.016
-Patch217:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.017
-Patch218:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.018
-Patch219:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.019
-Patch220:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.020
-Patch221:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.021
-Patch222:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.022
-Patch223:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.023
-Patch224:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.024
-Patch225:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.025
-Patch226:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.026
+#Patch205:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.005
+Patch206:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.006
+Patch207:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.007
+Patch208:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.008
+Patch209:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.009
+Patch210:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.010
+Patch211:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.011
+Patch212:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.012
+Patch213:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.013
+Patch214:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.014
+Patch215:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.015
+Patch216:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.016
+Patch217:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.017
+Patch218:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.018
+Patch219:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.019
+Patch220:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.020
+Patch221:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.021
+Patch222:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.022
+Patch223:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.023
+Patch224:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.024
+Patch225:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.025
+Patch226:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.026
 # patches for -extra
-#Patch227:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.027
-#Patch228:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.028
-Patch229:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.029
-Patch230:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.030
-Patch231:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.031
+#Patch227:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.027
+#Patch228:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.028
+Patch229:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.029
+Patch230:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.030
+Patch231:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.031
 # patch for -extra
-#Patch232:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.032
-Patch233:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.033
-Patch234:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.034
-Patch235:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.035
-Patch236:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.036
-Patch237:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.037
-Patch238:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.038
-Patch239:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.039
-Patch240:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.040
-Patch241:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.041
-Patch242:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.042
-Patch243:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.043
-Patch244:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.044
+#Patch232:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.032
+Patch233:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.033
+Patch234:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.034
+Patch235:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.035
+Patch236:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.036
+Patch237:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.037
+Patch238:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.038
+Patch239:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.039
+Patch240:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.040
+Patch241:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.041
+Patch242:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.042
+Patch243:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.043
+Patch244:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.044
 # patch for -extra
-#Patch245:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.045
-Patch246:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.046
-Patch247:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.047
-Patch248:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.048
-Patch249:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.049
-Patch250:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.050
-Patch251:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.051
-Patch252:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.052
-Patch253:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.053
-Patch254:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.054
-Patch255:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.055
-Patch256:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.056
+#Patch245:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.045
+Patch246:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.046
+Patch247:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.047
+Patch248:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.048
+Patch249:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.049
+Patch250:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.050
+Patch251:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.051
+Patch252:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.052
+Patch253:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.053
+Patch254:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.054
+Patch255:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.055
+Patch256:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.056
 # patch for -extra
-#Patch257:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.057
-Patch258:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.058
-Patch259:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.059
-Patch260:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.060
-Patch261:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.061
-Patch262:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.062
-Patch263:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.063
-Patch264:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.064
+#Patch257:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.057
+Patch258:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.058
+Patch259:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.059
+Patch260:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.060
+Patch261:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.061
+Patch262:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.062
+Patch263:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.063
+Patch264:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.064
 # patch for -extra
-#Patch265:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.065
-Patch266:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.066
-Patch267:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.067
-Patch268:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.068
-Patch269:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.069
-Patch270:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.070
-Patch271:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.071
-Patch272:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.072
-Patch273:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.073
+#Patch265:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.065
+Patch266:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.066
+Patch267:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.067
+Patch268:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.068
+Patch269:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.069
+Patch270:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.070
+Patch271:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.071
+Patch272:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.072
+Patch273:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.073
 # patch for -extra
-#Patch274:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.074
-Patch275:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.075
-Patch276:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.076
-Patch277:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.077
-Patch278:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.078
-Patch279:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.079
-Patch280:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.080
-Patch281:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.081
+#Patch274:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.074
+Patch275:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.075
+Patch276:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.076
+Patch277:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.077
+Patch278:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.078
+Patch279:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.079
+Patch280:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.080
+Patch281:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.081
 URL:		http://www.vim.org/
+%{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -190,7 +191,6 @@ BuildRequires:	ncurses-devel
 %{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	XFree86-devel}
 Obsoletes:	kvim
 %if %{with bonobo}
 BuildRequires:	ORBit2-devel
@@ -585,7 +585,7 @@ Wersja edytora Vim pracuj±ca w ¶rodowisku X Window, zbudowana jako
 element bonobo.
 
 %prep
-%setup -q -n vim70 -b1
+%setup -q -n %{name}70 -b1
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
