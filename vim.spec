@@ -199,7 +199,7 @@ BuildRequires:	libbonoboui-devel >= 2.2.0
 BuildRequires:	libgnomeui-devel >= 2.2.0.1
 BuildRequires:	nautilus-devel >= 2.2.0
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.210
+BuildRequires:	rpmbuild(macros) >= 1.311
 %if %{with static}
 BuildRequires:	acl-static
 BuildRequires:	attr-static
@@ -777,7 +777,7 @@ LDFLAGS="%{rpmldflags} -static"
 	--disable-multibyte \
 	%{?with_bonobo:--disable-bonobo} \
 	--with-features=small \
-	--with-tlib=tinfo \
+	--with-tlib="ncurses -ltinfo" \
 	--disable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
@@ -834,6 +834,7 @@ mv -f vim bin/vim.ncurses
 	--enable-fontset \
 	--disable-gpm \
 	--without-gnome \
+	--with-tlib="ncurses -ltinfo" \
 	--enable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
@@ -864,6 +865,7 @@ mv -f vim bin/gvim.athena
 	--enable-fontset \
 	--disable-gpm \
 	--without-gnome \
+	--with-tlib="ncurses -ltinfo" \
 	--enable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
@@ -891,6 +893,7 @@ mv -f vim bin/gvim.motif
 	%{?with_bonobo:--disable-bonobo} \
 	--disable-gpm \
 	--enable-cscope \
+	--with-tlib="ncurses -ltinfo" \
 	--enable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
@@ -919,6 +922,7 @@ mv -f vim bin/gvim.gtk
 	%{?with_tcl:--enable-tclinterp} \
 	--disable-gpm \
 	--enable-cscope \
+	--with-tlib="ncurses -ltinfo" \
 	--enable-nls \
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
