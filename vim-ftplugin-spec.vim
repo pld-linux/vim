@@ -8,5 +8,8 @@
 
 "setlocal tw=70
 
-map <F8> :!rpmbuild -bb %<CR>
+map <F5> :!./builder -5 %<CR>
 map <F6> :!./adapter %<CR>
+map <F8> :!rpmbuild -bb %<CR>
+map <F9> :!cvs diff -u % \| diffcol \| less -nR<CR>
+map <F10> :!./builder -bb -R -u %<CR>
