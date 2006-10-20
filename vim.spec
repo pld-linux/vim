@@ -283,7 +283,7 @@ Edytor tekstu podobny do Vi. Wa¿ne ulepszenia: mo¿liwo¶æ pracy w wielu
 oknach, wielopoziomowa opcja 'cofnij', bloki, pod¶wietlanie sk³adni,
 folding i wiele innych.
 
-%description -l ja
+%description -l pt
 O VIM (VIsual editor iMproved) é uma versão melhorada e actualizada do
 editor vi. O vi foi o primeiro verdadeiro editor baseado em ecrã para
 o UNIX, e ainda é muito popular. O VIM melhora o vi acrescentando
