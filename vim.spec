@@ -17,8 +17,8 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	066
-%define		_rel		1
+%define		_patchlevel	081
+%define		_rel		2
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -161,6 +161,22 @@ Patch264:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.064
 # patch for -extra
 #Patch265:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.065
 Patch266:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.066
+Patch267:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.067
+Patch268:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.068
+Patch269:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.069
+Patch270:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.070
+Patch271:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.071
+Patch272:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.072
+Patch273:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.073
+# patch for -extra
+#Patch274:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.074
+Patch275:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.075
+Patch276:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.076
+Patch277:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.077
+Patch278:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.078
+Patch279:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.079
+Patch280:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.080
+Patch281:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.081
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -674,7 +690,7 @@ element bonobo.
 %patch254 -p0
 %patch255 -p0
 %patch256 -p0
-# patch for windows
+# patch for -extra
 #%patch257 -p0
 %patch258 -p0
 %patch259 -p0
@@ -683,9 +699,26 @@ element bonobo.
 %patch262 -p0
 %patch263 -p0
 %patch264 -p0
-# patch for mac
-# %patch265 -p0
+# patch for -extra
+#%patch265 -p0
 %patch266 -p0
+%patch267 -p0
+%patch268 -p0
+%patch269 -p0
+%patch270 -p0
+%patch271 -p0
+%patch272 -p0
+%patch273 -p0
+# patch for -extra
+#%patch274 -p0
+%patch275 -p0
+%patch276 -p0
+%patch277 -p0
+%patch278 -p0
+%patch279 -p0
+%patch280 -p0
+%patch281 -p0
+
 
 # bonobo
 %if %{with bonobo}
