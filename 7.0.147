@@ -1,0 +1,297 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.147
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.147
+Problem:    When creating a session file and there are several tab pages and
+            some windows have a local directory a short file name may be used
+            when it's not valid. (Marius Roets)
+            A session with multiple tab pages may result in "No Name" buffers.
+            (Bill McCarthy)
+Solution:   Don't enter tab pages when going through the list, only use a
+            pointer to the first window in each tab page.
+            Use "tabedit" instead of "tabnew | edit" when possible.
+Files:      src/ex_docmd.c
+
+
+*** ../vim-7.0.146/src/ex_docmd.c	Sun Sep 10 21:05:39 2006
+--- src/ex_docmd.c	Tue Oct 24 12:55:11 2006
+***************
+*** 9643,9649 ****
+  #endif
+  
+  #ifdef FEAT_SESSION
+! static int ses_winsizes __ARGS((FILE *fd, int restore_size));
+  static int ses_win_rec __ARGS((FILE *fd, frame_T *fr));
+  static frame_T *ses_skipframe __ARGS((frame_T *fr));
+  static int ses_do_frame __ARGS((frame_T *fr));
+--- 9643,9650 ----
+  #endif
+  
+  #ifdef FEAT_SESSION
+! static int ses_winsizes __ARGS((FILE *fd, int restore_size,
+! 							win_T *tab_firstwin));
+  static int ses_win_rec __ARGS((FILE *fd, frame_T *fr));
+  static frame_T *ses_skipframe __ARGS((frame_T *fr));
+  static int ses_do_frame __ARGS((frame_T *fr));
+***************
+*** 9669,9676 ****
+      win_T	*wp;
+      char_u	*sname;
+      win_T	*edited_win = NULL;
+-     tabpage_T	*old_curtab = curtab;
+      int		tabnr;
+  
+      if (ssop_flags & SSOP_BUFFERS)
+  	only_save_windows = FALSE;		/* Save ALL buffers */
+--- 9670,9677 ----
+      win_T	*wp;
+      char_u	*sname;
+      win_T	*edited_win = NULL;
+      int		tabnr;
++     win_T	*tab_firstwin;
+  
+      if (ssop_flags & SSOP_BUFFERS)
+  	only_save_windows = FALSE;		/* Save ALL buffers */
+***************
+*** 9778,9791 ****
+      /*
+       * May repeat putting Windows for each tab, when "tabpages" is in
+       * 'sessionoptions'.
+       */
+      for (tabnr = 1; ; ++tabnr)
+      {
+  	if ((ssop_flags & SSOP_TABPAGES))
+  	{
+! 	    goto_tabpage(tabnr);
+! 	    if (tabnr > 1 && put_line(fd, "tabnew") == FAIL)
+! 		return FAIL;
+  	}
+  
+  	/*
+--- 9779,9804 ----
+      /*
+       * May repeat putting Windows for each tab, when "tabpages" is in
+       * 'sessionoptions'.
++      * Don't use goto_tabpage(), it may change directory and trigger
++      * autocommands.
+       */
++     tab_firstwin = firstwin;	/* first window in tab page "tabnr" */
+      for (tabnr = 1; ; ++tabnr)
+      {
++ 	int  need_tabnew = FALSE;
++ 
+  	if ((ssop_flags & SSOP_TABPAGES))
+  	{
+! 	    tabpage_T *tp = find_tabpage(tabnr);
+! 
+! 	    if (tp == NULL)
+! 		break;		/* done all tab pages */
+! 	    if (tp == curtab)
+! 		tab_firstwin = firstwin;
+! 	    else
+! 		tab_firstwin = tp->tp_firstwin;
+! 	    if (tabnr > 1)
+! 		need_tabnew = TRUE;
+  	}
+  
+  	/*
+***************
+*** 9793,9799 ****
+  	 * is aborted we don't end up with a number of useless windows.
+  	 * This may have side effects! (e.g., compressed or network file).
+  	 */
+! 	for (wp = firstwin; wp != NULL; wp = wp->w_next)
+  	{
+  	    if (ses_do_win(wp)
+  		    && wp->w_buffer->b_ffname != NULL
+--- 9806,9812 ----
+  	 * is aborted we don't end up with a number of useless windows.
+  	 * This may have side effects! (e.g., compressed or network file).
+  	 */
+! 	for (wp = tab_firstwin; wp != NULL; wp = wp->w_next)
+  	{
+  	    if (ses_do_win(wp)
+  		    && wp->w_buffer->b_ffname != NULL
+***************
+*** 9803,9817 ****
+  #endif
+  		    )
+  	    {
+! 		if (fputs("edit ", fd) < 0
+  			|| ses_fname(fd, wp->w_buffer, &ssop_flags) == FAIL)
+  		    return FAIL;
+  		if (!wp->w_arg_idx_invalid)
+  		    edited_win = wp;
+  		break;
+  	    }
+  	}
+  
+  	/*
+  	 * Save current window layout.
+  	 */
+--- 9816,9835 ----
+  #endif
+  		    )
+  	    {
+! 		if (fputs(need_tabnew ? "tabedit " : "edit ", fd) < 0
+  			|| ses_fname(fd, wp->w_buffer, &ssop_flags) == FAIL)
+  		    return FAIL;
++ 		need_tabnew = FALSE;
+  		if (!wp->w_arg_idx_invalid)
+  		    edited_win = wp;
+  		break;
+  	    }
+  	}
+  
++ 	/* If no file got edited create an empty tab page. */
++ 	if (need_tabnew && put_line(fd, "tabnew") == FAIL)
++ 	    return FAIL;
++ 
+  	/*
+  	 * Save current window layout.
+  	 */
+***************
+*** 9829,9835 ****
+  	 * Remember the window number of the current window after restoring.
+  	 */
+  	nr = 0;
+! 	for (wp = firstwin; wp != NULL; wp = W_NEXT(wp))
+  	{
+  	    if (ses_do_win(wp))
+  		++nr;
+--- 9847,9853 ----
+  	 * Remember the window number of the current window after restoring.
+  	 */
+  	nr = 0;
+! 	for (wp = tab_firstwin; wp != NULL; wp = W_NEXT(wp))
+  	{
+  	    if (ses_do_win(wp))
+  		++nr;
+***************
+*** 9852,9864 ****
+  	 */
+  	if (put_line(fd, "set winheight=1 winwidth=1") == FAIL)
+  	    return FAIL;
+! 	if (nr > 1 && ses_winsizes(fd, restore_size) == FAIL)
+  	    return FAIL;
+  
+  	/*
+  	 * Restore the view of the window (options, file, cursor, etc.).
+  	 */
+! 	for (wp = firstwin; wp != NULL; wp = wp->w_next)
+  	{
+  	    if (!ses_do_win(wp))
+  		continue;
+--- 9870,9882 ----
+  	 */
+  	if (put_line(fd, "set winheight=1 winwidth=1") == FAIL)
+  	    return FAIL;
+! 	if (nr > 1 && ses_winsizes(fd, restore_size, tab_firstwin) == FAIL)
+  	    return FAIL;
+  
+  	/*
+  	 * Restore the view of the window (options, file, cursor, etc.).
+  	 */
+! 	for (wp = tab_firstwin; wp != NULL; wp = wp->w_next)
+  	{
+  	    if (!ses_do_win(wp))
+  		continue;
+***************
+*** 9879,9897 ****
+  	 * Restore window sizes again after jumping around in windows, because
+  	 * the current window has a minimum size while others may not.
+  	 */
+! 	if (nr > 1 && ses_winsizes(fd, restore_size) == FAIL)
+  	    return FAIL;
+  
+  	/* Don't continue in another tab page when doing only the current one
+  	 * or when at the last tab page. */
+! 	if (!(ssop_flags & SSOP_TABPAGES) || curtab->tp_next == NULL)
+  	    break;
+      }
+  
+      if (ssop_flags & SSOP_TABPAGES)
+      {
+- 	if (valid_tabpage(old_curtab))
+- 	    goto_tabpage_tp(old_curtab);
+  	if (fprintf(fd, "tabnext %d", tabpage_index(curtab)) < 0
+  		|| put_eol(fd) == FAIL)
+  	    return FAIL;
+--- 9897,9913 ----
+  	 * Restore window sizes again after jumping around in windows, because
+  	 * the current window has a minimum size while others may not.
+  	 */
+! 	if (nr > 1 && ses_winsizes(fd, restore_size, tab_firstwin) == FAIL)
+  	    return FAIL;
+  
+  	/* Don't continue in another tab page when doing only the current one
+  	 * or when at the last tab page. */
+! 	if (!(ssop_flags & SSOP_TABPAGES))
+  	    break;
+      }
+  
+      if (ssop_flags & SSOP_TABPAGES)
+      {
+  	if (fprintf(fd, "tabnext %d", tabpage_index(curtab)) < 0
+  		|| put_eol(fd) == FAIL)
+  	    return FAIL;
+***************
+*** 9927,9942 ****
+  }
+  
+      static int
+! ses_winsizes(fd, restore_size)
+      FILE	*fd;
+      int		restore_size;
+  {
+      int		n = 0;
+      win_T	*wp;
+  
+      if (restore_size && (ssop_flags & SSOP_WINSIZE))
+      {
+! 	for (wp = firstwin; wp != NULL; wp = wp->w_next)
+  	{
+  	    if (!ses_do_win(wp))
+  		continue;
+--- 9943,9959 ----
+  }
+  
+      static int
+! ses_winsizes(fd, restore_size, tab_firstwin)
+      FILE	*fd;
+      int		restore_size;
++     win_T	*tab_firstwin;
+  {
+      int		n = 0;
+      win_T	*wp;
+  
+      if (restore_size && (ssop_flags & SSOP_WINSIZE))
+      {
+! 	for (wp = tab_firstwin; wp != NULL; wp = wp->w_next)
+  	{
+  	    if (!ses_do_win(wp))
+  		continue;
+*** ../vim-7.0.146/src/version.c	Fri Oct 20 20:15:05 2006
+--- src/version.c	Tue Oct 24 12:57:04 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     147,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+95. Only communication in your household is through email.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,83 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.134
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.134
+Problem:    Crash when comparing a recursively looped List or Dictionary.
+Solution:   Limit recursiveness for comparing to 1000.
+Files:	    src/eval.c
+
+
+*** ../vim-7.0.133/src/eval.c	Tue Oct 10 12:56:09 2006
+--- src/eval.c	Sun Oct 15 15:08:13 2006
+***************
+*** 5520,5538 ****
+  {
+      char_u	buf1[NUMBUFLEN], buf2[NUMBUFLEN];
+      char_u	*s1, *s2;
+  
+!     if (tv1->v_type != tv2->v_type)
+  	return FALSE;
+  
+      switch (tv1->v_type)
+      {
+  	case VAR_LIST:
+! 	    /* recursive! */
+! 	    return list_equal(tv1->vval.v_list, tv2->vval.v_list, ic);
+  
+  	case VAR_DICT:
+! 	    /* recursive! */
+! 	    return dict_equal(tv1->vval.v_dict, tv2->vval.v_dict, ic);
+  
+  	case VAR_FUNC:
+  	    return (tv1->vval.v_string != NULL
+--- 5520,5546 ----
+  {
+      char_u	buf1[NUMBUFLEN], buf2[NUMBUFLEN];
+      char_u	*s1, *s2;
++     static int  recursive = 0;	    /* cach recursive loops */
++     int		r;
+  
+!     /* Catch lists and dicts that have an endless loop by limiting
+!      * recursiveness to 1000. */
+!     if (tv1->v_type != tv2->v_type || recursive >= 1000)
+  	return FALSE;
+  
+      switch (tv1->v_type)
+      {
+  	case VAR_LIST:
+! 	    ++recursive;
+! 	    r = list_equal(tv1->vval.v_list, tv2->vval.v_list, ic);
+! 	    --recursive;
+! 	    return r;
+  
+  	case VAR_DICT:
+! 	    ++recursive;
+! 	    r = dict_equal(tv1->vval.v_dict, tv2->vval.v_dict, ic);
+! 	    --recursive;
+! 	    return r;
+  
+  	case VAR_FUNC:
+  	    return (tv1->vval.v_string != NULL
+*** ../vim-7.0.133/src/version.c	Sat Oct 14 14:33:21 2006
+--- src/version.c	Sun Oct 15 15:03:30 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     134,
+  /**/
+
+-- 
+It was recently discovered that research causes cancer in rats.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

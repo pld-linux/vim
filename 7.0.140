@@ -1,0 +1,82 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.140
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.140 (after 7.0.134)
+Problem:    Comparing recursively looped List or Dictionary doesn't work well.
+Solution:   Detect comparing a List or Dictionary with itself.
+Files:	    src/eval.c
+
+
+*** ../vim-7.0.139/src/eval.c	Sun Oct 15 22:38:41 2006
+--- src/eval.c	Sun Oct 15 22:30:09 2006
+***************
+*** 5451,5456 ****
+--- 5451,5458 ----
+  {
+      listitem_T	*item1, *item2;
+  
++     if (l1 == l2)
++ 	return TRUE;
+      if (list_len(l1) != list_len(l2))
+  	return FALSE;
+  
+***************
+*** 5487,5492 ****
+--- 5489,5496 ----
+      dictitem_T	*item2;
+      int		todo;
+  
++     if (d1 == d2)
++ 	return TRUE;
+      if (dict_len(d1) != dict_len(d2))
+  	return FALSE;
+  
+***************
+*** 5522,5531 ****
+      static int  recursive = 0;	    /* cach recursive loops */
+      int		r;
+  
+!     /* Catch lists and dicts that have an endless loop by limiting
+!      * recursiveness to 1000. */
+!     if (tv1->v_type != tv2->v_type || recursive >= 1000)
+  	return FALSE;
+  
+      switch (tv1->v_type)
+      {
+--- 5526,5537 ----
+      static int  recursive = 0;	    /* cach recursive loops */
+      int		r;
+  
+!     if (tv1->v_type != tv2->v_type)
+  	return FALSE;
++     /* Catch lists and dicts that have an endless loop by limiting
++      * recursiveness to 1000.  We guess they are equal then. */
++     if (recursive >= 1000)
++ 	return TRUE;
+  
+      switch (tv1->v_type)
+      {
+*** ../vim-7.0.139/src/version.c	Tue Oct 17 13:39:36 2006
+--- src/version.c	Tue Oct 17 15:15:04 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     140,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+54. You start tilting your head sideways to smile. :-)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

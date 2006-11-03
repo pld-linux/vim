@@ -1,0 +1,50 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.121
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.121
+Problem:    GUI: Dragging the last status line doesn't work when there is a
+	    text tabline.  (Markus Wolf)
+Solution:   Take the text tabline into account when deciding to start modeless
+	    selection.
+Files:	    src/gui.c
+
+
+*** ../vim-7.0.120/src/gui.c	Sun Sep 10 21:38:48 2006
+--- src/gui.c	Sun Oct  8 12:47:04 2006
+***************
+*** 2873,2878 ****
+--- 2873,2881 ----
+       */
+      if ((State == NORMAL || State == NORMAL_BUSY || (State & INSERT))
+  	    && Y_2_ROW(y) >= topframe->fr_height
++ # ifdef FEAT_WINDOWS
++ 						+ firstwin->w_winrow
++ # endif
+  	    && button != MOUSE_DRAG
+  # ifdef FEAT_MOUSESHAPE
+  	    && !drag_status_line
+*** ../vim-7.0.120/src/version.c	Fri Oct  6 23:33:22 2006
+--- src/version.c	Sun Oct  8 13:55:58 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     121,
+  /**/
+
+-- 
+If they don't keep on exercising their lips, he thought, their brains
+start working.
+		-- Douglas Adams, "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

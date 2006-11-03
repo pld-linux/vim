@@ -1,0 +1,166 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.117
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.117
+Problem:    Using "extend" on a syntax item inside a region with "keepend", an
+	    intermediate item may be truncated.
+	    When applying the "keepend" and there is an offset to the end
+	    pattern the highlighting of a contained item isn't adjusted.
+Solution:   Use the seen_keepend flag to remember when to apply the "keepend"
+	    flag.  Adjust the keepend highlighting properly. (Ilya Bobir)
+Files:	    src/syntax.c
+
+
+*** ../vim-7.0.116/src/syntax.c	Thu Apr 27 01:58:59 2006
+--- src/syntax.c	Tue Oct  3 17:00:44 2006
+***************
+*** 977,982 ****
+--- 977,983 ----
+  {
+      stateitem_T	*cur_si;
+      int		i;
++     int		seen_keepend;
+  
+      if (startofline)
+      {
+***************
+*** 1002,1008 ****
+      /*
+       * Need to update the end of a start/skip/end that continues from the
+       * previous line.  And regions that have "keepend", because they may
+!      * influence contained items.
+       * Then check for items ending in column 0.
+       */
+      i = current_state.ga_len - 1;
+--- 1003,1012 ----
+      /*
+       * Need to update the end of a start/skip/end that continues from the
+       * previous line.  And regions that have "keepend", because they may
+!      * influence contained items.  If we've just removed "extend"
+!      * (startofline == 0) then we should update ends of normal regions
+!      * contained inside "keepend" because "extend" could have extended
+!      * these "keepend" regions as well as contained normal regions.
+       * Then check for items ending in column 0.
+       */
+      i = current_state.ga_len - 1;
+***************
+*** 1010,1019 ****
+--- 1014,1026 ----
+  	for ( ; i > keepend_level; --i)
+  	    if (CUR_STATE(i).si_flags & HL_EXTEND)
+  		break;
++ 
++     seen_keepend = FALSE;
+      for ( ; i < current_state.ga_len; ++i)
+      {
+  	cur_si = &CUR_STATE(i);
+  	if ((cur_si->si_flags & HL_KEEPEND)
++ 			    || (seen_keepend && !startofline)
+  			    || (i == current_state.ga_len - 1 && startofline))
+  	{
+  	    cur_si->si_h_startpos.col = 0;	/* start highl. in col 0 */
+***************
+*** 1021,1026 ****
+--- 1028,1036 ----
+  
+  	    if (!(cur_si->si_flags & HL_MATCHCONT))
+  		update_si_end(cur_si, (int)current_col, !startofline);
++ 
++ 	    if (!startofline && (cur_si->si_flags & HL_KEEPEND))
++ 		seen_keepend = TRUE;
+  	}
+      }
+      check_keepend();
+***************
+*** 2564,2569 ****
+--- 2574,2580 ----
+  {
+      int		i;
+      lpos_T	maxpos;
++     lpos_T	maxpos_h;
+      stateitem_T	*sip;
+  
+      /*
+***************
+*** 2583,2605 ****
+  	    break;
+  
+      maxpos.lnum = 0;
+      for ( ; i < current_state.ga_len; ++i)
+      {
+  	sip = &CUR_STATE(i);
+  	if (maxpos.lnum != 0)
+  	{
+  	    limit_pos_zero(&sip->si_m_endpos, &maxpos);
+! 	    limit_pos_zero(&sip->si_h_endpos, &maxpos);
+  	    limit_pos_zero(&sip->si_eoe_pos, &maxpos);
+  	    sip->si_ends = TRUE;
+  	}
+! 	if (sip->si_ends
+! 		&& (sip->si_flags & HL_KEEPEND)
+! 		&& (maxpos.lnum == 0
+  		    || maxpos.lnum > sip->si_m_endpos.lnum
+  		    || (maxpos.lnum == sip->si_m_endpos.lnum
+! 			&& maxpos.col > sip->si_m_endpos.col)))
+! 	    maxpos = sip->si_m_endpos;
+      }
+  }
+  
+--- 2594,2623 ----
+  	    break;
+  
+      maxpos.lnum = 0;
++     maxpos_h.lnum = 0;
+      for ( ; i < current_state.ga_len; ++i)
+      {
+  	sip = &CUR_STATE(i);
+  	if (maxpos.lnum != 0)
+  	{
+  	    limit_pos_zero(&sip->si_m_endpos, &maxpos);
+! 	    limit_pos_zero(&sip->si_h_endpos, &maxpos_h);
+  	    limit_pos_zero(&sip->si_eoe_pos, &maxpos);
+  	    sip->si_ends = TRUE;
+  	}
+! 	if (sip->si_ends && (sip->si_flags & HL_KEEPEND))
+! 	{
+! 	    if (maxpos.lnum == 0
+  		    || maxpos.lnum > sip->si_m_endpos.lnum
+  		    || (maxpos.lnum == sip->si_m_endpos.lnum
+! 			&& maxpos.col > sip->si_m_endpos.col))
+! 		maxpos = sip->si_m_endpos;
+! 	    if (maxpos_h.lnum == 0
+! 		    || maxpos_h.lnum > sip->si_h_endpos.lnum
+! 		    || (maxpos_h.lnum == sip->si_h_endpos.lnum
+! 			&& maxpos_h.col > sip->si_h_endpos.col))
+! 		maxpos_h = sip->si_h_endpos;
+! 	}
+      }
+  }
+  
+*** ../vim-7.0.116/src/version.c	Tue Oct  3 16:30:40 2006
+--- src/version.c	Tue Oct  3 16:59:50 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     117,
+  /**/
+
+-- 
+For humans, honesty is a matter of degree.  Engineers are always honest in
+matters of technology and human relationships.  That's why it's a good idea
+to keep engineers away from customers, romantic interests, and other people
+who can't handle the truth.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

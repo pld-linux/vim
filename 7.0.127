@@ -1,0 +1,99 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.127
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.127
+Problem:    Crash when swap files has invalid timestamp.
+Solution:   Check return value of ctime() for being NULL.
+Files:	    src/memline.c
+
+
+*** ../vim-7.0.126/src/memline.c	Tue Aug 29 17:28:56 2006
+--- src/memline.c	Tue Oct 10 16:19:56 2006
+***************
+*** 1633,1638 ****
+--- 1633,1639 ----
+      int		    fd;
+      struct block0   b0;
+      time_t	    x = (time_t)0;
++     char	    *p;
+  #ifdef UNIX
+      char_u	    uname[B0_UNAME_SIZE];
+  #endif
+***************
+*** 1652,1659 ****
+  #endif
+  	    MSG_PUTS(_("             dated: "));
+  	x = st.st_mtime;		    /* Manx C can't do &st.st_mtime */
+! 	MSG_PUTS(ctime(&x));		    /* includes '\n' */
+! 
+      }
+  
+      /*
+--- 1653,1663 ----
+  #endif
+  	    MSG_PUTS(_("             dated: "));
+  	x = st.st_mtime;		    /* Manx C can't do &st.st_mtime */
+! 	p = ctime(&x);			    /* includes '\n' */
+! 	if (p == NULL)
+! 	    MSG_PUTS("(invalid)\n");
+! 	else
+! 	    MSG_PUTS(p);
+      }
+  
+      /*
+***************
+*** 3652,3657 ****
+--- 3656,3662 ----
+  {
+      struct stat st;
+      time_t	x, sx;
++     char	*p;
+  
+      ++no_wait_return;
+      (void)EMSG(_("E325: ATTENTION"));
+***************
+*** 3666,3672 ****
+      {
+  	MSG_PUTS(_("             dated: "));
+  	x = st.st_mtime;    /* Manx C can't do &st.st_mtime */
+! 	MSG_PUTS(ctime(&x));
+  	if (sx != 0 && x > sx)
+  	    MSG_PUTS(_("      NEWER than swap file!\n"));
+      }
+--- 3671,3681 ----
+      {
+  	MSG_PUTS(_("             dated: "));
+  	x = st.st_mtime;    /* Manx C can't do &st.st_mtime */
+! 	p = ctime(&x);			    /* includes '\n' */
+! 	if (p == NULL)
+! 	    MSG_PUTS("(invalid)\n");
+! 	else
+! 	    MSG_PUTS(p);
+  	if (sx != 0 && x > sx)
+  	    MSG_PUTS(_("      NEWER than swap file!\n"));
+      }
+*** ../vim-7.0.126/src/version.c	Tue Oct 10 15:49:41 2006
+--- src/version.c	Tue Oct 10 16:18:51 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     127,
+  /**/
+
+-- 
+How To Keep A Healthy Level Of Insanity:
+17. When the money comes out the ATM, scream "I won!, I won! 3rd
+    time this week!!!!!"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

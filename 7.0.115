@@ -1,0 +1,75 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.115
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.115
+Problem:    When 'ignorecase' is set, Insert mode completion only adds "foo"
+	    and not "Foo" when both are found.
+	    A found match isn't displayed right away when 'completeopt' does
+	    not have "menu" or "menuone".
+Solution:   Do not ignore case when checking if a completion match already
+	    exists.  call ins_compl_check_keys() also when not using a popup
+	    menu. (Yukihiro Nakadaira)
+Files:	    src/edit.c
+
+
+*** ../vim-7.0.114/src/edit.c	Tue Oct  3 15:22:00 2006
+--- src/edit.c	Tue Oct  3 14:57:47 2006
+***************
+*** 2157,2163 ****
+  	do
+  	{
+  	    if (    !(match->cp_flags & ORIGINAL_TEXT)
+! 		    && ins_compl_equal(match, str, len)
+  		    && match->cp_str[len] == NUL)
+  		return NOTDONE;
+  	    match = match->cp_next;
+--- 2157,2163 ----
+  	do
+  	{
+  	    if (    !(match->cp_flags & ORIGINAL_TEXT)
+! 		    && STRNCMP(match->cp_str, str, len) == 0
+  		    && match->cp_str[len] == NUL)
+  		return NOTDONE;
+  	    match = match->cp_next;
+***************
+*** 4042,4048 ****
+  	    if (got_int)
+  		break;
+  	    /* Fill the popup menu as soon as possible. */
+! 	    if (pum_wanted() && type != -1)
+  		ins_compl_check_keys(0);
+  
+  	    if ((ctrl_x_mode != 0 && ctrl_x_mode != CTRL_X_WHOLE_LINE)
+--- 4042,4048 ----
+  	    if (got_int)
+  		break;
+  	    /* Fill the popup menu as soon as possible. */
+! 	    if (type != -1)
+  		ins_compl_check_keys(0);
+  
+  	    if ((ctrl_x_mode != 0 && ctrl_x_mode != CTRL_X_WHOLE_LINE)
+*** ../vim-7.0.114/src/version.c	Tue Oct  3 15:36:09 2006
+--- src/version.c	Tue Oct  3 15:46:15 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     115,
+  /**/
+
+-- 
+The budget process was invented by an alien race of sadistic beings who
+resemble large cats.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

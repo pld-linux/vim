@@ -1,0 +1,70 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.142
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.142
+Problem:    Using the middle mouse button in Select mode to paste text results 
+            in an extra "y". (Kriton Kyrimis)
+Solution:   Let the middle mouse button replace the selected text with the
+            contents of the clipboard.
+Files:      src/normal.c
+
+
+*** ../vim-7.0.141/src/normal.c	Tue Oct 10 13:27:30 2006
+--- src/normal.c	Tue Oct 17 16:54:57 2006
+***************
+*** 2380,2390 ****
+  	    /*
+  	     * If visual was active, yank the highlighted text and put it
+  	     * before the mouse pointer position.
+  	     */
+  	    if (VIsual_active)
+  	    {
+! 		stuffcharReadbuff('y');
+! 		stuffcharReadbuff(K_MIDDLEMOUSE);
+  		do_always = TRUE;	/* ignore 'mouse' setting next time */
+  		return FALSE;
+  	    }
+--- 2380,2399 ----
+  	    /*
+  	     * If visual was active, yank the highlighted text and put it
+  	     * before the mouse pointer position.
++ 	     * In Select mode replace the highlighted text with the clipboard.
+  	     */
+  	    if (VIsual_active)
+  	    {
+! 		if (VIsual_select)
+! 		{
+! 		    stuffcharReadbuff(Ctrl_G);
+! 		    stuffReadbuff("\"+p");
+! 		}
+! 		else
+! 		{
+! 		    stuffcharReadbuff('y');
+! 		    stuffcharReadbuff(K_MIDDLEMOUSE);
+! 		}
+  		do_always = TRUE;	/* ignore 'mouse' setting next time */
+  		return FALSE;
+  	    }
+*** ../vim-7.0.141/src/version.c	Tue Oct 17 16:26:52 2006
+--- src/version.c	Tue Oct 17 16:51:23 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     142,
+  /**/
+
+-- 
+Keyboard not found.  Think ENTER to continue.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
