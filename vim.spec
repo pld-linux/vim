@@ -17,8 +17,8 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	081
-%define		_rel		2
+%define		_patchlevel	158
+%define		_rel		1
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -89,6 +89,7 @@ Patch103:	%{name}-gtkfilechooser-bonobo.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-selinux.patch
 Patch106:	%{name}-fstab-uuid.patch
+Patch107:	%{name}-autopaste.patch
 Patch201:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.001
 Patch202:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.002
 Patch203:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.003
@@ -177,6 +178,88 @@ Patch278:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.078
 Patch279:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.079
 Patch280:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.080
 Patch281:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.081
+Patch282:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.082
+Patch283:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.083
+Patch284:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.084
+Patch285:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.085
+Patch286:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.086
+Patch287:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.087
+Patch288:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.088
+Patch289:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.089
+Patch290:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.090
+Patch291:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.091
+Patch292:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.092
+Patch293:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.093
+Patch294:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.094
+Patch295:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.095
+Patch296:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.096
+Patch297:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.097
+Patch298:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.098
+Patch299:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.099
+Patch300:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.100
+Patch301:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.101
+Patch302:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.102
+Patch303:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.103
+Patch304:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.104
+Patch305:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.105
+Patch306:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.106
+Patch307:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.107
+# patch for -extra
+#Patch308:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.108
+Patch309:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.109
+Patch310:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.110
+Patch311:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.111
+Patch312:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.112
+Patch313:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.113
+Patch314:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.114
+Patch315:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.115
+Patch316:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.116
+Patch317:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.117
+Patch318:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.118
+Patch319:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.119
+Patch320:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.120
+Patch321:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.121
+Patch322:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.122
+Patch323:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.123
+Patch324:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.124
+Patch325:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.125
+Patch326:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.126
+Patch327:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.127
+Patch328:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.128
+Patch329:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.129
+# patch for -extra
+#Patch330:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.130
+Patch331:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.131
+# patch for -extra
+#Patch332:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.132
+Patch333:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.133
+Patch334:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.134
+Patch335:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.135
+Patch336:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.136
+Patch337:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.137
+# patch for -extra
+#Patch338:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.138
+Patch339:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.139
+Patch340:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.140
+Patch341:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.141
+Patch342:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.142
+Patch343:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.143
+Patch344:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.144
+Patch345:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.145
+Patch346:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.146
+Patch347:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.147
+Patch348:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.148
+Patch349:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.149
+Patch350:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.150
+Patch351:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.151
+Patch352:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.152
+Patch353:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.153
+Patch354:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.154
+Patch355:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.155
+# patch for -extra
+#Patch356:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.156
+Patch357:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.157
+Patch358:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.158
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -718,6 +801,88 @@ element bonobo.
 %patch279 -p0
 %patch280 -p0
 %patch281 -p0
+%patch282 -p0
+%patch283 -p0
+%patch284 -p0
+%patch285 -p0
+%patch286 -p0
+%patch287 -p0
+%patch288 -p0
+%patch289 -p0
+%patch290 -p0
+%patch291 -p0
+%patch292 -p0
+%patch293 -p0
+%patch294 -p0
+%patch295 -p0
+%patch296 -p0
+%patch297 -p0
+%patch298 -p0
+%patch299 -p0
+%patch300 -p0
+%patch301 -p0
+%patch302 -p0
+%patch303 -p0
+%patch304 -p0
+%patch305 -p0
+%patch306 -p0
+%patch307 -p0
+# patch for -extra
+#%patch308 -p0
+%patch309 -p0
+%patch310 -p0
+%patch311 -p0
+%patch312 -p0
+%patch313 -p0
+%patch314 -p0
+%patch315 -p0
+%patch316 -p0
+%patch317 -p0
+%patch318 -p0
+%patch319 -p0
+%patch320 -p0
+%patch321 -p0
+%patch322 -p0
+%patch323 -p0
+%patch324 -p0
+%patch325 -p0
+%patch326 -p0
+%patch327 -p0
+%patch328 -p0
+%patch329 -p0
+# patch for -extra
+#%patch330 -p0
+%patch331 -p0
+# patch for -extra
+#%patch332 -p0
+%patch333 -p0
+%patch334 -p0
+%patch335 -p0
+%patch336 -p0
+%patch337 -p0
+# patch for -extra
+#%patch338 -p0
+%patch339 -p0
+%patch340 -p0
+%patch341 -p0
+%patch342 -p0
+%patch343 -p0
+%patch344 -p0
+%patch345 -p0
+%patch346 -p0
+%patch347 -p0
+%patch348 -p0
+%patch349 -p0
+%patch350 -p0
+%patch351 -p0
+%patch352 -p0
+%patch353 -p0
+%patch354 -p0
+%patch355 -p0
+# patch for -extra
+#%patch356 -p0
+%patch357 -p0
+%patch358 -p0
 
 
 # bonobo
@@ -734,7 +899,12 @@ element bonobo.
 # selinux
 %{?with_selinux:%patch105 -p1}
 
+# recognize UUID= in /etc/fstab
 %patch106 -p1
+
+# autopaste patch - automatically switch to paste mode if `really fast typing' 
+# situation happens
+%patch107 -p1 
 
 install %{SOURCE14} runtime/indent
 install %{SOURCE15} runtime/colors
