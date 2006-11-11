@@ -18,9 +18,11 @@ syn sync minlines=1000
 syn match specSpecialChar contained '[][!$()\\|>^;:]'
 syn match specColon       contained ':'
 syn match specPercent     contained '%'
+syn match specSubstChar   contained '[#%]'
 
 syn match specVariables   contained '\$\h\w*' contains=specSpecialVariablesNames,specSpecialChar
 syn match specVariables   contained '\${\w*}' contains=specSpecialVariablesNames,specSpecialChar
+syn match specVariables   contained '\${\w*[#%][^}]*}' contains=specSubstChar
 
 syn match specMacroIdentifier contained '%\h\w*' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
 "syn match specMacroIdentifier contained '%{\w*}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
@@ -62,7 +64,7 @@ syn match specListedFilesLib    contained '/\(lib\|include\)/'me=e-1
 syn match specListedFilesDoc    contained '/\(man\d*\|doc\|info\)\>'
 syn match specListedFilesEtc    contained '/etc/'me=e-1
 syn match specListedFilesShare  contained '/share/'me=e-1
-syn cluster specListedFiles contains=specListedFilesBin,specListedFilesLib,specListedFilesDoc,specListedFilesEtc,specListedFilesShare,specListedFilesPrefix,specVariables,specSpecialChar
+syn cluster specListedFiles contains=specListedFilesBin,specListedFilesLib,specListedFilesDoc,specListedFilesEtc,specListedFilesShare,specListedFilesPrefix,specSpecialChar
 
 " specComands
 syn match   specConfigure  contained '\./configure'
@@ -70,7 +72,7 @@ syn match   specTarCommand contained '\<tar\s\+[cxvpzjf]\{,5}\s*'
 
 " XXX don't forget to update specScriptArea when updating specMacro
 syn match   specMacro contained '%\(group\|user\)\(add\|remove\)'
-syn match   specMacro contained '%\(depmod\|banner\|service\|addusertogroup\|env_update\)'
+syn match   specMacro contained '%\(depmod\|banner\|service\|addusertogroup\|env_update\|build_kernel_modules\|install_kernel_modules\)'
 syn match   specMacro contained '%\(\(nsplugin\|apache_config\)_\(un\)\?install\)'
 syn match   specMacro contained '%\(\(openldap_schema\|webapp\)_\(un\)\?register\)'
 syn match   specMacro contained '%\(pear_package_\(setup\|install\)\)'
@@ -168,7 +170,7 @@ syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e
 " %% Scripts Section %%
 syn region specScriptArea matchgroup=specSection
 	\ start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\|pretrans\|posttrans\|verifyscript\|check\)\>'
-	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|ant\|GNUconfigure\|setup\|find_lang\|makeinstall\|cmake\|useradd\|groupadd\|addusertogroup\|banner\|service\|env_update\|py_o\?comp\|py_postclean\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|\(openldap_schema\|webapp\)_\(un\)\?register\|depmod\|pear_package_\(setup\|install\)\)\>'
+	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|ant\|GNUconfigure\|setup\|find_lang\|makeinstall\|cmake\|useradd\|groupadd\|addusertogroup\|banner\|service\|env_update\|py_o\?comp\|py_postclean\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|\(openldap_schema\|webapp\)_\(un\)\?register\|depmod\|pear_package_\(setup\|install\|build_kernel_modules\|install_kernel_modules\)\)\>'
 	\ end='^%'me=e-1
 	\ contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
 " XXX don't forget to update specMacro when updating specScriptArea skip definition
@@ -195,17 +197,17 @@ syn region shQuote1 contained matchgroup=shQuoteDelim start=+'+ skip=+\\'+ end=+
 syn region shQuote2 contained matchgroup=shQuoteDelim start=+"+ skip=+\\"+ end=+"+ contains=specVariables,specMacroIdentifier,specSectionMacroBcondArea
 
 syn match shOperator contained '[><|!&;]\|[!=]='
-syn region shDo transparent matchgroup=specBlock start="\<do\>" end="\<done\>" contains=ALLBUT,shFunction,shDoError,shCase,specPreAmble,@specListedFiles
+syn region shDo transparent matchgroup=specBlock start="\(^\|\s\)do\(\s\|$\)" end="\(^\|\s\)done\(\s\|$\)" contains=ALLBUT,shDoError,shCase,specPreAmble,@specListedFiles
 
 syn region specIf  matchgroup=specBlock start="%ifosf\|%ifos\|%ifnos\|%ifarch\|%ifnarch\|ifdef\|ifndef\|%if\|%else"  end='%endif'  contains=ALLBUT, specIfError, shCase, shComment
 
-syn region shIf transparent matchgroup=specBlock start="\<if\>" end="\<fi\>" contains=ALLBUT,shFunction,shIfError,shCase,@specListedFiles
+syn region shIf transparent matchgroup=specBlock start="\(^\|\s\)if\(\s\|$\)" end="\(^\|\s\)fi\(\s\|$\)" contains=ALLBUT,shIfError,shCase,@specListedFiles
 
-syn region shFor  matchgroup=specBlock start="\<for\>" end="\<in\>" contains=ALLBUT,shFunction,shInError,shCase,@specListedFiles
+syn region shFor  matchgroup=specBlock start="\(^\|\s\)for\(\s\|$\)" end="\(^\|\s\)in\(\s\|$\)" contains=ALLBUT,shInError,shCase,@specListedFiles
 
-syn region shCaseEsac transparent matchgroup=specBlock start="\<case\>" matchgroup=NONE end="\<in\>"me=s-1 contains=ALLBUT,shFunction,shCaseError,@specListedFiles nextgroup=shCaseEsac
-syn region shCaseEsac matchgroup=specBlock start="\<in\>" end="\<esac\>" contains=ALLBUT,shFunction,shCaseError,@specListedFilesBin
-syn region shCase matchgroup=specBlock contained start=")"  end=";;" contains=ALLBUT,shFunction,shCaseError,shCase,@specListedFiles
+syn region shCaseEsac transparent matchgroup=specBlock start="\(^\|\s\)case\(\s\|$\)" matchgroup=NONE end="\(^\|\s\)in\(\s\|$\)"me=s-1 contains=ALLBUT,@specListedFiles nextgroup=shCaseEsac
+syn region shCaseEsac matchgroup=specBlock start="\(^\|\s\)in\(\s\|$\)" end="\(^\|\s\)esac\(\s\|$\)" contains=ALLBUT,@specListedFilesBin
+syn region shCase matchgroup=specBlock contained start=")"  end=";;" contains=ALLBUT,shCase,@specListedFiles
 
 syn sync match shDoSync       grouphere  shDo       "\<do\>"
 syn sync match shDoSync       groupthere shDo       "\<done\>"
@@ -276,6 +278,7 @@ if version >= 508 || !exists("did_spec_syntax_inits")
   HiLink specPackageOpts		specOpts
   HiLink specPercent			Special
   HiLink specSpecialChar		Special
+  HiLink specSubstChar			Special
   HiLink specSpecialVariables		specGlobalMacro
   HiLink specSpecialVariablesNames	specGlobalMacro
   HiLink specTarCommand			specCommand
