@@ -5,7 +5,7 @@
  au BufNewFile,BufRead *.sml			setf sml
  
 +" tests for perl modules
-+au BufNewFile,BufRead t/*.t			call FTCheck_pl()
++au BufNewFile,BufRead t/*.t			call s:FTpl()
 +
  " Sysctl
  au BufNewFile,BufRead /etc/sysctl.conf          setf sysctl
