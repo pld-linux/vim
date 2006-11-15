@@ -9,7 +9,7 @@
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	perl		# without Perl interp
-%bcond_with	python		# with Python interp
+%bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
 %bcond_with	bonobo		# with bonobo component (breaks other things)
@@ -18,7 +18,7 @@
 #
 %define		_ver		7.0
 %define		_patchlevel	158
-%define		_rel		1
+%define		_rel		2
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -261,6 +261,7 @@ Patch355:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.155
 Patch357:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.157
 Patch358:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.158
 URL:		http://www.vim.org/
+%{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -271,10 +272,9 @@ BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
 %{?with_motif:BuildRequires:	openmotif-devel}
 %{?with_perl:BuildRequires:	perl-devel}
-%{?with_python:BuildRequires:	python-devel >= 2.5}
+%{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 Obsoletes:	kvim
 %if %{with bonobo}
 BuildRequires:	ORBit2-devel
@@ -303,7 +303,6 @@ Provides:	vi-editor
 Provides:	vi
 Obsoletes:	vim-enhanced
 Obsoletes:	vim-ispell
-Obsoletes:	vim-plugin-multvals
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # that's example script
@@ -543,18 +542,6 @@ köra.
 ðÁËÅÔ vim-rt Í¦ÓÔÉÔØ ÆÁÊÌÉ (ÎÁÐÒÉËÌÁÄ, ÆÁÊÌÉ ÄÏ×¦ÄËÉ), ËÏÔÒ¦ ÐÏÔÒ¦ÂÎ¦
 ÄÌÑ ÒÏÂÏÔÉ ÂÕÄØ-ÑËÏ§ ÐÒÏÇÒÁÍÉ vim.
 
-%package spell-en
-Summary:	English dictionaries for VIMspell
-Summary(pl):	Angielskie s³owniki dla VIMspella
-Group:		Applications/Editors/Vim
-Requires:	%{name} = %{epoch}:%{version}-%{release}
-
-%description spell-en
-English dictionaries for VIMspell.
-
-%description spell-en -l pl
-Angielskie s³owniki dla VIMspella.
-
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Athena
@@ -613,8 +600,6 @@ Motif, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
 Summary:	Vim for X Window built with gtk
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GTK
 Group:		Applications/Editors/Vim
-Requires(post,postun):	gtk+2
-Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	vi-editor
@@ -643,8 +628,6 @@ GTK, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
 Summary:	Vim for X Window built with GNOME
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GNOME
 Group:		Applications/Editors/Vim
-Requires(post,postun):	gtk+2
-Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	vi-editor
@@ -924,6 +907,7 @@ install -d bin
 %if %{with bonobo}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	--enable-bonobo \
@@ -968,8 +952,8 @@ LDFLAGS="%{rpmldflags} -static"
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} vim
-
+%{__make} vim \
+	SPELL_OBJ=
 mv -f vim bin/vim.static
 LDFLAGS="%{rpmldflags}"
 %endif
@@ -996,13 +980,14 @@ LDFLAGS="%{rpmldflags}"
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} vim
-
+%{__make} vim \
+	SPELL_OBJ=
 mv -f vim bin/vim.ncurses
 
 %if %{with athena}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
@@ -1032,6 +1017,7 @@ mv -f vim bin/gvim.athena
 %if %{with motif}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
@@ -1061,6 +1047,7 @@ mv -f vim bin/gvim.motif
 %if %{with gtk}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gtk2 \
 	--enable-gtk2-check \
@@ -1088,6 +1075,7 @@ mv -f vim bin/gvim.gtk
 %if %{with gnome}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	%{?with_bonobo:--disable-bonobo} \
@@ -1113,6 +1101,7 @@ mv -f vim bin/gvim.gtk
 mv -f vim bin/gvim.gnome
 %endif
 
+
 %{__make} xxd/xxd languages
 
 %install
@@ -1122,7 +1111,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
 	$RPM_BUILD_ROOT%{_desktopdir}
 
-%{__make} install \
+%{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
@@ -1149,7 +1138,7 @@ install src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 # echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
+
 
 # not supported directories
 rm -rf $RPM_BUILD_ROOT%{_mandir}/??.*/
@@ -1157,10 +1146,7 @@ rm -rf $RPM_BUILD_ROOT%{_mandir}/??.*/
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
 
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/eview
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/evim
 ln -sf vim $RPM_BUILD_ROOT%{_bindir}/rvim
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/vimdiff
 ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
@@ -1182,10 +1168,9 @@ install %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
 %if %{with gtk}
 install src/bin/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
 ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_bindir}/gvim
-ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
-ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gvimdiff
-ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 
@@ -1202,6 +1187,8 @@ install src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 %endif
 
 bzip2 -dc %{SOURCE2} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
+# non-existent binaries
+rm -rf $RPM_BUILD_ROOT%{_mandir}/*/man1/{evim,{,g}vimdiff}.1
 
 unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE3}
 
@@ -1231,49 +1218,25 @@ rm -rf $RPM_BUILD_ROOT
 
 %post -n gvim-gtk
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
-%update_icon_cache hicolor
 
 %postun -n gvim-gtk
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
-%update_icon_cache hicolor
 
 %post -n gvim-gnome
-%update_desktop_database_post
-%update_icon_cache hicolor
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
 
 %postun -n gvim-gnome
-%update_desktop_database_postun
-%update_icon_cache hicolor
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
 
 %files
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/eview
-%attr(755,root,root) %{_bindir}/evim
-%attr(755,root,root) %{_bindir}/rvim
 %attr(755,root,root) %{_bindir}/vim
-%attr(755,root,root) %{_bindir}/vimdiff
-%{_mandir}/man1/eview.1*
-%{_mandir}/man1/evim.1*
-%{_mandir}/man1/rvim.1*
-%{_mandir}/man1/vimdiff.1*
-%lang(fi) %{_mandir}/fi/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/eview.1*
-%lang(fr) %{_mandir}/fr/man1/evim.1*
-%lang(fr) %{_mandir}/fr/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/vimdiff.1*
-%lang(id) %{_mandir}/id/man1/rvim.1*
-%lang(it) %{_mandir}/it/man1/eview.1*
-%lang(it) %{_mandir}/it/man1/evim.1*
-%lang(it) %{_mandir}/it/man1/rvim.1*
-%lang(it) %{_mandir}/it/man1/vimdiff.1*
-%lang(pl) %{_mandir}/pl/man1/eview.1*
-%lang(pl) %{_mandir}/pl/man1/evim.1*
-%lang(pl) %{_mandir}/pl/man1/rvim.1*
-%lang(pl) %{_mandir}/pl/man1/vimdiff.1*
-%lang(ru) %{_mandir}/ru/man1/eview.1*
-%lang(ru) %{_mandir}/ru/man1/evim.1*
-%lang(ru) %{_mandir}/ru/man1/rvim.1*
-%lang(ru) %{_mandir}/ru/man1/vimdiff.1*
+%attr(755,root,root) %{_bindir}/rvim
+%{_mandir}/man1/rvim.*
+%lang(fi) %{_mandir}/fi/man1/rvim.*
+%lang(fr) %{_mandir}/fr/man1/rvim.*
+%lang(id) %{_mandir}/id/man1/rvim.*
+%lang(pl) %{_mandir}/pl/man1/rvim.*
 %{_desktopdir}/%{name}.desktop
 
 %if %{with static}
@@ -1362,7 +1325,6 @@ rm -rf $RPM_BUILD_ROOT
 %lang(es) %{_datadir}/vim/v*/lang/es/
 %lang(fr) %{_datadir}/vim/v*/lang/menu_fr*
 %lang(fr) %{_datadir}/vim/v*/lang/fr/
-%lang(ga) %{_datadir}/vim/v*/lang/ga/
 %lang(hu) %{_datadir}/vim/v*/lang/menu_hu*
 %lang(it) %{_datadir}/vim/v*/lang/menu_it*
 %lang(it) %{_datadir}/vim/v*/lang/it/
@@ -1386,9 +1348,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sv) %{_datadir}/vim/v*/lang/menu_sv*
 %lang(sv) %{_datadir}/vim/v*/lang/sv/
 %lang(uk) %{_datadir}/vim/v*/lang/menu_uk*
-%lang(uk) %{_datadir}/vim/v*/lang/uk/
 %lang(vi) %{_datadir}/vim/v*/lang/menu_vi*
-%lang(vi) %{_datadir}/vim/v*/lang/vi/
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.cp936*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.gb2312*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
@@ -1399,9 +1359,9 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW/
-
 %dir %{_datadir}/vim/v*/spell
 %{_datadir}/vim/v*/spell/cleanadd.vim
+%lang(en_GB) %{_datadir}/vim/v*/spell/en.*.*
 %lang(he) %{_datadir}/vim/v*/spell/he.*
 %lang(yi) %{_datadir}/vim/v*/spell/yi.*
 
@@ -1415,29 +1375,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/compiler
 %{_datadir}/vim/v*/autoload
 %{_datadir}/vim/v*/*.vim
-
-%{_mandir}/man1/rvim.1*
-%{_mandir}/man1/vim.1*
-%{_mandir}/man1/vimtutor.1*
-%lang(fi) %{_mandir}/fi/man1/rvim.1*
-%lang(fi) %{_mandir}/fi/man1/vim.1*
-%lang(fr) %{_mandir}/fr/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/vim.1*
-%lang(fr) %{_mandir}/fr/man1/vimtutor.1*
-%lang(id) %{_mandir}/id/man1/vim.1*
-%lang(it) %{_mandir}/it/man1/vim.1*
-%lang(it) %{_mandir}/it/man1/vimtutor.1*
-%lang(pl) %{_mandir}/pl/man1/vim.1*
-%lang(pl) %{_mandir}/pl/man1/vimtutor.1*
-%lang(ru) %{_mandir}/ru/man1/vim.1*
-%lang(ru) %{_mandir}/ru/man1/vimtutor.1*
+%{_mandir}/man1/vim*
+%lang(fi) %{_mandir}/fi/man1/vim*
+%lang(fr) %{_mandir}/fr/man1/vim*
+%lang(id) %{_mandir}/id/man1/vim*
+%lang(it) %{_mandir}/it/man1/vim*
+%lang(pl) %{_mandir}/pl/man1/vim*
+%lang(ru) %{_mandir}/ru/man1/vim*
 %{_iconsdir}/hicolor/16x16/apps/vim.png
 %{_iconsdir}/hicolor/32x32/apps/vim.png
 %{_iconsdir}/hicolor/48x48/apps/vim.png
-
-%files spell-en
-%defattr(644,root,root,755)
-%{_datadir}/vim/v*/spell/en.*.*
 
 %if %{with athena}
 %files -n gvim-athena
@@ -1456,25 +1403,19 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gtk}
 %files -n gvim-gtk
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/gview
 %attr(755,root,root) %{_bindir}/gvim.gtk
-%attr(755,root,root) %{_bindir}/gvimdiff
 %attr(755,root,root) %{_bindir}/rgvim
 %attr(755,root,root) %{_bindir}/rgview
 %attr(755,root,root) %verify(not link) %{_bindir}/gvim
-%{_mandir}/man1/gvi*
-%{_mandir}/man1/rgv*
 %lang(fi) %{_mandir}/fi/man1/gvi*
 %lang(fi) %{_mandir}/fi/man1/rgv*
 %lang(fr) %{_mandir}/fr/man1/gvi*
 %lang(fr) %{_mandir}/fr/man1/rgv*
 %lang(id) %{_mandir}/id/man1/gvi*
 %lang(id) %{_mandir}/id/man1/rgv*
-%lang(it) %{_mandir}/it/man1/gvi*
-%lang(it) %{_mandir}/it/man1/rgv*
 %lang(pl) %{_mandir}/pl/man1/gvi*
 %lang(pl) %{_mandir}/pl/man1/rgv*
-%lang(ru) %{_mandir}/ru/man1/gvi*
-%lang(ru) %{_mandir}/ru/man1/rgv*
 %{_desktopdir}/gvim-gtk.desktop
 %endif
 
