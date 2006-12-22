@@ -94,41 +94,28 @@ Patch108:	%{name}-ft-cron.patch
 # Official patches 10000-...
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 1 4
 # 5: patch for -extra
-#Patch205:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.005
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 6 26
-# patches for -extra
-#Patch227:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.027
-#Patch228:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.028
+# 27-28: patches for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 29 31
-# patch for -extra
-#Patch232:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.032
+# 32: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 33 44
-# patch for -extra
-#Patch245:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.045
+# 45: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 46 56
-# patch for -extra
-#Patch257:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.057
+# 57: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 58 64
-# patch for -extra
-#Patch265:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.065
+# 65: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 66 73
-# patch for -extra
-#Patch274:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.074
+# 74: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 75 107
-# patch for -extra
-#Patch308:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.108
+# 108: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 109 129
-# patch for -extra
-#Patch330:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.130
+# 130: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 131 131
-# patch for -extra
-#Patch332:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.132
+# 132: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 133 137
-# patch for -extra
-#Patch338:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.138
+# 138: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 139 155
-# patch for -extra
-#Patch356:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.156
+# 156: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 157 158
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
@@ -567,42 +554,17 @@ element bonobo.
 
 # official patches
 %patchset_patch 1 4
-# patch for -extra
-#%patch205 -p0
 %patchset_patch 6 26
-# patches for -extra
-#%patch227 -p0
-#%patch228 -p0
 %patchset_patch 29 31
-# patch for -extra
-#%patch232 -p0
 %patchset_patch 33 44
-# patch for -extra
-#%patch245 -p0
 %patchset_patch 46 56
-# patch for -extra
-#%patch257 -p0
 %patchset_patch 58 64
-# patch for -extra
-#%patch265 -p0
 %patchset_patch 66 73
-# patch for -extra
-#%patch274 -p0
 %patchset_patch 75 107
-# patch for -extra
-#%patch308 -p0
 %patchset_patch 109 129
-# patch for -extra
-#%patch330 -p0
 %patchset_patch 131 131
-# patch for -extra
-#%patch332 -p0
 %patchset_patch 133 137
-# patch for -extra
-#%patch338 -p0
 %patchset_patch 139 155
-# patch for -extra
-#%patch356 -p0
 %patchset_patch 157 158
 
 # bonobo
