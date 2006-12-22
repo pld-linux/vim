@@ -90,6 +90,7 @@ Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-selinux.patch
 Patch106:	%{name}-fstab-uuid.patch
 Patch107:	%{name}-autopaste.patch
+Patch108:	%{name}-ft-cron.patch
 Patch201:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.001
 Patch202:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.002
 Patch203:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.003
@@ -902,9 +903,11 @@ element bonobo.
 # recognize UUID= in /etc/fstab
 %patch106 -p1
 
-# autopaste patch - automatically switch to paste mode if `really fast typing' 
+# autopaste patch - automatically switch to paste mode if `really fast typing'
 # situation happens
-%patch107 -p1 
+%patch107 -p1
+
+%patch108 -p1
 
 install %{SOURCE14} runtime/indent
 install %{SOURCE15} runtime/colors
