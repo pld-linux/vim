@@ -13,3 +13,6 @@ map <F6> :!./adapter %<CR>
 map <F8> :!rpmbuild -bb %<CR>
 map <F9> :!cvs diff -u % \| diffcol \| less -nR<CR>
 map <F10> :!./builder -bb -R -u %<CR>
+
+" PLD specfiles are in latin2 encoding for -pl
+setlocal fileencodings=ucs-bom,utf-8,default,latin2
