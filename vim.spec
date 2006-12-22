@@ -531,6 +531,23 @@ element bonobo.
 
 %prep
 %setup -q -n %{name}70 -b1
+# official patches
+%patchset_patch 1 4
+%patchset_patch 6 26
+%patchset_patch 29 31
+%patchset_patch 33 44
+%patchset_patch 46 56
+%patchset_patch 58 64
+%patchset_patch 66 73
+%patchset_patch 75 107
+%patchset_patch 109 129
+%patchset_patch 131 131
+%patchset_patch 133 137
+%patchset_patch 139 155
+%patchset_patch 157 160
+%patchset_patch 162 169
+%patchset_patch 172 %{_patchlevel}
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -555,23 +572,6 @@ element bonobo.
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
-
-# official patches
-%patchset_patch 1 4
-%patchset_patch 6 26
-%patchset_patch 29 31
-%patchset_patch 33 44
-%patchset_patch 46 56
-%patchset_patch 58 64
-%patchset_patch 66 73
-%patchset_patch 75 107
-%patchset_patch 109 129
-%patchset_patch 131 131
-%patchset_patch 133 137
-%patchset_patch 139 155
-%patchset_patch 157 160
-%patchset_patch 162 169
-%patchset_patch 172 %{_patchlevel}
 
 # bonobo
 %if %{with bonobo}
