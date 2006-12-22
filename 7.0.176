@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.176
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.176
+Problem:    ":emenu" isn't executed directly, causing the encryption key
+	    prompt to fail. (Life Jazzer)
+Solution:   Fix wrong #ifdef.
+Files:	    src/menu.c
+
+
+*** ../vim-7.0.175/src/menu.c	Wed Aug 16 21:42:34 2006
+--- src/menu.c	Wed Nov 29 21:15:36 2006
+***************
+*** 2246,2252 ****
+      {
+  	/* When executing a script or function execute the commands right now.
+  	 * Otherwise put them in the typeahead buffer. */
+! #ifdef FEAT_En
+  	if (current_SID != 0)
+  	    exec_normal_cmd(menu->strings[idx], menu->noremap[idx],
+  							   menu->silent[idx]);
+--- 2246,2252 ----
+      {
+  	/* When executing a script or function execute the commands right now.
+  	 * Otherwise put them in the typeahead buffer. */
+! #ifdef FEAT_EVAL
+  	if (current_SID != 0)
+  	    exec_normal_cmd(menu->strings[idx], menu->noremap[idx],
+  							   menu->silent[idx]);
+*** ../vim-7.0.175/src/version.c	Tue Dec  5 10:33:57 2006
+--- src/version.c	Tue Dec  5 21:31:03 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     176,
+  /**/
+
+-- 
+-rwxr-xr-x  1 root          24 Oct 29  1929 /bin/ed
+-rwxr-xr-t  4 root      131720 Jan  1  1970 /usr/ucb/vi
+-rwxr-xr-x  1 root  5.89824e37 Oct 22  1990 /usr/bin/emacs
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

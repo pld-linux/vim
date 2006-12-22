@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.169
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.169
+Problem:    With a Visual block selection, with the cursor in the left upper
+	    corner, pressing "I" doesn't remove the highlighting. (Guopeng
+	    Wen)
+Solution:   When checking if redrawing is needed also check if Visual
+	    selection is still active.
+Files:	    src/screen.c
+
+
+*** ../vim-7.0.168/src/screen.c	Mon Oct  9 22:11:52 2006
+--- src/screen.c	Tue Nov 28 16:11:24 2006
+***************
+*** 455,460 ****
+--- 455,461 ----
+  		    && curwin->w_topline == curwin->w_lines[0].wl_lnum)
+  #ifdef FEAT_VISUAL
+  		|| (type == INVERTED
++ 		    && VIsual_active
+  		    && curwin->w_old_cursor_lnum == curwin->w_cursor.lnum
+  		    && curwin->w_old_visual_mode == VIsual_mode
+  		    && (curwin->w_valid & VALID_VIRTCOL)
+*** ../vim-7.0.168/src/version.c	Tue Nov 21 20:57:21 2006
+--- src/version.c	Tue Nov 28 16:13:40 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     169,
+  /**/
+
+-- 
+    [clop clop]
+GUARD #1:  Halt!  Who goes there?
+ARTHUR:    It is I, Arthur, son of Uther Pendragon, from the castle of
+           Camelot.  King of the Britons, defeator of the Saxons, sovereign of
+           all England!
+GUARD #1:  Pull the other one!
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

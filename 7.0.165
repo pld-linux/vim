@@ -1,0 +1,76 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.165
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.165
+Problem:    Using CTRL-L at the search prompt adds a "/" and other characters
+	    without escaping, causing the pattern not to match.
+Solution:   Escape special characters with a backslash.
+Files:	    src/ex_getln.c
+
+
+*** ../vim-7.0.164/src/ex_getln.c	Tue Oct 17 16:26:52 2006
+--- src/ex_getln.c	Tue Nov 14 21:36:13 2006
+***************
+*** 34,40 ****
+      int		xp_context;	/* type of expansion */
+  # ifdef FEAT_EVAL
+      char_u	*xp_arg;	/* user-defined expansion arg */
+!     int		input_fn;	/* Invoked for input() function */
+  # endif
+  };
+  
+--- 34,40 ----
+      int		xp_context;	/* type of expansion */
+  # ifdef FEAT_EVAL
+      char_u	*xp_arg;	/* user-defined expansion arg */
+!     int		input_fn;	/* when TRUE Invoked for input() function */
+  # endif
+  };
+  
+***************
+*** 1390,1396 ****
+--- 1390,1406 ----
+  		    {
+  			c = gchar_cursor();
+  			if (c != NUL)
++ 			{
++ 			    if (c == firstc || vim_strchr((char_u *)(
++ 					    p_magic ? "\\^$.*[" : "\\^$"), c)
++ 								      != NULL)
++ 			    {
++ 				/* put a backslash before special characters */
++ 				stuffcharReadbuff(c);
++ 				c = '\\';
++ 			    }
+  			    break;
++ 			}
+  		    }
+  		    goto cmdline_not_changed;
+  		}
+*** ../vim-7.0.164/src/version.c	Tue Nov 14 20:24:32 2006
+--- src/version.c	Tue Nov 21 11:28:43 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     165,
+  /**/
+
+-- 
+       He was not in the least bit scared to be mashed into a pulp
+       Or to have his eyes gouged out and his elbows broken;
+       To have his kneecaps split and his body burned away
+       And his limbs all hacked and mangled, brave Sir Robin.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

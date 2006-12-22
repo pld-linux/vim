@@ -1,0 +1,78 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.172
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.172
+Problem:    Crash when recovering and quitting at the "press-enter" prompt.
+Solution:   Check for "msg_list" to be NULL. (Liu Yubao)
+Files:	    src/ex_eval.c
+
+
+*** ../vim-7.0.171/src/ex_eval.c	Sun Apr 23 00:28:06 2006
+--- src/ex_eval.c	Tue Nov 28 18:30:23 2006
+***************
+*** 340,346 ****
+  
+      /* If no exception is to be thrown or the conversion should be done after
+       * returning to a previous invocation of do_one_cmd(), do nothing. */
+!     if (*msg_list == NULL)
+  	return;
+  
+      if (throw_exception(*msg_list, ET_ERROR, cmdname) == FAIL)
+--- 340,346 ----
+  
+      /* If no exception is to be thrown or the conversion should be done after
+       * returning to a previous invocation of do_one_cmd(), do nothing. */
+!     if (msg_list == NULL || *msg_list == NULL)
+  	return;
+  
+      if (throw_exception(*msg_list, ET_ERROR, cmdname) == FAIL)
+***************
+*** 2026,2033 ****
+  
+  	/* If an error was about to be converted to an exception when
+  	 * enter_cleanup() was called, free the message list. */
+! 	free_msglist(*msg_list);
+! 	*msg_list = NULL;
+      }
+  
+      /*
+--- 2026,2036 ----
+  
+  	/* If an error was about to be converted to an exception when
+  	 * enter_cleanup() was called, free the message list. */
+! 	if (msg_list != NULL)
+! 	{
+! 	    free_msglist(*msg_list);
+! 	    *msg_list = NULL;
+! 	}
+      }
+  
+      /*
+*** ../vim-7.0.171/src/version.c	Tue Nov 28 17:44:51 2006
+--- src/version.c	Tue Nov 28 18:32:50 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     172,
+  /**/
+
+-- 
+GUARD #1:  Where'd you get the coconut?
+ARTHUR:    We found them.
+GUARD #1:  Found them?  In Mercea?  The coconut's tropical!
+ARTHUR:    What do you mean?
+GUARD #1:  Well, this is a temperate zone.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,142 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.177
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.177
+Problem:    When the press-enter prompt gets a character from a non-remappable
+	    mapping, it's put back in the typeahead buffer as remappable,
+	    which may cause an endless loop.
+Solution:   Restore the non-remappable flag and the silent flag when putting a
+	    char back in the typeahead buffer.
+Files:	    src/getchar.c, src/message.c, src/normal.c
+
+
+*** ../vim-7.0.176/src/getchar.c	Tue Oct  3 15:36:09 2006
+--- src/getchar.c	Tue Dec  5 21:17:42 2006
+***************
+*** 76,82 ****
+   */
+  static mapblock_T	*first_abbr = NULL; /* first entry in abbrlist */
+  
+! static int		KeyNoremap = FALSE; /* remapping disabled */
+  
+  /*
+   * variables used by vgetorpeek() and flush_buffers()
+--- 76,82 ----
+   */
+  static mapblock_T	*first_abbr = NULL; /* first entry in abbrlist */
+  
+! static int		KeyNoremap = 0;	    /* remapping flags */
+  
+  /*
+   * variables used by vgetorpeek() and flush_buffers()
+***************
+*** 1035,1040 ****
+--- 1037,1044 ----
+  /*
+   * Put character "c" back into the typeahead buffer.
+   * Can be used for a character obtained by vgetc() that needs to be put back.
++  * Uses cmd_silent, KeyTyped and KeyNoremap to restore the flags belonging to
++  * the char.
+   */
+      void
+  ins_char_typebuf(c)
+***************
+*** 1061,1067 ****
+  	buf[1] = NUL;
+  #endif
+      }
+!     (void)ins_typebuf(buf, REMAP_YES, 0, !KeyTyped, FALSE);
+  }
+  
+  /*
+--- 1065,1071 ----
+  	buf[1] = NUL;
+  #endif
+      }
+!     (void)ins_typebuf(buf, KeyNoremap, 0, !KeyTyped, cmd_silent);
+  }
+  
+  /*
+***************
+*** 2270,2278 ****
+  					gotchars(typebuf.tb_buf
+  							 + typebuf.tb_off, 1);
+  				    }
+! 				    KeyNoremap = (typebuf.tb_noremap[
+! 						   typebuf.tb_off]
+! 						       & (RM_NONE|RM_SCRIPT));
+  				    del_typebuf(1, 0);
+  				}
+  				break;	    /* got character, break for loop */
+--- 2276,2283 ----
+  					gotchars(typebuf.tb_buf
+  							 + typebuf.tb_off, 1);
+  				    }
+! 				    KeyNoremap = typebuf.tb_noremap[
+! 							      typebuf.tb_off];
+  				    del_typebuf(1, 0);
+  				}
+  				break;	    /* got character, break for loop */
+***************
+*** 4196,4202 ****
+  
+      if (typebuf.tb_no_abbr_cnt)	/* abbrev. are not recursive */
+  	return FALSE;
+!     if (KeyNoremap)		/* no remapping implies no abbreviation */
+  	return FALSE;
+  
+      /*
+--- 4201,4208 ----
+  
+      if (typebuf.tb_no_abbr_cnt)	/* abbrev. are not recursive */
+  	return FALSE;
+!     if ((KeyNoremap & (RM_NONE|RM_SCRIPT)) != 0)
+! 	/* no remapping implies no abbreviation */
+  	return FALSE;
+  
+      /*
+*** ../vim-7.0.176/src/normal.c	Tue Nov  7 18:43:10 2006
+--- src/normal.c	Tue Dec  5 21:16:07 2006
+***************
+*** 651,659 ****
+  	/* Fake a "c"hange command.  When "restart_edit" is set (e.g., because
+  	 * 'insertmode' is set) fake a "d"elete command, Insert mode will
+  	 * restart automatically.
+! 	 * Insert the typed character in the typeahead buffer, so that it will
+! 	 * be mapped in Insert mode.  Required for ":lmap" to work.  May cause
+! 	 * mapping a character from ":vnoremap"... */
+  	ins_char_typebuf(c);
+  	if (restart_edit != 0)
+  	    c = 'd';
+--- 651,658 ----
+  	/* Fake a "c"hange command.  When "restart_edit" is set (e.g., because
+  	 * 'insertmode' is set) fake a "d"elete command, Insert mode will
+  	 * restart automatically.
+! 	 * Insert the typed character in the typeahead buffer, so that it can
+! 	 * be mapped in Insert mode.  Required for ":lmap" to work. */
+  	ins_char_typebuf(c);
+  	if (restart_edit != 0)
+  	    c = 'd';
+*** ../vim-7.0.176/src/version.c	Tue Dec  5 21:32:00 2006
+--- src/version.c	Tue Dec  5 21:36:07 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     177,
+  /**/
+
+-- 
+5 out of 4 people have trouble with fractions.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
