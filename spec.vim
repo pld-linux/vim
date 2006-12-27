@@ -80,6 +80,7 @@ syn match   specMacro contained '%\(py_o\?comp\|py_postclean\)'
 syn match   specMacro contained '%\(build\|install\)_kernel_modules'
 syn match   specMacro contained '%ant'
 syn match   specMacro contained '%\(php\|php4\)_webserver_restart'
+syn match   specMacro contained '%update_browser_plugins\|%browser_plugins_add_browser'
 
 syn keyword specCommandSpecial contained root
 syn keyword specCommand		contained make xmkmf mkdir chmod find sed rm strip moc echo grep ls rm mv mkdir chown install cp pwd cat tail then else elif cd gzip rmdir ln eval export touch unzip bzip2
@@ -96,7 +97,7 @@ syn keyword specMacroNameOther contained perl_vendorarch perl_vendorlib php_pear
 syn keyword specMacroNameOther contained releq_kernel_up requires_php_extension requires_php_pdo_module requires_releq_kernel_smp requires_releq_kernel_up
 syn keyword specMacroNameOther contained requires_zend_extension ruby_mod_ver_requires_eq rpmcflags rpmcxxflags rpmldflags tmpdir x8664
 syn keyword specMacroNameOther contained ruby_archdir ruby_rubylibdir ruby_ridir ruby_sitearchdir ruby_sitelibdir ruby_version
-syn keyword specMacroNameOther contained apache_modules_api php_sysconfdir php_extensiondir
+syn keyword specMacroNameOther contained apache_modules_api php_sysconfdir php_extensiondir _browserpluginsdir _browserpluginsconfdir
 
 syn match   specMacroNameOther contained '\<\(PATCH\|SOURCE\)\d*\>'
 
@@ -172,7 +173,7 @@ syn region specPackageArea matchgroup=specSection start='^%package' end='^%'me=e
 " %% Scripts Section %%
 syn region specScriptArea matchgroup=specSection
 	\ start='^%\(prep\|build\|install\|clean\|pre\|postun\|preun\|post\|triggerin\|triggerun\|triggerpostun\|pretrans\|posttrans\|verifyscript\|check\)\>'
-	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|ant\|GNUconfigure\|setup\|find_lang\|makeinstall\|cmake\|waf\|useradd\|groupadd\|addusertogroup\|banner\|service\|env_update\|py_o\?comp\|py_postclean\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|\(openldap_schema\|webapp\)_\(un\)\?register\|depmod\|pear_package_\(setup\|install\)\|\(build\|install\)_kernel_modules\|php_webserver_restart\|php4_webserver_restart\)\>'
+	\ skip='^%{\|^%\(define\|patch\d*\|configure2_13\|configure\|ant\|GNUconfigure\|setup\|find_lang\|makeinstall\|cmake\|waf\|useradd\|groupadd\|addusertogroup\|banner\|service\|env_update\|py_o\?comp\|py_postclean\|\(\(nsplugin\|apache_config\)_\(un\)\?install\)\|\(openldap_schema\|webapp\)_\(un\)\?register\|depmod\|pear_package_\(setup\|install\)\|\(build\|install\)_kernel_modules\|php_webserver_restart\|php4_webserver_restart\|update_browser_plugins\)\>'
 	\ end='^%'me=e-1
 	\ contains=specSpecialVariables,specVariables,@specCommands,specVariables,shDo,shFor,shCaseEsac,specNoNumberHilite,specCommandOpts,shComment,shIf,specSpecialChar,specMacroIdentifier,specSectionMacroArea,specSectionMacroBracketArea,shOperator,shQuote1,shQuote2,specSectionMacroBcondArea
 " XXX don't forget to update specMacro when updating specScriptArea skip definition
