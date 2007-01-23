@@ -9,7 +9,7 @@
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	perl		# without Perl interp
-%bcond_with	python		# with Python interp
+%bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
 %bcond_with	bonobo		# with bonobo component (breaks other things)
@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	158
+%define		_patchlevel	188
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -91,177 +91,46 @@ Patch105:	%{name}-selinux.patch
 Patch106:	%{name}-fstab-uuid.patch
 Patch107:	%{name}-autopaste.patch
 Patch108:	%{name}-ft-cron.patch
-Patch201:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.001
-Patch202:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.002
-Patch203:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.003
-Patch204:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.004
-# patch for -extra
-#Patch205:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.005
-Patch206:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.006
-Patch207:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.007
-Patch208:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.008
-Patch209:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.009
-Patch210:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.010
-Patch211:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.011
-Patch212:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.012
-Patch213:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.013
-Patch214:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.014
-Patch215:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.015
-Patch216:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.016
-Patch217:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.017
-Patch218:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.018
-Patch219:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.019
-Patch220:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.020
-Patch221:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.021
-Patch222:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.022
-Patch223:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.023
-Patch224:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.024
-Patch225:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.025
-Patch226:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.026
-# patches for -extra
-#Patch227:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.027
-#Patch228:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.028
-Patch229:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.029
-Patch230:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.030
-Patch231:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.031
-# patch for -extra
-#Patch232:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.032
-Patch233:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.033
-Patch234:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.034
-Patch235:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.035
-Patch236:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.036
-Patch237:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.037
-Patch238:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.038
-Patch239:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.039
-Patch240:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.040
-Patch241:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.041
-Patch242:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.042
-Patch243:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.043
-Patch244:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.044
-# patch for -extra
-#Patch245:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.045
-Patch246:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.046
-Patch247:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.047
-Patch248:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.048
-Patch249:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.049
-Patch250:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.050
-Patch251:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.051
-Patch252:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.052
-Patch253:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.053
-Patch254:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.054
-Patch255:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.055
-Patch256:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.056
-# patch for -extra
-#Patch257:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.057
-Patch258:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.058
-Patch259:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.059
-Patch260:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.060
-Patch261:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.061
-Patch262:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.062
-Patch263:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.063
-Patch264:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.064
-# patch for -extra
-#Patch265:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.065
-Patch266:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.066
-Patch267:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.067
-Patch268:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.068
-Patch269:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.069
-Patch270:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.070
-Patch271:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.071
-Patch272:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.072
-Patch273:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.073
-# patch for -extra
-#Patch274:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.074
-Patch275:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.075
-Patch276:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.076
-Patch277:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.077
-Patch278:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.078
-Patch279:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.079
-Patch280:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.080
-Patch281:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.081
-Patch282:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.082
-Patch283:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.083
-Patch284:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.084
-Patch285:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.085
-Patch286:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.086
-Patch287:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.087
-Patch288:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.088
-Patch289:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.089
-Patch290:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.090
-Patch291:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.091
-Patch292:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.092
-Patch293:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.093
-Patch294:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.094
-Patch295:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.095
-Patch296:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.096
-Patch297:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.097
-Patch298:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.098
-Patch299:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.099
-Patch300:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.100
-Patch301:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.101
-Patch302:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.102
-Patch303:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.103
-Patch304:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.104
-Patch305:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.105
-Patch306:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.106
-Patch307:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.107
-# patch for -extra
-#Patch308:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.108
-Patch309:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.109
-Patch310:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.110
-Patch311:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.111
-Patch312:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.112
-Patch313:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.113
-Patch314:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.114
-Patch315:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.115
-Patch316:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.116
-Patch317:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.117
-Patch318:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.118
-Patch319:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.119
-Patch320:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.120
-Patch321:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.121
-Patch322:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.122
-Patch323:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.123
-Patch324:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.124
-Patch325:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.125
-Patch326:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.126
-Patch327:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.127
-Patch328:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.128
-Patch329:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.129
-# patch for -extra
-#Patch330:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.130
-Patch331:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.131
-# patch for -extra
-#Patch332:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.132
-Patch333:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.133
-Patch334:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.134
-Patch335:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.135
-Patch336:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.136
-Patch337:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.137
-# patch for -extra
-#Patch338:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.138
-Patch339:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.139
-Patch340:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.140
-Patch341:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.141
-Patch342:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.142
-Patch343:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.143
-Patch344:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.144
-Patch345:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.145
-Patch346:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.146
-Patch347:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.147
-Patch348:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.148
-Patch349:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.149
-Patch350:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.150
-Patch351:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.151
-Patch352:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.152
-Patch353:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.153
-Patch354:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.154
-Patch355:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.155
-# patch for -extra
-#Patch356:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.156
-Patch357:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.157
-Patch358:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.158
+Patch109:	%{name}-dosini.vim-hash_comment.patch
+Patch110:	%{name}-mysql.vim-syntax_comment.patch
+Patch111:	%{name}-perl.vim-ftplugin_perldoc.patch
+Patch112:	%{name}-python.vim-ftplugin_pydoc.patch
+Patch113:	%{name}-ruby.vim-ftplugin_ri.patch
+Patch114:	%{name}-noruntimeperl.patch
+# Official patches 10000-...
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 1 4
+# 5: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 6 26
+# 27-28: patches for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 29 31
+# 32: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 33 44
+# 45: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 46 56
+# 57: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 58 64
+# 65: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 66 73
+# 74: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 75 107
+# 108: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 109 129
+# 130: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 131 131
+# 132: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 133 137
+# 138: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 139 155
+# 156: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 157 160
+# 7.0.161: patch for windows
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 162 169
+# 7.0.170, 7.0.171: patch for windows
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 172 179
+# 7.0.180: patch for windows
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 181 %{_patchlevel}
 URL:		http://www.vim.org/
+%{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -272,10 +141,9 @@ BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
 %{?with_motif:BuildRequires:	openmotif-devel}
 %{?with_perl:BuildRequires:	perl-devel}
-%{?with_python:BuildRequires:	python-devel >= 2.5}
+%{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 Obsoletes:	kvim
 %if %{with bonobo}
 BuildRequires:	ORBit2-devel
@@ -283,7 +151,7 @@ BuildRequires:	libbonoboui-devel >= 2.2.0
 BuildRequires:	libgnomeui-devel >= 2.2.0.1
 BuildRequires:	nautilus-devel >= 2.2.0
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.311
+BuildRequires:	rpmbuild(macros) >= 1.351
 %if %{with static}
 BuildRequires:	acl-static
 BuildRequires:	attr-static
@@ -304,7 +172,6 @@ Provides:	vi-editor
 Provides:	vi
 Obsoletes:	vim-enhanced
 Obsoletes:	vim-ispell
-Obsoletes:	vim-plugin-multvals
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # that's example script
@@ -544,18 +411,6 @@ köra.
 ðÁËÅÔ vim-rt Í¦ÓÔÉÔØ ÆÁÊÌÉ (ÎÁÐÒÉËÌÁÄ, ÆÁÊÌÉ ÄÏ×¦ÄËÉ), ËÏÔÒ¦ ÐÏÔÒ¦ÂÎ¦
 ÄÌÑ ÒÏÂÏÔÉ ÂÕÄØ-ÑËÏ§ ÐÒÏÇÒÁÍÉ vim.
 
-%package spell-en
-Summary:	English dictionaries for VIMspell
-Summary(pl):	Angielskie s³owniki dla VIMspella
-Group:		Applications/Editors/Vim
-Requires:	%{name} = %{epoch}:%{version}-%{release}
-
-%description spell-en
-English dictionaries for VIMspell.
-
-%description spell-en -l pl
-Angielskie s³owniki dla VIMspella.
-
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Athena
@@ -614,8 +469,6 @@ Motif, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
 Summary:	Vim for X Window built with gtk
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GTK
 Group:		Applications/Editors/Vim
-Requires(post,postun):	gtk+2
-Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	vi-editor
@@ -644,8 +497,6 @@ GTK, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
 Summary:	Vim for X Window built with GNOME
 Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GNOME
 Group:		Applications/Editors/Vim
-Requires(post,postun):	gtk+2
-Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	vi-editor
@@ -688,6 +539,24 @@ element bonobo.
 
 %prep
 %setup -q -n %{name}70 -b1
+# official patches
+%patchset_patch 1 4
+%patchset_patch 6 26
+%patchset_patch 29 31
+%patchset_patch 33 44
+%patchset_patch 46 56
+%patchset_patch 58 64
+%patchset_patch 66 73
+%patchset_patch 75 107
+%patchset_patch 109 129
+%patchset_patch 131 131
+%patchset_patch 133 137
+%patchset_patch 139 155
+%patchset_patch 157 160
+%patchset_patch 162 169
+%patchset_patch 172 179
+%patchset_patch 181 %{_patchlevel}
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -713,179 +582,6 @@ element bonobo.
 %patch22 -p1
 %patch23 -p1
 
-# official patches
-%patch201 -p0
-%patch202 -p0
-%patch203 -p0
-%patch204 -p0
-# patch for -extra
-#%patch205 -p0
-%patch206 -p0
-%patch207 -p0
-%patch208 -p0
-%patch209 -p0
-%patch210 -p0
-%patch211 -p0
-%patch212 -p0
-%patch213 -p0
-%patch214 -p0
-%patch215 -p0
-%patch216 -p0
-%patch217 -p0
-%patch218 -p0
-%patch219 -p0
-%patch220 -p0
-%patch221 -p0
-%patch222 -p0
-%patch223 -p0
-%patch224 -p0
-%patch225 -p0
-%patch226 -p0
-# patches for -extra
-#%patch227 -p0
-#%patch228 -p0
-%patch229 -p0
-%patch230 -p0
-%patch231 -p0
-# patch for -extra
-#%patch232 -p0
-%patch233 -p0
-%patch234 -p0
-%patch235 -p0
-%patch236 -p0
-%patch237 -p0
-%patch238 -p0
-%patch239 -p0
-%patch240 -p0
-%patch241 -p0
-%patch242 -p0
-%patch243 -p0
-%patch244 -p0
-# patch for -extra
-#%patch245 -p0
-%patch246 -p0
-%patch247 -p0
-%patch248 -p0
-%patch249 -p0
-%patch250 -p0
-%patch251 -p0
-%patch252 -p0
-%patch253 -p0
-%patch254 -p0
-%patch255 -p0
-%patch256 -p0
-# patch for -extra
-#%patch257 -p0
-%patch258 -p0
-%patch259 -p0
-%patch260 -p0
-%patch261 -p0
-%patch262 -p0
-%patch263 -p0
-%patch264 -p0
-# patch for -extra
-#%patch265 -p0
-%patch266 -p0
-%patch267 -p0
-%patch268 -p0
-%patch269 -p0
-%patch270 -p0
-%patch271 -p0
-%patch272 -p0
-%patch273 -p0
-# patch for -extra
-#%patch274 -p0
-%patch275 -p0
-%patch276 -p0
-%patch277 -p0
-%patch278 -p0
-%patch279 -p0
-%patch280 -p0
-%patch281 -p0
-%patch282 -p0
-%patch283 -p0
-%patch284 -p0
-%patch285 -p0
-%patch286 -p0
-%patch287 -p0
-%patch288 -p0
-%patch289 -p0
-%patch290 -p0
-%patch291 -p0
-%patch292 -p0
-%patch293 -p0
-%patch294 -p0
-%patch295 -p0
-%patch296 -p0
-%patch297 -p0
-%patch298 -p0
-%patch299 -p0
-%patch300 -p0
-%patch301 -p0
-%patch302 -p0
-%patch303 -p0
-%patch304 -p0
-%patch305 -p0
-%patch306 -p0
-%patch307 -p0
-# patch for -extra
-#%patch308 -p0
-%patch309 -p0
-%patch310 -p0
-%patch311 -p0
-%patch312 -p0
-%patch313 -p0
-%patch314 -p0
-%patch315 -p0
-%patch316 -p0
-%patch317 -p0
-%patch318 -p0
-%patch319 -p0
-%patch320 -p0
-%patch321 -p0
-%patch322 -p0
-%patch323 -p0
-%patch324 -p0
-%patch325 -p0
-%patch326 -p0
-%patch327 -p0
-%patch328 -p0
-%patch329 -p0
-# patch for -extra
-#%patch330 -p0
-%patch331 -p0
-# patch for -extra
-#%patch332 -p0
-%patch333 -p0
-%patch334 -p0
-%patch335 -p0
-%patch336 -p0
-%patch337 -p0
-# patch for -extra
-#%patch338 -p0
-%patch339 -p0
-%patch340 -p0
-%patch341 -p0
-%patch342 -p0
-%patch343 -p0
-%patch344 -p0
-%patch345 -p0
-%patch346 -p0
-%patch347 -p0
-%patch348 -p0
-%patch349 -p0
-%patch350 -p0
-%patch351 -p0
-%patch352 -p0
-%patch353 -p0
-%patch354 -p0
-%patch355 -p0
-# patch for -extra
-#%patch356 -p0
-%patch357 -p0
-%patch358 -p0
-
-
 # bonobo
 %if %{with bonobo}
 %patch100 -p1
@@ -908,6 +604,12 @@ element bonobo.
 %patch107 -p1
 
 %patch108 -p1
+%patch109 -p1
+%patch110 -p1
+%patch111 -p1
+%patch112 -p1
+%patch113 -p1
+%patch114 -p1
 
 install %{SOURCE14} runtime/indent
 install %{SOURCE15} runtime/colors
@@ -927,6 +629,7 @@ install -d bin
 %if %{with bonobo}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	--enable-bonobo \
@@ -971,8 +674,8 @@ LDFLAGS="%{rpmldflags} -static"
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} vim
-
+%{__make} vim \
+	SPELL_OBJ=
 mv -f vim bin/vim.static
 LDFLAGS="%{rpmldflags}"
 %endif
@@ -999,13 +702,14 @@ LDFLAGS="%{rpmldflags}"
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} vim
-
+%{__make} vim \
+	SPELL_OBJ=
 mv -f vim bin/vim.ncurses
 
 %if %{with athena}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
@@ -1035,6 +739,7 @@ mv -f vim bin/gvim.athena
 %if %{with motif}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
@@ -1064,6 +769,7 @@ mv -f vim bin/gvim.motif
 %if %{with gtk}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gtk2 \
 	--enable-gtk2-check \
@@ -1091,6 +797,7 @@ mv -f vim bin/gvim.gtk
 %if %{with gnome}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	%{?with_bonobo:--disable-bonobo} \
@@ -1116,6 +823,7 @@ mv -f vim bin/gvim.gtk
 mv -f vim bin/gvim.gnome
 %endif
 
+
 %{__make} xxd/xxd languages
 
 %install
@@ -1125,7 +833,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
 	$RPM_BUILD_ROOT%{_desktopdir}
 
-%{__make} install \
+%{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
@@ -1152,7 +860,7 @@ install src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 # echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
+
 
 # not supported directories
 rm -rf $RPM_BUILD_ROOT%{_mandir}/??.*/
@@ -1160,10 +868,7 @@ rm -rf $RPM_BUILD_ROOT%{_mandir}/??.*/
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
 
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/eview
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/evim
 ln -sf vim $RPM_BUILD_ROOT%{_bindir}/rvim
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/vimdiff
 ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
@@ -1185,10 +890,9 @@ install %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
 %if %{with gtk}
 install src/bin/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
 ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_bindir}/gvim
-ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
-ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gvimdiff
-ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 
@@ -1205,11 +909,15 @@ install src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 %endif
 
 bzip2 -dc %{SOURCE2} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
+# non-existent binaries
+rm -rf $RPM_BUILD_ROOT%{_mandir}/*/man1/{evim,{,g}vimdiff}.1
 
 unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE3}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
+
+chmod -x $RPM_BUILD_ROOT%{_datadir}/vim/v*/tools/*.pl
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -1234,49 +942,25 @@ rm -rf $RPM_BUILD_ROOT
 
 %post -n gvim-gtk
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
-%update_icon_cache hicolor
 
 %postun -n gvim-gtk
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
-%update_icon_cache hicolor
 
 %post -n gvim-gnome
-%update_desktop_database_post
-%update_icon_cache hicolor
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
 
 %postun -n gvim-gnome
-%update_desktop_database_postun
-%update_icon_cache hicolor
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
 
 %files
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/eview
-%attr(755,root,root) %{_bindir}/evim
-%attr(755,root,root) %{_bindir}/rvim
 %attr(755,root,root) %{_bindir}/vim
-%attr(755,root,root) %{_bindir}/vimdiff
-%{_mandir}/man1/eview.1*
-%{_mandir}/man1/evim.1*
-%{_mandir}/man1/rvim.1*
-%{_mandir}/man1/vimdiff.1*
-%lang(fi) %{_mandir}/fi/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/eview.1*
-%lang(fr) %{_mandir}/fr/man1/evim.1*
-%lang(fr) %{_mandir}/fr/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/vimdiff.1*
-%lang(id) %{_mandir}/id/man1/rvim.1*
-%lang(it) %{_mandir}/it/man1/eview.1*
-%lang(it) %{_mandir}/it/man1/evim.1*
-%lang(it) %{_mandir}/it/man1/rvim.1*
-%lang(it) %{_mandir}/it/man1/vimdiff.1*
-%lang(pl) %{_mandir}/pl/man1/eview.1*
-%lang(pl) %{_mandir}/pl/man1/evim.1*
-%lang(pl) %{_mandir}/pl/man1/rvim.1*
-%lang(pl) %{_mandir}/pl/man1/vimdiff.1*
-%lang(ru) %{_mandir}/ru/man1/eview.1*
-%lang(ru) %{_mandir}/ru/man1/evim.1*
-%lang(ru) %{_mandir}/ru/man1/rvim.1*
-%lang(ru) %{_mandir}/ru/man1/vimdiff.1*
+%attr(755,root,root) %{_bindir}/rvim
+%{_mandir}/man1/rvim.*
+%lang(fi) %{_mandir}/fi/man1/rvim.*
+%lang(fr) %{_mandir}/fr/man1/rvim.*
+%lang(id) %{_mandir}/id/man1/rvim.*
+%lang(pl) %{_mandir}/pl/man1/rvim.*
 %{_desktopdir}/%{name}.desktop
 
 %if %{with static}
@@ -1365,7 +1049,6 @@ rm -rf $RPM_BUILD_ROOT
 %lang(es) %{_datadir}/vim/v*/lang/es/
 %lang(fr) %{_datadir}/vim/v*/lang/menu_fr*
 %lang(fr) %{_datadir}/vim/v*/lang/fr/
-%lang(ga) %{_datadir}/vim/v*/lang/ga/
 %lang(hu) %{_datadir}/vim/v*/lang/menu_hu*
 %lang(it) %{_datadir}/vim/v*/lang/menu_it*
 %lang(it) %{_datadir}/vim/v*/lang/it/
@@ -1389,9 +1072,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sv) %{_datadir}/vim/v*/lang/menu_sv*
 %lang(sv) %{_datadir}/vim/v*/lang/sv/
 %lang(uk) %{_datadir}/vim/v*/lang/menu_uk*
-%lang(uk) %{_datadir}/vim/v*/lang/uk/
 %lang(vi) %{_datadir}/vim/v*/lang/menu_vi*
-%lang(vi) %{_datadir}/vim/v*/lang/vi/
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.cp936*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.gb2312*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
@@ -1402,9 +1083,9 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW/
-
 %dir %{_datadir}/vim/v*/spell
 %{_datadir}/vim/v*/spell/cleanadd.vim
+%lang(en_GB) %{_datadir}/vim/v*/spell/en.*.*
 %lang(he) %{_datadir}/vim/v*/spell/he.*
 %lang(yi) %{_datadir}/vim/v*/spell/yi.*
 
@@ -1418,29 +1099,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/compiler
 %{_datadir}/vim/v*/autoload
 %{_datadir}/vim/v*/*.vim
-
-%{_mandir}/man1/rvim.1*
-%{_mandir}/man1/vim.1*
-%{_mandir}/man1/vimtutor.1*
-%lang(fi) %{_mandir}/fi/man1/rvim.1*
-%lang(fi) %{_mandir}/fi/man1/vim.1*
-%lang(fr) %{_mandir}/fr/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/vim.1*
-%lang(fr) %{_mandir}/fr/man1/vimtutor.1*
-%lang(id) %{_mandir}/id/man1/vim.1*
-%lang(it) %{_mandir}/it/man1/vim.1*
-%lang(it) %{_mandir}/it/man1/vimtutor.1*
-%lang(pl) %{_mandir}/pl/man1/vim.1*
-%lang(pl) %{_mandir}/pl/man1/vimtutor.1*
-%lang(ru) %{_mandir}/ru/man1/vim.1*
-%lang(ru) %{_mandir}/ru/man1/vimtutor.1*
+%{_mandir}/man1/vim*
+%lang(fi) %{_mandir}/fi/man1/vim*
+%lang(fr) %{_mandir}/fr/man1/vim*
+%lang(id) %{_mandir}/id/man1/vim*
+%lang(it) %{_mandir}/it/man1/vim*
+%lang(pl) %{_mandir}/pl/man1/vim*
+%lang(ru) %{_mandir}/ru/man1/vim*
 %{_iconsdir}/hicolor/16x16/apps/vim.png
 %{_iconsdir}/hicolor/32x32/apps/vim.png
 %{_iconsdir}/hicolor/48x48/apps/vim.png
-
-%files spell-en
-%defattr(644,root,root,755)
-%{_datadir}/vim/v*/spell/en.*.*
 
 %if %{with athena}
 %files -n gvim-athena
@@ -1459,25 +1127,19 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gtk}
 %files -n gvim-gtk
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/gview
 %attr(755,root,root) %{_bindir}/gvim.gtk
-%attr(755,root,root) %{_bindir}/gvimdiff
 %attr(755,root,root) %{_bindir}/rgvim
 %attr(755,root,root) %{_bindir}/rgview
 %attr(755,root,root) %verify(not link) %{_bindir}/gvim
-%{_mandir}/man1/gvi*
-%{_mandir}/man1/rgv*
 %lang(fi) %{_mandir}/fi/man1/gvi*
 %lang(fi) %{_mandir}/fi/man1/rgv*
 %lang(fr) %{_mandir}/fr/man1/gvi*
 %lang(fr) %{_mandir}/fr/man1/rgv*
 %lang(id) %{_mandir}/id/man1/gvi*
 %lang(id) %{_mandir}/id/man1/rgv*
-%lang(it) %{_mandir}/it/man1/gvi*
-%lang(it) %{_mandir}/it/man1/rgv*
 %lang(pl) %{_mandir}/pl/man1/gvi*
 %lang(pl) %{_mandir}/pl/man1/rgv*
-%lang(ru) %{_mandir}/ru/man1/gvi*
-%lang(ru) %{_mandir}/ru/man1/rgv*
 %{_desktopdir}/gvim-gtk.desktop
 %endif
 
