@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	178
+%define		_patchlevel	188
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -120,7 +120,9 @@ Patch108:	%{name}-ft-cron.patch
 # 7.0.161: patch for windows
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 162 169
 # 7.0.170, 7.0.171: patch for windows
-%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 172 %{_patchlevel}
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 172 179
+# 7.0.180: patch for windows
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 181 %{_patchlevel}
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
@@ -546,7 +548,8 @@ element bonobo.
 %patchset_patch 139 155
 %patchset_patch 157 160
 %patchset_patch 162 169
-%patchset_patch 172 %{_patchlevel}
+%patchset_patch 172 179
+%patchset_patch 181 %{_patchlevel}
 
 %patch0 -p1
 %patch1 -p1
