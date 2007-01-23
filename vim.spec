@@ -91,6 +91,11 @@ Patch105:	%{name}-selinux.patch
 Patch106:	%{name}-fstab-uuid.patch
 Patch107:	%{name}-autopaste.patch
 Patch108:	%{name}-ft-cron.patch
+Patch109:	%{name}-dosini.vim-hash_comment.patch
+Patch110:	%{name}-mysql.vim-syntax_comment.patch
+Patch111:	%{name}-perl.vim-ftplugin_perldoc.patch
+Patch112:	%{name}-python.vim-ftplugin_pydoc.patch
+Patch113:	%{name}-ruby.vim-ftplugin_ri.patch
 # Official patches 10000-...
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 1 4
 # 5: patch for -extra
@@ -598,6 +603,11 @@ element bonobo.
 %patch107 -p1
 
 %patch108 -p1
+%patch109 -p1
+%patch110 -p1
+%patch111 -p1
+%patch112 -p1
+%patch113 -p1
 
 install %{SOURCE14} runtime/indent
 install %{SOURCE15} runtime/colors
