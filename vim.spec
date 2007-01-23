@@ -96,6 +96,7 @@ Patch110:	%{name}-mysql.vim-syntax_comment.patch
 Patch111:	%{name}-perl.vim-ftplugin_perldoc.patch
 Patch112:	%{name}-python.vim-ftplugin_pydoc.patch
 Patch113:	%{name}-ruby.vim-ftplugin_ri.patch
+Patch114:	%{name}-noruntimeperl.patch
 # Official patches 10000-...
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 1 4
 # 5: patch for -extra
@@ -608,6 +609,7 @@ element bonobo.
 %patch111 -p1
 %patch112 -p1
 %patch113 -p1
+%patch114 -p1
 
 install %{SOURCE14} runtime/indent
 install %{SOURCE15} runtime/colors
@@ -914,6 +916,8 @@ unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE3}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
+
+chmod -x $RPM_BUILD_ROOT%{_datadir}/vim/v*/tools/*.pl
 
 %clean
 rm -rf $RPM_BUILD_ROOT
