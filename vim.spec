@@ -22,14 +22,14 @@
 %define		_patchlevel	148
 
 Summary:	Vi IMproved - a Vi clone
-Summary(de):	VIsual editor iMproved
-Summary(es):	Editor visual incrementado
-Summary(fr):	Editeur VIM : VIsual editor iMproved
-Summary(pl):	Vi IMproved - klon edytora Vi
-Summary(pt_BR):	Editor visual incrementado
-Summary(ru):	Visual editor IMproved - Единственно Правильный Редактор :)
-Summary(tr):	GeliЧmiЧ bir vi sЭrЭmЭ
-Summary(uk):	Visual editor IMproved - ╢дино В╕рний Редактор :)
+Summary(de.UTF-8):   VIsual editor iMproved
+Summary(es.UTF-8):   Editor visual incrementado
+Summary(fr.UTF-8):   Editeur VIM : VIsual editor iMproved
+Summary(pl.UTF-8):   Vi IMproved - klon edytora Vi
+Summary(pt_BR.UTF-8):   Editor visual incrementado
+Summary(ru.UTF-8):   Visual editor IMproved - п∙п╢п╦п╫я│я┌п╡п╣п╫п╫п╬ п÷я─п╟п╡п╦п╩я▄п╫я▀п╧ п═п╣п╢п╟п╨я┌п╬я─ :)
+Summary(tr.UTF-8):   Geliе÷miе÷ bir vi sц╪rц╪mц╪
+Summary(uk.UTF-8):   Visual editor IMproved - п└п╢п╦п╫п╬ п▓я√я─п╫п╦п╧ п═п╣п╢п╟п╨я┌п╬я─ :)
 Name:		vim
 Version:	%{_ver}
 Release:	0.%{_patchlevel}.1
@@ -125,106 +125,99 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Text editor similar to Vi. Important improvements: multiple windows,
 multi-level undo, block highliting, folding, and many other.
 
-%description -l cs
-ViM je novЩ a vylep╧enЩ editor vychАzejМcМ z klasickИho editoru vi. Vi
-byl prvnМm celoobrazovkovЩm editorem pro Unix a je stАle velmi
-populАrnМ. ViM je obohacenЩ funkcemi jako: podpora vМce oken,
-vМceЗrovРovИ undo, zvЩrazРovАnМ blokЫ a Ьadu dal╧Мch u╬iteХnЩch
-funkcМ.
+%description -l cs.UTF-8
+ViM je novц╫ a vylepе║enц╫ editor vychц║zejц╜cц╜ z klasickц╘ho editoru vi. Vi
+byl prvnц╜m celoobrazovkovц╫m editorem pro Unix a je stц║le velmi
+populц║rnц╜. ViM je obohacenц╫ funkcemi jako: podpora vц╜ce oken,
+vц╜ceц╨rovе┬ovц╘ undo, zvц╫razе┬ovц║nц╜ blokе╞ a е≥adu dalе║ц╜ch uе╬iteд█nц╫ch
+funkcц╜.
 
-%description -l de
+%description -l de.UTF-8
 Der Visual-Editor iMproved ist ein aktualisierter und erweiterter Klon
 des vi-Editors, der mit praktisch allen UN*X-Systemen ausgeliefert
 wird. Er bringt mehrere Fenster, mehrstufige Widerrufen-Funktion,
 Block-Markierung und viele weitere Zusatzfunktionen im Vergleich zum
 Standard-vi-Programm.
 
-%description -l es
-El editor Visual Mejorado es una versiСn actualizada y con nuevas
-caracterМsticas adicionales del mundialmente famoso 'vi' que acompaЯa
-prАcticamente todos los sistemas UN*X. Posibilita trabajar con
-mЗltiples ventanas, varios niveles de deshacer, bloques enfatizados, y
-otras muchas caracterМsticas del 'vi'.
+%description -l es.UTF-8
+El editor Visual Mejorado es una versiцЁn actualizada y con nuevas
+caracterц╜sticas adicionales del mundialmente famoso 'vi' que acompaц╠a
+prц║cticamente todos los sistemas UN*X. Posibilita trabajar con
+mц╨ltiples ventanas, varios niveles de deshacer, bloques enfatizados, y
+otras muchas caracterц╜sticas del 'vi'.
 
-%description -l fr
-L'Иditeur VIsuel aMИliorИ est un clone mis Ю jour et dotИ de
-caractИristiques supplИmentaires de l'Иditeur ╚ vi ╩ fourni avec
-pratiquement tous les systХmes UN*X. Il ajoute les fenЙtres
-mutltiples, l'annulation a plusieurs niveaux, la mise en Иvidence des
-blocs et autres caractИristiques au vi de base.
+%description -l fr.UTF-8
+L'ц╘diteur VIsuel aMц╘liorц╘ est un clone mis ц═ jour et dotц╘ de
+caractц╘ristiques supplц╘mentaires de l'ц╘diteur б╚ vi б╩ fourni avec
+pratiquement tous les systц╗mes UN*X. Il ajoute les fenц╙tres
+mutltiples, l'annulation a plusieurs niveaux, la mise en ц╘vidence des
+blocs et autres caractц╘ristiques au vi de base.
 
-%description -l id
+%description -l id.UTF-8
 VIM (VIsual editor iMproved) adalah versi vi editor yang sudah
 diupdate dan ditambah kemampuannya. Vi adalah editor untuk UNIX yang
 pertama yang menggunakan layar, dan sekarang masih sangat populer. VIM
 mengembangkan vi dengan menambah kemampuan baru seperti: multiple
 windows, multi-level undo, block highlighting, dll.
 
-%description -l is
-VIM (VIsual editor iMproved) er uppfФrП og endurbФtt ЗtgАfa af vi
-ritlinum. Vi var fyrsti skjА-ritillinn fyrir UNIX og er enn mjЖg
-vinsФll. VIM gerist fЖПurbetrungur meП nЩjum mЖguleikum lМkt og
-gluggakerfi, iПrun og yfirbСt (e: multi-level undo), blokkarvali og
+%description -l is.UTF-8
+VIM (VIsual editor iMproved) er uppfц╕rц╟ og endurbц╕tt ц╨tgц║fa af vi
+ritlinum. Vi var fyrsti skjц║-ritillinn fyrir UNIX og er enn mjц╤g
+vinsц╕ll. VIM gerist fц╤ц╟urbetrungur meц╟ nц╫jum mц╤guleikum lц╜kt og
+gluggakerfi, iц╟run og yfirbцЁt (e: multi-level undo), blokkarvali og
 fleira.
 
-%description -l it
-VIM (Vi IMproved) Х una versione aggiornata e perfezionata dell'editor
-vi. Vi Х stato il primo editor per UNIX realmente basato su video ed Х
+%description -l it.UTF-8
+VIM (Vi IMproved) ц╗ una versione aggiornata e perfezionata dell'editor
+vi. Vi ц╗ stato il primo editor per UNIX realmente basato su video ed ц╗
 ancora molto diffuso. VIM perfeziona vi aggiungendo nuove funzioni:
 finestre multiple, funzione \"annulla\" multilivello, evidenziazione
 dei blocchi e altro.
 
-%description -l pl
-Edytor tekstu podobny do Vi. Wa©ne ulepszenia: mo©liwo╤Ф pracy w wielu
-oknach, wielopoziomowa opcja 'cofnij', bloki, pod╤wietlanie skЁadni,
+%description -l pl.UTF-8
+Edytor tekstu podobny do Vi. Waе╪ne ulepszenia: moе╪liwoе⌡д┤ pracy w wielu
+oknach, wielopoziomowa opcja 'cofnij', bloki, podе⌡wietlanie skе┌adni,
 folding i wiele innych.
 
-%description -l ja
-O VIM (VIsual editor iMproved) И uma versЦo melhorada e actualizada do
-editor vi. O vi foi o primeiro verdadeiro editor baseado em ecrЦ para
-o UNIX, e ainda И muito popular. O VIM melhora o vi acrescentando
-novas potencialidades: janelas mЗltiplas, anulaГЦo multi-nМvel, realce
-de blocos e mais.
+%description -l pt_BR.UTF-8
+O editor Vim (Vi Enhanced) ц╘ um versцёo atualizada e com novas
+caracterц╜sticas do mundialmente famoso 'vi' que acompanha praticamente
+todos os sistemas UN*X. Ele possibilita trabalhar com mц╨ltiplas
+janelas, vц║rios nц╜veis de desfazer, blocos enfatizados, e muitas
+outras caracterц╜sticas do 'vi'.
 
-%description -l pt_BR
-O editor Vim (Vi Enhanced) И um versЦo atualizada e com novas
-caracterМsticas do mundialmente famoso 'vi' que acompanha praticamente
-todos os sistemas UN*X. Ele possibilita trabalhar com mЗltiplas
-janelas, vАrios nМveis de desfazer, blocos enfatizados, e muitas
-outras caracterМsticas do 'vi'.
+%description -l ru.UTF-8
+VIsual editor iMproved - я█я┌п╬ п╬п╠п╫п╬п╡п╩п╣п╫п╫я▀п╧ п╦ п╥п╫п╟я┤п╦я┌п╣п╩я▄п╫п╬ я┐п╩я┐я┤я┬п╣п╫п╫я▀п╧ п╨п╩п╬п╫
+я─п╣п╢п╟п╨я┌п╬я─п╟ vi, п╨п╬я┌п╬я─я▀п╧ п©п╬я│я┌п╟п╡п╩я▐п╣я┌я│я▐ п©я─п╟п╨я┌п╦я┤п╣я│п╨п╦ я│п╬ п╡я│п╣п╪п╦
+UN*X-я│п╦я│я┌п╣п╪п╟п╪п╦. п▓ я█я┌п╬п╧ п╡п╣я─я│п╦п╦ п╣я│я┌я▄ п╪п╫п╬пЁп╬я┐я─п╬п╡п╫п╣п╡я▀п╧ п╬я┌п╨п╟я┌, п╡я▀п╢п╣п╩п╣п╫п╦п╣
+п╠п╩п╬п╨п╬п╡, я│п╦п╫я┌п╟п╨я│п╦я┤п╣я│п╨п╟я▐ п©п╬п╢я│п╡п╣я┌п╨п╟ п╦ п╪п╫п╬пЁп╬ п╢я─я┐пЁп╬пЁп╬...
 
-%description -l ru
-VIsual editor iMproved - это обновленный и значительно улучшенный клон
-редактора vi, который поставляется практически со всеми
-UN*X-системами. В этой версии есть многоуровневый откат, выделение
-блоков, синтаксическая подсветка и много другого...
+%description -l sk.UTF-8
+VIM (VIsual editor iMproved) je novе║ia a vylepе║enц║ verzia editoru vi.
+Vi bol prvц╫m skutoд█ne obrazovkovo orientovanц╫m editorom pre UNIX a
+stц║le je veд╬mi populц║rny. VIM mц║ oproti vi vylepе║enia ako: prц║cu s
+viacerц╫mi oknami, viacnц║sobnц╘ undo, zvц╫razе┬ovanie blokov textu a inц╘.
 
-%description -l sk
-VIM (VIsual editor iMproved) je nov╧ia a vylep╧enА verzia editoru vi.
-Vi bol prvЩm skutoХne obrazovkovo orientovanЩm editorom pre UNIX a
-stАle je ve╣mi populАrny. VIM mА oproti vi vylep╧enia ako: prАcu s
-viacerЩmi oknami, viacnАsobnИ undo, zvЩrazРovanie blokov textu a inИ.
+%description -l sv.UTF-8
+VIM (Vi IMproved) ц╓r en uppdaterad och fц╤rbц╓ttrad version av
+redigeraren vi. Vi var den fц╤rsta riktiga skц╓rmbaserade redigeraren
+till UNIX, och ц╓r fortfarande vц╓ldigt populц╓r. VIM fц╤rbц╓ttrar vi med
+nya finesser: flera fц╤nster, flernivц╔ ц╔ngra, blockmarkering och mer
+ц╓ndц╔.
 
-%description -l sv
-VIM (Vi IMproved) Дr en uppdaterad och fЖrbДttrad version av
-redigeraren vi. Vi var den fЖrsta riktiga skДrmbaserade redigeraren
-till UNIX, och Дr fortfarande vДldigt populДr. VIM fЖrbДttrar vi med
-nya finesser: flera fЖnster, flernivЕ Еngra, blockmarkering och mer
-ДndЕ.
+%description -l tr.UTF-8
+Standart vi metin dц╪zenleyicisinin geliе÷miе÷ hali; daha fazla komut,
+birden fazla pencere desteд÷i ve blok iе÷aretleme yetenekleri iц╖erir.
 
-%description -l tr
-Standart vi metin dЭzenleyicisinin geliЧmiЧ hali; daha fazla komut,
-birden fazla pencere desteПi ve blok iЧaretleme yetenekleri iГerir.
-
-%description -l uk
-VIsual editor iMproved - це оновлений та значно пол╕пшений клон
-редактора vi, який поставля╓ться практично з╕ вс╕ма UN*X-системами. В
-ц╕й верс╕╖ ╓ багатор╕вневий в╕дкат, вид╕лення блок╕в, синтаксична
-п╕дсв╕тка та багато ╕ншого...
+%description -l uk.UTF-8
+VIsual editor iMproved - я├п╣ п╬п╫п╬п╡п╩п╣п╫п╦п╧ я┌п╟ п╥п╫п╟я┤п╫п╬ п©п╬п╩я√п©я┬п╣п╫п╦п╧ п╨п╩п╬п╫
+я─п╣п╢п╟п╨я┌п╬я─п╟ vi, я▐п╨п╦п╧ п©п╬я│я┌п╟п╡п╩я▐я■я┌я▄я│я▐ п©я─п╟п╨я┌п╦я┤п╫п╬ п╥я√ п╡я│я√п╪п╟ UN*X-я│п╦я│я┌п╣п╪п╟п╪п╦. п▓
+я├я√п╧ п╡п╣я─я│я√я≈ я■ п╠п╟пЁп╟я┌п╬я─я√п╡п╫п╣п╡п╦п╧ п╡я√п╢п╨п╟я┌, п╡п╦п╢я√п╩п╣п╫п╫я▐ п╠п╩п╬п╨я√п╡, я│п╦п╫я┌п╟п╨я│п╦я┤п╫п╟
+п©я√п╢я│п╡я√я┌п╨п╟ я┌п╟ п╠п╟пЁп╟я┌п╬ я√п╫я┬п╬пЁп╬...
 
 %package -n xxd
 Summary:	Utility to convert files to hexdump or do the reverse
-Summary(pl):	NarzЙdzie do zamiany plikСw na postaФ szesnastkow╠ i odwrotnie
+Summary(pl.UTF-8):   Narzд≥dzie do zamiany plikцЁw na postaд┤ szesnastkowд┘ i odwrotnie
 Group:		Applications/Editors/Vim
 
 %description -n xxd
@@ -234,16 +227,16 @@ uudecode it allows the transmission of binary data in a `mail-safe'
 ASCII representation, but has the advantage of decoding to standard
 output. Moreover, it can be used to perform binary file patching.
 
-%description -n xxd -l pl
-xxd tworzy szesnastkowy zapis pliku podanego na standardowe wej╤cie.
-Mo©e tak©e przekonwertowaФ taki zapis na oryginaln╠, binarn╠ postaФ.
-Podobnie jak uuencode i uudecode pozwala na przesyЁanie danych
-binarnych w postaci ASCII, ale ma mo©liwo╤Ф dekodowania na standardowe
-wyj╤cie. Co wiЙcej, mo©e byФ u©yty do modyfikowania plikСw binarnych.
+%description -n xxd -l pl.UTF-8
+xxd tworzy szesnastkowy zapis pliku podanego na standardowe wejе⌡cie.
+Moе╪e takе╪e przekonwertowaд┤ taki zapis na oryginalnд┘, binarnд┘ postaд┤.
+Podobnie jak uuencode i uudecode pozwala na przesyе┌anie danych
+binarnych w postaci ASCII, ale ma moе╪liwoе⌡д┤ dekodowania na standardowe
+wyjе⌡cie. Co wiд≥cej, moе╪e byд┤ uе╪yty do modyfikowania plikцЁw binarnych.
 
 %package static
 Summary:	Statically linked Vim
-Summary(pl):	Statycznie skonsolidowany Vim
+Summary(pl.UTF-8):   Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
 Provides:	vi
 Obsoletes:	elvis-static
@@ -256,24 +249,24 @@ Text editor similar to Vi. This version is built with minimal feature
 and is installed in /bin as a rescue tool. The installation of this
 package is STRONGLY recommended.
 
-%description static -l pl
-Edytor tekstu podobny do Vi. Ta wersja zostaЁa skonsolidowana
-statycznie i posiada minimaln╠ ilo╤Ф dodatkСw. Jest instalowana w /bin
-jako narzЙdzie dla administratora. Instalacja tego pakietu jest MOCNO
-zalecana, mo©e on pomСc Ci uratowaФ system w czasie awarii.
+%description static -l pl.UTF-8
+Edytor tekstu podobny do Vi. Ta wersja zostaе┌a skonsolidowana
+statycznie i posiada minimalnд┘ iloе⌡д┤ dodatkцЁw. Jest instalowana w /bin
+jako narzд≥dzie dla administratora. Instalacja tego pakietu jest MOCNO
+zalecana, moе╪e on pomцЁc Ci uratowaд┤ system w czasie awarii.
 
-%description static -l ru
-Пакет vim-static устанавливает разновидность vim как /bin/vi, что
-удобно для запуска даже когда смонтирована только корневая файловая
-система.
+%description static -l ru.UTF-8
+п÷п╟п╨п╣я┌ vim-static я┐я│я┌п╟п╫п╟п╡п╩п╦п╡п╟п╣я┌ я─п╟п╥п╫п╬п╡п╦п╢п╫п╬я│я┌я▄ vim п╨п╟п╨ /bin/vi, я┤я┌п╬
+я┐п╢п╬п╠п╫п╬ п╢п╩я▐ п╥п╟п©я┐я│п╨п╟ п╢п╟п╤п╣ п╨п╬пЁп╢п╟ я│п╪п╬п╫я┌п╦я─п╬п╡п╟п╫п╟ я┌п╬п╩я▄п╨п╬ п╨п╬я─п╫п╣п╡п╟я▐ я└п╟п╧п╩п╬п╡п╟я▐
+я│п╦я│я┌п╣п╪п╟.
 
-%description static -l uk
-Пакет vim-static встановлю╓ р╕зновид vim як /bin/vi, що зручно для
-запуску нав╕ть тод╕, коли змонтована т╕льки корньова файлова система.
+%description static -l uk.UTF-8
+п÷п╟п╨п╣я┌ vim-static п╡я│я┌п╟п╫п╬п╡п╩я▌я■ я─я√п╥п╫п╬п╡п╦п╢ vim я▐п╨ /bin/vi, я┴п╬ п╥я─я┐я┤п╫п╬ п╢п╩я▐
+п╥п╟п©я┐я│п╨я┐ п╫п╟п╡я√я┌я▄ я┌п╬п╢я√, п╨п╬п╩п╦ п╥п╪п╬п╫я┌п╬п╡п╟п╫п╟ я┌я√п╩я▄п╨п╦ п╨п╬я─п╫я▄п╬п╡п╟ я└п╟п╧п╩п╬п╡п╟ я│п╦я│я┌п╣п╪п╟.
 
 %package ispell
 Summary:	Vim with ispell support
-Summary(pl):	Vim z wsparciem dla ispella
+Summary(pl.UTF-8):   Vim z wsparciem dla ispella
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Conflicts:	ispell < 3.2.06
@@ -282,30 +275,30 @@ Conflicts:	ispell-pl < 20021127-2
 %description ispell
 Text editor similar to Vi. This version is built with ispell support.
 
-%description ispell -l pl
-Edytor tekstu podobny do Vi. Ta wersja zostaЁa skompilowana ze
+%description ispell -l pl.UTF-8
+Edytor tekstu podobny do Vi. Ta wersja zostaе┌a skompilowana ze
 wsparciem dla ispella.
 
 %package rt
 Summary:	Vim runtime files
-Summary(cs):	Soubory nezbytnИ pro libovolnЩ editor ViM
-Summary(da):	FФlles filer som er nЬdvendige for enhver version af VIM editoren
-Summary(de):	Die von allen Versionen des VIM-Editors benЖtigten gemeinsamen Dateien
-Summary(es):	Ficheros comunes a todas las versiones de VIM
-Summary(fr):	Fichiers communs indispensables pour toute version de l'Иditeur VIM
-Summary(id):	File umum yang dibutuhkan oleh semua versi editor VIM
-Summary(is):	GrunnskrАr sem allar ЗtgАfur VIM ritilsins Чurfa А aП halda
-Summary(it):	File comuni necessari per tutte le versioni dell'editor VIM
-Summary(ja):	╓╧╓ы╓ф╓н╔п║╪╔╦╔Г╔С╓н VIM ╔╗╔г╔ё╔©╓ги╛мв╓х╓╣╓Л╓К╤╕дл╔у╔║╔╓╔К
-Summary(nb):	Felles filer som er nЬdvendige for enhver versjon av VIM editoren
-Summary(pl):	Pliki przydatne edytorowi Vim
-Summary(pt):	Os ficheiros comuns necessАrios para qualquer versЦo do editor VIM
-Summary(ru):	Файлы, требуемые для любой версии редактора vim
-Summary(sk):	SpoloХnИ sЗbory potrebnИ pre v╧etky verzie editoru VIM
-Summary(sl):	Skupne datoteke, potrebne s katerokoli razliХico urejevalnika VIM
-Summary(sv):	De gemensamma filerna som behЖvs av alla versioner av redigeraren VIM
-Summary(uk):	Файли, потр╕бн╕ для будь-яко╖ верс╕╖ редактору vim
-Summary(zh_CN):	хн╨н╟Ф╠╬╣д VIM ╠Ю╪╜фВкЫпХ╣д╧╚сцнд╪Ч║ё
+Summary(cs.UTF-8):   Soubory nezbytnц╘ pro libovolnц╫ editor ViM
+Summary(da.UTF-8):   Fц╕lles filer som er nц╦dvendige for enhver version af VIM editoren
+Summary(de.UTF-8):   Die von allen Versionen des VIM-Editors benц╤tigten gemeinsamen Dateien
+Summary(es.UTF-8):   Ficheros comunes a todas las versiones de VIM
+Summary(fr.UTF-8):   Fichiers communs indispensables pour toute version de l'ц╘diteur VIM
+Summary(id.UTF-8):   File umum yang dibutuhkan oleh semua versi editor VIM
+Summary(is.UTF-8):   Grunnskrц║r sem allar ц╨tgц║fur VIM ritilsins ц╬urfa ц║ aц╟ halda
+Summary(it.UTF-8):   File comuni necessari per tutte le versioni dell'editor VIM
+Summary(ja.UTF-8):   Ц│≥Ц│╧Ц│╕Ц│╝Ц┐░Ц┐╪Ц┌╦Ц┐╖Ц┐ЁЦ│╝ VIM Ц┌╗Ц┐┤Ц┌ёЦ┌©Ц│╖Е©┘Х╕│Ц│╗Ц│∙Ц┌▄Ц┌▀Е┘╠И─ Ц┐∙Ц┌║Ц┌╓Ц┐╚
+Summary(nb.UTF-8):   Felles filer som er nц╦dvendige for enhver versjon av VIM editoren
+Summary(pl.UTF-8):   Pliki przydatne edytorowi Vim
+Summary(pt.UTF-8):   Os ficheiros comuns necessц║rios para qualquer versцёo do editor VIM
+Summary(ru.UTF-8):   п╓п╟п╧п╩я▀, я┌я─п╣п╠я┐п╣п╪я▀п╣ п╢п╩я▐ п╩я▌п╠п╬п╧ п╡п╣я─я│п╦п╦ я─п╣п╢п╟п╨я┌п╬я─п╟ vim
+Summary(sk.UTF-8):   Spoloд█nц╘ sц╨bory potrebnц╘ pre vе║etky verzie editoru VIM
+Summary(sl.UTF-8):   Skupne datoteke, potrebne s katerokoli razliд█ico urejevalnika VIM
+Summary(sv.UTF-8):   De gemensamma filerna som behц╤vs av alla versioner av redigeraren VIM
+Summary(uk.UTF-8):   п╓п╟п╧п╩п╦, п©п╬я┌я─я√п╠п╫я√ п╢п╩я▐ п╠я┐п╢я▄-я▐п╨п╬я≈ п╡п╣я─я│я√я≈ я─п╣п╢п╟п╨я┌п╬я─я┐ vim
+Summary(zh_CN.UTF-8):   Д╩╩Д╫∙Г┴┬Ф°╛Г └ VIM Г╪√Х╬▒Е≥╗Ф┴─И°─Г └Е┘╛Г■╗Ф√┤Д╩╤Ц─┌
 Group:		Applications/Editors/Vim
 Requires:	mktemp
 Requires:	which
@@ -316,66 +309,66 @@ This package contains macros, documentation, syntax configuration and
 manual pages for Vim. If you want to take advantage of Vim more
 powerful features, you should install this package.
 
-%description rt -l cs
-Tento balМХek obsahuje spoleХnИ soubory pro v╧echny dal╧М balМХky s
+%description rt -l cs.UTF-8
+Tento balц╜д█ek obsahuje spoleд█nц╘ soubory pro vе║echny dalе║ц╜ balц╜д█ky s
 vim.
 
-%description rt -l da
+%description rt -l da.UTF-8
 The vim-rt package contains files which every VIM binary will need in
 order to run.
 
-%description rt -l de
-Das Paket vim-rt enthДlt Dateien, die jede VIM-BinДrdatei fЭr die
-AusfЭhrung benЖtigt.
+%description rt -l de.UTF-8
+Das Paket vim-rt enthц╓lt Dateien, die jede VIM-Binц╓rdatei fц╪r die
+Ausfц╪hrung benц╤tigt.
 
-%description rt -l es
+%description rt -l es.UTF-8
 The vim-rt package contains files which every VIM binary will need in
 order to run.
 
-%description rt -l fr
+%description rt -l fr.UTF-8
 Le paquetage vim-rt contient des fichiers dont chaque fichier binaire
 VIM a besoin pour fonctionner.
 
-%description rt -l id
+%description rt -l id.UTF-8
 Package vim-rt berisi file yang dibutuhkan semua versi VIM agar bisa
 berjalan.
 
-%description rt -l is
-vim-rt pakkinn inniheldur skrАr sem allar VIM keyrsluskrАrnar Чurfa
-til aП keyra.
+%description rt -l is.UTF-8
+vim-rt pakkinn inniheldur skrц║r sem allar VIM keyrsluskrц║rnar ц╬urfa
+til aц╟ keyra.
 
-%description rt -l it
+%description rt -l it.UTF-8
 Il pacchetto vim-rt contiene i file necessari a ogni binario di VIM
 per poter funzionare.
 
-%description rt -l pl
-W tym pakiecie znajdziesz dokumentacjЙ, makra, pliki konfiguracyjne i
-strony podrЙcznika dla edytora Vim. Je©eli chcesz korzystaФ z
-zaawansowanych mo©liwo╤ci Vima, powiniene╤ zainstalowaФ ten pakiet.
+%description rt -l pl.UTF-8
+W tym pakiecie znajdziesz dokumentacjд≥, makra, pliki konfiguracyjne i
+strony podrд≥cznika dla edytora Vim. Jeе╪eli chcesz korzystaд┤ z
+zaawansowanych moе╪liwoе⌡ci Vima, powinieneе⌡ zainstalowaд┤ ten pakiet.
 
-%description rt -l pt
-O pacote vim-rt contИm os ficheiros que todos os executАveis do VIM
-irЦo necessitar para correr.
+%description rt -l pt.UTF-8
+O pacote vim-rt contц╘m os ficheiros que todos os executц║veis do VIM
+irцёo necessitar para correr.
 
-%description rt -l ru
-Пакет vim-rt содержит файлы (например, файлы справки), которые нужны
-для работы любой программы vim.
+%description rt -l ru.UTF-8
+п÷п╟п╨п╣я┌ vim-rt я│п╬п╢п╣я─п╤п╦я┌ я└п╟п╧п╩я▀ (п╫п╟п©я─п╦п╪п╣я─, я└п╟п╧п╩я▀ я│п©я─п╟п╡п╨п╦), п╨п╬я┌п╬я─я▀п╣ п╫я┐п╤п╫я▀
+п╢п╩я▐ я─п╟п╠п╬я┌я▀ п╩я▌п╠п╬п╧ п©я─п╬пЁя─п╟п╪п╪я▀ vim.
 
-%description rt -l sk
-BalМk vim-rt obsahuje sЗbory, ktorИ bude potrebova╩ pre sprАvnu
-funkciu ka╬dА verzia editoru VIM.
+%description rt -l sk.UTF-8
+Balц╜k vim-rt obsahuje sц╨bory, ktorц╘ bude potrebovaе╔ pre sprц║vnu
+funkciu kaе╬dц║ verzia editoru VIM.
 
-%description rt -l sv
-Paketet vim-rt innehЕller filer som alla VIM-binДrer behЖver fЖr att
-kЖra.
+%description rt -l sv.UTF-8
+Paketet vim-rt innehц╔ller filer som alla VIM-binц╓rer behц╤ver fц╤r att
+kц╤ra.
 
-%description rt -l uk
-Пакет vim-rt м╕стить файли (наприклад, файли дов╕дки), котр╕ потр╕бн╕
-для роботи будь-яко╖ програми vim.
+%description rt -l uk.UTF-8
+п÷п╟п╨п╣я┌ vim-rt п╪я√я│я┌п╦я┌я▄ я└п╟п╧п╩п╦ (п╫п╟п©я─п╦п╨п╩п╟п╢, я└п╟п╧п╩п╦ п╢п╬п╡я√п╢п╨п╦), п╨п╬я┌я─я√ п©п╬я┌я─я√п╠п╫я√
+п╢п╩я▐ я─п╬п╠п╬я┌п╦ п╠я┐п╢я▄-я▐п╨п╬я≈ п©я─п╬пЁя─п╟п╪п╦ vim.
 
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
-Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki Athena
+Summary(pl.UTF-8):   Vim dla X Window korzystajд┘cy z biblioteki Athena
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -385,23 +378,23 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is built with Athena Widget Set.
 
-%description -n gvim-athena -l pl
-Wersja edytora Vim pracuj╠ca w ╤rodowisku X Window z wykorzystaniem
+%description -n gvim-athena -l pl.UTF-8
+Wersja edytora Vim pracujд┘ca w е⌡rodowisku X Window z wykorzystaniem
 biblioteki Athena Widget Set.
 
-%description -n gvim-athena -l ru
-Этот пакет представляет собой версию VIM, собранную с библиотеками
-Athena Widget Set, что позволяет запускать VIM как приложение X Window
-System - с полностью графическим интерфейсом и поддержкой мыши.
+%description -n gvim-athena -l ru.UTF-8
+п╜я┌п╬я┌ п©п╟п╨п╣я┌ п©я─п╣п╢я│я┌п╟п╡п╩я▐п╣я┌ я│п╬п╠п╬п╧ п╡п╣я─я│п╦я▌ VIM, я│п╬п╠я─п╟п╫п╫я┐я▌ я│ п╠п╦п╠п╩п╦п╬я┌п╣п╨п╟п╪п╦
+Athena Widget Set, я┤я┌п╬ п©п╬п╥п╡п╬п╩я▐п╣я┌ п╥п╟п©я┐я│п╨п╟я┌я▄ VIM п╨п╟п╨ п©я─п╦п╩п╬п╤п╣п╫п╦п╣ X Window
+System - я│ п©п╬п╩п╫п╬я│я┌я▄я▌ пЁя─п╟я└п╦я┤п╣я│п╨п╦п╪ п╦п╫я┌п╣я─я└п╣п╧я│п╬п╪ п╦ п©п╬п╢п╢п╣я─п╤п╨п╬п╧ п╪я▀я┬п╦.
 
-%description -n gvim-athena -l uk
-Цей пакет м╕стить верс╕ю VIM, з╕брану з б╕бл╕отеками Athena Widget
-Set, що дозволя╓ запускати VIM як прикладну програму X Window System -
-з повн╕стю граф╕чним ╕нтерфейсом та п╕дтримкою миш╕.
+%description -n gvim-athena -l uk.UTF-8
+п╕п╣п╧ п©п╟п╨п╣я┌ п╪я√я│я┌п╦я┌я▄ п╡п╣я─я│я√я▌ VIM, п╥я√п╠я─п╟п╫я┐ п╥ п╠я√п╠п╩я√п╬я┌п╣п╨п╟п╪п╦ Athena Widget
+Set, я┴п╬ п╢п╬п╥п╡п╬п╩я▐я■ п╥п╟п©я┐я│п╨п╟я┌п╦ VIM я▐п╨ п©я─п╦п╨п╩п╟п╢п╫я┐ п©я─п╬пЁя─п╟п╪я┐ X Window System -
+п╥ п©п╬п╡п╫я√я│я┌я▌ пЁя─п╟я└я√я┤п╫п╦п╪ я√п╫я┌п╣я─я└п╣п╧я│п╬п╪ я┌п╟ п©я√п╢я┌я─п╦п╪п╨п╬я▌ п╪п╦я┬я√.
 
 %package -n gvim-motif
 Summary:	Vim for X Window built with Motif
-Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki Motif
+Summary(pl.UTF-8):   Vim dla X Window korzystajд┘cy z biblioteki Motif
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -411,23 +404,23 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is built with Motif.
 
-%description -n gvim-motif -l pl
-Wersja edytora Vim pracuj╠ca w ╤rodowisku X Window z wykorzystaniem
+%description -n gvim-motif -l pl.UTF-8
+Wersja edytora Vim pracujд┘ca w е⌡rodowisku X Window z wykorzystaniem
 biblioteki Motif.
 
-%description -n gvim-motif -l ru
-Этот пакет представляет собой версию VIM, собранную с библиотеками
-Motif, что позволяет запускать VIM как приложение X Window System - с
-полностью графическим интерфейсом и поддержкой мыши.
+%description -n gvim-motif -l ru.UTF-8
+п╜я┌п╬я┌ п©п╟п╨п╣я┌ п©я─п╣п╢я│я┌п╟п╡п╩я▐п╣я┌ я│п╬п╠п╬п╧ п╡п╣я─я│п╦я▌ VIM, я│п╬п╠я─п╟п╫п╫я┐я▌ я│ п╠п╦п╠п╩п╦п╬я┌п╣п╨п╟п╪п╦
+Motif, я┤я┌п╬ п©п╬п╥п╡п╬п╩я▐п╣я┌ п╥п╟п©я┐я│п╨п╟я┌я▄ VIM п╨п╟п╨ п©я─п╦п╩п╬п╤п╣п╫п╦п╣ X Window System - я│
+п©п╬п╩п╫п╬я│я┌я▄я▌ пЁя─п╟я└п╦я┤п╣я│п╨п╦п╪ п╦п╫я┌п╣я─я└п╣п╧я│п╬п╪ п╦ п©п╬п╢п╢п╣я─п╤п╨п╬п╧ п╪я▀я┬п╦.
 
-%description -n gvim-motif -l uk
-Цей пакет м╕стить верс╕ю VIM, з╕брану з б╕бл╕отеками Motif, що
-дозволя╓ запускати VIM як прикладну програму X Window System - з
-повн╕стю граф╕чним ╕нтерфейсом та п╕дтримкою миш╕.
+%description -n gvim-motif -l uk.UTF-8
+п╕п╣п╧ п©п╟п╨п╣я┌ п╪я√я│я┌п╦я┌я▄ п╡п╣я─я│я√я▌ VIM, п╥я√п╠я─п╟п╫я┐ п╥ п╠я√п╠п╩я√п╬я┌п╣п╨п╟п╪п╦ Motif, я┴п╬
+п╢п╬п╥п╡п╬п╩я▐я■ п╥п╟п©я┐я│п╨п╟я┌п╦ VIM я▐п╨ п©я─п╦п╨п╩п╟п╢п╫я┐ п©я─п╬пЁя─п╟п╪я┐ X Window System - п╥
+п©п╬п╡п╫я√я│я┌я▌ пЁя─п╟я└я√я┤п╫п╦п╪ я√п╫я┌п╣я─я└п╣п╧я│п╬п╪ я┌п╟ п©я√п╢я┌я─п╦п╪п╨п╬я▌ п╪п╦я┬я√.
 
 %package -n kvim
 Summary:	Vim for X Window built with KDE
-Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki KDE
+Summary(pl.UTF-8):   Vim dla X Window korzystajд┘cy z biblioteki KDE
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -437,13 +430,13 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is built with KDE.
 
-%description -n kvim -l pl
-Wersja edytora Vim pracuj╠ca w ╤rodowisku X Window z wykorzystaniem
+%description -n kvim -l pl.UTF-8
+Wersja edytora Vim pracujд┘ca w е⌡rodowisku X Window z wykorzystaniem
 biblioteki KDE.
 
 %package -n gvim-gtk
 Summary:	Vim for X Window built with gtk
-Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki GTK
+Summary(pl.UTF-8):   Vim dla X Window korzystajд┘cy z biblioteki GTK
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -453,24 +446,24 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is built with GTK.
 
-%description -n gvim-gtk -l pl
-Wersja edytora Vim pracuj╠ca w ╤rodowisku X Window z wykorzystaniem
+%description -n gvim-gtk -l pl.UTF-8
+Wersja edytora Vim pracujд┘ca w е⌡rodowisku X Window z wykorzystaniem
 biblioteki GTK.
 
-%description -n gvim-gtk -l ru
-Этот пакет представляет собой версию VIM, собранную с библиотеками
-GTK, что позволяет запускать VIM как приложение X Window System - с
-полностью графическим интерфейсом и поддержкой мыши. Просто скажите
+%description -n gvim-gtk -l ru.UTF-8
+п╜я┌п╬я┌ п©п╟п╨п╣я┌ п©я─п╣п╢я│я┌п╟п╡п╩я▐п╣я┌ я│п╬п╠п╬п╧ п╡п╣я─я│п╦я▌ VIM, я│п╬п╠я─п╟п╫п╫я┐я▌ я│ п╠п╦п╠п╩п╦п╬я┌п╣п╨п╟п╪п╦
+GTK, я┤я┌п╬ п©п╬п╥п╡п╬п╩я▐п╣я┌ п╥п╟п©я┐я│п╨п╟я┌я▄ VIM п╨п╟п╨ п©я─п╦п╩п╬п╤п╣п╫п╦п╣ X Window System - я│
+п©п╬п╩п╫п╬я│я┌я▄я▌ пЁя─п╟я└п╦я┤п╣я│п╨п╦п╪ п╦п╫я┌п╣я─я└п╣п╧я│п╬п╪ п╦ п©п╬п╢п╢п╣я─п╤п╨п╬п╧ п╪я▀я┬п╦. п÷я─п╬я│я┌п╬ я│п╨п╟п╤п╦я┌п╣
 'gvim'...
 
-%description -n gvim-gtk -l uk
-Цей пакет м╕стить верс╕ю VIM, з╕брану з б╕бл╕отеками GTK, що дозволя╓
-запускати VIM як прикладну програму X Window System - з повн╕стю
-граф╕чним ╕нтерфейсом та п╕дтримкою миш╕. Просто скаж╕ть 'gvim'...
+%description -n gvim-gtk -l uk.UTF-8
+п╕п╣п╧ п©п╟п╨п╣я┌ п╪я√я│я┌п╦я┌я▄ п╡п╣я─я│я√я▌ VIM, п╥я√п╠я─п╟п╫я┐ п╥ п╠я√п╠п╩я√п╬я┌п╣п╨п╟п╪п╦ GTK, я┴п╬ п╢п╬п╥п╡п╬п╩я▐я■
+п╥п╟п©я┐я│п╨п╟я┌п╦ VIM я▐п╨ п©я─п╦п╨п╩п╟п╢п╫я┐ п©я─п╬пЁя─п╟п╪я┐ X Window System - п╥ п©п╬п╡п╫я√я│я┌я▌
+пЁя─п╟я└я√я┤п╫п╦п╪ я√п╫я┌п╣я─я└п╣п╧я│п╬п╪ я┌п╟ п©я√п╢я┌я─п╦п╪п╨п╬я▌ п╪п╦я┬я√. п÷я─п╬я│я┌п╬ я│п╨п╟п╤я√я┌я▄ 'gvim'...
 
 %package -n gvim-gnome
 Summary:	Vim for X Window built with GNOME
-Summary(pl):	Vim dla X Window korzystaj╠cy z biblioteki GNOME
+Summary(pl.UTF-8):   Vim dla X Window korzystajд┘cy z biblioteki GNOME
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -480,23 +473,23 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is build with GNOME.
 
-%description -n gvim-gnome -l pl
-Wersja edytora Vim pracuj╠ca w ╤rodowisku X Window z wykorzystaniem
+%description -n gvim-gnome -l pl.UTF-8
+Wersja edytora Vim pracujд┘ca w е⌡rodowisku X Window z wykorzystaniem
 bibliotek GNOME.
 
-%description -n gvim-gnome -l ru
-Этот пакет представляет собой версию VIM, собранную с библиотеками
-GNOME, что позволяет запускать VIM как приложение X Window System - с
-полностью графическим интерфейсом и поддержкой мыши.
+%description -n gvim-gnome -l ru.UTF-8
+п╜я┌п╬я┌ п©п╟п╨п╣я┌ п©я─п╣п╢я│я┌п╟п╡п╩я▐п╣я┌ я│п╬п╠п╬п╧ п╡п╣я─я│п╦я▌ VIM, я│п╬п╠я─п╟п╫п╫я┐я▌ я│ п╠п╦п╠п╩п╦п╬я┌п╣п╨п╟п╪п╦
+GNOME, я┤я┌п╬ п©п╬п╥п╡п╬п╩я▐п╣я┌ п╥п╟п©я┐я│п╨п╟я┌я▄ VIM п╨п╟п╨ п©я─п╦п╩п╬п╤п╣п╫п╦п╣ X Window System - я│
+п©п╬п╩п╫п╬я│я┌я▄я▌ пЁя─п╟я└п╦я┤п╣я│п╨п╦п╪ п╦п╫я┌п╣я─я└п╣п╧я│п╬п╪ п╦ п©п╬п╢п╢п╣я─п╤п╨п╬п╧ п╪я▀я┬п╦.
 
-%description -n gvim-gnome -l uk
-Цей пакет м╕стить верс╕ю VIM, з╕брану з б╕бл╕отеками GNOME, що
-дозволя╓ запускати VIM як прикладну програму X Window System - з
-повн╕стю граф╕чним ╕нтерфейсом та п╕дтримкою миш╕.
+%description -n gvim-gnome -l uk.UTF-8
+п╕п╣п╧ п©п╟п╨п╣я┌ п╪я√я│я┌п╦я┌я▄ п╡п╣я─я│я√я▌ VIM, п╥я√п╠я─п╟п╫я┐ п╥ п╠я√п╠п╩я√п╬я┌п╣п╨п╟п╪п╦ GNOME, я┴п╬
+п╢п╬п╥п╡п╬п╩я▐я■ п╥п╟п©я┐я│п╨п╟я┌п╦ VIM я▐п╨ п©я─п╦п╨п╩п╟п╢п╫я┐ п©я─п╬пЁя─п╟п╪я┐ X Window System - п╥
+п©п╬п╡п╫я√я│я┌я▌ пЁя─п╟я└я√я┤п╫п╦п╪ я√п╫я┌п╣я─я└п╣п╧я│п╬п╪ я┌п╟ п©я√п╢я┌я─п╦п╪п╨п╬я▌ п╪п╦я┬я√.
 
 %package -n gvim-bonobo
 Summary:	Vim for X Window built as bonobo component
-Summary(pl):	Vim dla X Window zbudowany jako element bonobo
+Summary(pl.UTF-8):   Vim dla X Window zbudowany jako element bonobo
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -506,8 +499,8 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is build as bonobo component.
 
-%description -n gvim-bonobo -l pl
-Wersja edytora Vim pracuj╠ca w ╤rodowisku X Window, zbudowana jako
+%description -n gvim-bonobo -l pl.UTF-8
+Wersja edytora Vim pracujд┘ca w е⌡rodowisku X Window, zbudowana jako
 element bonobo.
 
 %prep
