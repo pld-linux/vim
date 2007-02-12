@@ -24,14 +24,14 @@
 %undefine	configure_cache
 #
 Summary:	Vi IMproved - a Vi clone
-Summary(de.UTF-8):   VIsual editor iMproved
-Summary(es.UTF-8):   Editor visual incrementado
-Summary(fr.UTF-8):   Editeur VIM : VIsual editor iMproved
-Summary(pl.UTF-8):   Vi IMproved - klon edytora Vi
-Summary(pt_BR.UTF-8):   Editor visual incrementado
-Summary(ru.UTF-8):   Visual editor IMproved - Единственно Правильный Редактор :)
-Summary(tr.UTF-8):   Gelişmiş bir vi sürümü
-Summary(uk.UTF-8):   Visual editor IMproved - Єдино Вірний Редактор :)
+Summary(de.UTF-8):	VIsual editor iMproved
+Summary(es.UTF-8):	Editor visual incrementado
+Summary(fr.UTF-8):	Editeur VIM : VIsual editor iMproved
+Summary(pl.UTF-8):	Vi IMproved - klon edytora Vi
+Summary(pt_BR.UTF-8):	Editor visual incrementado
+Summary(ru.UTF-8):	Visual editor IMproved - Единственно Правильный Редактор :)
+Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
+Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
 Release:	%{_rel}
@@ -413,7 +413,7 @@ VIsual editor iMproved - це оновлений та значно поліпш�
 
 %package -n xxd
 Summary:	Utility to convert files to hexdump or do the reverse
-Summary(pl.UTF-8):   Narzędzie do zamiany plików na postać szesnastkową i odwrotnie
+Summary(pl.UTF-8):	Narzędzie do zamiany plików na postać szesnastkową i odwrotnie
 Group:		Applications/Editors/Vim
 
 %description -n xxd
@@ -432,7 +432,7 @@ wyjście. Co więcej, może być użyty do modyfikowania plików binarnych.
 
 %package static
 Summary:	Statically linked Vim
-Summary(pl.UTF-8):   Statycznie skonsolidowany Vim
+Summary(pl.UTF-8):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
 Provides:	vi-editor
 Provides:	vi
@@ -462,24 +462,24 @@ zalecana, może on pomóc Ci uratować system w czasie awarii.
 
 %package rt
 Summary:	Vim runtime files
-Summary(cs.UTF-8):   Soubory nezbytné pro libovolný editor ViM
-Summary(da.UTF-8):   Fælles filer som er nødvendige for enhver version af VIM editoren
-Summary(de.UTF-8):   Die von allen Versionen des VIM-Editors benötigten gemeinsamen Dateien
-Summary(es.UTF-8):   Ficheros comunes a todas las versiones de VIM
-Summary(fr.UTF-8):   Fichiers communs indispensables pour toute version de l'éditeur VIM
-Summary(id.UTF-8):   File umum yang dibutuhkan oleh semua versi editor VIM
-Summary(is.UTF-8):   Grunnskrár sem allar útgáfur VIM ritilsins þurfa á að halda
-Summary(it.UTF-8):   File comuni necessari per tutte le versioni dell'editor VIM
-Summary(ja.UTF-8):   すべてのバージョンの VIM エディタで必要とされる共通ファイル
-Summary(nb.UTF-8):   Felles filer som er nødvendige for enhver versjon av VIM editoren
-Summary(pl.UTF-8):   Pliki przydatne edytorowi Vim
-Summary(pt.UTF-8):   Os ficheiros comuns necessários para qualquer versão do editor VIM
-Summary(ru.UTF-8):   Файлы, требуемые для любой версии редактора vim
-Summary(sk.UTF-8):   Spoločné súbory potrebné pre všetky verzie editoru VIM
-Summary(sl.UTF-8):   Skupne datoteke, potrebne s katerokoli različico urejevalnika VIM
-Summary(sv.UTF-8):   De gemensamma filerna som behövs av alla versioner av redigeraren VIM
-Summary(uk.UTF-8):   Файли, потрібні для будь-якої версії редактору vim
-Summary(zh_CN.UTF-8):   任何版本的 VIM 编辑器所需的公用文件。
+Summary(cs.UTF-8):	Soubory nezbytné pro libovolný editor ViM
+Summary(da.UTF-8):	Fælles filer som er nødvendige for enhver version af VIM editoren
+Summary(de.UTF-8):	Die von allen Versionen des VIM-Editors benötigten gemeinsamen Dateien
+Summary(es.UTF-8):	Ficheros comunes a todas las versiones de VIM
+Summary(fr.UTF-8):	Fichiers communs indispensables pour toute version de l'éditeur VIM
+Summary(id.UTF-8):	File umum yang dibutuhkan oleh semua versi editor VIM
+Summary(is.UTF-8):	Grunnskrár sem allar útgáfur VIM ritilsins þurfa á að halda
+Summary(it.UTF-8):	File comuni necessari per tutte le versioni dell'editor VIM
+Summary(ja.UTF-8):	すべてのバージョンの VIM エディタで必要とされる共通ファイル
+Summary(nb.UTF-8):	Felles filer som er nødvendige for enhver versjon av VIM editoren
+Summary(pl.UTF-8):	Pliki przydatne edytorowi Vim
+Summary(pt.UTF-8):	Os ficheiros comuns necessários para qualquer versão do editor VIM
+Summary(ru.UTF-8):	Файлы, требуемые для любой версии редактора vim
+Summary(sk.UTF-8):	Spoločné súbory potrebné pre všetky verzie editoru VIM
+Summary(sl.UTF-8):	Skupne datoteke, potrebne s katerokoli različico urejevalnika VIM
+Summary(sv.UTF-8):	De gemensamma filerna som behövs av alla versioner av redigeraren VIM
+Summary(uk.UTF-8):	Файли, потрібні для будь-якої версії редактору vim
+Summary(zh_CN.UTF-8):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
 # mktemp is for vimtutor
 Requires:	mktemp
@@ -546,7 +546,7 @@ köra.
 
 %package spell-en
 Summary:	English dictionaries for VIMspell
-Summary(pl.UTF-8):   Angielskie słowniki dla VIMspella
+Summary(pl.UTF-8):	Angielskie słowniki dla VIMspella
 Group:		Applications/Editors/Vim
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 
@@ -558,7 +558,7 @@ Angielskie słowniki dla VIMspella.
 
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
-Summary(pl.UTF-8):   Vim dla X Window korzystający z biblioteki Athena
+Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Athena
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -585,7 +585,7 @@ Set, що дозволяє запускати VIM як прикладну про
 
 %package -n gvim-motif
 Summary:	Vim for X Window built with Motif
-Summary(pl.UTF-8):   Vim dla X Window korzystający z biblioteki Motif
+Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Motif
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -612,7 +612,7 @@ Motif, что позволяет запускать VIM как приложен�
 
 %package -n gvim-gtk
 Summary:	Vim for X Window built with gtk
-Summary(pl.UTF-8):   Vim dla X Window korzystający z biblioteki GTK
+Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GTK
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
 Requires(post,postun):	hicolor-icon-theme
@@ -642,7 +642,7 @@ GTK, что позволяет запускать VIM как приложени�
 
 %package -n gvim-gnome
 Summary:	Vim for X Window built with GNOME
-Summary(pl.UTF-8):   Vim dla X Window korzystający z biblioteki GNOME
+Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GNOME
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
 Requires(post,postun):	hicolor-icon-theme
@@ -671,7 +671,7 @@ GNOME, что позволяет запускать VIM как приложен�
 
 %package -n gvim-bonobo
 Summary:	Vim for X Window built as bonobo component
-Summary(pl.UTF-8):   Vim dla X Window zbudowany jako element bonobo
+Summary(pl.UTF-8):	Vim dla X Window zbudowany jako element bonobo
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
