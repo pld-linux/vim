@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	188
+%define		_patchlevel	216
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -123,12 +123,18 @@ Patch114:	%{name}-noruntimeperl.patch
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 139 155
 # 156: patch for -extra
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 157 160
-# 7.0.161: patch for windows
+# 7.0.161: patch for win32
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 162 169
-# 7.0.170, 7.0.171: patch for windows
+# 7.0.170, 7.0.171: patches for win32
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 172 179
-# 7.0.180: patch for windows
-%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 181 %{_patchlevel}
+# 7.0.180: patch for win32
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 181 196
+# 7.0.197, 7.0.198: patches for win32
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 199 207
+# 7.0.208: vms: reverts 7.0.171 and 7.0.180
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 209 214
+# 7.0.215: patch for macos
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 216 216
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
@@ -555,7 +561,10 @@ element bonobo.
 %patchset_patch 157 160
 %patchset_patch 162 169
 %patchset_patch 172 179
-%patchset_patch 181 %{_patchlevel}
+%patchset_patch 181 196
+%patchset_patch 199 207
+%patchset_patch 209 214
+%patchset_patch 216 216
 
 %patch0 -p1
 %patch1 -p1
