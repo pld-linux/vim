@@ -1,0 +1,166 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.214
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.214
+Problem:    When using <f-args> in a user command it's not possible to have an
+	    argument end in '\ '.
+Solution:   Change the handling of backslashes. (Yakov Lerner)
+Files:	    runtime/doc/map.txt, src/ex_docmd.c
+
+
+*** ../vim-7.0.213/runtime/doc/map.txt	Sun May  7 16:57:11 2006
+--- runtime/doc/map.txt	Thu Mar  8 18:00:26 2007
+***************
+*** 1,4 ****
+! *map.txt*       For Vim version 7.0.  Last change: 2006 May 03
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *map.txt*       For Vim version 7.0.  Last change: 2007 Mar 08
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 1303,1314 ****
+  <q-args>) then the value is quoted in such a way as to make it a valid value
+  for use in an expression.  This uses the argument as one single value.
+  When there is no argument <q-args> is an empty string.
+! 
+  To allow commands to pass their arguments on to a user-defined function, there
+  is a special form <f-args> ("function args").  This splits the command
+  arguments at spaces and Tabs, quotes each argument individually, and the
+  <f-args> sequence is replaced by the comma-separated list of quoted arguments.
+  See the Mycmd example below.  If no arguments are given <f-args> is removed.
+  
+  Examples >
+  
+--- 1319,1346 ----
+  <q-args>) then the value is quoted in such a way as to make it a valid value
+  for use in an expression.  This uses the argument as one single value.
+  When there is no argument <q-args> is an empty string.
+! 							*<f-args>*
+  To allow commands to pass their arguments on to a user-defined function, there
+  is a special form <f-args> ("function args").  This splits the command
+  arguments at spaces and Tabs, quotes each argument individually, and the
+  <f-args> sequence is replaced by the comma-separated list of quoted arguments.
+  See the Mycmd example below.  If no arguments are given <f-args> is removed.
++    To embed whitespace into an argument of <f-args>, prepend a backslash.
++ <f-args> replaces every pair of backslashes (\\) with one backslash.  A
++ backslash followed by a character other than white space or a backslash
++ remains unmodified.  Overview:
++ 
++ 	command		   <f-args> ~
++ 	XX ab		   'ab'
++ 	XX a\b		   'a\b'
++ 	XX a\ b		   'a b'
++ 	XX a\  b	   'a ', 'b'
++ 	XX a\\b		   'a\b'
++ 	XX a\\ b	   'a\', 'b'
++ 	XX a\\\b	   'a\\b'
++ 	XX a\\\ b	   'a\ b'
++ 	XX a\\\\b	   'a\\b'
++ 	XX a\\\\ b	   'a\\', 'b'
+  
+  Examples >
+  
+*** ../vim-7.0.213/src/ex_docmd.c	Tue Nov 28 21:41:19 2006
+--- src/ex_docmd.c	Thu Mar  8 17:49:11 2007
+***************
+*** 5551,5556 ****
+--- 5551,5559 ----
+  	mch_memmove(cmd, cmd + 1, (gap->ga_len - i) * sizeof(ucmd_T));
+  }
+  
++ /*
++  * split and quote args for <f-args>
++  */
+      static char_u *
+  uc_split_args(arg, lenp)
+      char_u *arg;
+***************
+*** 5567,5573 ****
+  
+      while (*p)
+      {
+! 	if (p[0] == '\\' && vim_iswhite(p[1]))
+  	{
+  	    len += 1;
+  	    p += 2;
+--- 5570,5581 ----
+  
+      while (*p)
+      {
+! 	if (p[0] == '\\' && p[1] == '\\')
+! 	{
+! 	    len += 2;
+! 	    p += 2;
+! 	}
+! 	else if (p[0] == '\\' && vim_iswhite(p[1]))
+  	{
+  	    len += 1;
+  	    p += 2;
+***************
+*** 5603,5609 ****
+      *q++ = '"';
+      while (*p)
+      {
+! 	if (p[0] == '\\' && vim_iswhite(p[1]))
+  	{
+  	    *q++ = p[1];
+  	    p += 2;
+--- 5611,5623 ----
+      *q++ = '"';
+      while (*p)
+      {
+! 	if (p[0] == '\\' && p[1] == '\\')
+! 	{
+! 	    *q++ = '\\';
+! 	    *q++ = '\\';
+! 	    p += 2;
+! 	}
+! 	else if (p[0] == '\\' && vim_iswhite(p[1]))
+  	{
+  	    *q++ = p[1];
+  	    p += 2;
+***************
+*** 5735,5741 ****
+  	    }
+  
+  	    break;
+! 	case 2: /* Quote and split */
+  	    /* This is hard, so only do it once, and cache the result */
+  	    if (*split_buf == NULL)
+  		*split_buf = uc_split_args(eap->arg, split_len);
+--- 5749,5755 ----
+  	    }
+  
+  	    break;
+! 	case 2: /* Quote and split (<f-args>) */
+  	    /* This is hard, so only do it once, and cache the result */
+  	    if (*split_buf == NULL)
+  		*split_buf = uc_split_args(eap->arg, split_len);
+*** ../vim-7.0.213/src/version.c	Thu Mar  8 14:54:52 2007
+--- src/version.c	Thu Mar  8 18:11:47 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     214,
+  /**/
+
+-- 
+Microsoft's definition of a boolean: TRUE, FALSE, MAYBE
+"Embrace and extend"...?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

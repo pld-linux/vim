@@ -1,0 +1,97 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.194
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.194
+Problem:    Once an ml_get error is given redrawing part of the screen may
+            cause it again, resulting in an endless loop.
+Solution:   Don't give the error message for a recursive call.
+Files:      src/memline.c
+
+
+*** ../vim-7.0.193/src/memline.c	Wed Feb  7 03:42:37 2007
+--- src/memline.c	Tue Feb 13 03:56:00 2007
+***************
+*** 2054,2066 ****
+      linenr_T	lnum;
+      int		will_change;		/* line will be changed */
+  {
+!     bhdr_T    *hp;
+!     DATA_BL *dp;
+!     char_u  *ptr;
+  
+      if (lnum > buf->b_ml.ml_line_count)	/* invalid line number */
+      {
+! 	EMSGN(_("E315: ml_get: invalid lnum: %ld"), lnum);
+  errorret:
+  	STRCPY(IObuff, "???");
+  	return IObuff;
+--- 2054,2074 ----
+      linenr_T	lnum;
+      int		will_change;		/* line will be changed */
+  {
+!     bhdr_T	*hp;
+!     DATA_BL	*dp;
+!     char_u	*ptr;
+!     static int	recursive = 0;
+  
+      if (lnum > buf->b_ml.ml_line_count)	/* invalid line number */
+      {
+! 	if (recursive == 0)
+! 	{
+! 	    /* Avoid giving this message for a recursive call, may happen when
+! 	     * the GUI redraws part of the text. */
+! 	    ++recursive;
+! 	    EMSGN(_("E315: ml_get: invalid lnum: %ld"), lnum);
+! 	    --recursive;
+! 	}
+  errorret:
+  	STRCPY(IObuff, "???");
+  	return IObuff;
+***************
+*** 2088,2094 ****
+  	 */
+  	if ((hp = ml_find_line(buf, lnum, ML_FIND)) == NULL)
+  	{
+! 	    EMSGN(_("E316: ml_get: cannot find line %ld"), lnum);
+  	    goto errorret;
+  	}
+  
+--- 2096,2109 ----
+  	 */
+  	if ((hp = ml_find_line(buf, lnum, ML_FIND)) == NULL)
+  	{
+! 	    if (recursive == 0)
+! 	    {
+! 		/* Avoid giving this message for a recursive call, may happen
+! 		 * when the GUI redraws part of the text. */
+! 		++recursive;
+! 		EMSGN(_("E316: ml_get: cannot find line %ld"), lnum);
+! 		--recursive;
+! 	    }
+  	    goto errorret;
+  	}
+  
+*** ../vim-7.0.193/src/version.c	Tue Feb 13 03:49:01 2007
+--- src/version.c	Tue Feb 13 03:59:22 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     194,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+114. You are counting items, you go "0,1,2,3,4,5,6,7,8,9,A,B,C,D...".
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

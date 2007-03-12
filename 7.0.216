@@ -1,0 +1,123 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.216
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.216
+Problem:    ":tab wincmd ]" does not open a tab page. (Tony Mechelynck)
+Solution:   Copy the cmdmod.tab value to postponed_split_tab and use it.
+Files:	    src/globals.h, src/ex_docmd.c, src/if_cscope.c, src/window.c
+
+
+*** ../vim-7.0.215/src/globals.h	Wed Feb  7 03:42:37 2007
+--- src/globals.h	Sun Mar 11 15:27:12 2007
+***************
+*** 1030,1035 ****
+--- 1030,1036 ----
+  #ifdef FEAT_WINDOWS
+  EXTERN int	postponed_split INIT(= 0);  /* for CTRL-W CTRL-] command */
+  EXTERN int	postponed_split_flags INIT(= 0);  /* args for win_split() */
++ EXTERN int	postponed_split_tab INIT(= 0);  /* cmdmod.tab */
+  # ifdef FEAT_QUICKFIX
+  EXTERN int	g_do_tagpreview INIT(= 0);  /* for tag preview commands:
+  					       height of preview window */
+*** ../vim-7.0.215/src/ex_docmd.c	Thu Mar  8 18:16:54 2007
+--- src/ex_docmd.c	Sun Mar 11 15:29:06 2007
+***************
+*** 7980,7987 ****
+--- 7980,7989 ----
+      {
+  	/* Pass flags on for ":vertical wincmd ]". */
+  	postponed_split_flags = cmdmod.split;
++ 	postponed_split_tab = cmdmod.tab;
+  	do_window(*eap->arg, eap->addr_count > 0 ? eap->line2 : 0L, xchar);
+  	postponed_split_flags = 0;
++ 	postponed_split_tab = 0;
+      }
+  }
+  #endif
+***************
+*** 9189,9196 ****
+--- 9191,9200 ----
+  {
+      postponed_split = -1;
+      postponed_split_flags = cmdmod.split;
++     postponed_split_tab = cmdmod.tab;
+      ex_tag_cmd(eap, cmdnames[eap->cmdidx].cmd_name + 1);
+      postponed_split_flags = 0;
++     postponed_split_tab = 0;
+  }
+  #endif
+  
+*** ../vim-7.0.215/src/if_cscope.c	Tue Feb 27 18:11:55 2007
+--- src/if_cscope.c	Sun Mar 11 15:29:57 2007
+***************
+*** 128,133 ****
+--- 128,134 ----
+  	}
+  	postponed_split = -1;
+  	postponed_split_flags = cmdmod.split;
++ 	postponed_split_tab = cmdmod.tab;
+      }
+  #endif
+  
+***************
+*** 135,140 ****
+--- 136,142 ----
+  
+  #ifdef FEAT_WINDOWS
+      postponed_split_flags = 0;
++     postponed_split_tab = 0;
+  #endif
+  }
+  
+*** ../vim-7.0.215/src/window.c	Tue Feb 20 00:17:01 2007
+--- src/window.c	Sun Mar 11 15:31:57 2007
+***************
+*** 3290,3300 ****
+      int
+  may_open_tabpage()
+  {
+!     int		n = cmdmod.tab;
+  
+!     if (cmdmod.tab != 0)
+      {
+  	cmdmod.tab = 0;	    /* reset it to avoid doing it twice */
+  	return win_new_tabpage(n);
+      }
+      return FAIL;
+--- 3290,3301 ----
+      int
+  may_open_tabpage()
+  {
+!     int		n = (cmdmod.tab == 0) ? postponed_split_tab : cmdmod.tab;
+  
+!     if (n != 0)
+      {
+  	cmdmod.tab = 0;	    /* reset it to avoid doing it twice */
++ 	postponed_split_tab = 0;
+  	return win_new_tabpage(n);
+      }
+      return FAIL;
+*** ../vim-7.0.215/src/version.c	Thu Mar  8 20:39:02 2007
+--- src/version.c	Sun Mar 11 15:50:04 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     216,
+  /**/
+
+-- 
+You were lucky to have a LAKE! There were a hundred and sixty of
+us living in a small shoebox in the middle of the road.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

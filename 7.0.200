@@ -1,0 +1,100 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.200
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.200
+Problem:    Memory leaks when out of memory.
+Solution:   Free the memory.
+Files:      src/edit.c, src/diff.c
+
+
+*** ../vim-7.0.199/src/edit.c	Tue Feb 20 03:33:51 2007
+--- src/edit.c	Fri Feb 16 01:15:49 2007
+***************
+*** 2698,2703 ****
+--- 2698,2704 ----
+      buf = alloc(LSIZE);
+      if (buf == NULL)
+  	return;
++     regmatch.regprog = NULL;	/* so that we can goto theend */
+  
+      /* If 'infercase' is set, don't use 'smartcase' here */
+      save_p_scs = p_scs;
+***************
+*** 2712,2724 ****
+  	char_u *pat_esc = vim_strsave_escaped(pat, (char_u *)"\\");
+  
+  	if (pat_esc == NULL)
+! 	    return ;
+  	i = (int)STRLEN(pat_esc) + 10;
+  	ptr = alloc(i);
+  	if (ptr == NULL)
+  	{
+  	    vim_free(pat_esc);
+! 	    return;
+  	}
+  	vim_snprintf((char *)ptr, i, "^\\s*\\zs\\V%s", pat_esc);
+  	regmatch.regprog = vim_regcomp(ptr, RE_MAGIC);
+--- 2713,2725 ----
+  	char_u *pat_esc = vim_strsave_escaped(pat, (char_u *)"\\");
+  
+  	if (pat_esc == NULL)
+! 	    goto theend ;
+  	i = (int)STRLEN(pat_esc) + 10;
+  	ptr = alloc(i);
+  	if (ptr == NULL)
+  	{
+  	    vim_free(pat_esc);
+! 	    goto theend;
+  	}
+  	vim_snprintf((char *)ptr, i, "^\\s*\\zs\\V%s", pat_esc);
+  	regmatch.regprog = vim_regcomp(ptr, RE_MAGIC);
+*** ../vim-7.0.199/src/diff.c	Sun Apr 23 00:23:34 2006
+--- src/diff.c	Fri Feb 16 01:18:41 2007
+***************
+*** 1822,1835 ****
+--- 1822,1841 ----
+  
+      idx = diff_buf_idx(wp->w_buffer);
+      if (idx == DB_COUNT)	/* cannot happen */
++     {
++ 	vim_free(line_org);
+  	return FALSE;
++     }
+  
+      /* search for a change that includes "lnum" in the list of diffblocks. */
+      for (dp = curtab->tp_first_diff; dp != NULL; dp = dp->df_next)
+  	if (lnum <= dp->df_lnum[idx] + dp->df_count[idx])
+  	    break;
+      if (dp == NULL || diff_check_sanity(curtab, dp) == FAIL)
++     {
++ 	vim_free(line_org);
+  	return FALSE;
++     }
+  
+      off = lnum - dp->df_lnum[idx];
+  
+*** ../vim-7.0.199/src/version.c	Tue Feb 20 03:33:51 2007
+--- src/version.c	Tue Feb 20 03:48:16 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     200,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+157. You fum through a magazine, you first check to see if it has a web
+     address.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

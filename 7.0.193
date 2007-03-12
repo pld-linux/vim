@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.193
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.193
+Problem:    Using --remote or --remote-tab with an argument that matches
+            'wildignore' causes a crash.
+Solution:   Check the argument count before using ARGLIST[0].
+Files:      src/ex_cmds.c
+
+
+*** ../vim-7.0.192/src/ex_cmds.c	Tue Sep  5 18:28:45 2006
+--- src/ex_cmds.c	Tue Feb 13 03:47:52 2007
+***************
+*** 6967,6972 ****
+--- 6967,6980 ----
+       */
+      set_arglist(eap->arg);
+  
++     /*
++      * Expanding wildcards may result in an empty argument list.  E.g. when
++      * editing "foo.pyc" and ".pyc" is in 'wildignore'.  Assume that we
++      * already did an error message for this.
++      */
++     if (ARGCOUNT == 0)
++ 	return;
++ 
+  # ifdef FEAT_WINDOWS
+      if (cmdmod.tab)
+      {
+*** ../vim-7.0.192/src/version.c	Wed Feb  7 03:42:37 2007
+--- src/version.c	Tue Feb 13 03:47:08 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     193,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+113. You are asked about a bus schedule, you wonder if it is 16 or 32 bits.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

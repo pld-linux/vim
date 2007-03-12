@@ -1,0 +1,350 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.208
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.208 (after 7.0.171 and 7.0.180)
+Problem:    VMS: changes to path handling cause more trouble than they solve.
+Solution:   Revert changes.
+Files:	    src/buffer.c, src/memline.c, src/os_unix.c
+
+
+*** ../vim-7.0.207/src/buffer.c	Tue Nov 28 17:44:51 2006
+--- src/buffer.c	Mon Mar  5 21:34:41 2007
+***************
+*** 4145,4157 ****
+      /*
+       * Force expanding the path always for Unix, because symbolic links may
+       * mess up the full path name, even though it starts with a '/'.
+-      * Also expand always for VMS, it may have alternate paths that need to be
+-      * resolved.
+       * Also expand when there is ".." in the file name, try to remove it,
+       * because "c:/src/../README" is equal to "c:/README".
+       * For MS-Windows also expand names like "longna~1" to "longname".
+       */
+! #if defined(UNIX) || defined(VMS)
+      return FullName_save(fname, TRUE);
+  #else
+      if (!vim_isAbsName(fname) || strstr((char *)fname, "..") != NULL
+--- 4145,4155 ----
+      /*
+       * Force expanding the path always for Unix, because symbolic links may
+       * mess up the full path name, even though it starts with a '/'.
+       * Also expand when there is ".." in the file name, try to remove it,
+       * because "c:/src/../README" is equal to "c:/README".
+       * For MS-Windows also expand names like "longna~1" to "longname".
+       */
+! #ifdef UNIX
+      return FullName_save(fname, TRUE);
+  #else
+      if (!vim_isAbsName(fname) || strstr((char *)fname, "..") != NULL
+*** ../vim-7.0.207/src/memline.c	Tue Feb 13 04:03:05 2007
+--- src/memline.c	Mon Mar  5 21:34:41 2007
+***************
+*** 3592,3600 ****
+  #else
+  	    (buf->b_p_sn || buf->b_shortname),
+  #endif
+! #if defined(VMS) || defined(RISCOS)
+! 	    /* Avoid problems if fname has special chars, eg <Wimp$Scrap>.
+! 	     * For VMS always use full path for swapfile. */
+  	    ffname,
+  #else
+  # ifdef HAVE_READLINK
+--- 3592,3599 ----
+  #else
+  	    (buf->b_p_sn || buf->b_shortname),
+  #endif
+! #ifdef RISCOS
+! 	    /* Avoid problems if fname has special chars, eg <Wimp$Scrap> */
+  	    ffname,
+  #else
+  # ifdef HAVE_READLINK
+*** ../vim-7.0.207/src/os_unix.c	Tue Feb 27 16:51:07 2007
+--- src/os_unix.c	Mon Mar  5 21:40:31 2007
+***************
+*** 2214,2262 ****
+      int		len;
+      int		force;		/* also expand when already absolute path */
+  {
+- #ifdef VMS
+-     /*
+-      * VMS does this in a completely different way.
+-      *
+-      * By default a file found in a complex path is written to the first
+-      * directory in the path and not to the original directory.  This
+-      * behaviour should be avoided for the existing files and we need to find
+-      * the exact path of the edited file.
+-      */
+-     {
+- 	char_u	*fixed_fname = vms_fixfilename(fname);
+- 	int	fd = mch_open((char *)fixed_fname, O_RDONLY | O_EXTRA, 0);
+- 
+- 	if (fd > 0)
+- 	{
+- 	    char nbuf[MAXNAMLEN];
+- 
+- 	    /* File exists, use getname() to get the real name. */
+- 	    if (getname(fd, nbuf))
+- 		vim_strncpy(fixed_fname, (char_u *)nbuf, (size_t)(len - 1));
+- 	    close(fd);
+- 	}
+- 
+- 	if (STRLEN(fixed_fname) >= len)
+- 	    return FAIL;
+- 
+- 	STRCPY(buf, fixed_fname);
+-     }
+- 
+- #else /* not VMS */
+- 
+      int		l;
+! # ifdef OS2
+      int		only_drive;	/* file name is only a drive letter */
+! # endif
+! # ifdef HAVE_FCHDIR
+      int		fd = -1;
+      static int	dont_fchdir = FALSE;	/* TRUE when fchdir() doesn't work */
+! # endif
+      char_u	olddir[MAXPATHL];
+      char_u	*p;
+      int		retval = OK;
+  
+      /* expand it if forced or not an absolute path */
+      if (force || !mch_isFullName(fname))
+      {
+--- 2214,2235 ----
+      int		len;
+      int		force;		/* also expand when already absolute path */
+  {
+      int		l;
+! #ifdef OS2
+      int		only_drive;	/* file name is only a drive letter */
+! #endif
+! #ifdef HAVE_FCHDIR
+      int		fd = -1;
+      static int	dont_fchdir = FALSE;	/* TRUE when fchdir() doesn't work */
+! #endif
+      char_u	olddir[MAXPATHL];
+      char_u	*p;
+      int		retval = OK;
+  
++ #ifdef VMS
++     fname = vms_fixfilename(fname);
++ #endif
++ 
+      /* expand it if forced or not an absolute path */
+      if (force || !mch_isFullName(fname))
+      {
+***************
+*** 2265,2280 ****
+  	 * and then do the getwd() (and get back to where we were).
+  	 * This will get the correct path name with "../" things.
+  	 */
+! # ifdef OS2
+  	only_drive = 0;
+  	if (((p = vim_strrchr(fname, '/')) != NULL)
+  		|| ((p = vim_strrchr(fname, '\\')) != NULL)
+  		|| (((p = vim_strchr(fname,  ':')) != NULL) && ++only_drive))
+! # else
+  	if ((p = vim_strrchr(fname, '/')) != NULL)
+! # endif
+  	{
+! # ifdef HAVE_FCHDIR
+  	    /*
+  	     * Use fchdir() if possible, it's said to be faster and more
+  	     * reliable.  But on SunOS 4 it might not work.  Check this by
+--- 2238,2253 ----
+  	 * and then do the getwd() (and get back to where we were).
+  	 * This will get the correct path name with "../" things.
+  	 */
+! #ifdef OS2
+  	only_drive = 0;
+  	if (((p = vim_strrchr(fname, '/')) != NULL)
+  		|| ((p = vim_strrchr(fname, '\\')) != NULL)
+  		|| (((p = vim_strchr(fname,  ':')) != NULL) && ++only_drive))
+! #else
+  	if ((p = vim_strrchr(fname, '/')) != NULL)
+! #endif
+  	{
+! #ifdef HAVE_FCHDIR
+  	    /*
+  	     * Use fchdir() if possible, it's said to be faster and more
+  	     * reliable.  But on SunOS 4 it might not work.  Check this by
+***************
+*** 2290,2303 ****
+  		    dont_fchdir = TRUE;	    /* don't try again */
+  		}
+  	    }
+! # endif
+  
+  	    /* Only change directory when we are sure we can return to where
+  	     * we are now.  After doing "su" chdir(".") might not work. */
+  	    if (
+! # ifdef HAVE_FCHDIR
+  		fd < 0 &&
+! # endif
+  			(mch_dirname(olddir, MAXPATHL) == FAIL
+  					   || mch_chdir((char *)olddir) != 0))
+  	    {
+--- 2263,2276 ----
+  		    dont_fchdir = TRUE;	    /* don't try again */
+  		}
+  	    }
+! #endif
+  
+  	    /* Only change directory when we are sure we can return to where
+  	     * we are now.  After doing "su" chdir(".") might not work. */
+  	    if (
+! #ifdef HAVE_FCHDIR
+  		fd < 0 &&
+! #endif
+  			(mch_dirname(olddir, MAXPATHL) == FAIL
+  					   || mch_chdir((char *)olddir) != 0))
+  	    {
+***************
+*** 2306,2312 ****
+  	    }
+  	    else
+  	    {
+! # ifdef OS2
+  		/*
+  		 * compensate for case where ':' from "D:" was the only
+  		 * path separator detected in the file name; the _next_
+--- 2279,2285 ----
+  	    }
+  	    else
+  	    {
+! #ifdef OS2
+  		/*
+  		 * compensate for case where ':' from "D:" was the only
+  		 * path separator detected in the file name; the _next_
+***************
+*** 2314,2320 ****
+  		 */
+  		if (only_drive)
+  		    p++;
+! # endif
+  		/* The directory is copied into buf[], to be able to remove
+  		 * the file name without changing it (could be a string in
+  		 * read-only memory) */
+--- 2287,2293 ----
+  		 */
+  		if (only_drive)
+  		    p++;
+! #endif
+  		/* The directory is copied into buf[], to be able to remove
+  		 * the file name without changing it (could be a string in
+  		 * read-only memory) */
+***************
+*** 2329,2342 ****
+  			fname = p + 1;
+  		    *buf = NUL;
+  		}
+! # ifdef OS2
+  		if (only_drive)
+  		{
+  		    p--;
+  		    if (retval != FAIL)
+  			fname--;
+  		}
+! # endif
+  	    }
+  	}
+  	if (mch_dirname(buf, len) == FAIL)
+--- 2302,2315 ----
+  			fname = p + 1;
+  		    *buf = NUL;
+  		}
+! #ifdef OS2
+  		if (only_drive)
+  		{
+  		    p--;
+  		    if (retval != FAIL)
+  			fname--;
+  		}
+! #endif
+  	    }
+  	}
+  	if (mch_dirname(buf, len) == FAIL)
+***************
+*** 2346,2359 ****
+  	}
+  	if (p != NULL)
+  	{
+! # ifdef HAVE_FCHDIR
+  	    if (fd >= 0)
+  	    {
+  		l = fchdir(fd);
+  		close(fd);
+  	    }
+  	    else
+! # endif
+  		l = mch_chdir((char *)olddir);
+  	    if (l != 0)
+  		EMSG(_(e_prev_dir));
+--- 2319,2332 ----
+  	}
+  	if (p != NULL)
+  	{
+! #ifdef HAVE_FCHDIR
+  	    if (fd >= 0)
+  	    {
+  		l = fchdir(fd);
+  		close(fd);
+  	    }
+  	    else
+! #endif
+  		l = mch_chdir((char *)olddir);
+  	    if (l != 0)
+  		EMSG(_(e_prev_dir));
+***************
+*** 2362,2373 ****
+--- 2335,2348 ----
+  	l = STRLEN(buf);
+  	if (l >= len)
+  	    retval = FAIL;
++ #ifndef VMS
+  	else
+  	{
+  	    if (l > 0 && buf[l - 1] != '/' && *fname != NUL
+  						   && STRCMP(fname, ".") != 0)
+  		STRCAT(buf, "/");
+  	}
++ #endif
+      }
+  
+      /* Catch file names which are too long. */
+***************
+*** 2377,2384 ****
+      /* Do not append ".", "/dir/." is equal to "/dir". */
+      if (STRCMP(fname, ".") != 0)
+  	STRCAT(buf, fname);
+- 
+- #endif /* VMS */
+  
+      return OK;
+  }
+--- 2352,2357 ----
+*** ../vim-7.0.207/src/version.c	Sun Mar  4 21:25:44 2007
+--- src/version.c	Tue Mar  6 20:22:52 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     208,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+262. Your computer has it's own phone line - but your daughter doesn't.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,320 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.202
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.202
+Problem:    Problems on Tandem systems while compiling and at runtime.
+Solution:   Recognize root uid is 65535.  Check select() return value for it
+	    not being supported.  Avoid wrong function prototypes.  Mention
+	    use of -lfloss.  (Matthew Woehlke)
+Files:	    src/Makefile, src/ex_cmds.c, src/fileio.c, src/main.c,
+	    src/osdef1.h.in, src/osdef2.h.in, src/os_unix.c, src/pty.c,
+	    src/vim.h
+
+
+*** ../vim-7.0.201/src/Makefile	Tue Feb 20 04:46:41 2007
+--- src/Makefile	Tue Feb 27 10:24:05 2007
+***************
+*** 201,206 ****
+--- 201,207 ----
+  #SunOS 4.1.x			     +X11 -GUI		5.1b (J) Bram Moolenaar
+  #SunOS 4.1.3_U1 (sun4c) gcc	     +X11 +GUI Athena	5.0w (J) Darren Hiebert
+  #SUPER-UX 6.2 (NEC SX-4) cc	     +X11R6 Motif,Athena4.6b (P) Lennart Schultz
++ #Tandem/NSK                                                  (c) Matthew Woehlke
+  #Unisys 6035	      cc	     +X11 Motif		5.3  (8) Glauber Ribeiro
+  #ESIX V4.2	      cc	     +X11		6.0  (a) Reinhard Wobst
+  #Mac OS X 10.[23]     gcc	     Carbon		6.2  (x) Bram Moolenaar
+***************
+*** 251,256 ****
+--- 252,258 ----
+  # (a)  See line with EXTRA_LIBS below.
+  # (b)  When using gcc with the Solaris linker, make sure you don't use GNU
+  #      strip, otherwise the binary may not run: "Cannot find ELF".
++ # (c)  Add -lfloss to EXTRA_LIBS, see below.
+  # (x)  When you get warnings for precompiled header files, run
+  #      "sudo fixPrecomps".  Also see CONF_OPT_DARWIN below.
+  # }}}
+***************
+*** 793,798 ****
+--- 796,804 ----
+  
+  ### (a)  ESIX V4.2 (Reinhard Wobst)
+  #EXTRA_LIBS = -lnsl -lsocket -lgen -lXIM -lXmu -lXext
++ 
++ ### (c)  Tandem/NSK (Matthew Woehlke)
++ #EXTRA_LIBS = -lfloss
+  
+  ### If you want to use ncurses library instead of the automatically found one
+  ### after changing this, you need to do "make reconfig".
+*** ../vim-7.0.201/src/ex_cmds.c	Tue Feb 13 03:49:01 2007
+--- src/ex_cmds.c	Tue Feb 20 05:20:55 2007
+***************
+*** 1772,1778 ****
+  	 */
+  	st_old.st_dev = st_old.st_ino = 0;
+  	st_old.st_mode = 0600;
+! 	if (mch_stat((char *)fname, &st_old) == 0 && getuid()
+  		&& !(st_old.st_uid == getuid()
+  			? (st_old.st_mode & 0200)
+  			: (st_old.st_gid == getgid()
+--- 1772,1779 ----
+  	 */
+  	st_old.st_dev = st_old.st_ino = 0;
+  	st_old.st_mode = 0600;
+! 	if (mch_stat((char *)fname, &st_old) == 0
+! 		&& getuid() != ROOT_UID
+  		&& !(st_old.st_uid == getuid()
+  			? (st_old.st_mode & 0200)
+  			: (st_old.st_gid == getgid()
+*** ../vim-7.0.201/src/fileio.c	Tue Jan 16 21:31:38 2007
+--- src/fileio.c	Wed Feb 21 06:04:39 2007
+***************
+*** 1122,1128 ****
+  	    if (!skip_read)
+  	    {
+  #if SIZEOF_INT > 2
+! # ifdef __TANDEM
+  		size = SSIZE_MAX;		    /* use max I/O size, 52K */
+  # else
+  		size = 0x10000L;		    /* use buffer >= 64K */
+--- 1122,1128 ----
+  	    if (!skip_read)
+  	    {
+  #if SIZEOF_INT > 2
+! # if defined(SSIZE_MAX) && (SSIZE_MAX < 0x10000L)
+  		size = SSIZE_MAX;		    /* use max I/O size, 52K */
+  # else
+  		size = 0x10000L;		    /* use buffer >= 64K */
+*** ../vim-7.0.201/src/main.c	Tue Nov  7 22:41:37 2006
+--- src/main.c	Tue Feb 20 05:22:33 2007
+***************
+*** 3280,3286 ****
+  #  ifdef FEAT_GUI
+  		(gui.in_use
+  #   ifdef UNIX
+! 		 && getuid() != 0
+  #   endif
+  		) ||
+  #  endif
+--- 3280,3286 ----
+  #  ifdef FEAT_GUI
+  		(gui.in_use
+  #   ifdef UNIX
+! 		 && getuid() != ROOT_UID
+  #   endif
+  		) ||
+  #  endif
+*** ../vim-7.0.201/src/osdef1.h.in	Sun Jun 13 21:14:18 2004
+--- src/osdef1.h.in	Tue Feb 20 05:13:23 2007
+***************
+*** 98,104 ****
+--- 98,106 ----
+  
+  #ifndef USE_SYSTEM
+  extern int	fork __ARGS((void));
++ # ifndef __TANDEM
+  extern int	execvp __ARGS((const char *, const char **));
++ # endif
+  extern int	wait __ARGS((int *)); /* will this break things ...? */
+  extern int	waitpid __ARGS((pid_t, int *, int));
+  #endif
+***************
+*** 123,132 ****
+  
+  extern int	kill __ARGS((int, int));
+  
+  extern int	access __ARGS((char *, int));
+  extern int	fsync __ARGS((int));
+  extern int	fchown __ARGS((int, int, int));
+! #if defined(HAVE_GETCWD) && !defined(sun)
+  extern char	*getcwd __ARGS((char *, int));
+  #else
+  extern char	*getwd __ARGS((char *));
+--- 125,136 ----
+  
+  extern int	kill __ARGS((int, int));
+  
++ #ifndef __TANDEM
+  extern int	access __ARGS((char *, int));
++ #endif
+  extern int	fsync __ARGS((int));
+  extern int	fchown __ARGS((int, int, int));
+! #if defined(HAVE_GETCWD) && !defined(sun) && !defined(__TANDEM)
+  extern char	*getcwd __ARGS((char *, int));
+  #else
+  extern char	*getwd __ARGS((char *));
+*** ../vim-7.0.201/src/osdef2.h.in	Sun Jun 13 17:19:40 2004
+--- src/osdef2.h.in	Tue Feb 20 05:14:50 2007
+***************
+*** 11,23 ****
+--- 11,29 ----
+  extern int	setenv __ARGS((char *, char *, int));
+  extern int	putenv __ARGS((const char *));
+  
++ #ifndef __TANDEM
+  extern int	gethostname __ARGS((char *, int));
++ #endif
+  extern void	perror __ARGS((char *));
+  
++ #ifndef __TANDEM
+  extern int	sleep __ARGS((int));
++ #endif
+  extern int	usleep __ARGS((unsigned int));
+  extern unsigned int	alarm __ARGS((unsigned int));
++ #ifndef __TANDEM
+  extern int	chdir __ARGS((char *));
++ #endif
+  extern int	fchdir __ARGS((int));
+  #ifndef stat	/* could be redefined to stat64() */
+  extern int	stat __ARGS((const char *, struct stat *));
+***************
+*** 28,35 ****
+--- 34,43 ----
+  extern int	fstat __ARGS((int, struct stat *));
+  extern int	open __ARGS((const char *, int, ...));
+  extern int	close __ARGS((int));
++ #ifndef __TANDEM
+  extern int	read __ARGS((int, char *, size_t));
+  extern int	write __ARGS((int, char *, size_t));
++ #endif
+  extern int	pipe __ARGS((int *));
+  extern off_t	lseek __ARGS((int, off_t, int));
+  extern void	sync __ARGS((void));
+*** ../vim-7.0.201/src/os_unix.c	Tue Jan  9 15:15:36 2007
+--- src/os_unix.c	Tue Feb 20 05:17:23 2007
+***************
+*** 25,31 ****
+   * Don't use it for the Mac, it causes a warning for precompiled headers.
+   * TODO: use a configure check for precompiled headers?
+   */
+! #ifndef __APPLE__
+  # define select select_declared_wrong
+  #endif
+  
+--- 25,31 ----
+   * Don't use it for the Mac, it causes a warning for precompiled headers.
+   * TODO: use a configure check for precompiled headers?
+   */
+! #if !defined(__APPLE__) && !defined(__TANDEM)
+  # define select select_declared_wrong
+  #endif
+  
+***************
+*** 48,56 ****
+  /*
+   * Use this prototype for select, some include files have a wrong prototype
+   */
+! #undef select
+! #ifdef __BEOS__
+! # define select	beos_select
+  #endif
+  
+  #if defined(HAVE_SELECT)
+--- 48,58 ----
+  /*
+   * Use this prototype for select, some include files have a wrong prototype
+   */
+! #ifndef __TANDEM
+! # undef select
+! # ifdef __BEOS__
+! #  define select	beos_select
+! # endif
+  #endif
+  
+  #if defined(HAVE_SELECT)
+***************
+*** 4770,4775 ****
+--- 4772,4785 ----
+  # else
+  	ret = select(maxfd + 1, &rfds, NULL, &efds, tvp);
+  # endif
++ # ifdef __TANDEM
++ 	if (ret == -1 && errno == ENOTSUP)
++ 	{
++ 	    FD_ZERO(&rfds);
++ 	    FD_ZERO(&efds);
++ 	    ret = 0;
++ 	}
++ #endif
+  # ifdef FEAT_MZSCHEME
+  	if (ret == 0 && mzquantum_used)
+  	    /* loop if MzThreads must be scheduled and timeout occured */
+*** ../vim-7.0.201/src/pty.c	Wed Nov  1 18:12:46 2006
+--- src/pty.c	Tue Feb 20 05:21:22 2007
+***************
+*** 330,336 ****
+      if ((f = open("/dev/ptc", O_RDWR | O_NOCTTY | O_EXTRA)) < 0)
+  	return -1;
+      strncpy(TtyName, ttyname(f), sizeof(TtyName));
+!     if (geteuid() && mch_access(TtyName, R_OK | W_OK))
+      {
+  	close(f);
+  	return -1;
+--- 330,336 ----
+      if ((f = open("/dev/ptc", O_RDWR | O_NOCTTY | O_EXTRA)) < 0)
+  	return -1;
+      strncpy(TtyName, ttyname(f), sizeof(TtyName));
+!     if (geteuid() != ROOT_UID && mch_access(TtyName, R_OK | W_OK))
+      {
+  	close(f);
+  	return -1;
+***************
+*** 394,400 ****
+  	    q[0] = *l;
+  	    q[1] = *d;
+  #ifndef MACOS
+! 	    if (geteuid() && mch_access(TtyName, R_OK | W_OK))
+  	    {
+  		close(f);
+  		continue;
+--- 394,400 ----
+  	    q[0] = *l;
+  	    q[1] = *d;
+  #ifndef MACOS
+! 	    if (geteuid() != ROOT_UID && mch_access(TtyName, R_OK | W_OK))
+  	    {
+  		close(f);
+  		continue;
+*** ../vim-7.0.201/src/vim.h	Tue Jan 16 21:31:38 2007
+--- src/vim.h	Tue Feb 20 05:23:47 2007
+***************
+*** 50,55 ****
+--- 50,64 ----
+  # endif
+  #endif
+  
++ /* user ID of root is usually zero, but not for everybody */
++ #ifdef __TANDEM
++ # define _TANDEM_SOURCE
++ # include <floss.h>
++ # define ROOT_UID 65535
++ #else
++ # define ROOT_UID 0
++ #endif
++ 
+  #ifdef __EMX__		/* hand-edited config.h for OS/2 with EMX */
+  # include "os_os2_cfg.h"
+  #endif
+*** ../vim-7.0.201/src/version.c	Tue Feb 20 04:46:32 2007
+--- src/version.c	Tue Feb 27 16:44:14 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     202,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+214. Your MCI "Circle of Friends" are all Hayes-compatible.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

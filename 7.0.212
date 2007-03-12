@@ -1,0 +1,98 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.212
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.212
+Problem:    The GUI can't be terminated with SIGTERM. (Mark Logan)
+Solution:   Use the signal protection in the GUI as in the console, allow
+	    signals when waiting for 100 msec or longer.
+Files:	    src/ui.c
+
+
+*** ../vim-7.0.211/src/ui.c	Tue Aug 29 17:28:56 2006
+--- src/ui.c	Thu Mar  8 13:24:17 2007
+***************
+*** 166,175 ****
+      }
+  #endif
+  
+!     /* When doing a blocking wait there is no need for CTRL-C to interrupt
+!      * something, don't let it set got_int when it was mapped. */
+!     if (mapped_ctrl_c && (wtime == -1 || wtime > 100L))
+! 	ctrl_c_interrupts = FALSE;
+  
+  #ifdef FEAT_GUI
+      if (gui.in_use)
+--- 166,182 ----
+      }
+  #endif
+  
+!     /* If we are going to wait for some time or block... */
+!     if (wtime == -1 || wtime > 100L)
+!     {
+! 	/* ... allow signals to kill us. */
+! 	(void)vim_handle_signal(SIGNAL_UNBLOCK);
+! 
+! 	/* ... there is no need for CTRL-C to interrupt something, don't let
+! 	 * it set got_int when it was mapped. */
+! 	if (mapped_ctrl_c)
+! 	    ctrl_c_interrupts = FALSE;
+!     }
+  
+  #ifdef FEAT_GUI
+      if (gui.in_use)
+***************
+*** 183,198 ****
+      else
+  # endif
+      {
+- 	if (wtime == -1 || wtime > 100L)
+- 	    /* allow signals to kill us */
+- 	    (void)vim_handle_signal(SIGNAL_UNBLOCK);
+  	retval = mch_inchar(buf, maxlen, wtime, tb_change_cnt);
+- 	if (wtime == -1 || wtime > 100L)
+- 	    /* block SIGHUP et al. */
+- 	    (void)vim_handle_signal(SIGNAL_BLOCK);
+      }
+  #endif
+  
+      ctrl_c_interrupts = TRUE;
+  
+  #ifdef NO_CONSOLE_INPUT
+--- 190,203 ----
+      else
+  # endif
+      {
+  	retval = mch_inchar(buf, maxlen, wtime, tb_change_cnt);
+      }
+  #endif
+  
++     if (wtime == -1 || wtime > 100L)
++ 	/* block SIGHUP et al. */
++ 	(void)vim_handle_signal(SIGNAL_BLOCK);
++ 
+      ctrl_c_interrupts = TRUE;
+  
+  #ifdef NO_CONSOLE_INPUT
+*** ../vim-7.0.211/src/version.c	Thu Mar  8 13:15:08 2007
+--- src/version.c	Thu Mar  8 13:37:06 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     212,
+  /**/
+
+-- 
+This is an airconditioned room, do not open Windows.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

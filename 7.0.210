@@ -1,0 +1,116 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.210
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.210
+Problem:    ":cbuffer" and ":lbuffer" always fail when the buffer is modified.
+	    (Gary Johnson)
+Solution:   Support adding a !. (Yegappan Lakshmanan)
+Files:	    runtime/doc/quickfix.txt, src/ex_cmds.h
+
+
+*** ../vim-7.0.209/runtime/doc/quickfix.txt	Sun May  7 17:15:46 2006
+--- runtime/doc/quickfix.txt	Thu Mar  8 10:14:54 2007
+***************
+*** 1,4 ****
+! *quickfix.txt*  For Vim version 7.0.  Last change: 2006 Apr 30
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *quickfix.txt*  For Vim version 7.0.  Last change: 2006 Jul 18
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 178,192 ****
+  			current window is used instead of the quickfix list.
+  
+  						*:cb* *:cbuffer* *E681*
+! :cb[uffer] [bufnr]	Read the error list from the current buffer.
+  			When [bufnr] is given it must be the number of a
+  			loaded buffer.  That buffer will then be used instead
+  			of the current buffer.
+  			A range can be specified for the lines to be used.
+  			Otherwise all lines in the buffer are used.
+  
+  						*:lb* *:lbuffer*
+! :lb[uffer] [bufnr]	Same as ":cbuffer", except the location list for the
+  			current window is used instead of the quickfix list.
+  
+  						*:cgetb* *:cgetbuffer*
+--- 178,193 ----
+  			current window is used instead of the quickfix list.
+  
+  						*:cb* *:cbuffer* *E681*
+! :cb[uffer][!] [bufnr]	Read the error list from the current buffer.
+  			When [bufnr] is given it must be the number of a
+  			loaded buffer.  That buffer will then be used instead
+  			of the current buffer.
+  			A range can be specified for the lines to be used.
+  			Otherwise all lines in the buffer are used.
++ 			See |:cc| for [!].
+  
+  						*:lb* *:lbuffer*
+! :lb[uffer][!] [bufnr]	Same as ":cbuffer", except the location list for the
+  			current window is used instead of the quickfix list.
+  
+  						*:cgetb* *:cgetbuffer*
+*** ../vim-7.0.209/src/ex_cmds.h	Thu Jun 22 21:15:46 2006
+--- src/ex_cmds.h	Wed Mar  7 21:53:27 2007
+***************
+*** 198,204 ****
+  EX(CMD_catch,		"catch",	ex_catch,
+  			EXTRA|SBOXOK|CMDWIN),
+  EX(CMD_cbuffer,		"cbuffer",	ex_cbuffer,
+! 			RANGE|NOTADR|WORD1|TRLBAR),
+  EX(CMD_cc,		"cc",		ex_cc,
+  			RANGE|NOTADR|COUNT|TRLBAR|BANG),
+  EX(CMD_cclose,		"cclose",	ex_cclose,
+--- 198,204 ----
+  EX(CMD_catch,		"catch",	ex_catch,
+  			EXTRA|SBOXOK|CMDWIN),
+  EX(CMD_cbuffer,		"cbuffer",	ex_cbuffer,
+! 			BANG|RANGE|NOTADR|WORD1|TRLBAR),
+  EX(CMD_cc,		"cc",		ex_cc,
+  			RANGE|NOTADR|COUNT|TRLBAR|BANG),
+  EX(CMD_cclose,		"cclose",	ex_cclose,
+***************
+*** 498,504 ****
+  EX(CMD_later,		"later",	ex_later,
+  			TRLBAR|EXTRA|NOSPC|CMDWIN),
+  EX(CMD_lbuffer,		"lbuffer",	ex_cbuffer,
+! 			RANGE|NOTADR|WORD1|TRLBAR),
+  EX(CMD_lcd,		"lcd",		ex_cd,
+  			BANG|FILE1|TRLBAR|CMDWIN),
+  EX(CMD_lchdir,		"lchdir",	ex_cd,
+--- 498,504 ----
+  EX(CMD_later,		"later",	ex_later,
+  			TRLBAR|EXTRA|NOSPC|CMDWIN),
+  EX(CMD_lbuffer,		"lbuffer",	ex_cbuffer,
+! 			BANG|RANGE|NOTADR|WORD1|TRLBAR),
+  EX(CMD_lcd,		"lcd",		ex_cd,
+  			BANG|FILE1|TRLBAR|CMDWIN),
+  EX(CMD_lchdir,		"lchdir",	ex_cd,
+*** ../vim-7.0.209/src/version.c	Thu Mar  8 10:25:03 2007
+--- src/version.c	Thu Mar  8 11:04:35 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     210,
+  /**/
+
+-- 
+press CTRL-ALT-DEL for more information
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
