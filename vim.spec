@@ -9,7 +9,7 @@
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	perl		# without Perl interp
-%bcond_with	python		# with Python interp
+%bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
 %bcond_with	bonobo		# with bonobo component (breaks other things)
@@ -17,21 +17,21 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	158
+%define		_patchlevel	216
 %define		_rel		1
 
 # cflags get changed while configuring
 %undefine	configure_cache
 #
 Summary:	Vi IMproved - a Vi clone
-Summary(de.UTF-8):	VIsual editor iMproved
-Summary(es.UTF-8):	Editor visual incrementado
-Summary(fr.UTF-8):	Editeur VIM : VIsual editor iMproved
-Summary(pl.UTF-8):	Vi IMproved - klon edytora Vi
-Summary(pt_BR.UTF-8):	Editor visual incrementado
-Summary(ru.UTF-8):	Visual editor IMproved - Ð•Ð´Ð¸Ð½ÑÑ‚Ð²ÐµÐ½Ð½Ð¾ ÐŸÑ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ñ‹Ð¹ Ð ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€ :)
-Summary(tr.UTF-8):	GeliÅŸmiÅŸ bir vi sÃ¼rÃ¼mÃ¼
-Summary(uk.UTF-8):	Visual editor IMproved - Ð„Ð´Ð¸Ð½Ð¾ Ð’Ñ–Ñ€Ð½Ð¸Ð¹ Ð ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€ :)
+Summary(de):	VIsual editor iMproved
+Summary(es):	Editor visual incrementado
+Summary(fr):	Editeur VIM : VIsual editor iMproved
+Summary(pl):	Vi IMproved - klon edytora Vi
+Summary(pt_BR):	Editor visual incrementado
+Summary(ru):	Visual editor IMproved - åÄÉÎÓÔ×ÅÎÎÏ ðÒÁ×ÉÌØÎÙÊ òÅÄÁËÔÏÒ :)
+Summary(tr):	Geliþmiþ bir vi sürümü
+Summary(uk):	Visual editor IMproved - ´ÄÉÎÏ ÷¦ÒÎÉÊ òÅÄÁËÔÏÒ :)
 Name:		vim
 Version:	%{_ver}.%{_patchlevel}
 Release:	%{_rel}
@@ -91,177 +91,52 @@ Patch105:	%{name}-selinux.patch
 Patch106:	%{name}-fstab-uuid.patch
 Patch107:	%{name}-autopaste.patch
 Patch108:	%{name}-ft-cron.patch
-Patch201:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.001
-Patch202:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.002
-Patch203:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.003
-Patch204:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.004
-# patch for -extra
-#Patch205:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.005
-Patch206:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.006
-Patch207:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.007
-Patch208:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.008
-Patch209:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.009
-Patch210:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.010
-Patch211:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.011
-Patch212:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.012
-Patch213:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.013
-Patch214:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.014
-Patch215:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.015
-Patch216:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.016
-Patch217:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.017
-Patch218:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.018
-Patch219:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.019
-Patch220:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.020
-Patch221:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.021
-Patch222:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.022
-Patch223:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.023
-Patch224:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.024
-Patch225:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.025
-Patch226:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.026
-# patches for -extra
-#Patch227:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.027
-#Patch228:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.028
-Patch229:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.029
-Patch230:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.030
-Patch231:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.031
-# patch for -extra
-#Patch232:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.032
-Patch233:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.033
-Patch234:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.034
-Patch235:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.035
-Patch236:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.036
-Patch237:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.037
-Patch238:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.038
-Patch239:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.039
-Patch240:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.040
-Patch241:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.041
-Patch242:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.042
-Patch243:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.043
-Patch244:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.044
-# patch for -extra
-#Patch245:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.045
-Patch246:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.046
-Patch247:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.047
-Patch248:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.048
-Patch249:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.049
-Patch250:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.050
-Patch251:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.051
-Patch252:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.052
-Patch253:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.053
-Patch254:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.054
-Patch255:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.055
-Patch256:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.056
-# patch for -extra
-#Patch257:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.057
-Patch258:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.058
-Patch259:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.059
-Patch260:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.060
-Patch261:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.061
-Patch262:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.062
-Patch263:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.063
-Patch264:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.064
-# patch for -extra
-#Patch265:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.065
-Patch266:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.066
-Patch267:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.067
-Patch268:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.068
-Patch269:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.069
-Patch270:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.070
-Patch271:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.071
-Patch272:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.072
-Patch273:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.073
-# patch for -extra
-#Patch274:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.074
-Patch275:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.075
-Patch276:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.076
-Patch277:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.077
-Patch278:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.078
-Patch279:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.079
-Patch280:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.080
-Patch281:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.081
-Patch282:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.082
-Patch283:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.083
-Patch284:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.084
-Patch285:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.085
-Patch286:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.086
-Patch287:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.087
-Patch288:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.088
-Patch289:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.089
-Patch290:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.090
-Patch291:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.091
-Patch292:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.092
-Patch293:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.093
-Patch294:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.094
-Patch295:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.095
-Patch296:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.096
-Patch297:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.097
-Patch298:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.098
-Patch299:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.099
-Patch300:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.100
-Patch301:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.101
-Patch302:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.102
-Patch303:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.103
-Patch304:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.104
-Patch305:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.105
-Patch306:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.106
-Patch307:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.107
-# patch for -extra
-#Patch308:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.108
-Patch309:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.109
-Patch310:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.110
-Patch311:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.111
-Patch312:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.112
-Patch313:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.113
-Patch314:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.114
-Patch315:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.115
-Patch316:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.116
-Patch317:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.117
-Patch318:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.118
-Patch319:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.119
-Patch320:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.120
-Patch321:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.121
-Patch322:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.122
-Patch323:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.123
-Patch324:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.124
-Patch325:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.125
-Patch326:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.126
-Patch327:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.127
-Patch328:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.128
-Patch329:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.129
-# patch for -extra
-#Patch330:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.130
-Patch331:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.131
-# patch for -extra
-#Patch332:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.132
-Patch333:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.133
-Patch334:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.134
-Patch335:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.135
-Patch336:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.136
-Patch337:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.137
-# patch for -extra
-#Patch338:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.138
-Patch339:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.139
-Patch340:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.140
-Patch341:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.141
-Patch342:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.142
-Patch343:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.143
-Patch344:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.144
-Patch345:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.145
-Patch346:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.146
-Patch347:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.147
-Patch348:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.148
-Patch349:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.149
-Patch350:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.150
-Patch351:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.151
-Patch352:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.152
-Patch353:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.153
-Patch354:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.154
-Patch355:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.155
-# patch for -extra
-#Patch356:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.156
-Patch357:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.157
-Patch358:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.158
+Patch109:	%{name}-dosini.vim-hash_comment.patch
+Patch110:	%{name}-mysql.vim-syntax_comment.patch
+Patch111:	%{name}-perl.vim-ftplugin_perldoc.patch
+Patch112:	%{name}-python.vim-ftplugin_pydoc.patch
+Patch113:	%{name}-ruby.vim-ftplugin_ri.patch
+Patch114:	%{name}-noruntimeperl.patch
+# Official patches 10000-...
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 1 4
+# 5: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 6 26
+# 27-28: patches for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 29 31
+# 32: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 33 44
+# 45: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 46 56
+# 57: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 58 64
+# 65: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 66 73
+# 74: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 75 107
+# 108: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 109 129
+# 130: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 131 131
+# 132: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 133 137
+# 138: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 139 155
+# 156: patch for -extra
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 157 160
+# 7.0.161: patch for win32
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 162 169
+# 7.0.170, 7.0.171: patches for win32
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 172 179
+# 7.0.180: patch for win32
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 181 196
+# 7.0.197, 7.0.198: patches for win32
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 199 207
+# 7.0.208: vms: reverts 7.0.171 and 7.0.180
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 209 214
+# 7.0.215: patch for macos
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 216 216
 URL:		http://www.vim.org/
+%{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -272,10 +147,9 @@ BuildRequires:	gpm-devel
 BuildRequires:	ncurses-devel
 %{?with_motif:BuildRequires:	openmotif-devel}
 %{?with_perl:BuildRequires:	perl-devel}
-%{?with_python:BuildRequires:	python-devel >= 2.5}
+%{?with_python:BuildRequires:	python-devel}
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 Obsoletes:	kvim
 %if %{with bonobo}
 BuildRequires:	ORBit2-devel
@@ -283,7 +157,7 @@ BuildRequires:	libbonoboui-devel >= 2.2.0
 BuildRequires:	libgnomeui-devel >= 2.2.0.1
 BuildRequires:	nautilus-devel >= 2.2.0
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.311
+BuildRequires:	rpmbuild(macros) >= 1.351
 %if %{with static}
 BuildRequires:	acl-static
 BuildRequires:	attr-static
@@ -304,7 +178,6 @@ Provides:	vi-editor
 Provides:	vi
 Obsoletes:	vim-enhanced
 Obsoletes:	vim-ispell
-Obsoletes:	vim-plugin-multvals
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # that's example script
@@ -314,106 +187,106 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Text editor similar to Vi. Important improvements: multiple windows,
 multi-level undo, block highliting, folding, and many other.
 
-%description -l cs.UTF-8
-ViM je novÃ½ a vylepÅ¡enÃ½ editor vychÃ¡zejÃ­cÃ­ z klasickÃ©ho editoru vi. Vi
-byl prvnÃ­m celoobrazovkovÃ½m editorem pro Unix a je stÃ¡le velmi
-populÃ¡rnÃ­. ViM je obohacenÃ½ funkcemi jako: podpora vÃ­ce oken,
-vÃ­ceÃºrovÅˆovÃ© undo, zvÃ½razÅˆovÃ¡nÃ­ blokÅ¯ a Å™adu dalÅ¡Ã­ch uÅ¾iteÄnÃ½ch
-funkcÃ­.
+%description -l cs
+ViM je nový a vylep¹ený editor vycházející z klasického editoru vi. Vi
+byl prvním celoobrazovkovým editorem pro Unix a je stále velmi
+populární. ViM je obohacený funkcemi jako: podpora více oken,
+víceúrovòové undo, zvýrazòování blokù a øadu dal¹ích u¾iteèných
+funkcí.
 
-%description -l de.UTF-8
+%description -l de
 Der Visual-Editor iMproved ist ein aktualisierter und erweiterter Klon
 des vi-Editors, der mit praktisch allen UN*X-Systemen ausgeliefert
 wird. Er bringt mehrere Fenster, mehrstufige Widerrufen-Funktion,
 Block-Markierung und viele weitere Zusatzfunktionen im Vergleich zum
 Standard-vi-Programm.
 
-%description -l es.UTF-8
-El editor Visual Mejorado es una versiÃ³n actualizada y con nuevas
-caracterÃ­sticas adicionales del mundialmente famoso 'vi' que acompaÃ±a
-prÃ¡cticamente todos los sistemas UN*X. Posibilita trabajar con
-mÃºltiples ventanas, varios niveles de deshacer, bloques enfatizados, y
-otras muchas caracterÃ­sticas del 'vi'.
+%description -l es
+El editor Visual Mejorado es una versión actualizada y con nuevas
+características adicionales del mundialmente famoso 'vi' que acompaña
+prácticamente todos los sistemas UN*X. Posibilita trabajar con
+múltiples ventanas, varios niveles de deshacer, bloques enfatizados, y
+otras muchas características del 'vi'.
 
-%description -l fr.UTF-8
-L'Ã©diteur VIsuel aMÃ©liorÃ© est un clone mis Ã  jour et dotÃ© de
-caractÃ©ristiques supplÃ©mentaires de l'Ã©diteur Â« vi Â» fourni avec
-pratiquement tous les systÃ¨mes UN*X. Il ajoute les fenÃªtres
-mutltiples, l'annulation a plusieurs niveaux, la mise en Ã©vidence des
-blocs et autres caractÃ©ristiques au vi de base.
+%description -l fr
+L'éditeur VIsuel aMélioré est un clone mis à jour et doté de
+caractéristiques supplémentaires de l'éditeur « vi » fourni avec
+pratiquement tous les systèmes UN*X. Il ajoute les fenêtres
+mutltiples, l'annulation a plusieurs niveaux, la mise en évidence des
+blocs et autres caractéristiques au vi de base.
 
-%description -l id.UTF-8
+%description -l id
 VIM (VIsual editor iMproved) adalah versi vi editor yang sudah
 diupdate dan ditambah kemampuannya. Vi adalah editor untuk UNIX yang
 pertama yang menggunakan layar, dan sekarang masih sangat populer. VIM
 mengembangkan vi dengan menambah kemampuan baru seperti: multiple
 windows, multi-level undo, block highlighting, dll.
 
-%description -l is.UTF-8
-VIM (VIsual editor iMproved) er uppfÃ¦rÃ° og endurbÃ¦tt ÃºtgÃ¡fa af vi
-ritlinum. Vi var fyrsti skjÃ¡-ritillinn fyrir UNIX og er enn mjÃ¶g
-vinsÃ¦ll. VIM gerist fÃ¶Ã°urbetrungur meÃ° nÃ½jum mÃ¶guleikum lÃ­kt og
-gluggakerfi, iÃ°run og yfirbÃ³t (e: multi-level undo), blokkarvali og
+%description -l is
+VIM (VIsual editor iMproved) er uppfærð og endurbætt útgáfa af vi
+ritlinum. Vi var fyrsti skjá-ritillinn fyrir UNIX og er enn mjög
+vinsæll. VIM gerist föðurbetrungur með nýjum möguleikum líkt og
+gluggakerfi, iðrun og yfirbót (e: multi-level undo), blokkarvali og
 fleira.
 
-%description -l it.UTF-8
-VIM (Vi IMproved) Ã¨ una versione aggiornata e perfezionata dell'editor
-vi. Vi Ã¨ stato il primo editor per UNIX realmente basato su video ed Ã¨
+%description -l it
+VIM (Vi IMproved) è una versione aggiornata e perfezionata dell'editor
+vi. Vi è stato il primo editor per UNIX realmente basato su video ed è
 ancora molto diffuso. VIM perfeziona vi aggiungendo nuove funzioni:
 finestre multiple, funzione \"annulla\" multilivello, evidenziazione
 dei blocchi e altro.
 
-%description -l pl.UTF-8
-Edytor tekstu podobny do Vi. WaÅ¼ne ulepszenia: moÅ¼liwoÅ›Ä‡ pracy w wielu
-oknach, wielopoziomowa opcja 'cofnij', bloki, podÅ›wietlanie skÅ‚adni,
+%description -l pl
+Edytor tekstu podobny do Vi. Wa¿ne ulepszenia: mo¿liwo¶æ pracy w wielu
+oknach, wielopoziomowa opcja 'cofnij', bloki, pod¶wietlanie sk³adni,
 folding i wiele innych.
 
-%description -l pt.UTF-8
-O VIM (VIsual editor iMproved) Ã© uma versÃ£o melhorada e actualizada do
-editor vi. O vi foi o primeiro verdadeiro editor baseado em ecrÃ£ para
-o UNIX, e ainda Ã© muito popular. O VIM melhora o vi acrescentando
-novas potencialidades: janelas mÃºltiplas, anulaÃ§Ã£o multi-nÃ­vel, realce
+%description -l pt
+O VIM (VIsual editor iMproved) é uma versão melhorada e actualizada do
+editor vi. O vi foi o primeiro verdadeiro editor baseado em ecrã para
+o UNIX, e ainda é muito popular. O VIM melhora o vi acrescentando
+novas potencialidades: janelas múltiplas, anulação multi-nível, realce
 de blocos e mais.
 
-%description -l pt_BR.UTF-8
-O editor Vim (Vi Enhanced) Ã© um versÃ£o atualizada e com novas
-caracterÃ­sticas do mundialmente famoso 'vi' que acompanha praticamente
-todos os sistemas UN*X. Ele possibilita trabalhar com mÃºltiplas
-janelas, vÃ¡rios nÃ­veis de desfazer, blocos enfatizados, e muitas
-outras caracterÃ­sticas do 'vi'.
+%description -l pt_BR
+O editor Vim (Vi Enhanced) é um versão atualizada e com novas
+características do mundialmente famoso 'vi' que acompanha praticamente
+todos os sistemas UN*X. Ele possibilita trabalhar com múltiplas
+janelas, vários níveis de desfazer, blocos enfatizados, e muitas
+outras características do 'vi'.
 
-%description -l ru.UTF-8
-VIsual editor iMproved - ÑÑ‚Ð¾ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð½Ñ‹Ð¹ Ð¸ Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ ÑƒÐ»ÑƒÑ‡ÑˆÐµÐ½Ð½Ñ‹Ð¹ ÐºÐ»Ð¾Ð½
-Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€Ð° vi, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð¿Ð¾ÑÑ‚Ð°Ð²Ð»ÑÐµÑ‚ÑÑ Ð¿Ñ€Ð°ÐºÑ‚Ð¸Ñ‡ÐµÑÐºÐ¸ ÑÐ¾ Ð²ÑÐµÐ¼Ð¸
-UN*X-ÑÐ¸ÑÑ‚ÐµÐ¼Ð°Ð¼Ð¸. Ð’ ÑÑ‚Ð¾Ð¹ Ð²ÐµÑ€ÑÐ¸Ð¸ ÐµÑÑ‚ÑŒ Ð¼Ð½Ð¾Ð³Ð¾ÑƒÑ€Ð¾Ð²Ð½ÐµÐ²Ñ‹Ð¹ Ð¾Ñ‚ÐºÐ°Ñ‚, Ð²Ñ‹Ð´ÐµÐ»ÐµÐ½Ð¸Ðµ
-Ð±Ð»Ð¾ÐºÐ¾Ð², ÑÐ¸Ð½Ñ‚Ð°ÐºÑÐ¸Ñ‡ÐµÑÐºÐ°Ñ Ð¿Ð¾Ð´ÑÐ²ÐµÑ‚ÐºÐ° Ð¸ Ð¼Ð½Ð¾Ð³Ð¾ Ð´Ñ€ÑƒÐ³Ð¾Ð³Ð¾...
+%description -l ru
+VIsual editor iMproved - ÜÔÏ ÏÂÎÏ×ÌÅÎÎÙÊ É ÚÎÁÞÉÔÅÌØÎÏ ÕÌÕÞÛÅÎÎÙÊ ËÌÏÎ
+ÒÅÄÁËÔÏÒÁ vi, ËÏÔÏÒÙÊ ÐÏÓÔÁ×ÌÑÅÔÓÑ ÐÒÁËÔÉÞÅÓËÉ ÓÏ ×ÓÅÍÉ
+UN*X-ÓÉÓÔÅÍÁÍÉ. ÷ ÜÔÏÊ ×ÅÒÓÉÉ ÅÓÔØ ÍÎÏÇÏÕÒÏ×ÎÅ×ÙÊ ÏÔËÁÔ, ×ÙÄÅÌÅÎÉÅ
+ÂÌÏËÏ×, ÓÉÎÔÁËÓÉÞÅÓËÁÑ ÐÏÄÓ×ÅÔËÁ É ÍÎÏÇÏ ÄÒÕÇÏÇÏ...
 
-%description -l sk.UTF-8
-VIM (VIsual editor iMproved) je novÅ¡ia a vylepÅ¡enÃ¡ verzia editoru vi.
-Vi bol prvÃ½m skutoÄne obrazovkovo orientovanÃ½m editorom pre UNIX a
-stÃ¡le je veÄ¾mi populÃ¡rny. VIM mÃ¡ oproti vi vylepÅ¡enia ako: prÃ¡cu s
-viacerÃ½mi oknami, viacnÃ¡sobnÃ© undo, zvÃ½razÅˆovanie blokov textu a inÃ©.
+%description -l sk
+VIM (VIsual editor iMproved) je nov¹ia a vylep¹ená verzia editoru vi.
+Vi bol prvým skutoène obrazovkovo orientovaným editorom pre UNIX a
+stále je veµmi populárny. VIM má oproti vi vylep¹enia ako: prácu s
+viacerými oknami, viacnásobné undo, zvýrazòovanie blokov textu a iné.
 
-%description -l sv.UTF-8
-VIM (Vi IMproved) Ã¤r en uppdaterad och fÃ¶rbÃ¤ttrad version av
-redigeraren vi. Vi var den fÃ¶rsta riktiga skÃ¤rmbaserade redigeraren
-till UNIX, och Ã¤r fortfarande vÃ¤ldigt populÃ¤r. VIM fÃ¶rbÃ¤ttrar vi med
-nya finesser: flera fÃ¶nster, flernivÃ¥ Ã¥ngra, blockmarkering och mer
-Ã¤ndÃ¥.
+%description -l sv
+VIM (Vi IMproved) är en uppdaterad och förbättrad version av
+redigeraren vi. Vi var den första riktiga skärmbaserade redigeraren
+till UNIX, och är fortfarande väldigt populär. VIM förbättrar vi med
+nya finesser: flera fönster, flernivå ångra, blockmarkering och mer
+ändå.
 
-%description -l tr.UTF-8
-Standart vi metin dÃ¼zenleyicisinin geliÅŸmiÅŸ hali; daha fazla komut,
-birden fazla pencere desteÄŸi ve blok iÅŸaretleme yetenekleri iÃ§erir.
+%description -l tr
+Standart vi metin düzenleyicisinin geliþmiþ hali; daha fazla komut,
+birden fazla pencere desteði ve blok iþaretleme yetenekleri içerir.
 
-%description -l uk.UTF-8
-VIsual editor iMproved - Ñ†Ðµ Ð¾Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ð¹ Ñ‚Ð° Ð·Ð½Ð°Ñ‡Ð½Ð¾ Ð¿Ð¾Ð»Ñ–Ð¿ÑˆÐµÐ½Ð¸Ð¹ ÐºÐ»Ð¾Ð½
-Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€Ð° vi, ÑÐºÐ¸Ð¹ Ð¿Ð¾ÑÑ‚Ð°Ð²Ð»ÑÑ”Ñ‚ÑŒÑÑ Ð¿Ñ€Ð°ÐºÑ‚Ð¸Ñ‡Ð½Ð¾ Ð·Ñ– Ð²ÑÑ–Ð¼Ð° UN*X-ÑÐ¸ÑÑ‚ÐµÐ¼Ð°Ð¼Ð¸. Ð’
-Ñ†Ñ–Ð¹ Ð²ÐµÑ€ÑÑ–Ñ— Ñ” Ð±Ð°Ð³Ð°Ñ‚Ð¾Ñ€Ñ–Ð²Ð½ÐµÐ²Ð¸Ð¹ Ð²Ñ–Ð´ÐºÐ°Ñ‚, Ð²Ð¸Ð´Ñ–Ð»ÐµÐ½Ð½Ñ Ð±Ð»Ð¾ÐºÑ–Ð², ÑÐ¸Ð½Ñ‚Ð°ÐºÑÐ¸Ñ‡Ð½Ð°
-Ð¿Ñ–Ð´ÑÐ²Ñ–Ñ‚ÐºÐ° Ñ‚Ð° Ð±Ð°Ð³Ð°Ñ‚Ð¾ Ñ–Ð½ÑˆÐ¾Ð³Ð¾...
+%description -l uk
+VIsual editor iMproved - ÃÅ ÏÎÏ×ÌÅÎÉÊ ÔÁ ÚÎÁÞÎÏ ÐÏÌ¦ÐÛÅÎÉÊ ËÌÏÎ
+ÒÅÄÁËÔÏÒÁ vi, ÑËÉÊ ÐÏÓÔÁ×ÌÑ¤ÔØÓÑ ÐÒÁËÔÉÞÎÏ Ú¦ ×Ó¦ÍÁ UN*X-ÓÉÓÔÅÍÁÍÉ. ÷
+Ã¦Ê ×ÅÒÓ¦§ ¤ ÂÁÇÁÔÏÒ¦×ÎÅ×ÉÊ ×¦ÄËÁÔ, ×ÉÄ¦ÌÅÎÎÑ ÂÌÏË¦×, ÓÉÎÔÁËÓÉÞÎÁ
+Ð¦ÄÓ×¦ÔËÁ ÔÁ ÂÁÇÁÔÏ ¦ÎÛÏÇÏ...
 
 %package -n xxd
 Summary:	Utility to convert files to hexdump or do the reverse
-Summary(pl.UTF-8):	NarzÄ™dzie do zamiany plikÃ³w na postaÄ‡ szesnastkowÄ… i odwrotnie
+Summary(pl):	Narzêdzie do zamiany plików na postaæ szesnastkow± i odwrotnie
 Group:		Applications/Editors/Vim
 
 %description -n xxd
@@ -423,16 +296,16 @@ uudecode it allows the transmission of binary data in a `mail-safe'
 ASCII representation, but has the advantage of decoding to standard
 output. Moreover, it can be used to perform binary file patching.
 
-%description -n xxd -l pl.UTF-8
-xxd tworzy szesnastkowy zapis pliku podanego na standardowe wejÅ›cie.
-MoÅ¼e takÅ¼e przekonwertowaÄ‡ taki zapis na oryginalnÄ…, binarnÄ… postaÄ‡.
-Podobnie jak uuencode i uudecode pozwala na przesyÅ‚anie danych
-binarnych w postaci ASCII, ale ma moÅ¼liwoÅ›Ä‡ dekodowania na standardowe
-wyjÅ›cie. Co wiÄ™cej, moÅ¼e byÄ‡ uÅ¼yty do modyfikowania plikÃ³w binarnych.
+%description -n xxd -l pl
+xxd tworzy szesnastkowy zapis pliku podanego na standardowe wej¶cie.
+Mo¿e tak¿e przekonwertowaæ taki zapis na oryginaln±, binarn± postaæ.
+Podobnie jak uuencode i uudecode pozwala na przesy³anie danych
+binarnych w postaci ASCII, ale ma mo¿liwo¶æ dekodowania na standardowe
+wyj¶cie. Co wiêcej, mo¿e byæ u¿yty do modyfikowania plików binarnych.
 
 %package static
 Summary:	Statically linked Vim
-Summary(pl.UTF-8):	Statycznie skonsolidowany Vim
+Summary(pl):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
 Provides:	vi-editor
 Provides:	vi
@@ -445,41 +318,41 @@ Text editor similar to Vi. This version is built with minimal feature
 and is installed in /bin as a rescue tool. The installation of this
 package is STRONGLY recommended.
 
-%description static -l pl.UTF-8
-Edytor tekstu podobny do Vi. Ta wersja zostaÅ‚a skonsolidowana
-statycznie i posiada minimalnÄ… iloÅ›Ä‡ dodatkÃ³w. Jest instalowana w /bin
-jako narzÄ™dzie dla administratora. Instalacja tego pakietu jest MOCNO
-zalecana, moÅ¼e on pomÃ³c Ci uratowaÄ‡ system w czasie awarii.
+%description static -l pl
+Edytor tekstu podobny do Vi. Ta wersja zosta³a skonsolidowana
+statycznie i posiada minimaln± ilo¶æ dodatków. Jest instalowana w /bin
+jako narzêdzie dla administratora. Instalacja tego pakietu jest MOCNO
+zalecana, mo¿e on pomóc Ci uratowaæ system w czasie awarii.
 
-%description static -l ru.UTF-8
-ÐŸÐ°ÐºÐµÑ‚ vim-static ÑƒÑÑ‚Ð°Ð½Ð°Ð²Ð»Ð¸Ð²Ð°ÐµÑ‚ Ñ€Ð°Ð·Ð½Ð¾Ð²Ð¸Ð´Ð½Ð¾ÑÑ‚ÑŒ vim ÐºÐ°Ðº /bin/vi, Ñ‡Ñ‚Ð¾
-ÑƒÐ´Ð¾Ð±Ð½Ð¾ Ð´Ð»Ñ Ð·Ð°Ð¿ÑƒÑÐºÐ° Ð´Ð°Ð¶Ðµ ÐºÐ¾Ð³Ð´Ð° ÑÐ¼Ð¾Ð½Ñ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð° Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÐºÐ¾Ñ€Ð½ÐµÐ²Ð°Ñ Ñ„Ð°Ð¹Ð»Ð¾Ð²Ð°Ñ
-ÑÐ¸ÑÑ‚ÐµÐ¼Ð°.
+%description static -l ru
+ðÁËÅÔ vim-static ÕÓÔÁÎÁ×ÌÉ×ÁÅÔ ÒÁÚÎÏ×ÉÄÎÏÓÔØ vim ËÁË /bin/vi, ÞÔÏ
+ÕÄÏÂÎÏ ÄÌÑ ÚÁÐÕÓËÁ ÄÁÖÅ ËÏÇÄÁ ÓÍÏÎÔÉÒÏ×ÁÎÁ ÔÏÌØËÏ ËÏÒÎÅ×ÁÑ ÆÁÊÌÏ×ÁÑ
+ÓÉÓÔÅÍÁ.
 
-%description static -l uk.UTF-8
-ÐŸÐ°ÐºÐµÑ‚ vim-static Ð²ÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÑŽÑ” Ñ€Ñ–Ð·Ð½Ð¾Ð²Ð¸Ð´ vim ÑÐº /bin/vi, Ñ‰Ð¾ Ð·Ñ€ÑƒÑ‡Ð½Ð¾ Ð´Ð»Ñ
-Ð·Ð°Ð¿ÑƒÑÐºÑƒ Ð½Ð°Ð²Ñ–Ñ‚ÑŒ Ñ‚Ð¾Ð´Ñ–, ÐºÐ¾Ð»Ð¸ Ð·Ð¼Ð¾Ð½Ñ‚Ð¾Ð²Ð°Ð½Ð° Ñ‚Ñ–Ð»ÑŒÐºÐ¸ ÐºÐ¾Ñ€Ð½ÑŒÐ¾Ð²Ð° Ñ„Ð°Ð¹Ð»Ð¾Ð²Ð° ÑÐ¸ÑÑ‚ÐµÐ¼Ð°.
+%description static -l uk
+ðÁËÅÔ vim-static ×ÓÔÁÎÏ×ÌÀ¤ Ò¦ÚÎÏ×ÉÄ vim ÑË /bin/vi, ÝÏ ÚÒÕÞÎÏ ÄÌÑ
+ÚÁÐÕÓËÕ ÎÁ×¦ÔØ ÔÏÄ¦, ËÏÌÉ ÚÍÏÎÔÏ×ÁÎÁ Ô¦ÌØËÉ ËÏÒÎØÏ×Á ÆÁÊÌÏ×Á ÓÉÓÔÅÍÁ.
 
 %package rt
 Summary:	Vim runtime files
-Summary(cs.UTF-8):	Soubory nezbytnÃ© pro libovolnÃ½ editor ViM
-Summary(da.UTF-8):	FÃ¦lles filer som er nÃ¸dvendige for enhver version af VIM editoren
-Summary(de.UTF-8):	Die von allen Versionen des VIM-Editors benÃ¶tigten gemeinsamen Dateien
-Summary(es.UTF-8):	Ficheros comunes a todas las versiones de VIM
-Summary(fr.UTF-8):	Fichiers communs indispensables pour toute version de l'Ã©diteur VIM
-Summary(id.UTF-8):	File umum yang dibutuhkan oleh semua versi editor VIM
-Summary(is.UTF-8):	GrunnskrÃ¡r sem allar ÃºtgÃ¡fur VIM ritilsins Ã¾urfa Ã¡ aÃ° halda
-Summary(it.UTF-8):	File comuni necessari per tutte le versioni dell'editor VIM
-Summary(ja.UTF-8):	ã™ã¹ã¦ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã® VIM ã‚¨ãƒ‡ã‚£ã‚¿ã§å¿…è¦ã¨ã•ã‚Œã‚‹å…±é€šãƒ•ã‚¡ã‚¤ãƒ«
-Summary(nb.UTF-8):	Felles filer som er nÃ¸dvendige for enhver versjon av VIM editoren
-Summary(pl.UTF-8):	Pliki przydatne edytorowi Vim
-Summary(pt.UTF-8):	Os ficheiros comuns necessÃ¡rios para qualquer versÃ£o do editor VIM
-Summary(ru.UTF-8):	Ð¤Ð°Ð¹Ð»Ñ‹, Ñ‚Ñ€ÐµÐ±ÑƒÐµÐ¼Ñ‹Ðµ Ð´Ð»Ñ Ð»ÑŽÐ±Ð¾Ð¹ Ð²ÐµÑ€ÑÐ¸Ð¸ Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€Ð° vim
-Summary(sk.UTF-8):	SpoloÄnÃ© sÃºbory potrebnÃ© pre vÅ¡etky verzie editoru VIM
-Summary(sl.UTF-8):	Skupne datoteke, potrebne s katerokoli razliÄico urejevalnika VIM
-Summary(sv.UTF-8):	De gemensamma filerna som behÃ¶vs av alla versioner av redigeraren VIM
-Summary(uk.UTF-8):	Ð¤Ð°Ð¹Ð»Ð¸, Ð¿Ð¾Ñ‚Ñ€Ñ–Ð±Ð½Ñ– Ð´Ð»Ñ Ð±ÑƒÐ´ÑŒ-ÑÐºÐ¾Ñ— Ð²ÐµÑ€ÑÑ–Ñ— Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¾Ñ€Ñƒ vim
-Summary(zh_CN.UTF-8):	ä»»ä½•ç‰ˆæœ¬çš„ VIM ç¼–è¾‘å™¨æ‰€éœ€çš„å…¬ç”¨æ–‡ä»¶ã€‚
+Summary(cs):	Soubory nezbytné pro libovolný editor ViM
+Summary(da):	Fælles filer som er nødvendige for enhver version af VIM editoren
+Summary(de):	Die von allen Versionen des VIM-Editors benötigten gemeinsamen Dateien
+Summary(es):	Ficheros comunes a todas las versiones de VIM
+Summary(fr):	Fichiers communs indispensables pour toute version de l'éditeur VIM
+Summary(id):	File umum yang dibutuhkan oleh semua versi editor VIM
+Summary(is):	Grunnskrár sem allar útgáfur VIM ritilsins þurfa á að halda
+Summary(it):	File comuni necessari per tutte le versioni dell'editor VIM
+Summary(ja):	¤¹¤Ù¤Æ¤Î¥Ð¡¼¥¸¥ç¥ó¤Î VIM ¥¨¥Ç¥£¥¿¤ÇÉ¬Í×¤È¤µ¤ì¤ë¶¦ÄÌ¥Õ¥¡¥¤¥ë
+Summary(nb):	Felles filer som er nødvendige for enhver versjon av VIM editoren
+Summary(pl):	Pliki przydatne edytorowi Vim
+Summary(pt):	Os ficheiros comuns necessários para qualquer versão do editor VIM
+Summary(ru):	æÁÊÌÙ, ÔÒÅÂÕÅÍÙÅ ÄÌÑ ÌÀÂÏÊ ×ÅÒÓÉÉ ÒÅÄÁËÔÏÒÁ vim
+Summary(sk):	Spoloèné súbory potrebné pre v¹etky verzie editoru VIM
+Summary(sl):	Skupne datoteke, potrebne s katerokoli razlièico urejevalnika VIM
+Summary(sv):	De gemensamma filerna som behövs av alla versioner av redigeraren VIM
+Summary(uk):	æÁÊÌÉ, ÐÏÔÒ¦ÂÎ¦ ÄÌÑ ÂÕÄØ-ÑËÏ§ ×ÅÒÓ¦§ ÒÅÄÁËÔÏÒÕ vim
+Summary(zh_CN):	ÈÎºÎ°æ±¾µÄ VIM ±à¼­Æ÷ËùÐèµÄ¹«ÓÃÎÄ¼þ¡£
 Group:		Applications/Editors/Vim
 # mktemp is for vimtutor
 Requires:	mktemp
@@ -491,74 +364,62 @@ This package contains macros, documentation, syntax configuration and
 manual pages for Vim. If you want to take advantage of Vim more
 powerful features, you should install this package.
 
-%description rt -l cs.UTF-8
-Tento balÃ­Äek obsahuje spoleÄnÃ© soubory pro vÅ¡echny dalÅ¡Ã­ balÃ­Äky s
+%description rt -l cs
+Tento balíèek obsahuje spoleèné soubory pro v¹echny dal¹í balíèky s
 vim.
 
-%description rt -l da.UTF-8
+%description rt -l da
 The vim-rt package contains files which every VIM binary will need in
 order to run.
 
-%description rt -l de.UTF-8
-Das Paket vim-rt enthÃ¤lt Dateien, die jede VIM-BinÃ¤rdatei fÃ¼r die
-AusfÃ¼hrung benÃ¶tigt.
+%description rt -l de
+Das Paket vim-rt enthält Dateien, die jede VIM-Binärdatei für die
+Ausführung benötigt.
 
-%description rt -l fr.UTF-8
+%description rt -l fr
 Le paquetage vim-rt contient des fichiers dont chaque fichier binaire
 VIM a besoin pour fonctionner.
 
-%description rt -l id.UTF-8
+%description rt -l id
 Package vim-rt berisi file yang dibutuhkan semua versi VIM agar bisa
 berjalan.
 
-%description rt -l is.UTF-8
-vim-rt pakkinn inniheldur skrÃ¡r sem allar VIM keyrsluskrÃ¡rnar Ã¾urfa
-til aÃ° keyra.
+%description rt -l is
+vim-rt pakkinn inniheldur skrár sem allar VIM keyrsluskrárnar þurfa
+til að keyra.
 
-%description rt -l it.UTF-8
+%description rt -l it
 Il pacchetto vim-rt contiene i file necessari a ogni binario di VIM
 per poter funzionare.
 
-%description rt -l pl.UTF-8
-W tym pakiecie znajdziesz dokumentacjÄ™, makra, pliki konfiguracyjne i
-strony podrÄ™cznika dla edytora Vim. JeÅ¼eli chcesz korzystaÄ‡ z
-zaawansowanych moÅ¼liwoÅ›ci Vima, powinieneÅ› zainstalowaÄ‡ ten pakiet.
+%description rt -l pl
+W tym pakiecie znajdziesz dokumentacjê, makra, pliki konfiguracyjne i
+strony podrêcznika dla edytora Vim. Je¿eli chcesz korzystaæ z
+zaawansowanych mo¿liwo¶ci Vima, powiniene¶ zainstalowaæ ten pakiet.
 
-%description rt -l pt.UTF-8
-O pacote vim-rt contÃ©m os ficheiros que todos os executÃ¡veis do VIM
-irÃ£o necessitar para correr.
+%description rt -l pt
+O pacote vim-rt contém os ficheiros que todos os executáveis do VIM
+irão necessitar para correr.
 
-%description rt -l ru.UTF-8
-ÐŸÐ°ÐºÐµÑ‚ vim-rt ÑÐ¾Ð´ÐµÑ€Ð¶Ð¸Ñ‚ Ñ„Ð°Ð¹Ð»Ñ‹ (Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€, Ñ„Ð°Ð¹Ð»Ñ‹ ÑÐ¿Ñ€Ð°Ð²ÐºÐ¸), ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð½ÑƒÐ¶Ð½Ñ‹
-Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð»ÑŽÐ±Ð¾Ð¹ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ñ‹ vim.
+%description rt -l ru
+ðÁËÅÔ vim-rt ÓÏÄÅÒÖÉÔ ÆÁÊÌÙ (ÎÁÐÒÉÍÅÒ, ÆÁÊÌÙ ÓÐÒÁ×ËÉ), ËÏÔÏÒÙÅ ÎÕÖÎÙ
+ÄÌÑ ÒÁÂÏÔÙ ÌÀÂÏÊ ÐÒÏÇÒÁÍÍÙ vim.
 
-%description rt -l sk.UTF-8
-BalÃ­k vim-rt obsahuje sÃºbory, ktorÃ© bude potrebovaÅ¥ pre sprÃ¡vnu
-funkciu kaÅ¾dÃ¡ verzia editoru VIM.
+%description rt -l sk
+Balík vim-rt obsahuje súbory, ktoré bude potrebova» pre správnu
+funkciu ka¾dá verzia editoru VIM.
 
-%description rt -l sv.UTF-8
-Paketet vim-rt innehÃ¥ller filer som alla VIM-binÃ¤rer behÃ¶ver fÃ¶r att
-kÃ¶ra.
+%description rt -l sv
+Paketet vim-rt innehåller filer som alla VIM-binärer behöver för att
+köra.
 
-%description rt -l uk.UTF-8
-ÐŸÐ°ÐºÐµÑ‚ vim-rt Ð¼Ñ–ÑÑ‚Ð¸Ñ‚ÑŒ Ñ„Ð°Ð¹Ð»Ð¸ (Ð½Ð°Ð¿Ñ€Ð¸ÐºÐ»Ð°Ð´, Ñ„Ð°Ð¹Ð»Ð¸ Ð´Ð¾Ð²Ñ–Ð´ÐºÐ¸), ÐºÐ¾Ñ‚Ñ€Ñ– Ð¿Ð¾Ñ‚Ñ€Ñ–Ð±Ð½Ñ–
-Ð´Ð»Ñ Ñ€Ð¾Ð±Ð¾Ñ‚Ð¸ Ð±ÑƒÐ´ÑŒ-ÑÐºÐ¾Ñ— Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¸ vim.
-
-%package spell-en
-Summary:	English dictionaries for VIMspell
-Summary(pl.UTF-8):	Angielskie sÅ‚owniki dla VIMspella
-Group:		Applications/Editors/Vim
-Requires:	%{name} = %{epoch}:%{version}-%{release}
-
-%description spell-en
-English dictionaries for VIMspell.
-
-%description spell-en -l pl.UTF-8
-Angielskie sÅ‚owniki dla VIMspella.
+%description rt -l uk
+ðÁËÅÔ vim-rt Í¦ÓÔÉÔØ ÆÁÊÌÉ (ÎÁÐÒÉËÌÁÄ, ÆÁÊÌÉ ÄÏ×¦ÄËÉ), ËÏÔÒ¦ ÐÏÔÒ¦ÂÎ¦
+ÄÌÑ ÒÏÂÏÔÉ ÂÕÄØ-ÑËÏ§ ÐÒÏÇÒÁÍÉ vim.
 
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
-Summary(pl.UTF-8):	Vim dla X Window korzystajÄ…cy z biblioteki Athena
+Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Athena
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -569,23 +430,23 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is built with Athena Widget Set.
 
-%description -n gvim-athena -l pl.UTF-8
-Wersja edytora Vim pracujÄ…ca w Å›rodowisku X Window z wykorzystaniem
+%description -n gvim-athena -l pl
+Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 biblioteki Athena Widget Set.
 
-%description -n gvim-athena -l ru.UTF-8
-Ð­Ñ‚Ð¾Ñ‚ Ð¿Ð°ÐºÐµÑ‚ Ð¿Ñ€ÐµÐ´ÑÑ‚Ð°Ð²Ð»ÑÐµÑ‚ ÑÐ¾Ð±Ð¾Ð¹ Ð²ÐµÑ€ÑÐ¸ÑŽ VIM, ÑÐ¾Ð±Ñ€Ð°Ð½Ð½ÑƒÑŽ Ñ Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐ°Ð¼Ð¸
-Athena Widget Set, Ñ‡Ñ‚Ð¾ Ð¿Ð¾Ð·Ð²Ð¾Ð»ÑÐµÑ‚ Ð·Ð°Ð¿ÑƒÑÐºÐ°Ñ‚ÑŒ VIM ÐºÐ°Ðº Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ X Window
-System - Ñ Ð¿Ð¾Ð»Ð½Ð¾ÑÑ‚ÑŒÑŽ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ð¼ Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ¾Ð¼ Ð¸ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¾Ð¹ Ð¼Ñ‹ÑˆÐ¸.
+%description -n gvim-athena -l ru
+üÔÏÔ ÐÁËÅÔ ÐÒÅÄÓÔÁ×ÌÑÅÔ ÓÏÂÏÊ ×ÅÒÓÉÀ VIM, ÓÏÂÒÁÎÎÕÀ Ó ÂÉÂÌÉÏÔÅËÁÍÉ
+Athena Widget Set, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window
+System - Ó ÐÏÌÎÏÓÔØÀ ÇÒÁÆÉÞÅÓËÉÍ ÉÎÔÅÒÆÅÊÓÏÍ É ÐÏÄÄÅÒÖËÏÊ ÍÙÛÉ.
 
-%description -n gvim-athena -l uk.UTF-8
-Ð¦ÐµÐ¹ Ð¿Ð°ÐºÐµÑ‚ Ð¼Ñ–ÑÑ‚Ð¸Ñ‚ÑŒ Ð²ÐµÑ€ÑÑ–ÑŽ VIM, Ð·Ñ–Ð±Ñ€Ð°Ð½Ñƒ Ð· Ð±Ñ–Ð±Ð»Ñ–Ð¾Ñ‚ÐµÐºÐ°Ð¼Ð¸ Athena Widget
-Set, Ñ‰Ð¾ Ð´Ð¾Ð·Ð²Ð¾Ð»ÑÑ” Ð·Ð°Ð¿ÑƒÑÐºÐ°Ñ‚Ð¸ VIM ÑÐº Ð¿Ñ€Ð¸ÐºÐ»Ð°Ð´Ð½Ñƒ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ñƒ X Window System -
-Ð· Ð¿Ð¾Ð²Ð½Ñ–ÑÑ‚ÑŽ Ð³Ñ€Ð°Ñ„Ñ–Ñ‡Ð½Ð¸Ð¼ Ñ–Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ¾Ð¼ Ñ‚Ð° Ð¿Ñ–Ð´Ñ‚Ñ€Ð¸Ð¼ÐºÐ¾ÑŽ Ð¼Ð¸ÑˆÑ–.
+%description -n gvim-athena -l uk
+ãÅÊ ÐÁËÅÔ Í¦ÓÔÉÔØ ×ÅÒÓ¦À VIM, Ú¦ÂÒÁÎÕ Ú Â¦ÂÌ¦ÏÔÅËÁÍÉ Athena Widget
+Set, ÝÏ ÄÏÚ×ÏÌÑ¤ ÚÁÐÕÓËÁÔÉ VIM ÑË ÐÒÉËÌÁÄÎÕ ÐÒÏÇÒÁÍÕ X Window System -
+Ú ÐÏ×Î¦ÓÔÀ ÇÒÁÆ¦ÞÎÉÍ ¦ÎÔÅÒÆÅÊÓÏÍ ÔÁ Ð¦ÄÔÒÉÍËÏÀ ÍÉÛ¦.
 
 %package -n gvim-motif
 Summary:	Vim for X Window built with Motif
-Summary(pl.UTF-8):	Vim dla X Window korzystajÄ…cy z biblioteki Motif
+Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Motif
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -596,26 +457,24 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is built with Motif.
 
-%description -n gvim-motif -l pl.UTF-8
-Wersja edytora Vim pracujÄ…ca w Å›rodowisku X Window z wykorzystaniem
+%description -n gvim-motif -l pl
+Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 biblioteki Motif.
 
-%description -n gvim-motif -l ru.UTF-8
-Ð­Ñ‚Ð¾Ñ‚ Ð¿Ð°ÐºÐµÑ‚ Ð¿Ñ€ÐµÐ´ÑÑ‚Ð°Ð²Ð»ÑÐµÑ‚ ÑÐ¾Ð±Ð¾Ð¹ Ð²ÐµÑ€ÑÐ¸ÑŽ VIM, ÑÐ¾Ð±Ñ€Ð°Ð½Ð½ÑƒÑŽ Ñ Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐ°Ð¼Ð¸
-Motif, Ñ‡Ñ‚Ð¾ Ð¿Ð¾Ð·Ð²Ð¾Ð»ÑÐµÑ‚ Ð·Ð°Ð¿ÑƒÑÐºÐ°Ñ‚ÑŒ VIM ÐºÐ°Ðº Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ X Window System - Ñ
-Ð¿Ð¾Ð»Ð½Ð¾ÑÑ‚ÑŒÑŽ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ð¼ Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ¾Ð¼ Ð¸ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¾Ð¹ Ð¼Ñ‹ÑˆÐ¸.
+%description -n gvim-motif -l ru
+üÔÏÔ ÐÁËÅÔ ÐÒÅÄÓÔÁ×ÌÑÅÔ ÓÏÂÏÊ ×ÅÒÓÉÀ VIM, ÓÏÂÒÁÎÎÕÀ Ó ÂÉÂÌÉÏÔÅËÁÍÉ
+Motif, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
+ÐÏÌÎÏÓÔØÀ ÇÒÁÆÉÞÅÓËÉÍ ÉÎÔÅÒÆÅÊÓÏÍ É ÐÏÄÄÅÒÖËÏÊ ÍÙÛÉ.
 
-%description -n gvim-motif -l uk.UTF-8
-Ð¦ÐµÐ¹ Ð¿Ð°ÐºÐµÑ‚ Ð¼Ñ–ÑÑ‚Ð¸Ñ‚ÑŒ Ð²ÐµÑ€ÑÑ–ÑŽ VIM, Ð·Ñ–Ð±Ñ€Ð°Ð½Ñƒ Ð· Ð±Ñ–Ð±Ð»Ñ–Ð¾Ñ‚ÐµÐºÐ°Ð¼Ð¸ Motif, Ñ‰Ð¾
-Ð´Ð¾Ð·Ð²Ð¾Ð»ÑÑ” Ð·Ð°Ð¿ÑƒÑÐºÐ°Ñ‚Ð¸ VIM ÑÐº Ð¿Ñ€Ð¸ÐºÐ»Ð°Ð´Ð½Ñƒ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ñƒ X Window System - Ð·
-Ð¿Ð¾Ð²Ð½Ñ–ÑÑ‚ÑŽ Ð³Ñ€Ð°Ñ„Ñ–Ñ‡Ð½Ð¸Ð¼ Ñ–Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ¾Ð¼ Ñ‚Ð° Ð¿Ñ–Ð´Ñ‚Ñ€Ð¸Ð¼ÐºÐ¾ÑŽ Ð¼Ð¸ÑˆÑ–.
+%description -n gvim-motif -l uk
+ãÅÊ ÐÁËÅÔ Í¦ÓÔÉÔØ ×ÅÒÓ¦À VIM, Ú¦ÂÒÁÎÕ Ú Â¦ÂÌ¦ÏÔÅËÁÍÉ Motif, ÝÏ
+ÄÏÚ×ÏÌÑ¤ ÚÁÐÕÓËÁÔÉ VIM ÑË ÐÒÉËÌÁÄÎÕ ÐÒÏÇÒÁÍÕ X Window System - Ú
+ÐÏ×Î¦ÓÔÀ ÇÒÁÆ¦ÞÎÉÍ ¦ÎÔÅÒÆÅÊÓÏÍ ÔÁ Ð¦ÄÔÒÉÍËÏÀ ÍÉÛ¦.
 
 %package -n gvim-gtk
 Summary:	Vim for X Window built with gtk
-Summary(pl.UTF-8):	Vim dla X Window korzystajÄ…cy z biblioteki GTK
+Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GTK
 Group:		Applications/Editors/Vim
-Requires(post,postun):	gtk+2
-Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	vi-editor
@@ -625,27 +484,25 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is built with GTK.
 
-%description -n gvim-gtk -l pl.UTF-8
-Wersja edytora Vim pracujÄ…ca w Å›rodowisku X Window z wykorzystaniem
+%description -n gvim-gtk -l pl
+Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 biblioteki GTK.
 
-%description -n gvim-gtk -l ru.UTF-8
-Ð­Ñ‚Ð¾Ñ‚ Ð¿Ð°ÐºÐµÑ‚ Ð¿Ñ€ÐµÐ´ÑÑ‚Ð°Ð²Ð»ÑÐµÑ‚ ÑÐ¾Ð±Ð¾Ð¹ Ð²ÐµÑ€ÑÐ¸ÑŽ VIM, ÑÐ¾Ð±Ñ€Ð°Ð½Ð½ÑƒÑŽ Ñ Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐ°Ð¼Ð¸
-GTK, Ñ‡Ñ‚Ð¾ Ð¿Ð¾Ð·Ð²Ð¾Ð»ÑÐµÑ‚ Ð·Ð°Ð¿ÑƒÑÐºÐ°Ñ‚ÑŒ VIM ÐºÐ°Ðº Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ X Window System - Ñ
-Ð¿Ð¾Ð»Ð½Ð¾ÑÑ‚ÑŒÑŽ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ð¼ Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ¾Ð¼ Ð¸ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¾Ð¹ Ð¼Ñ‹ÑˆÐ¸. ÐŸÑ€Ð¾ÑÑ‚Ð¾ ÑÐºÐ°Ð¶Ð¸Ñ‚Ðµ
+%description -n gvim-gtk -l ru
+üÔÏÔ ÐÁËÅÔ ÐÒÅÄÓÔÁ×ÌÑÅÔ ÓÏÂÏÊ ×ÅÒÓÉÀ VIM, ÓÏÂÒÁÎÎÕÀ Ó ÂÉÂÌÉÏÔÅËÁÍÉ
+GTK, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
+ÐÏÌÎÏÓÔØÀ ÇÒÁÆÉÞÅÓËÉÍ ÉÎÔÅÒÆÅÊÓÏÍ É ÐÏÄÄÅÒÖËÏÊ ÍÙÛÉ. ðÒÏÓÔÏ ÓËÁÖÉÔÅ
 'gvim'...
 
-%description -n gvim-gtk -l uk.UTF-8
-Ð¦ÐµÐ¹ Ð¿Ð°ÐºÐµÑ‚ Ð¼Ñ–ÑÑ‚Ð¸Ñ‚ÑŒ Ð²ÐµÑ€ÑÑ–ÑŽ VIM, Ð·Ñ–Ð±Ñ€Ð°Ð½Ñƒ Ð· Ð±Ñ–Ð±Ð»Ñ–Ð¾Ñ‚ÐµÐºÐ°Ð¼Ð¸ GTK, Ñ‰Ð¾ Ð´Ð¾Ð·Ð²Ð¾Ð»ÑÑ”
-Ð·Ð°Ð¿ÑƒÑÐºÐ°Ñ‚Ð¸ VIM ÑÐº Ð¿Ñ€Ð¸ÐºÐ»Ð°Ð´Ð½Ñƒ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ñƒ X Window System - Ð· Ð¿Ð¾Ð²Ð½Ñ–ÑÑ‚ÑŽ
-Ð³Ñ€Ð°Ñ„Ñ–Ñ‡Ð½Ð¸Ð¼ Ñ–Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ¾Ð¼ Ñ‚Ð° Ð¿Ñ–Ð´Ñ‚Ñ€Ð¸Ð¼ÐºÐ¾ÑŽ Ð¼Ð¸ÑˆÑ–. ÐŸÑ€Ð¾ÑÑ‚Ð¾ ÑÐºÐ°Ð¶Ñ–Ñ‚ÑŒ 'gvim'...
+%description -n gvim-gtk -l uk
+ãÅÊ ÐÁËÅÔ Í¦ÓÔÉÔØ ×ÅÒÓ¦À VIM, Ú¦ÂÒÁÎÕ Ú Â¦ÂÌ¦ÏÔÅËÁÍÉ GTK, ÝÏ ÄÏÚ×ÏÌÑ¤
+ÚÁÐÕÓËÁÔÉ VIM ÑË ÐÒÉËÌÁÄÎÕ ÐÒÏÇÒÁÍÕ X Window System - Ú ÐÏ×Î¦ÓÔÀ
+ÇÒÁÆ¦ÞÎÉÍ ¦ÎÔÅÒÆÅÊÓÏÍ ÔÁ Ð¦ÄÔÒÉÍËÏÀ ÍÉÛ¦. ðÒÏÓÔÏ ÓËÁÖ¦ÔØ 'gvim'...
 
 %package -n gvim-gnome
 Summary:	Vim for X Window built with GNOME
-Summary(pl.UTF-8):	Vim dla X Window korzystajÄ…cy z biblioteki GNOME
+Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GNOME
 Group:		Applications/Editors/Vim
-Requires(post,postun):	gtk+2
-Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	vi-editor
@@ -655,23 +512,23 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is build with GNOME.
 
-%description -n gvim-gnome -l pl.UTF-8
-Wersja edytora Vim pracujÄ…ca w Å›rodowisku X Window z wykorzystaniem
+%description -n gvim-gnome -l pl
+Wersja edytora Vim pracuj±ca w ¶rodowisku X Window z wykorzystaniem
 bibliotek GNOME.
 
-%description -n gvim-gnome -l ru.UTF-8
-Ð­Ñ‚Ð¾Ñ‚ Ð¿Ð°ÐºÐµÑ‚ Ð¿Ñ€ÐµÐ´ÑÑ‚Ð°Ð²Ð»ÑÐµÑ‚ ÑÐ¾Ð±Ð¾Ð¹ Ð²ÐµÑ€ÑÐ¸ÑŽ VIM, ÑÐ¾Ð±Ñ€Ð°Ð½Ð½ÑƒÑŽ Ñ Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐ°Ð¼Ð¸
-GNOME, Ñ‡Ñ‚Ð¾ Ð¿Ð¾Ð·Ð²Ð¾Ð»ÑÐµÑ‚ Ð·Ð°Ð¿ÑƒÑÐºÐ°Ñ‚ÑŒ VIM ÐºÐ°Ðº Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ X Window System - Ñ
-Ð¿Ð¾Ð»Ð½Ð¾ÑÑ‚ÑŒÑŽ Ð³Ñ€Ð°Ñ„Ð¸Ñ‡ÐµÑÐºÐ¸Ð¼ Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ¾Ð¼ Ð¸ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¾Ð¹ Ð¼Ñ‹ÑˆÐ¸.
+%description -n gvim-gnome -l ru
+üÔÏÔ ÐÁËÅÔ ÐÒÅÄÓÔÁ×ÌÑÅÔ ÓÏÂÏÊ ×ÅÒÓÉÀ VIM, ÓÏÂÒÁÎÎÕÀ Ó ÂÉÂÌÉÏÔÅËÁÍÉ
+GNOME, ÞÔÏ ÐÏÚ×ÏÌÑÅÔ ÚÁÐÕÓËÁÔØ VIM ËÁË ÐÒÉÌÏÖÅÎÉÅ X Window System - Ó
+ÐÏÌÎÏÓÔØÀ ÇÒÁÆÉÞÅÓËÉÍ ÉÎÔÅÒÆÅÊÓÏÍ É ÐÏÄÄÅÒÖËÏÊ ÍÙÛÉ.
 
-%description -n gvim-gnome -l uk.UTF-8
-Ð¦ÐµÐ¹ Ð¿Ð°ÐºÐµÑ‚ Ð¼Ñ–ÑÑ‚Ð¸Ñ‚ÑŒ Ð²ÐµÑ€ÑÑ–ÑŽ VIM, Ð·Ñ–Ð±Ñ€Ð°Ð½Ñƒ Ð· Ð±Ñ–Ð±Ð»Ñ–Ð¾Ñ‚ÐµÐºÐ°Ð¼Ð¸ GNOME, Ñ‰Ð¾
-Ð´Ð¾Ð·Ð²Ð¾Ð»ÑÑ” Ð·Ð°Ð¿ÑƒÑÐºÐ°Ñ‚Ð¸ VIM ÑÐº Ð¿Ñ€Ð¸ÐºÐ»Ð°Ð´Ð½Ñƒ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ñƒ X Window System - Ð·
-Ð¿Ð¾Ð²Ð½Ñ–ÑÑ‚ÑŽ Ð³Ñ€Ð°Ñ„Ñ–Ñ‡Ð½Ð¸Ð¼ Ñ–Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ¾Ð¼ Ñ‚Ð° Ð¿Ñ–Ð´Ñ‚Ñ€Ð¸Ð¼ÐºÐ¾ÑŽ Ð¼Ð¸ÑˆÑ–.
+%description -n gvim-gnome -l uk
+ãÅÊ ÐÁËÅÔ Í¦ÓÔÉÔØ ×ÅÒÓ¦À VIM, Ú¦ÂÒÁÎÕ Ú Â¦ÂÌ¦ÏÔÅËÁÍÉ GNOME, ÝÏ
+ÄÏÚ×ÏÌÑ¤ ÚÁÐÕÓËÁÔÉ VIM ÑË ÐÒÉËÌÁÄÎÕ ÐÒÏÇÒÁÍÕ X Window System - Ú
+ÐÏ×Î¦ÓÔÀ ÇÒÁÆ¦ÞÎÉÍ ¦ÎÔÅÒÆÅÊÓÏÍ ÔÁ Ð¦ÄÔÒÉÍËÏÀ ÍÉÛ¦.
 
 %package -n gvim-bonobo
 Summary:	Vim for X Window built as bonobo component
-Summary(pl.UTF-8):	Vim dla X Window zbudowany jako element bonobo
+Summary(pl):	Vim dla X Window zbudowany jako element bonobo
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -682,12 +539,33 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is build as bonobo component.
 
-%description -n gvim-bonobo -l pl.UTF-8
-Wersja edytora Vim pracujÄ…ca w Å›rodowisku X Window, zbudowana jako
+%description -n gvim-bonobo -l pl
+Wersja edytora Vim pracuj±ca w ¶rodowisku X Window, zbudowana jako
 element bonobo.
 
 %prep
 %setup -q -n %{name}70 -b1
+# official patches
+%patchset_patch 1 4
+%patchset_patch 6 26
+%patchset_patch 29 31
+%patchset_patch 33 44
+%patchset_patch 46 56
+%patchset_patch 58 64
+%patchset_patch 66 73
+%patchset_patch 75 107
+%patchset_patch 109 129
+%patchset_patch 131 131
+%patchset_patch 133 137
+%patchset_patch 139 155
+%patchset_patch 157 160
+%patchset_patch 162 169
+%patchset_patch 172 179
+%patchset_patch 181 196
+%patchset_patch 199 207
+%patchset_patch 209 214
+%patchset_patch 216 216
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -713,179 +591,6 @@ element bonobo.
 %patch22 -p1
 %patch23 -p1
 
-# official patches
-%patch201 -p0
-%patch202 -p0
-%patch203 -p0
-%patch204 -p0
-# patch for -extra
-#%patch205 -p0
-%patch206 -p0
-%patch207 -p0
-%patch208 -p0
-%patch209 -p0
-%patch210 -p0
-%patch211 -p0
-%patch212 -p0
-%patch213 -p0
-%patch214 -p0
-%patch215 -p0
-%patch216 -p0
-%patch217 -p0
-%patch218 -p0
-%patch219 -p0
-%patch220 -p0
-%patch221 -p0
-%patch222 -p0
-%patch223 -p0
-%patch224 -p0
-%patch225 -p0
-%patch226 -p0
-# patches for -extra
-#%patch227 -p0
-#%patch228 -p0
-%patch229 -p0
-%patch230 -p0
-%patch231 -p0
-# patch for -extra
-#%patch232 -p0
-%patch233 -p0
-%patch234 -p0
-%patch235 -p0
-%patch236 -p0
-%patch237 -p0
-%patch238 -p0
-%patch239 -p0
-%patch240 -p0
-%patch241 -p0
-%patch242 -p0
-%patch243 -p0
-%patch244 -p0
-# patch for -extra
-#%patch245 -p0
-%patch246 -p0
-%patch247 -p0
-%patch248 -p0
-%patch249 -p0
-%patch250 -p0
-%patch251 -p0
-%patch252 -p0
-%patch253 -p0
-%patch254 -p0
-%patch255 -p0
-%patch256 -p0
-# patch for -extra
-#%patch257 -p0
-%patch258 -p0
-%patch259 -p0
-%patch260 -p0
-%patch261 -p0
-%patch262 -p0
-%patch263 -p0
-%patch264 -p0
-# patch for -extra
-#%patch265 -p0
-%patch266 -p0
-%patch267 -p0
-%patch268 -p0
-%patch269 -p0
-%patch270 -p0
-%patch271 -p0
-%patch272 -p0
-%patch273 -p0
-# patch for -extra
-#%patch274 -p0
-%patch275 -p0
-%patch276 -p0
-%patch277 -p0
-%patch278 -p0
-%patch279 -p0
-%patch280 -p0
-%patch281 -p0
-%patch282 -p0
-%patch283 -p0
-%patch284 -p0
-%patch285 -p0
-%patch286 -p0
-%patch287 -p0
-%patch288 -p0
-%patch289 -p0
-%patch290 -p0
-%patch291 -p0
-%patch292 -p0
-%patch293 -p0
-%patch294 -p0
-%patch295 -p0
-%patch296 -p0
-%patch297 -p0
-%patch298 -p0
-%patch299 -p0
-%patch300 -p0
-%patch301 -p0
-%patch302 -p0
-%patch303 -p0
-%patch304 -p0
-%patch305 -p0
-%patch306 -p0
-%patch307 -p0
-# patch for -extra
-#%patch308 -p0
-%patch309 -p0
-%patch310 -p0
-%patch311 -p0
-%patch312 -p0
-%patch313 -p0
-%patch314 -p0
-%patch315 -p0
-%patch316 -p0
-%patch317 -p0
-%patch318 -p0
-%patch319 -p0
-%patch320 -p0
-%patch321 -p0
-%patch322 -p0
-%patch323 -p0
-%patch324 -p0
-%patch325 -p0
-%patch326 -p0
-%patch327 -p0
-%patch328 -p0
-%patch329 -p0
-# patch for -extra
-#%patch330 -p0
-%patch331 -p0
-# patch for -extra
-#%patch332 -p0
-%patch333 -p0
-%patch334 -p0
-%patch335 -p0
-%patch336 -p0
-%patch337 -p0
-# patch for -extra
-#%patch338 -p0
-%patch339 -p0
-%patch340 -p0
-%patch341 -p0
-%patch342 -p0
-%patch343 -p0
-%patch344 -p0
-%patch345 -p0
-%patch346 -p0
-%patch347 -p0
-%patch348 -p0
-%patch349 -p0
-%patch350 -p0
-%patch351 -p0
-%patch352 -p0
-%patch353 -p0
-%patch354 -p0
-%patch355 -p0
-# patch for -extra
-#%patch356 -p0
-%patch357 -p0
-%patch358 -p0
-
-
 # bonobo
 %if %{with bonobo}
 %patch100 -p1
@@ -908,6 +613,12 @@ element bonobo.
 %patch107 -p1
 
 %patch108 -p1
+%patch109 -p1
+%patch110 -p1
+%patch111 -p1
+%patch112 -p1
+%patch113 -p1
+%patch114 -p1
 
 install %{SOURCE14} runtime/indent
 install %{SOURCE15} runtime/colors
@@ -927,6 +638,7 @@ install -d bin
 %if %{with bonobo}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	--enable-bonobo \
@@ -971,8 +683,8 @@ LDFLAGS="%{rpmldflags} -static"
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} vim
-
+%{__make} vim \
+	SPELL_OBJ=
 mv -f vim bin/vim.static
 LDFLAGS="%{rpmldflags}"
 %endif
@@ -999,13 +711,14 @@ LDFLAGS="%{rpmldflags}"
 	--with-modifiedby="PLD Linux Distribution" \
 	--with-compiledby="PLD Linux Distribution"
 
-%{__make} vim
-
+%{__make} vim \
+	SPELL_OBJ=
 mv -f vim bin/vim.ncurses
 
 %if %{with athena}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
@@ -1035,6 +748,7 @@ mv -f vim bin/gvim.athena
 %if %{with motif}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
@@ -1064,6 +778,7 @@ mv -f vim bin/gvim.motif
 %if %{with gtk}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gtk2 \
 	--enable-gtk2-check \
@@ -1091,6 +806,7 @@ mv -f vim bin/gvim.gtk
 %if %{with gnome}
 %{__make} distclean
 %configure \
+	CFLAGS="%{rpmcflags} -DFEAT_SPELL_HL" \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	%{?with_bonobo:--disable-bonobo} \
@@ -1116,6 +832,7 @@ mv -f vim bin/gvim.gtk
 mv -f vim bin/gvim.gnome
 %endif
 
+
 %{__make} xxd/xxd languages
 
 %install
@@ -1125,7 +842,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
 	$RPM_BUILD_ROOT%{_desktopdir}
 
-%{__make} install \
+%{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
@@ -1152,7 +869,7 @@ install src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 # echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
+
 
 # not supported directories
 rm -rf $RPM_BUILD_ROOT%{_mandir}/??.*/
@@ -1160,10 +877,7 @@ rm -rf $RPM_BUILD_ROOT%{_mandir}/??.*/
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/vimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/vimrc
 mv -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/gvimrc_example.vim $RPM_BUILD_ROOT%{_sysconfdir}/vim/gvimrc
 
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/eview
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/evim
 ln -sf vim $RPM_BUILD_ROOT%{_bindir}/rvim
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/vimdiff
 ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
@@ -1185,10 +899,9 @@ install %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
 %if %{with gtk}
 install src/bin/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
 ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_bindir}/gvim
-ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
-ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gvimdiff
-ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 
@@ -1205,11 +918,15 @@ install src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
 %endif
 
 bzip2 -dc %{SOURCE2} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
+# non-existent binaries
+rm -rf $RPM_BUILD_ROOT%{_mandir}/*/man1/{evim,{,g}vimdiff}.1
 
 unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE3}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
+
+chmod -x $RPM_BUILD_ROOT%{_datadir}/vim/v*/tools/*.pl
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -1234,49 +951,25 @@ rm -rf $RPM_BUILD_ROOT
 
 %post -n gvim-gtk
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
-%update_icon_cache hicolor
 
 %postun -n gvim-gtk
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
-%update_icon_cache hicolor
 
 %post -n gvim-gnome
-%update_desktop_database_post
-%update_icon_cache hicolor
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
 
 %postun -n gvim-gnome
-%update_desktop_database_postun
-%update_icon_cache hicolor
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
 
 %files
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/eview
-%attr(755,root,root) %{_bindir}/evim
-%attr(755,root,root) %{_bindir}/rvim
 %attr(755,root,root) %{_bindir}/vim
-%attr(755,root,root) %{_bindir}/vimdiff
-%{_mandir}/man1/eview.1*
-%{_mandir}/man1/evim.1*
-%{_mandir}/man1/rvim.1*
-%{_mandir}/man1/vimdiff.1*
-%lang(fi) %{_mandir}/fi/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/eview.1*
-%lang(fr) %{_mandir}/fr/man1/evim.1*
-%lang(fr) %{_mandir}/fr/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/vimdiff.1*
-%lang(id) %{_mandir}/id/man1/rvim.1*
-%lang(it) %{_mandir}/it/man1/eview.1*
-%lang(it) %{_mandir}/it/man1/evim.1*
-%lang(it) %{_mandir}/it/man1/rvim.1*
-%lang(it) %{_mandir}/it/man1/vimdiff.1*
-%lang(pl) %{_mandir}/pl/man1/eview.1*
-%lang(pl) %{_mandir}/pl/man1/evim.1*
-%lang(pl) %{_mandir}/pl/man1/rvim.1*
-%lang(pl) %{_mandir}/pl/man1/vimdiff.1*
-%lang(ru) %{_mandir}/ru/man1/eview.1*
-%lang(ru) %{_mandir}/ru/man1/evim.1*
-%lang(ru) %{_mandir}/ru/man1/rvim.1*
-%lang(ru) %{_mandir}/ru/man1/vimdiff.1*
+%attr(755,root,root) %{_bindir}/rvim
+%{_mandir}/man1/rvim.*
+%lang(fi) %{_mandir}/fi/man1/rvim.*
+%lang(fr) %{_mandir}/fr/man1/rvim.*
+%lang(id) %{_mandir}/id/man1/rvim.*
+%lang(pl) %{_mandir}/pl/man1/rvim.*
 %{_desktopdir}/%{name}.desktop
 
 %if %{with static}
@@ -1365,7 +1058,6 @@ rm -rf $RPM_BUILD_ROOT
 %lang(es) %{_datadir}/vim/v*/lang/es/
 %lang(fr) %{_datadir}/vim/v*/lang/menu_fr*
 %lang(fr) %{_datadir}/vim/v*/lang/fr/
-%lang(ga) %{_datadir}/vim/v*/lang/ga/
 %lang(hu) %{_datadir}/vim/v*/lang/menu_hu*
 %lang(it) %{_datadir}/vim/v*/lang/menu_it*
 %lang(it) %{_datadir}/vim/v*/lang/it/
@@ -1389,9 +1081,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sv) %{_datadir}/vim/v*/lang/menu_sv*
 %lang(sv) %{_datadir}/vim/v*/lang/sv/
 %lang(uk) %{_datadir}/vim/v*/lang/menu_uk*
-%lang(uk) %{_datadir}/vim/v*/lang/uk/
 %lang(vi) %{_datadir}/vim/v*/lang/menu_vi*
-%lang(vi) %{_datadir}/vim/v*/lang/vi/
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.cp936*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.gb2312*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
@@ -1402,9 +1092,9 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW/
-
 %dir %{_datadir}/vim/v*/spell
 %{_datadir}/vim/v*/spell/cleanadd.vim
+%lang(en_GB) %{_datadir}/vim/v*/spell/en.*.*
 %lang(he) %{_datadir}/vim/v*/spell/he.*
 %lang(yi) %{_datadir}/vim/v*/spell/yi.*
 
@@ -1418,29 +1108,16 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/compiler
 %{_datadir}/vim/v*/autoload
 %{_datadir}/vim/v*/*.vim
-
-%{_mandir}/man1/rvim.1*
-%{_mandir}/man1/vim.1*
-%{_mandir}/man1/vimtutor.1*
-%lang(fi) %{_mandir}/fi/man1/rvim.1*
-%lang(fi) %{_mandir}/fi/man1/vim.1*
-%lang(fr) %{_mandir}/fr/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/vim.1*
-%lang(fr) %{_mandir}/fr/man1/vimtutor.1*
-%lang(id) %{_mandir}/id/man1/vim.1*
-%lang(it) %{_mandir}/it/man1/vim.1*
-%lang(it) %{_mandir}/it/man1/vimtutor.1*
-%lang(pl) %{_mandir}/pl/man1/vim.1*
-%lang(pl) %{_mandir}/pl/man1/vimtutor.1*
-%lang(ru) %{_mandir}/ru/man1/vim.1*
-%lang(ru) %{_mandir}/ru/man1/vimtutor.1*
+%{_mandir}/man1/vim*
+%lang(fi) %{_mandir}/fi/man1/vim*
+%lang(fr) %{_mandir}/fr/man1/vim*
+%lang(id) %{_mandir}/id/man1/vim*
+%lang(it) %{_mandir}/it/man1/vim*
+%lang(pl) %{_mandir}/pl/man1/vim*
+%lang(ru) %{_mandir}/ru/man1/vim*
 %{_iconsdir}/hicolor/16x16/apps/vim.png
 %{_iconsdir}/hicolor/32x32/apps/vim.png
 %{_iconsdir}/hicolor/48x48/apps/vim.png
-
-%files spell-en
-%defattr(644,root,root,755)
-%{_datadir}/vim/v*/spell/en.*.*
 
 %if %{with athena}
 %files -n gvim-athena
@@ -1459,25 +1136,19 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with gtk}
 %files -n gvim-gtk
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/gview
 %attr(755,root,root) %{_bindir}/gvim.gtk
-%attr(755,root,root) %{_bindir}/gvimdiff
 %attr(755,root,root) %{_bindir}/rgvim
 %attr(755,root,root) %{_bindir}/rgview
 %attr(755,root,root) %verify(not link) %{_bindir}/gvim
-%{_mandir}/man1/gvi*
-%{_mandir}/man1/rgv*
 %lang(fi) %{_mandir}/fi/man1/gvi*
 %lang(fi) %{_mandir}/fi/man1/rgv*
 %lang(fr) %{_mandir}/fr/man1/gvi*
 %lang(fr) %{_mandir}/fr/man1/rgv*
 %lang(id) %{_mandir}/id/man1/gvi*
 %lang(id) %{_mandir}/id/man1/rgv*
-%lang(it) %{_mandir}/it/man1/gvi*
-%lang(it) %{_mandir}/it/man1/rgv*
 %lang(pl) %{_mandir}/pl/man1/gvi*
 %lang(pl) %{_mandir}/pl/man1/rgv*
-%lang(ru) %{_mandir}/ru/man1/gvi*
-%lang(ru) %{_mandir}/ru/man1/rgv*
 %{_desktopdir}/gvim-gtk.desktop
 %endif
 
