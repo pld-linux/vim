@@ -860,7 +860,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
 	$RPM_BUILD_ROOT%{_desktopdir}
 
-%{__make} install \
+%{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
