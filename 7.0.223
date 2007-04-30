@@ -1,0 +1,87 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.223
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.223
+Problem:    Unprintable characters in completion text mess up the popup menu.
+	    (Gombault Damien)
+Solution:   Use strtrans() to make the text printable.
+Files:	    src/charset.c, src/popupmnu.c
+
+
+*** ../vim-7.0.222/src/charset.c	Tue Apr 18 00:04:40 2006
+--- src/charset.c	Sat Mar 24 21:10:37 2007
+***************
+*** 317,323 ****
+      }
+  }
+  
+! #if defined(FEAT_EVAL) || defined(FEAT_TITLE) || defined(PROTO)
+  /*
+   * Translate a string into allocated memory, replacing special chars with
+   * printable chars.  Returns NULL when out of memory.
+--- 317,324 ----
+      }
+  }
+  
+! #if defined(FEAT_EVAL) || defined(FEAT_TITLE) || defined(FEAT_INS_EXPAND) \
+! 	|| defined(PROTO)
+  /*
+   * Translate a string into allocated memory, replacing special chars with
+   * printable chars.  Returns NULL when out of memory.
+*** ../vim-7.0.222/src/popupmnu.c	Tue Aug 22 21:51:18 2006
+--- src/popupmnu.c	Sat Mar 24 21:07:39 2007
+***************
+*** 280,287 ****
+  		    w = ptr2cells(p);
+  		    if (*p == NUL || *p == TAB || totwidth + w > pum_width)
+  		    {
+! 			/* Display the text that fits or comes before a Tab. */
+! 			screen_puts_len(s, (int)(p - s), row, col, attr);
+  			col += width;
+  
+  			if (*p != TAB)
+--- 280,299 ----
+  		    w = ptr2cells(p);
+  		    if (*p == NUL || *p == TAB || totwidth + w > pum_width)
+  		    {
+! 			/* Display the text that fits or comes before a Tab.
+! 			 * First convert it to printable characters. */
+! 			char_u *st;
+! 			int  saved = *p;
+! 
+! 			*p = NUL;
+! 			st = transstr(s);
+! 			*p = saved;
+! 			if (st != NULL)
+! 			{
+! 			    screen_puts_len(st, (int)STRLEN(st), row, col,
+! 									attr);
+! 			    vim_free(st);
+! 			}
+  			col += width;
+  
+  			if (*p != TAB)
+*** ../vim-7.0.222/src/version.c	Tue Mar 27 11:00:43 2007
+--- src/version.c	Tue Mar 27 12:42:15 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     223,
+  /**/
+
+-- 
+Violators can be fined, arrested or jailed for making ugly faces at a dog.
+		[real standing law in Oklahoma, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

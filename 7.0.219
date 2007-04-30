@@ -1,0 +1,132 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.219
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.219
+Problem:    When using the 'editexisting.vim' script and a file is being
+	    edited in another tab page the window is split.  The "+123"
+	    argument is not used.
+Solution:   Make the tab page with the file the current tab page.  Set
+	    v:swapcommand when starting up to the first "+123" or "-c" command
+	    line argument.
+Files:	    runtime/macros/editexisting.vim, src/main.c
+
+
+*** ../vim-7.0.218/runtime/macros/editexisting.vim	Sun Apr 30 20:33:40 2006
+--- runtime/macros/editexisting.vim	Sat Mar 17 22:21:30 2007
+***************
+*** 1,6 ****
+  " Vim Plugin:	Edit the file with an existing Vim if possible
+  " Maintainer:	Bram Moolenaar
+! " Last Change:	2006 Apr 30
+  
+  " This is a plugin, drop it in your (Unix) ~/.vim/plugin or (Win32)
+  " $VIM/vimfiles/plugin directory.  Or make a symbolic link, so that you
+--- 1,6 ----
+  " Vim Plugin:	Edit the file with an existing Vim if possible
+  " Maintainer:	Bram Moolenaar
+! " Last Change:	2007 Mar 17
+  
+  " This is a plugin, drop it in your (Unix) ~/.vim/plugin or (Win32)
+  " $VIM/vimfiles/plugin directory.  Or make a symbolic link, so that you
+***************
+*** 85,93 ****
+  " Function used on the server to make the file visible and possibly execute a
+  " command.
+  func! EditExisting(fname, command)
+!   let n = bufwinnr(a:fname)
+!   if n > 0
+!     exe n . "wincmd w"
+    else
+      exe "split " . escape(a:fname, ' #%"|')
+    endif
+--- 85,107 ----
+  " Function used on the server to make the file visible and possibly execute a
+  " command.
+  func! EditExisting(fname, command)
+!   " Get the window number of the file in the current tab page.
+!   let winnr = bufwinnr(a:fname)
+!   if winnr <= 0
+!     " Not found, look in other tab pages.
+!     let bufnr = bufnr(a:fname)
+!     for i in range(tabpagenr('$'))
+!       if index(tabpagebuflist(i + 1), bufnr) >= 0
+! 	" Make this tab page the current one and find the window number.
+! 	exe 'tabnext ' . (i + 1)
+! 	let winnr = bufwinnr(a:fname)
+! 	break;
+!       endif
+!     endfor
+!   endif
+! 
+!   if winnr > 0
+!     exe winnr . "wincmd w"
+    else
+      exe "split " . escape(a:fname, ' #%"|')
+    endif
+*** ../vim-7.0.218/src/main.c	Tue Feb 27 16:51:07 2007
+--- src/main.c	Sun Mar 18 21:51:48 2007
+***************
+*** 798,803 ****
+--- 798,808 ----
+      create_windows(&params);
+      TIME_MSG("opening buffers");
+  
++ #ifdef FEAT_EVAL
++     /* clear v:swapcommand */
++     set_vim_var_string(VV_SWAPCOMMAND, NULL, -1);
++ #endif
++ 
+      /* Ex starts at last line of the file */
+      if (exmode_active)
+  	curwin->w_cursor.lnum = curbuf->b_ml.ml_line_count;
+***************
+*** 2202,2207 ****
+--- 2207,2227 ----
+  	    argv_idx = 1;
+  	}
+      }
++ 
++ #ifdef FEAT_EVAL
++     /* If there is a "+123" or "-c" command, set v:swapcommand to the first
++      * one. */
++     if (parmp->n_commands > 0)
++     {
++ 	p = alloc((unsigned)STRLEN(parmp->commands[0]) + 3);
++ 	if (p != NULL)
++ 	{
++ 	    sprintf((char *)p, ":%s\r", parmp->commands[0]);
++ 	    set_vim_var_string(VV_SWAPCOMMAND, p, -1);
++ 	    vim_free(p);
++ 	}
++     }
++ #endif
+  }
+  
+  /*
+*** ../vim-7.0.218/src/version.c	Thu Mar 15 22:54:51 2007
+--- src/version.c	Sun Mar 18 21:49:11 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     219,
+  /**/
+
+-- 
+FATHER:    You only killed the bride's father - that's all -
+LAUNCELOT: Oh dear, I didn't really mean to...
+FATHER:    Didn't mean to?  You put your sword right through his head!
+LAUNCELOT: Gosh - Is he all right?
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

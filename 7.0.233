@@ -1,0 +1,421 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.233 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.233 (extra)
+Problem:    Mac: code formatted badly.
+Solution:   Fix code formatting
+Files:	    src/gui_mac.c
+
+
+*** ../vim-7.0.232/src/gui_mac.c	Thu Apr 26 18:22:12 2007
+--- src/gui_mac.c	Fri Mar 16 11:26:05 2007
+***************
+*** 28,38 ****
+   *
+   */
+  
+!  /* TODO (Jussi)
+!   *   * Clipboard does not work (at least some cases)
+!   *   * ATSU font rendering has some problems
+!   *   * Investigate and remove dead code (there is still lots of that)
+!   */
+  
+  #include <Devices.h> /* included first to avoid CR problems */
+  #include "vim.h"
+--- 28,38 ----
+   *
+   */
+  
+! /* TODO (Jussi)
+!  *   * Clipboard does not work (at least some cases)
+!  *   * ATSU font rendering has some problems
+!  *   * Investigate and remove dead code (there is still lots of that)
+!  */
+  
+  #include <Devices.h> /* included first to avoid CR problems */
+  #include "vim.h"
+***************
+*** 504,512 ****
+      /* Get number of files in list */
+      *error = AECountItems(theList, numFiles);
+      if (*error)
+!     {
+! 	return(fnames);
+!     }
+  
+      /* Allocate the pointer list */
+      fnames = (char_u **) alloc(*numFiles * sizeof(char_u *));
+--- 504,510 ----
+      /* Get number of files in list */
+      *error = AECountItems(theList, numFiles);
+      if (*error)
+! 	return fnames;
+  
+      /* Allocate the pointer list */
+      fnames = (char_u **) alloc(*numFiles * sizeof(char_u *));
+***************
+*** 526,532 ****
+  	{
+  	    /* Caller is able to clean up */
+  	    /* TODO: Should be clean up or not? For safety. */
+! 	    return(fnames);
+  	}
+  
+  	/* Convert the FSSpec to a pathname */
+--- 524,530 ----
+  	{
+  	    /* Caller is able to clean up */
+  	    /* TODO: Should be clean up or not? For safety. */
+! 	    return fnames;
+  	}
+  
+  	/* Convert the FSSpec to a pathname */
+***************
+*** 589,603 ****
+  
+      error = AEGetParamPtr(theAEvent, keyDirectObject, typeChar, &typeCode, (Ptr) &SearchData, sizeof(WindowSearch), &actualSize);
+      if (error)
+!     {
+! 	return(error);
+!     }
+  
+      error = HandleUnusedParms(theAEvent);
+      if (error)
+!     {
+! 	return(error);
+!     }
+  
+      for (buf = firstbuf; buf != NULL; buf = buf->b_next)
+  	if (buf->b_ml.ml_mfp != NULL
+--- 587,597 ----
+  
+      error = AEGetParamPtr(theAEvent, keyDirectObject, typeChar, &typeCode, (Ptr) &SearchData, sizeof(WindowSearch), &actualSize);
+      if (error)
+! 	return error;
+  
+      error = HandleUnusedParms(theAEvent);
+      if (error)
+! 	return error;
+  
+      for (buf = firstbuf; buf != NULL; buf = buf->b_next)
+  	if (buf->b_ml.ml_mfp != NULL
+***************
+*** 668,676 ****
+  
+      error = HandleUnusedParms(theAEvent);
+      if (error)
+!     {
+! 	return(error);
+!     }
+  
+      /* Send the reply */
+  /*  replyObject.descriptorType = typeNull;
+--- 662,668 ----
+  
+      error = HandleUnusedParms(theAEvent);
+      if (error)
+! 	return error;
+  
+      /* Send the reply */
+  /*  replyObject.descriptorType = typeNull;
+***************
+*** 679,687 ****
+  /* AECreateDesc(typeChar, (Ptr)&title[1], title[0], &data) */
+      error = AECreateList(nil, 0, false, &replyList);
+      if (error)
+!     {
+! 	return(error);
+!     }
+  
+  #if 0
+      error = AECountItems(&replyList, &numFiles);
+--- 671,677 ----
+  /* AECreateDesc(typeChar, (Ptr)&title[1], title[0], &data) */
+      error = AECreateList(nil, 0, false, &replyList);
+      if (error)
+! 	return error;
+  
+  #if 0
+      error = AECountItems(&replyList, &numFiles);
+***************
+*** 775,783 ****
+      error = AEGetParamPtr(theAEvent, keyDirectObject, typeChar, &typeCode, (Ptr) &GetTextData, sizeof(GetTextData), &actualSize);
+  
+      if (error)
+!     {
+! 	return(error);
+!     }
+  
+      for (buf = firstbuf; buf != NULL; buf = buf->b_next)
+  	if (buf->b_ml.ml_mfp != NULL)
+--- 765,771 ----
+      error = AEGetParamPtr(theAEvent, keyDirectObject, typeChar, &typeCode, (Ptr) &GetTextData, sizeof(GetTextData), &actualSize);
+  
+      if (error)
+! 	return error;
+  
+      for (buf = firstbuf; buf != NULL; buf = buf->b_next)
+  	if (buf->b_ml.ml_mfp != NULL)
+***************
+*** 826,837 ****
+      }
+  
+      error = HandleUnusedParms(theAEvent);
+-     if (error)
+-     {
+- 	return(error);
+-     }
+  
+!     return(error);
+  }
+  
+  /*
+--- 814,821 ----
+      }
+  
+      error = HandleUnusedParms(theAEvent);
+  
+!     return error;
+  }
+  
+  /*
+***************
+*** 1017,1025 ****
+      /* the direct object parameter is the list of aliases to files (one or more) */
+      error = AEGetParamDesc(theAEvent, keyDirectObject, typeAEList, &theList);
+      if (error)
+!     {
+! 	return(error);
+!     }
+  
+  
+      error = AEGetParamPtr(theAEvent, keyAEPosition, typeChar, &typeCode, (Ptr) &thePosition, sizeof(SelectionRange), &actualSize);
+--- 1001,1007 ----
+      /* the direct object parameter is the list of aliases to files (one or more) */
+      error = AEGetParamDesc(theAEvent, keyDirectObject, typeAEList, &theList);
+      if (error)
+! 	return error;
+  
+  
+      error = AEGetParamPtr(theAEvent, keyAEPosition, typeChar, &typeCode, (Ptr) &thePosition, sizeof(SelectionRange), &actualSize);
+***************
+*** 1028,1036 ****
+      if (error == errAEDescNotFound)
+  	error = noErr;
+      if (error)
+!     {
+! 	return(error);
+!     }
+  
+  /*
+      error = AEGetParamDesc(theAEvent, keyAEPosition, typeChar, &thePosition);
+--- 1010,1016 ----
+      if (error == errAEDescNotFound)
+  	error = noErr;
+      if (error)
+! 	return error;
+  
+  /*
+      error = AEGetParamDesc(theAEvent, keyAEPosition, typeChar, &thePosition);
+***************
+*** 1134,1148 ****
+      /* Fake mouse event to wake from stall */
+      PostEvent(mouseUp, 0);
+  
+!   finished:
+      AEDisposeDesc(&theList); /* dispose what we allocated */
+  
+      error = HandleUnusedParms(theAEvent);
+!     if (error)
+!     {
+! 	return(error);
+!     }
+!     return(error);
+  }
+  
+  /*
+--- 1114,1124 ----
+      /* Fake mouse event to wake from stall */
+      PostEvent(mouseUp, 0);
+  
+! finished:
+      AEDisposeDesc(&theList); /* dispose what we allocated */
+  
+      error = HandleUnusedParms(theAEvent);
+!     return error;
+  }
+  
+  /*
+***************
+*** 1158,1169 ****
+      OSErr	error = noErr;
+  
+      error = HandleUnusedParms(theAEvent);
+!     if (error)
+!     {
+! 	return(error);
+!     }
+! 
+!     return(error);
+  }
+  
+  /*
+--- 1134,1140 ----
+      OSErr	error = noErr;
+  
+      error = HandleUnusedParms(theAEvent);
+!     return error;
+  }
+  
+  /*
+***************
+*** 1180,1193 ****
+  
+      error = HandleUnusedParms(theAEvent);
+      if (error)
+!     {
+! 	return(error);
+!     }
+  
+      /* Need to fake a :confirm qa */
+      do_cmdline_cmd((char_u *)"confirm qa");
+  
+!     return(error);
+  }
+  
+  /*
+--- 1151,1162 ----
+  
+      error = HandleUnusedParms(theAEvent);
+      if (error)
+! 	return error;
+  
+      /* Need to fake a :confirm qa */
+      do_cmdline_cmd((char_u *)"confirm qa");
+  
+!     return error;
+  }
+  
+  /*
+***************
+*** 1203,1214 ****
+      OSErr	error = noErr;
+  
+      error = HandleUnusedParms(theAEvent);
+-     if (error)
+-     {
+- 	return(error);
+-     }
+  
+!     return(error);
+  }
+  
+  /*
+--- 1172,1179 ----
+      OSErr	error = noErr;
+  
+      error = HandleUnusedParms(theAEvent);
+  
+!     return error;
+  }
+  
+  /*
+***************
+*** 1225,1236 ****
+      OSErr	error = noErr;
+  
+      error = HandleUnusedParms(theAEvent);
+-     if (error)
+-     {
+- 	return(error);
+-     }
+  
+!     return(error);
+  }
+  
+  
+--- 1190,1197 ----
+      OSErr	error = noErr;
+  
+      error = HandleUnusedParms(theAEvent);
+  
+!     return error;
+  }
+  
+  
+***************
+*** 2517,2523 ****
+  
+      return noErr;
+  
+!   bail:
+      /*
+       * when we fail give any additional callback handler a chance to perform
+       * it's actions
+--- 2478,2484 ----
+  
+      return noErr;
+  
+! bail:
+      /*
+       * when we fail give any additional callback handler a chance to perform
+       * it's actions
+***************
+*** 2907,2913 ****
+  #endif
+  
+      static OSErr
+! receiveHandler(WindowRef theWindow, void* handlerRefCon, DragRef theDrag)
+  {
+      int		x, y;
+      int_u	modifiers;
+--- 2868,2874 ----
+  #endif
+  
+      static OSErr
+! receiveHandler(WindowRef theWindow, void *handlerRefCon, DragRef theDrag)
+  {
+      int		x, y;
+      int_u	modifiers;
+***************
+*** 4982,4988 ****
+      SetControl32BitMaximum (sb->id, max);
+      SetControl32BitMinimum (sb->id, 0);
+      SetControl32BitValue   (sb->id, val);
+!     SetControlViewSize     (sb->id, size);    
+  #ifdef DEBUG_MAC_SB
+      printf("thumb_sb (%x) %x, %x,%x\n",sb->id, val, size, max);
+  #endif
+--- 4943,4949 ----
+      SetControl32BitMaximum (sb->id, max);
+      SetControl32BitMinimum (sb->id, 0);
+      SetControl32BitValue   (sb->id, val);
+!     SetControlViewSize     (sb->id, size);
+  #ifdef DEBUG_MAC_SB
+      printf("thumb_sb (%x) %x, %x,%x\n",sb->id, val, size, max);
+  #endif
+*** ../vim-7.0.232/src/version.c	Thu Apr 26 18:22:12 2007
+--- src/version.c	Thu Apr 26 18:41:08 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     233,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+25. You believe nothing looks sexier than a man in boxer shorts illuminated
+    only by a 17" inch svga monitor.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,71 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.235
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.235
+Problem:    It is possible to use writefile() in the sandbox.
+Solution:   Add a few more checks for the sandbox.
+Files:      src/eval.c
+    
+
+*** ../vim-7.0.234/src/eval.c	Fri Apr 27 22:17:43 2007
+--- src/eval.c	Sat Apr 28 21:36:02 2007
+***************
+*** 15598,15603 ****
+--- 15598,15606 ----
+      int		err = FALSE;
+      FILE	*fd;
+  
++     if (check_restricted() || check_secure())
++ 	return;
++ 
+      if (argvars[1].v_type != VAR_UNKNOWN)
+      {
+  	/*
+***************
+*** 16430,16435 ****
+--- 16433,16441 ----
+      char_u	*s;
+      int		ret = 0;
+      int		c;
++ 
++     if (check_restricted() || check_secure())
++ 	return;
+  
+      if (argvars[0].v_type != VAR_LIST)
+      {
+*** ../vim-7.0.234/src/version.c	Fri Apr 27 22:17:43 2007
+--- src/version.c	Sun Apr 29 13:54:29 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     235,
+  /**/
+
+-- 
+Now it is such a bizarrely improbable coincidence that anything as
+mind-bogglingly useful as the Babel fish could have evolved purely by chance
+that some thinkers have chosen to see it as a final and clinching proof of the
+NON-existence of God.
+The argument goes something like this: 'I refuse to prove that I exist,' says
+God, 'for proof denies faith, and without faith I am nothing.'
+'But,' says Man, 'the Babel fish is a dead giveaway, isn't it?  It could not
+have evolved by chance.  It proves you exist, and so therefore, by your own
+arguments, you don't.  QED.'
+'Oh dear,' says God, 'I hadn't thought of that,' and promptly vanishes in a
+puff of logic.
+'Oh, that was easy,' says Man, and for an encore goes on to prove that black
+is white and gets himself killed on the next pedestrian crossing.
+		-- Douglas Adams, "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

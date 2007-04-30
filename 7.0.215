@@ -1,0 +1,86 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.215 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.215 (extra)
+Problem:    Mac: Scrollbar size isn't set.  Context menu has disabled useless
+	    Help entry.  Call to MoreMasterPointers() is ignored.
+Solution:   Call SetControlViewSize() in gui_mch_set_scrollbar_thumb().  Use
+	    kCMHelpItemRemoveHelp for ContextualMenuSelect().  Remove call to
+	    MoreMasterPointers(). (Nicolas Weber)
+Files:	    src/gui_mac.c
+
+
+*** ../vim-7.0.214/src/gui_mac.c	Tue Oct 17 12:53:31 2006
+--- src/gui_mac.c	Thu Mar  8 16:44:31 2007
+***************
+*** 2800,2808 ****
+  # endif
+  #endif
+  
+-     /* Why did I put that in? (Dany) */
+-     MoreMasterPointers (0x40 * 3); /* we love handles */
+- 
+  #if 0
+      InitCursor();
+  
+--- 2800,2805 ----
+***************
+*** 4966,4971 ****
+--- 4963,4969 ----
+      SetControl32BitMaximum (sb->id, max);
+      SetControl32BitMinimum (sb->id, 0);
+      SetControl32BitValue   (sb->id, val);
++     SetControlViewSize     (sb->id, size);    
+  #ifdef DEBUG_MAC_SB
+      printf("thumb_sb (%x) %x, %x,%x\n",sb->id, val, size, max);
+  #endif
+***************
+*** 5727,5733 ****
+      /* TODO: Get the text selection from Vim */
+  
+      /* Call to Handle Popup */
+!     status = ContextualMenuSelect(CntxMenu, where, false, kCMHelpItemNoHelp,
+  		       HelpName, NULL, &CntxType, &CntxMenuID, &CntxMenuItem);
+  
+      if (status == noErr)
+--- 5725,5731 ----
+      /* TODO: Get the text selection from Vim */
+  
+      /* Call to Handle Popup */
+!     status = ContextualMenuSelect(CntxMenu, where, false, kCMHelpItemRemoveHelp,
+  		       HelpName, NULL, &CntxType, &CntxMenuID, &CntxMenuItem);
+  
+      if (status == noErr)
+*** ../vim-7.0.214/src/version.c	Thu Mar  8 18:16:54 2007
+--- src/version.c	Thu Mar  8 20:38:17 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     215,
+  /**/
+
+-- 
+       When danger reared its ugly head,
+       He bravely turned his tail and fled
+       Yes, Brave Sir Robin turned about
+       And gallantly he chickened out
+       Bravely taking to his feet
+       He beat a very brave retreat
+       Bravest of the brave Sir Robin
+       Petrified of being dead
+       Soiled his pants then brave Sir Robin
+       Turned away and fled.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
