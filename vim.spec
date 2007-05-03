@@ -1,4 +1,5 @@
 # TODO:
+# - merge with AC-branch
 # - some nice icon
 # - bonobo patches need update
 #
