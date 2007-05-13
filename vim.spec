@@ -536,7 +536,7 @@ element bonobo.
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
-#%patch16 -p1
+%patch16 -p1
 %patch17 -p0
 %patch18 -p0
 %patch19 -p1
