@@ -17,8 +17,8 @@
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 #
-%define		_ver		7.0
-%define		_patchlevel	235
+%define		_ver		7.1
+%define		_patchlevel	0
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -40,11 +40,11 @@ Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{_ver}.tar.bz2
-# Source0-md5:	4ca69757678272f718b1041c810d82d8
+# Source0-md5:	44c6b4914f38d6f9aa959640b89da329
 Source1:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{_ver}-lang.tar.gz
-# Source1-md5:	6d43efaff570b5c86e76b833ea0c6a04
+# Source1-md5:	144aa049ba70621acf4247f0459f3ee7
 Source2:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{_ver}-extra.tar.gz
-# Source2-md5:	200f741ecc2a896fca25486764fa18a2
+# Source2-md5:	605cc7ae31bcc9d7864bb0bb6025f55d
 Source3:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source3-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source4:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -91,46 +91,8 @@ Patch102:	%{name}-gtkfilechooser.patch
 Patch103:	%{name}-gtkfilechooser-bonobo.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-selinux.patch
-Patch106:	%{name}-fstab-uuid.patch
-Patch107:	%{name}-autopaste.patch
-Patch108:	%{name}-ft-cron.patch
-Patch199:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.001-100.gz
-Patch200:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.101-200.gz
-Patch201:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.201
-Patch202:       ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.202
-Patch203:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.203
-Patch204:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.204
-Patch205:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.205
-Patch206:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.206
-Patch207:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.207
-Patch208:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.208
-Patch209:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.209
-Patch210:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.210
-Patch211:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.211
-Patch212:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.212
-Patch213:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.213
-Patch214:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.214
-Patch215:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.215
-Patch216:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.216
-Patch217:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.217
-Patch218:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.218
-Patch219:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.219
-Patch220:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.220
-Patch221:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.221
-Patch222:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.222
-Patch223:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.223
-Patch224:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.224
-Patch225:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.225
-Patch226:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.226
-Patch227:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.227
-Patch228:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.228
-Patch229:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.229
-Patch230:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.230
-Patch231:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.231
-Patch232:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.232
-Patch233:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.233
-Patch234:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.234
-Patch235:	ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.235
+Patch106:	%{name}-autopaste.patch
+Patch107:	%{name}-ft-cron.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -557,7 +519,7 @@ Wersja edytora Vim pracująca w środowisku X Window, zbudowana jako
 element bonobo.
 
 %prep
-%setup -q -n %{name}70 -b1 -b2
+%setup -q -n %{name}71 -b1 -b2
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -574,7 +536,7 @@ element bonobo.
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
-%patch16 -p1
+#%patch16 -p1
 %patch17 -p0
 %patch18 -p0
 %patch19 -p1
@@ -582,45 +544,6 @@ element bonobo.
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
-
-# official patches
-%patch199 -p0
-%patch200 -p0
-%patch201 -p0
-%patch202 -p0
-%patch203 -p0
-%patch204 -p0
-%patch205 -p0
-%patch206 -p0
-%patch207 -p0
-%patch208 -p0
-%patch209 -p0
-%patch210 -p0
-%patch211 -p0
-%patch212 -p0
-%patch213 -p0
-%patch214 -p0
-%patch215 -p0
-%patch216 -p0
-%patch217 -p0
-%patch218 -p0
-%patch219 -p0
-%patch220 -p0
-%patch221 -p0
-%patch222 -p0
-%patch223 -p0
-%patch224 -p0
-%patch225 -p0
-%patch226 -p0
-%patch227 -p0
-%patch228 -p0
-%patch229 -p0
-%patch230 -p0
-%patch231 -p0
-%patch232 -p0
-%patch233 -p0
-%patch234 -p0
-%patch235 -p0
 
 # bonobo
 %if %{with bonobo}
@@ -636,14 +559,11 @@ element bonobo.
 # selinux
 %{?with_selinux:%patch105 -p1}
 
-# recognize UUID= in /etc/fstab
-%patch106 -p1
-
 # autopaste patch - automatically switch to paste mode if `really fast typing'
 # situation happens
-%patch107 -p1
+%patch106 -p1
 
-%patch108 -p1
+%patch107 -p1
 
 install %{SOURCE14} runtime/indent
 install %{SOURCE15} runtime/colors
