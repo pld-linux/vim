@@ -1,10 +1,9 @@
-diff -urN vim61/runtime/vimrc_example.vim vim61.pld/runtime/vimrc_example.vim
---- vim61/runtime/vimrc_example.vim	Wed Jul 18 21:59:50 2001
-+++ vim61.pld/runtime/vimrc_example.vim	Wed Sep  4 17:36:28 2002
-@@ -73,3 +73,8 @@
-     \ endif
- 
- endif " has("autocmd")
+--- vim71/runtime/vimrc_example.vim~	2007-05-13 08:47:25.040494112 +0200
++++ vim71/runtime/vimrc_example.vim	2007-05-13 08:49:53.405346643 +0200
+@@ -83,3 +83,8 @@
+ " file it was loaded from, thus the changes you made.
+ command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+ 	 	\ | wincmd p | diffthis
 +
 +" ADDED BY PLD.
 +" USE :help colorscheme FOR INFO
