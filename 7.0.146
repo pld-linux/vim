@@ -1,0 +1,137 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.146
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.146
+Problem:    When 'switchbuf' is set to "usetab" and the current tab has only a
+	    quickfix window, jumping to an error always opens a new window.
+	    Also, when the buffer is open in another tab page it's not found.
+Solution:   Check for the "split" value of 'switchbuf' properly.  Search in
+	    other tab pages for the desired buffer. (Yegappan Lakshmanan)
+Files:	    src/buffer.c, src/quickfix.c
+
+
+*** ../vim-7.0.145/src/buffer.c	Sat Sep  9 14:51:43 2006
+--- src/buffer.c	Fri Oct 20 20:08:49 2006
+***************
+*** 1208,1218 ****
+      {
+  # ifdef FEAT_WINDOWS
+  	/* jump to first window containing buf if one exists ("useopen") */
+! 	if (vim_strchr(p_swb, 'o') && buf_jump_open_win(buf))
+  	    return OK;
+  	/* jump to first window in any tab page containing buf if one exists
+  	 * ("usetab") */
+! 	if (vim_strchr(p_swb, 'a') && buf_jump_open_tab(buf))
+  	    return OK;
+  	if (win_split(0, 0) == FAIL)
+  # endif
+--- 1208,1218 ----
+      {
+  # ifdef FEAT_WINDOWS
+  	/* jump to first window containing buf if one exists ("useopen") */
+! 	if (vim_strchr(p_swb, 'o') != NULL && buf_jump_open_win(buf))
+  	    return OK;
+  	/* jump to first window in any tab page containing buf if one exists
+  	 * ("usetab") */
+! 	if (vim_strchr(p_swb, 'a') != NULL && buf_jump_open_tab(buf))
+  	    return OK;
+  	if (win_split(0, 0) == FAIL)
+  # endif
+***************
+*** 1842,1854 ****
+      if (options & GETF_SWITCH)
+      {
+  	/* use existing open window for buffer if wanted */
+! 	if (vim_strchr(p_swb, 'o'))     /* useopen */
+  	    wp = buf_jump_open_win(buf);
+  	/* use existing open window in any tab page for buffer if wanted */
+! 	if (vim_strchr(p_swb, 'a'))     /* usetab */
+  	    wp = buf_jump_open_tab(buf);
+  	/* split window if wanted ("split") */
+! 	if (wp == NULL && vim_strchr(p_swb, 't') && !bufempty())
+  	{
+  	    if (win_split(0, 0) == FAIL)
+  		return FAIL;
+--- 1842,1854 ----
+      if (options & GETF_SWITCH)
+      {
+  	/* use existing open window for buffer if wanted */
+! 	if (vim_strchr(p_swb, 'o') != NULL)	/* useopen */
+  	    wp = buf_jump_open_win(buf);
+  	/* use existing open window in any tab page for buffer if wanted */
+! 	if (vim_strchr(p_swb, 'a') != NULL)	/* usetab */
+  	    wp = buf_jump_open_tab(buf);
+  	/* split window if wanted ("split") */
+! 	if (wp == NULL && vim_strchr(p_swb, 'l') != NULL && !bufempty())
+  	{
+  	    if (win_split(0, 0) == FAIL)
+  		return FAIL;
+*** ../vim-7.0.145/src/quickfix.c	Tue Sep  5 15:36:30 2006
+--- src/quickfix.c	Fri Oct 20 20:05:00 2006
+***************
+*** 1586,1595 ****
+  	    }
+  
+  	/*
+! 	 * If there is only one window, create a new one above the quickfix
+! 	 * window.
+  	 */
+! 	if (firstwin == lastwin || !usable_win)
+  	{
+  	    ll_ref = curwin->w_llist_ref;
+  
+--- 1586,1615 ----
+  	    }
+  
+  	/*
+! 	 * If no usable window is found and 'switchbuf' is set to 'usetab'
+! 	 * then search in other tabs.
+  	 */
+! 	if (!usable_win && vim_strchr(p_swb, 'a') != NULL)
+! 	{
+! 	    tabpage_T	*tp;
+! 	    win_T	*wp;
+! 
+! 	    FOR_ALL_TAB_WINDOWS(tp, wp)
+! 	    {
+! 		if (wp->w_buffer->b_fnum == qf_ptr->qf_fnum)
+! 		{
+! 		    goto_tabpage_win(tp, wp);
+! 		    usable_win = 1;
+! 		    break;
+! 		}
+! 	    }
+! 	}
+! 
+! 	/*
+! 	 * If there is only one window and is the quickfix window, create a new
+! 	 * one above the quickfix window.
+! 	 */
+! 	if (((firstwin == lastwin) && bt_quickfix(curbuf)) || !usable_win)
+  	{
+  	    ll_ref = curwin->w_llist_ref;
+  
+*** ../vim-7.0.145/src/version.c	Tue Oct 17 22:40:14 2006
+--- src/version.c	Fri Oct 20 20:11:58 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     146,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+80. At parties, you introduce your spouse as your "service provider."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

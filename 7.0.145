@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.145
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.145 (after 7.0.142)
+Problem:    Compiler warning.
+Solution:   Add type cast.
+Files:	    src/normal.c
+
+
+*** ../vim-7.0.144/src/normal.c	Tue Oct 17 16:55:47 2006
+--- src/normal.c	Tue Oct 17 22:37:42 2006
+***************
+*** 2387,2393 ****
+  		if (VIsual_select)
+  		{
+  		    stuffcharReadbuff(Ctrl_G);
+! 		    stuffReadbuff("\"+p");
+  		}
+  		else
+  		{
+--- 2387,2393 ----
+  		if (VIsual_select)
+  		{
+  		    stuffcharReadbuff(Ctrl_G);
+! 		    stuffReadbuff((char_u *)"\"+p");
+  		}
+  		else
+  		{
+*** ../vim-7.0.144/src/version.c	Tue Oct 17 18:50:15 2006
+--- src/version.c	Tue Oct 17 22:38:21 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     145,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+59. Your wife says communication is important in a marriage...so you buy
+    another computer and install a second phone line so the two of you can
+    chat.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

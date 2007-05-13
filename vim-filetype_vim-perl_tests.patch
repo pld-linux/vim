@@ -1,0 +1,12 @@
+--- vim62/runtime/filetype.vim.orig	2004-04-27 07:44:02.019203248 +0200
++++ vim62/runtime/filetype.vim	2004-04-27 07:45:18.716543480 +0200
+@@ -1306,6 +1306,9 @@
+ " Standard ML
+ au BufNewFile,BufRead *.sml			setf sml
+ 
++" tests for perl modules
++au BufNewFile,BufRead t/*.t			call s:FTpl()
++
+ " Sysctl
+ au BufNewFile,BufRead /etc/sysctl.conf          setf sysctl
+ 

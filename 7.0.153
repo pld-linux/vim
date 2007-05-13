@@ -1,0 +1,154 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.153
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.153
+Problem:    When using cscope and opening the temp file fails Vim crashes.
+	    (Kaya Bekiroglu)
+Solution:   Check for NULL pointer returned from mch_open().
+Files:	    src/if_cscope.c
+
+
+*** ../vim-7.0.152/src/if_cscope.c	Tue Aug 29 17:28:56 2006
+--- src/if_cscope.c	Mon Oct 30 22:26:01 2006
+***************
+*** 1100,1137 ****
+      if (qfpos != NULL && *qfpos != '0' && totmatches > 0)
+      {
+  	/* fill error list */
+! 	FILE *f;
+! 	char_u *tmp = vim_tempname('c');
+  	qf_info_T   *qi = NULL;
+  	win_T	    *wp = NULL;
+  
+  	f = mch_fopen((char *)tmp, "w");
+! 	cs_file_results(f, nummatches);
+! 	fclose(f);
+! 	if (use_ll)	    /* Use location list */
+! 	    wp = curwin;
+! 	/* '-' starts a new error list */
+! 	if (qf_init(wp, tmp, (char_u *)"%f%*\\t%l%*\\t%m", *qfpos == '-') > 0)
+  	{
+! # ifdef FEAT_WINDOWS
+! 	    if (postponed_split != 0)
+  	    {
+! 		win_split(postponed_split > 0 ? postponed_split : 0,
+  						       postponed_split_flags);
+  #  ifdef FEAT_SCROLLBIND
+! 		curwin->w_p_scb = FALSE;
+  #  endif
+! 		postponed_split = 0;
+! 	    }
+  # endif
+! 	    if (use_ll)
+! 		/*
+! 		 * In the location list window, use the displayed location
+! 		 * list. Otherwise, use the location list for the window.
+! 		 */
+! 		qi = (bt_quickfix(wp->w_buffer) && wp->w_llist_ref != NULL) ?
+! 				    wp->w_llist_ref : wp->w_llist;
+! 	    qf_jump(qi, 0, 0, forceit);
+  	}
+  	mch_remove(tmp);
+  	vim_free(tmp);
+--- 1100,1143 ----
+      if (qfpos != NULL && *qfpos != '0' && totmatches > 0)
+      {
+  	/* fill error list */
+! 	FILE	    *f;
+! 	char_u	    *tmp = vim_tempname('c');
+  	qf_info_T   *qi = NULL;
+  	win_T	    *wp = NULL;
+  
+  	f = mch_fopen((char *)tmp, "w");
+! 	if (f == NULL)
+! 	    EMSG2(_(e_notopen), tmp);
+! 	else
+  	{
+! 	    cs_file_results(f, nummatches);
+! 	    fclose(f);
+! 	    if (use_ll)	    /* Use location list */
+! 		wp = curwin;
+! 	    /* '-' starts a new error list */
+! 	    if (qf_init(wp, tmp, (char_u *)"%f%*\\t%l%*\\t%m",
+! 							   *qfpos == '-') > 0)
+  	    {
+! # ifdef FEAT_WINDOWS
+! 		if (postponed_split != 0)
+! 		{
+! 		    win_split(postponed_split > 0 ? postponed_split : 0,
+  						       postponed_split_flags);
+  #  ifdef FEAT_SCROLLBIND
+! 		    curwin->w_p_scb = FALSE;
+  #  endif
+! 		    postponed_split = 0;
+! 		}
+  # endif
+! 		if (use_ll)
+! 		    /*
+! 		     * In the location list window, use the displayed location
+! 		     * list. Otherwise, use the location list for the window.
+! 		     */
+! 		    qi = (bt_quickfix(wp->w_buffer) && wp->w_llist_ref != NULL)
+! 			?  wp->w_llist_ref : wp->w_llist;
+! 		qf_jump(qi, 0, 0, forceit);
+! 	    }
+  	}
+  	mch_remove(tmp);
+  	vim_free(tmp);
+***************
+*** 1723,1729 ****
+  	       continue;
+  
+  	   context = (char *)alloc((unsigned)strlen(cntx)+5);
+! 	   if (context==NULL)
+  	       continue;
+  
+  	   if (strcmp(cntx, "<global>")==0)
+--- 1729,1735 ----
+  	       continue;
+  
+  	   context = (char *)alloc((unsigned)strlen(cntx)+5);
+! 	   if (context == NULL)
+  	       continue;
+  
+  	   if (strcmp(cntx, "<global>")==0)
+***************
+*** 1731,1737 ****
+  	   else
+  	       sprintf(context, "<<%s>>", cntx);
+  
+! 	   if (search==NULL)
+  	       fprintf(f, "%s\t%s\t%s\n", fullname, slno, context);
+  	   else
+  	       fprintf(f, "%s\t%s\t%s %s\n", fullname, slno, context, search);
+--- 1737,1743 ----
+  	   else
+  	       sprintf(context, "<<%s>>", cntx);
+  
+! 	   if (search == NULL)
+  	       fprintf(f, "%s\t%s\t%s\n", fullname, slno, context);
+  	   else
+  	       fprintf(f, "%s\t%s\t%s %s\n", fullname, slno, context, search);
+*** ../vim-7.0.152/src/version.c	Tue Oct 24 22:31:51 2006
+--- src/version.c	Mon Oct 30 22:29:45 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     153,
+  /**/
+
+-- 
+You cannot have a baby in one month by getting nine women pregnant.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

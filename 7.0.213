@@ -1,0 +1,48 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.213
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.213
+Problem:    When 'spellfile' has two regions that use the same sound folding
+	    using "z=" will cause memory to be freed twice. (Mark Woodward)
+Solution:   Clear the hashtable properly so that the items are only freed once.
+Files:	    src/spell.c
+
+
+*** ../vim-7.0.212/src/spell.c	Thu Sep 14 10:48:00 2006
+--- src/spell.c	Thu Mar  8 14:54:46 2007
+***************
+*** 13094,13100 ****
+--- 13094,13103 ----
+  		    vim_free(HI2SFT(hi));
+  		    --todo;
+  		}
++ 
++ 	    /* Clear the hashtable, it may also be used by another region. */
+  	    hash_clear(&slang->sl_sounddone);
++ 	    hash_init(&slang->sl_sounddone);
+  	}
+      }
+  }
+*** ../vim-7.0.212/src/version.c	Thu Mar  8 13:41:25 2007
+--- src/version.c	Thu Mar  8 14:53:40 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     213,
+  /**/
+
+-- 
+The software said it requires Windows 95 or better, so I installed Linux.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

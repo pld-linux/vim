@@ -1,0 +1,13 @@
+Index: vim/runtime/syntax/mysql.vim
+===================================================================
+--- vim/runtime/syntax/mysql.vim.orig
++++ vim/runtime/syntax/mysql.vim
+@@ -67,7 +67,7 @@
+ " Comments (c-style, mysql-style and modified sql-style)
+ syn region mysqlComment		 start="/\*"  end="\*/"
+ syn match mysqlComment		 "#.*"
+-syn match mysqlComment		 "-- .*"
++syn match mysqlComment		 "--\_s.*"
+ syn sync ccomment mysqlComment
+ 
+ " Column types

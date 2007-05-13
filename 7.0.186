@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.186
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.186
+Problem:    Get an ml_get error when 'encoding' is "utf-8" and searching for
+	    "/\_s*/e" in an empty buffer.  (Andrew Maykov)
+Solution:   Don't try getting the line just below the last line.
+Files:	    src/search.c
+
+
+*** ../vim-7.0.185/src/search.c	Sat Oct 14 14:33:21 2006
+--- src/search.c	Tue Jan 16 15:31:28 2007
+***************
+*** 812,818 ****
+  #ifdef FEAT_MBYTE
+  			if (has_mbyte)
+  			{
+! 			    ptr = ml_get_buf(buf, pos->lnum, FALSE);
+  			    pos->col -= (*mb_head_off)(ptr, ptr + pos->col);
+  			}
+  #endif
+--- 812,822 ----
+  #ifdef FEAT_MBYTE
+  			if (has_mbyte)
+  			{
+! 			    /* 'e' offset may put us just below the last line */
+! 			    if (pos->lnum > buf->b_ml.ml_line_count)
+! 				ptr = "";
+! 			    else
+! 				ptr = ml_get_buf(buf, pos->lnum, FALSE);
+  			    pos->col -= (*mb_head_off)(ptr, ptr + pos->col);
+  			}
+  #endif
+*** ../vim-7.0.185/src/version.c	Tue Jan 16 15:44:59 2007
+--- src/version.c	Tue Jan 16 15:59:37 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     186,
+  /**/
+
+-- 
+Time is an illusion.  Lunchtime doubly so.
+		-- Ford Prefect, in Douglas Adams'
+		   "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

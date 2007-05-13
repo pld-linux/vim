@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.175
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.175
+Problem:    The result of tr() is missing the terminating NUL. (Ingo Karkat)
+Solution:   Add the NUL.
+Files:	    src/eval.c
+
+
+*** ../vim-7.0.174/src/eval.c	Tue Nov 28 20:54:32 2006
+--- src/eval.c	Tue Dec  5 10:30:00 2006
+***************
+*** 16072,16077 ****
+--- 16072,16081 ----
+  	    ++instr;
+  	}
+      }
++ 
++     /* add a terminating NUL */
++     ga_grow(&ga, 1);
++     ga_append(&ga, NUL);
+  
+      rettv->vval.v_string = ga.ga_data;
+  }
+*** ../vim-7.0.174/src/version.c	Tue Nov 28 21:41:19 2006
+--- src/version.c	Tue Dec  5 10:32:58 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     175,
+  /**/
+
+-- 
+BLACK KNIGHT:  I move for no man.
+ARTHUR:        So be it!
+    [hah] [parry thrust]
+    [ARTHUR chops the BLACK KNIGHT's left arm off]
+ARTHUR:        Now stand aside, worthy adversary.
+BLACK KNIGHT:  'Tis but a scratch.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

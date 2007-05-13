@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.178
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.178
+Problem:    When 'enc' is "utf-8" and 'ignorecase' is set the result of ":echo
+	    ("\xe4" == "\xe4")" varies.
+Solution:   In mb_strnicmp() avoid looking past NUL bytes.
+Files:	    src/mbyte.c
+
+
+*** ../vim-7.0.177/src/mbyte.c	Wed Nov  1 18:10:36 2006
+--- src/mbyte.c	Tue Dec  5 22:04:34 2006
+***************
+*** 2294,2301 ****
+--- 2294,2307 ----
+  	    }
+  	    /* Check directly first, it's faster. */
+  	    for (j = 0; j < l; ++j)
++ 	    {
+  		if (s1[i + j] != s2[i + j])
+  		    break;
++ 		if (s1[i + j] == 0)
++ 		    /* Both stings have the same bytes but are incomplete or
++ 		     * have illegal bytes, accept them as equal. */
++ 		    l = j;
++ 	    }
+  	    if (j < l)
+  	    {
+  		/* If one of the two characters is incomplete return -1. */
+*** ../vim-7.0.177/src/version.c	Tue Dec  5 21:45:20 2006
+--- src/version.c	Tue Dec  5 22:08:08 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     178,
+  /**/
+
+-- 
+Trees moving back and forth is what makes the wind blow.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,18 @@
+--- vim-7.0/runtime/syntax/po.vim~	2005-06-22 13:57:45.000000000 +0200
++++ vim-7.0/runtime/syntax/po.vim	2006-05-01 00:19:51.041176750 +0200
+@@ -43,6 +43,7 @@
+ syn match     poCommentAutomatic "^#\..*$" 
+ syn match     poCommentSources	"^#:.*$"
+ syn match     poCommentFlags "^#,.*$" contains=poFlagFuzzy
++syn match     poUntranslated /^msgstr\s\+""\n\n/
+ 
+ " Translations (also includes header fields as they appear in a translation msgstr)
+ syn region poCommentKDE	  start=+"_: +ms=s+1 end="\\n" end="\"\n^msgstr"me=s-1 contained
+@@ -86,6 +87,7 @@
+   HiLink poCommentFlags      Special
+   HiLink poCopyrightUnset    Todo
+   HiLink poFlagFuzzy         Todo
++  HiLink poUntranslated      Todo
+   HiLink poObsolete         Comment
+ 
+   HiLink poStatementMsgid   Statement

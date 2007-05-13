@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.148
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.148
+Problem:    When doing "call a.xyz()" and "xyz" does not exist in dictionary
+	    "a" there is no error message. (Yegappan Lakshmanan)
+Solution:   Add the error message.
+Files:	    src/eval.c
+
+
+*** ../vim-7.0.147/src/eval.c	Tue Oct 17 15:17:41 2006
+--- src/eval.c	Tue Oct 24 11:01:25 2006
+***************
+*** 3125,3131 ****
+      funcdict_T	fudi;
+  
+      tofree = trans_function_name(&arg, eap->skip, TFN_INT, &fudi);
+!     vim_free(fudi.fd_newkey);
+      if (tofree == NULL)
+  	return;
+  
+--- 3125,3136 ----
+      funcdict_T	fudi;
+  
+      tofree = trans_function_name(&arg, eap->skip, TFN_INT, &fudi);
+!     if (fudi.fd_newkey != NULL)
+!     {
+! 	/* Still need to give an error message for missing key. */
+! 	EMSG2(_(e_dictkey), fudi.fd_newkey);
+! 	vim_free(fudi.fd_newkey);
+!     }
+      if (tofree == NULL)
+  	return;
+  
+*** ../vim-7.0.147/src/version.c	Tue Oct 24 13:02:27 2006
+--- src/version.c	Tue Oct 24 13:50:39 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     148,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+99. The hum of a cooling fan and the click of keys is comforting to you.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

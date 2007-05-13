@@ -1,0 +1,77 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.131
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.131
+Problem:    Win32: "vim -r" does not list all the swap files.
+Solution:   Also check for swap files starting with a dot.
+Files:	    src/memline.c
+
+
+*** ../vim-7.0.130/src/memline.c	Tue Oct 10 16:20:51 2006
+--- src/memline.c	Tue Oct 10 21:54:21 2006
+***************
+*** 1400,1407 ****
+  		names[0] = vim_strsave((char_u *)"*.sw?");
+  # endif
+  #endif
+! #ifdef UNIX
+! 		/* for Unix names starting with a dot are special */
+  		names[1] = vim_strsave((char_u *)".*.sw?");
+  		names[2] = vim_strsave((char_u *)".sw?");
+  		num_names = 3;
+--- 1400,1408 ----
+  		names[0] = vim_strsave((char_u *)"*.sw?");
+  # endif
+  #endif
+! #if defined(UNIX) || defined(WIN3264)
+! 		/* For Unix names starting with a dot are special.  MS-Windows
+! 		 * supports this too, on some file systems. */
+  		names[1] = vim_strsave((char_u *)".*.sw?");
+  		names[2] = vim_strsave((char_u *)".sw?");
+  		num_names = 3;
+***************
+*** 1430,1437 ****
+  		names[0] = concat_fnames(dir_name, (char_u *)"*.sw?", TRUE);
+  # endif
+  #endif
+! #ifdef UNIX
+! 		/* for Unix names starting with a dot are special */
+  		names[1] = concat_fnames(dir_name, (char_u *)".*.sw?", TRUE);
+  		names[2] = concat_fnames(dir_name, (char_u *)".sw?", TRUE);
+  		num_names = 3;
+--- 1431,1439 ----
+  		names[0] = concat_fnames(dir_name, (char_u *)"*.sw?", TRUE);
+  # endif
+  #endif
+! #if defined(UNIX) || defined(WIN3264)
+! 		/* For Unix names starting with a dot are special.  MS-Windows
+! 		 * supports this too, on some file systems. */
+  		names[1] = concat_fnames(dir_name, (char_u *)".*.sw?", TRUE);
+  		names[2] = concat_fnames(dir_name, (char_u *)".sw?", TRUE);
+  		num_names = 3;
+*** ../vim-7.0.130/src/version.c	Tue Oct 10 18:43:50 2006
+--- src/version.c	Tue Oct 10 21:55:02 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     131,
+  /**/
+
+-- 
+Apparently, 1 in 5 people in the world are Chinese.  And there are 5
+people in my family, so it must be one of them.  It's either my mum
+or my dad.  Or my older brother Colin.  Or my younger brother
+Ho-Cha-Chu.  But I think it's Colin.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

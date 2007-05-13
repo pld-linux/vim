@@ -1,0 +1,65 @@
+diff -bur vim-7.0f.orig/runtime/syntax/crontab.vim vim-7.0f/runtime/syntax/crontab.vim
+--- vim-7.0f.orig/runtime/syntax/crontab.vim	2006-04-20 14:30:15.000000000 +0200
++++ vim-7.0f/runtime/syntax/crontab.vim	2006-04-25 11:43:06.032452000 +0200
+@@ -19,17 +19,20 @@
+   finish
+ endif
+ 
+-syntax match crontabMin "^\s*[-0-9/,.*]\+" nextgroup=crontabHr skipwhite
+-syntax match crontabHr "\s[-0-9/,.*]\+" nextgroup=crontabDay skipwhite contained
+-syntax match crontabDay "\s[-0-9/,.*]\+" nextgroup=crontabMnth skipwhite contained
++syntax match crontabMin "\_^[0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?" nextgroup=crontabHr skipwhite
++syntax match crontabHr  "\_^[0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?" nextgroup=crontabDay skipwhite contained
++syntax match crontabDay "\_^[0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?" nextgroup=crontabMnth skipwhite contained
+ 
+-syntax match crontabMnth "\s[-a-z0-9/,.*]\+" nextgroup=crontabDow skipwhite contained
++syntax match crontabMnth "\<[a-z0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?" nextgroup=crontabDow skipwhite contained
+ syntax keyword crontabMnth12 contained jan feb mar apr may jun jul aug sep oct nov dec
+ 
+-syntax match crontabDow "\s[-a-z0-9/,.*]\+" nextgroup=crontabCmd skipwhite contained
++syntax match crontabDow "\<[a-z0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?" nextgroup=crontabCmd skipwhite contained
+ syntax keyword crontabDow7 contained sun mon tue wed thu fri sat
+ 
++syntax match crontabSpecial  "@\w\+" nextgroup=crontabCmd skipwhite
++syntax match crontabCmdSpecial contained /\\.\|%/
+ syntax region crontabCmd start="\S" end="$" skipwhite contained keepend contains=crontabPercent
++syntax region crontabCmd  start="\S" end="$" nextgroup=crontabCmnt skipwhite contained contains=crontabCmnt,crontabCmdSpecial keepend
+ syntax match crontabCmnt "^\s*#.*"
+ syntax match crontabPercent "[^\\]%.*"lc=1 contained
+ 
+@@ -37,6 +40,12 @@
+ 
+ syntax match crontabVar "^\s*\k\w*\s*="me=e-1
+ 
++syntax match crontabVar /^[A-Za-z][A-Za-z0-9\-\_]*/ nextgroup=crontabVarEq skipwhite
++syntax match crontabVarEq contained /=/ nextgroup=CrontabVarValQ,CrontabVarVal skipwhite
++syntax match crontabVarValQ contained /\(["']\).*\1/ skipwhite
++syntax match crontabVarVal contained /["']\@!\S\+/ skipwhite
++ 
++
+ " Define the default highlighting.
+ " For version 5.7 and earlier: only when not done already
+ " For version 5.8 and later: only when an item doesn't have highlighting yet
+@@ -48,6 +57,7 @@
+     command -nargs=+ HiLink hi def link <args>
+   endif
+ 
++  HiLink crontabSpecial         PreProc
+   HiLink crontabMin		Number
+   HiLink crontabHr		PreProc
+   HiLink crontabDay		Type
+@@ -69,6 +79,13 @@
+ " comment out next line for to suppress unix commands coloring.
+   HiLink crontabCmd		Statement
+ 
++  HiLink crontabCmdSpecial      Special
++
++  HiLink crontabVar            Identifier
++  HiLink crontabVarEq          Special
++  HiLink crontabVarVal         Constant
++  HiLink crontabVarValQ                String
++
+   HiLink crontabCmnt		Comment
+ 
+   delcommand HiLink
+Only in vim-7.0f/runtime/syntax: crontab.vim.rej

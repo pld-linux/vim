@@ -1,0 +1,88 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.110
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.110
+Problem:    Amiga: Compilation problems when not using libnix.
+Solution:   Change a few #ifdefs. (Willy Catteau)
+Files:	    src/memfile.c
+
+
+*** ../vim-7.0.109/src/memfile.c	Tue Mar  7 00:27:12 2006
+--- src/memfile.c	Sun Sep 17 15:50:00 2006
+***************
+*** 517,523 ****
+  	mf_ins_free(mfp, hp);	/* put *hp in the free list */
+  }
+  
+! #if defined(__MORPHOS__)
+  /* function is missing in MorphOS libnix version */
+  extern unsigned long *__stdfiledes;
+  
+--- 517,523 ----
+  	mf_ins_free(mfp, hp);	/* put *hp in the free list */
+  }
+  
+! #if defined(__MORPHOS__) && defined(__libnix__)
+  /* function is missing in MorphOS libnix version */
+  extern unsigned long *__stdfiledes;
+  
+***************
+*** 677,691 ****
+  #  else
+  #   if defined(_DCC) || defined(__GNUC__) || defined(__MORPHOS__)
+  	{
+! #    if defined(__GNUC__) && !defined(__MORPHOS__)
+  	    /* Have function (in libnix at least),
+  	     * but ain't got no prototype anywhere. */
+  	    extern unsigned long fdtofh(int filedescriptor);
+  #    endif
+  	    BPTR fh = (BPTR)fdtofh(mfp->mf_fd);
+  
+  	    if (fh != 0)
+  		Flush(fh);
+  	}
+  #   else /* assume Manx */
+  	    Flush(_devtab[mfp->mf_fd].fd);
+--- 677,695 ----
+  #  else
+  #   if defined(_DCC) || defined(__GNUC__) || defined(__MORPHOS__)
+  	{
+! #    if defined(__GNUC__) && !defined(__MORPHOS__) && defined(__libnix__)
+  	    /* Have function (in libnix at least),
+  	     * but ain't got no prototype anywhere. */
+  	    extern unsigned long fdtofh(int filedescriptor);
+  #    endif
++ #    if !defined(__libnix__)
++ 	    fflush(NULL);
++ #    else
+  	    BPTR fh = (BPTR)fdtofh(mfp->mf_fd);
+  
+  	    if (fh != 0)
+  		Flush(fh);
++ #    endif
+  	}
+  #   else /* assume Manx */
+  	    Flush(_devtab[mfp->mf_fd].fd);
+*** ../vim-7.0.109/src/version.c	Fri Sep 15 20:17:49 2006
+--- src/version.c	Tue Sep 26 13:48:48 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     110,
+  /**/
+
+-- 
+A fool must search for a greater fool to find admiration.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

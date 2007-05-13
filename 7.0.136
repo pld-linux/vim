@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.136
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.136
+Problem:    Using "O" while matching parens are highlighted may not remove the
+	    highlighting. (Ilya Bobir)
+Solution:   Also trigger CursorMoved when a line is inserted under the cursor.
+Files:	    src/misc1.c
+
+
+*** ../vim-7.0.135/src/misc1.c	Fri Sep 15 20:17:49 2006
+--- src/misc1.c	Tue Oct 17 11:11:42 2006
+***************
+*** 2842,2848 ****
+  
+  #ifdef FEAT_AUTOCMD
+      /* when the cursor line is changed always trigger CursorMoved */
+!     if (lnum <= curwin->w_cursor.lnum && lnume > curwin->w_cursor.lnum)
+  	last_cursormoved.lnum = 0;
+  #endif
+  }
+--- 2842,2849 ----
+  
+  #ifdef FEAT_AUTOCMD
+      /* when the cursor line is changed always trigger CursorMoved */
+!     if (lnum <= curwin->w_cursor.lnum
+! 		 && lnume + (xtra < 0 ? -xtra : xtra) > curwin->w_cursor.lnum)
+  	last_cursormoved.lnum = 0;
+  #endif
+  }
+*** ../vim-7.0.135/src/version.c	Sun Oct 15 22:38:41 2006
+--- src/version.c	Tue Oct 17 11:10:21 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     136,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+46. Your wife makes a new rule: "The computer cannot come to bed."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

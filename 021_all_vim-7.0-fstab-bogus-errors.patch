@@ -1,0 +1,20 @@
+--- vim71/runtime/syntax/fstab.vim~	2007-05-13 10:06:54.941399738 +0200
++++ vim71/runtime/syntax/fstab.vim	2007-05-13 10:16:31.814544999 +0200
+@@ -27,7 +27,7 @@
+ 
+ " Device
+ syn cluster fsDeviceCluster contains=fsOperator,fsDeviceKeyword,fsDeviceError
+-syn match fsDeviceError /\%([^a-zA-Z0-9_\/#@:\.-]\|^\w\{-}\ze\W\)/ contained
++syn match fsDeviceError /\%([^a-zA-Z0-9_\/#@:\.-]\)/ contained
+ syn keyword fsDeviceKeyword contained none proc linproc tmpfs devpts sysfs usbfs
+ syn keyword fsDeviceKeyword contained LABEL nextgroup=fsDeviceLabel
+ syn keyword fsDeviceKeyword contained UUID nextgroup=fsDeviceUUID
+@@ -37,7 +37,7 @@
+ 
+ " Mount Point
+ syn cluster fsMountPointCluster contains=fsMountPointKeyword,fsMountPointError
+-syn match fsMountPointError /\%([^ \ta-zA-Z0-9_\/#@\.-]\|\s\+\zs\w\{-}\ze\s\)/ contained
++syn match fsMountPointError /\%([^ \ta-zA-Z0-9_\/#@\.-]\)/ contained
+ syn keyword fsMountPointKeyword contained none swap
+ 
+ " Type

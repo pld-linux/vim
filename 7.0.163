@@ -1,0 +1,133 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.163
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.163
+Problem:    Can't retrieve the position of a sign after it was set.
+Solution:   Add the netbeans interface getAnno command. (Xavier de Gaye)
+Files:	    runtime/doc/netbeans.txt, src/netbeans.c
+
+
+*** ../vim-7.0.162/runtime/doc/netbeans.txt	Sun May  7 16:58:43 2006
+--- runtime/doc/netbeans.txt	Tue Nov 14 18:24:32 2006
+***************
+*** 1,4 ****
+! *netbeans.txt*  For Vim version 7.0.  Last change: 2006 Mar 09
+  
+  
+  		  VIM REFERENCE MANUAL    by Gordon Prieur
+--- 1,4 ----
+! *netbeans.txt*  For Vim version 7.0.  Last change: 2006 Nov 14
+  
+  
+  		  VIM REFERENCE MANUAL    by Gordon Prieur
+***************
+*** 259,266 ****
+  confusion happening again, netbeans_saved() has been renamed to
+  netbeans_save_buffer().
+  
+! We are now at version 2.3.  For the differences between 2.2 and 2.3 search for
+! "2.3" below.
+  
+  The messages are currently sent over a socket.  Since the messages are in
+  plain UTF-8 text this protocol could also be used with any other communication
+--- 259,266 ----
+  confusion happening again, netbeans_saved() has been renamed to
+  netbeans_save_buffer().
+  
+! We are now at version 2.4.  For the differences between 2.3 and 2.4 search for
+! "2.4" below.
+  
+  The messages are currently sent over a socket.  Since the messages are in
+  plain UTF-8 text this protocol could also be used with any other communication
+***************
+*** 604,609 ****
+--- 604,618 ----
+  		TODO: explain use of partial line.
+  
+  getMark		Not implemented.
++ 
++ getAnno serNum
++ 		Return the line number of the annotation in the buffer.
++ 		Argument:
++ 			serNum		serial number of this placed annotation
++ 		The reply is:
++ 			123 lnum	line number of the annotation
++ 			123 0		invalid annotation serial number
++ 		New in version 2.4.
+  
+  getModified	When a buffer is specified: Return zero if the buffer does not
+  		have changes, one if it does have changes.
+*** ../vim-7.0.162/src/netbeans.c	Tue Aug 29 17:28:56 2006
+--- src/netbeans.c	Tue Nov 14 18:23:48 2006
+***************
+*** 61,67 ****
+  
+  /* The first implementation (working only with Netbeans) returned "1.1".  The
+   * protocol implemented here also supports A-A-P. */
+! static char *ExtEdProtocolVersion = "2.3";
+  
+  static long pos2off __ARGS((buf_T *, pos_T *));
+  static pos_T *off2pos __ARGS((buf_T *, long));
+--- 61,67 ----
+  
+  /* The first implementation (working only with Netbeans) returned "1.1".  The
+   * protocol implemented here also supports A-A-P. */
+! static char *ExtEdProtocolVersion = "2.4";
+  
+  static long pos2off __ARGS((buf_T *, pos_T *));
+  static pos_T *off2pos __ARGS((buf_T *, long));
+***************
+*** 1269,1274 ****
+--- 1269,1297 ----
+  		    (int)curwin->w_cursor.col,
+  		    pos2off(curbuf, &curwin->w_cursor));
+  	    nb_reply_text(cmdno, text);
++ /* =====================================================================*/
++ 	}
++ 	else if (streq((char *)cmd, "getAnno"))
++ 	{
++ 	    long linenum = 0;
++ #ifdef FEAT_SIGNS
++ 	    if (buf == NULL || buf->bufp == NULL)
++ 	    {
++ 		nbdebug(("    null bufp in getAnno"));
++ 		EMSG("E652: null bufp in getAnno");
++ 		retval = FAIL;
++ 	    }
++ 	    else
++ 	    {
++ 		int serNum;
++ 
++ 		cp = (char *)args;
++ 		serNum = strtol(cp, &cp, 10);
++ 		/* If the sign isn't found linenum will be zero. */
++ 		linenum = (long)buf_findsign(buf->bufp, serNum);
++ 	    }
++ #endif
++ 	    nb_reply_nr(cmdno, linenum);
+  /* =====================================================================*/
+  	}
+  	else if (streq((char *)cmd, "getLength"))
+*** ../vim-7.0.162/src/version.c	Tue Nov  7 22:41:37 2006
+--- src/version.c	Tue Nov 14 18:25:31 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     163,
+  /**/
+
+-- 
+A computer without Windows is like a fish without a bicycle.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

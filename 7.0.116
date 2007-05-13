@@ -1,0 +1,49 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.116
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.116
+Problem:    64 bit Windows version reports "32 bit" in the ":version" output.
+            (M. Veerman)
+Solution:   Change the text for Win64.
+Files:      src/version.c
+
+
+*** ../vim-7.0.115/src/version.c	Tue Oct  3 15:49:20 2006
+--- src/version.c	Tue Oct  3 16:29:31 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     116,
+  /**/
+***************
+*** 962,966 ****
+--- 964,972 ----
+      MSG_PUTS(_("\nMS-Windows 16/32 bit GUI version"));
+  #  else
++ #   ifdef _WIN64
++     MSG_PUTS(_("\nMS-Windows 64 bit GUI version"));
++ #   else
+      MSG_PUTS(_("\nMS-Windows 32 bit GUI version"));
++ #   endif
+  #  endif
+      if (gui_is_win32s())
+
+-- 
+Article in the first Free Software Magazine: "Bram Moolenaar studied electrical
+engineering at the Technical University of Delft and graduated in 1985 on a
+multi-processor Unix architecture."
+Response by "dimator": Could the school not afford a proper stage for the
+ceremony?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

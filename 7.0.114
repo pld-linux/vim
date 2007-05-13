@@ -1,0 +1,64 @@
+To: vim-dev@vim.org
+Subject: Patch 7.0.114
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.114
+Problem:    When aborting an insert with CTRL-C an extra undo point is
+	    created in the GUI. (Yukihiro Nakadaira)
+Solution:   Call gotchars() only when advancing.
+Files:	    src/getchar.c
+
+
+*** ../vim-7.0.113/src/getchar.c	Tue Sep  5 12:57:14 2006
+--- src/getchar.c	Tue Sep 26 17:44:45 2006
+***************
+*** 1960,1969 ****
+  			c = Ctrl_C;
+  		    flush_buffers(TRUE);	/* flush all typeahead */
+  
+! 		    /* Also record this character, it might be needed to
+! 		     * get out of Insert mode. */
+! 		    *typebuf.tb_buf = c;
+! 		    gotchars(typebuf.tb_buf, 1);
+  		    cmd_silent = FALSE;
+  
+  		    break;
+--- 1962,1974 ----
+  			c = Ctrl_C;
+  		    flush_buffers(TRUE);	/* flush all typeahead */
+  
+! 		    if (advance)
+! 		    {
+! 			/* Also record this character, it might be needed to
+! 			 * get out of Insert mode. */
+! 			*typebuf.tb_buf = c;
+! 			gotchars(typebuf.tb_buf, 1);
+! 		    }
+  		    cmd_silent = FALSE;
+  
+  		    break;
+*** ../vim-7.0.113/src/version.c	Tue Oct  3 15:22:00 2006
+--- src/version.c	Tue Oct  3 15:34:14 2006
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     114,
+  /**/
+
+-- 
+Sometimes you can protect millions of dollars in your budget simply by buying
+a bag of cookies, dropping it on the budget anylyst's desk, and saying
+something deeply personal such as "How was your weekend, big guy?"
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

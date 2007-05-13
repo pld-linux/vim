@@ -1,0 +1,11 @@
+--- vim-7.0/runtime/filetype.vim~	2006-04-29 14:54:54.702689335 +0300
++++ vim-7.0/runtime/filetype.vim	2006-04-29 14:56:07.254310876 +0300
+@@ -99,7 +99,7 @@
+ au BufNewFile,BufRead build.xml			setf ant
+ 
+ " Apache style config file
+-au BufNewFile,BufRead proftpd.conf*		call s:StarSetf('apachestyle')
++au BufNewFile,BufRead /etc/ftpd/conf.d/*.conf,proftpd*.conf*		call s:StarSetf('apachestyle')
+ 
+ " Apache config file
+ au BufNewFile,BufRead .htaccess			 setf apache

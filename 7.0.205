@@ -1,0 +1,56 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.205
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.205 (after 7.0.203)
+Problem:    Can't compile.
+Solution:   Always include the vim_strsave_escape_csi function.
+Files:	    src/getchar.c
+
+
+*** ../vim-7.0.204/src/getchar.c	Tue Dec  5 21:45:20 2006
+--- src/getchar.c	Tue Feb 27 23:04:38 2007
+***************
+*** 4401,4407 ****
+  }
+  #endif
+  
+- #if defined(FEAT_EVAL) || defined(PROTO)
+  /*
+   * Copy "p" to allocated memory, escaping K_SPECIAL and CSI so that the result
+   * can be put in the typeahead buffer.
+--- 4405,4410 ----
+***************
+*** 4440,4446 ****
+      }
+      return res;
+  }
+- #endif
+  
+  /*
+   * Write map commands for the current mappings to an .exrc file.
+--- 4443,4448 ----
+*** ../vim-7.0.204/src/version.c	Tue Feb 27 18:11:55 2007
+--- src/version.c	Tue Feb 27 23:05:15 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     205,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+218. Your spouse hands you a gift wrapped magnet with your PC's name
+     on it and you accuse him or her of genocide.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

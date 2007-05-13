@@ -1,0 +1,64 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.184
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.184
+Problem:    When the cscope program is called "mlcscope" the Cscope interface
+	    doesn't work.
+Solution:   Accept "\S*cscope:" instead of "cscope:". (Frodak D. Baksik)
+Files:	    src/if_cscope.c
+
+
+*** ../vim-7.0.183/src/if_cscope.c	Tue Nov 21 11:43:49 2006
+--- src/if_cscope.c	Fri Jan 12 20:02:37 2007
+***************
+*** 627,636 ****
+  	 * If the database is out of date, or there's some other problem,
+  	 * cscope will output error messages before the number-of-lines output.
+  	 * Display/discard any output that doesn't match what we want.
+  	 */
+  	if ((stok = strtok(buf, (const char *)" ")) == NULL)
+  	    continue;
+! 	if (strcmp((const char *)stok, "cscope:"))
+  	    continue;
+  
+  	if ((stok = strtok(NULL, (const char *)" ")) == NULL)
+--- 627,637 ----
+  	 * If the database is out of date, or there's some other problem,
+  	 * cscope will output error messages before the number-of-lines output.
+  	 * Display/discard any output that doesn't match what we want.
++ 	 * Accept "\S*cscope: X lines", also matches "mlcscope".
+  	 */
+  	if ((stok = strtok(buf, (const char *)" ")) == NULL)
+  	    continue;
+! 	if (strstr((const char *)stok, "cscope:") == NULL)
+  	    continue;
+  
+  	if ((stok = strtok(NULL, (const char *)" ")) == NULL)
+*** ../vim-7.0.183/src/version.c	Sun Jan 14 15:27:05 2007
+--- src/version.c	Tue Jan 16 15:16:41 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     184,
+  /**/
+
+-- 
+The technology involved in making anything invisible is so infinitely
+complex that nine hundred and ninety-nine billion, nine hundred and
+ninety-nine million, nine hundred and ninety-nine thousand, nine hundred
+and ninety-nine times out of a trillion it is much simpler and more
+effective just to take the thing away and do without it.
+		-- Douglas Adams, "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

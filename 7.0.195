@@ -1,0 +1,89 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.195
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.195
+Problem:    When a buffer is modified and 'autowriteall' is set, ":quit"
+            results in an endless loop when there is a conversion error while
+            writing. (Nikolai Weibull)
+Solution:   Make autowrite() return FAIL if the buffer is still changed after
+            writing it.
+Files:      src/ex_cmds2.c
+
+
+*** ../vim-7.0.194/src/ex_cmds2.c	Tue Jan 16 21:31:38 2007
+--- src/ex_cmds2.c	Tue Feb 13 06:11:28 2007
+***************
+*** 1242,1255 ****
+      buf_T	*buf;
+      int		forceit;
+  {
+      if (!(p_aw || p_awa) || !p_write
+  #ifdef FEAT_QUICKFIX
+! 	/* never autowrite a "nofile" or "nowrite" buffer */
+! 	|| bt_dontwrite(buf)
+  #endif
+! 	|| (!forceit && buf->b_p_ro) || buf->b_ffname == NULL)
+  	return FAIL;
+!     return buf_write_all(buf, forceit);
+  }
+  
+  /*
+--- 1242,1263 ----
+      buf_T	*buf;
+      int		forceit;
+  {
++     int		r;
++ 
+      if (!(p_aw || p_awa) || !p_write
+  #ifdef FEAT_QUICKFIX
+! 	    /* never autowrite a "nofile" or "nowrite" buffer */
+! 	    || bt_dontwrite(buf)
+  #endif
+! 	    || (!forceit && buf->b_p_ro) || buf->b_ffname == NULL)
+  	return FAIL;
+!     r = buf_write_all(buf, forceit);
+! 
+!     /* Writing may succeed but the buffer still changed, e.g., when there is a
+!      * conversion error.  We do want to return FAIL then. */
+!     if (buf_valid(buf) && bufIsChanged(buf))
+! 	r = FAIL;
+!     return r;
+  }
+  
+  /*
+***************
+*** 1472,1477 ****
+--- 1480,1487 ----
+  	if (buf == NULL)    /* No buffers changed */
+  	    return FALSE;
+  
++ 	/* Try auto-writing the buffer.  If this fails but the buffer no
++ 	 * longer exists it's not changed, that's OK. */
+  	if (check_changed(buf, p_awa, TRUE, FALSE, TRUE) && buf_valid(buf))
+  	    break;	    /* didn't save - still changes */
+      }
+*** ../vim-7.0.194/src/version.c	Tue Feb 13 04:03:05 2007
+--- src/version.c	Tue Feb 13 06:18:28 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     195,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+115. You are late picking up your kid from school and try to explain
+     to the teacher you were stuck in Web traffic.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
