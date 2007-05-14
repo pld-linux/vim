@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.0
-%define		_patchlevel	216
+%define		_patchlevel	243
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -134,7 +134,7 @@ Patch114:	%{name}-noruntimeperl.patch
 # 7.0.208: vms: reverts 7.0.171 and 7.0.180
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 209 214
 # 7.0.215: patch for macos
-%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 216 216
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.0/7.0.%03g 216 %{_patchlevel}
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
@@ -423,6 +423,7 @@ Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Athena
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	gvim
 Provides:	vi-editor
 Obsoletes:	vim-X11
 
@@ -450,6 +451,7 @@ Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki Motif
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	gvim
 Provides:	vi-editor
 Obsoletes:	vim-X11
 
@@ -477,6 +479,7 @@ Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GTK
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	gvim
 Provides:	vi-editor
 Obsoletes:	vim-X11
 
@@ -505,6 +508,7 @@ Summary(pl):	Vim dla X Window korzystaj±cy z biblioteki GNOME
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	gvim
 Provides:	vi-editor
 Obsoletes:	vim-X11
 
@@ -532,6 +536,7 @@ Summary(pl):	Vim dla X Window zbudowany jako element bonobo
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	gvim
 Provides:	vi-editor
 Obsoletes:	vim-X11
 
@@ -564,7 +569,9 @@ element bonobo.
 %patchset_patch 181 196
 %patchset_patch 199 207
 %patchset_patch 209 214
-%patchset_patch 216 216
+%patchset_patch 216 231
+%patchset_patch 234 241
+%patchset_patch 244 %{_patchlevel}
 
 %patch0 -p1
 %patch1 -p1
