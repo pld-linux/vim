@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.234
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.234
+Problem:    It's possible to use feedkeys() from a modeline.  That is a
+	    security issue, can be used for a trojan horse.
+Solution:   Disallow using feedkeys() in the sandbox.
+Files:	    src/eval.c
+
+
+*** ../vim-7.0.233/src/eval.c	Thu Apr 26 17:08:16 2007
+--- src/eval.c	Fri Apr 27 21:48:18 2007
+***************
+*** 9078,9083 ****
+--- 9078,9089 ----
+      int		typed = FALSE;
+      char_u	*keys_esc;
+  
++     /* This is not allowed in the sandbox.  If the commands would still be
++      * executed in the sandbox it would be OK, but it probably happens later,
++      * when "sandbox" is no longer set. */
++     if (check_secure())
++ 	return;
++ 
+      rettv->vval.v_number = 0;
+      keys = get_tv_string(&argvars[0]);
+      if (*keys != NUL)
+*** ../vim-7.0.233/src/version.c	Thu Apr 26 18:42:17 2007
+--- src/version.c	Fri Apr 27 22:13:23 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     234,
+  /**/
+
+-- 
+"Making it up?  Why should I want to make anything up?  Life's bad enough
+as it is without wanting to invent any more of it."
+		-- Marvin, the Paranoid Android in Douglas Adams'
+		   "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

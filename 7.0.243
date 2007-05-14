@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.243 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.243 (extra)
+Problem:    Win32: When GvimExt is built with MSVC 2005 or later, the "Edit
+	    with vim" context menu doesn't appear in the Windows Explorer.
+Solution:   Embed the linker manifest file into the resources of GvimExt.dll.
+	    (Mathias Michaelis)
+Files:	    src/GvimExt/Makefile
+
+
+*** ../vim-7.0.242/src/GvimExt/Makefile	Tue Mar  7 00:12:38 2006
+--- src/GvimExt/Makefile	Sat May  5 12:47:27 2007
+***************
+*** 19,24 ****
+--- 19,25 ----
+  # $(implib) /NOLOGO -machine:$(CPU) -def:gvimext.def $** -out:gvimext.lib
+  # $(link) $(dlllflags) -base:0x1C000000 -out:$*.dll $** $(olelibsdll) shell32.lib gvimext.lib comctl32.lib gvimext.exp
+    $(link) $(lflags) -dll -def:gvimext.def -base:0x1C000000 -out:$*.dll $** $(olelibsdll) shell32.lib comctl32.lib
++   if exist $*.dll.manifest mt -nologo -manifest $*.dll.manifest -outputresource:$*.dll;2
+  
+  gvimext.obj: gvimext.h
+  
+***************
+*** 34,36 ****
+--- 35,38 ----
+      - if exist gvimext.exp del gvimext.exp
+      - if exist gvimext.obj del gvimext.obj
+      - if exist gvimext.res del gvimext.res
++     - if exist gvimext.dll.manifest del gvimext.dll.manifest
+*** ../vim-7.0.242/src/version.c	Fri May  4 22:31:31 2007
+--- src/version.c	Sat May  5 12:54:21 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     243,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+50. The last girl you picked up was only a jpeg.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,274 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.236
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.236
+Problem:    Linux 2.4 uses sysinfo() with a mem_unit field, which is not
+	    backwards compatible.
+Solution:   Add an autoconf check for sysinfo.mem_unit.  Let mch_total_mem()
+	    return Kbyte to avoid overflow.
+Files:	    src/auto/configure, src/configure.in, src/config.h.in,
+	    src/option.c, src/os_unix.c
+
+
+*** ../vim-7.0.235/src/auto/configure	Tue Oct 17 11:50:45 2006
+--- src/auto/configure	Thu Apr 26 16:44:07 2007
+***************
+*** 13685,13690 ****
+--- 13685,13746 ----
+  
+  echo "$as_me:$LINENO: result: not usable" >&5
+  echo "${ECHO_T}not usable" >&6
++ fi
++ rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
++ 
++ echo "$as_me:$LINENO: checking for sysinfo.mem_unit" >&5
++ echo $ECHO_N "checking for sysinfo.mem_unit... $ECHO_C" >&6
++ cat >conftest.$ac_ext <<_ACEOF
++ /* confdefs.h.  */
++ _ACEOF
++ cat confdefs.h >>conftest.$ac_ext
++ cat >>conftest.$ac_ext <<_ACEOF
++ /* end confdefs.h.  */
++ #include <sys/types.h>
++ #include <sys/sysinfo.h>
++ int
++ main ()
++ {
++ 	struct sysinfo sinfo;
++  	sinfo.mem_unit = 1;
++ 
++   ;
++   return 0;
++ }
++ _ACEOF
++ rm -f conftest.$ac_objext
++ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
++   (eval $ac_compile) 2>conftest.er1
++   ac_status=$?
++   grep -v '^ *+' conftest.er1 >conftest.err
++   rm -f conftest.er1
++   cat conftest.err >&5
++   echo "$as_me:$LINENO: \$? = $ac_status" >&5
++   (exit $ac_status); } &&
++ 	 { ac_try='test -z "$ac_c_werror_flag"
++ 			 || test ! -s conftest.err'
++   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
++   (eval $ac_try) 2>&5
++   ac_status=$?
++   echo "$as_me:$LINENO: \$? = $ac_status" >&5
++   (exit $ac_status); }; } &&
++ 	 { ac_try='test -s conftest.$ac_objext'
++   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
++   (eval $ac_try) 2>&5
++   ac_status=$?
++   echo "$as_me:$LINENO: \$? = $ac_status" >&5
++   (exit $ac_status); }; }; then
++   echo "$as_me:$LINENO: result: yes" >&5
++ echo "${ECHO_T}yes" >&6; cat >>confdefs.h <<\_ACEOF
++ #define HAVE_SYSINFO_MEM_UNIT 1
++ _ACEOF
++ 
++ else
++   echo "$as_me: failed program was:" >&5
++ sed 's/^/| /' conftest.$ac_ext >&5
++ 
++ echo "$as_me:$LINENO: result: no" >&5
++ echo "${ECHO_T}no" >&6
+  fi
+  rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+  
+*** ../vim-7.0.235/src/configure.in	Tue Oct 17 11:50:45 2006
+--- src/configure.in	Thu Apr 26 16:40:18 2007
+***************
+*** 2589,2594 ****
+--- 2589,2605 ----
+  	],
+  	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_SYSINFO),
+  	AC_MSG_RESULT(not usable))
++ 
++ dnl struct sysinfo may have the mem_unit field or not
++ AC_MSG_CHECKING(for sysinfo.mem_unit)
++ AC_TRY_COMPILE(
++ [#include <sys/types.h>
++ #include <sys/sysinfo.h>],
++ [	struct sysinfo sinfo;
++  	sinfo.mem_unit = 1;
++ 	],
++ 	AC_MSG_RESULT(yes); AC_DEFINE(HAVE_SYSINFO_MEM_UNIT),
++ 	AC_MSG_RESULT(no))
+  
+  dnl sysconf() may exist but not support what we want to use
+  AC_MSG_CHECKING(for sysconf)
+*** ../vim-7.0.235/src/config.h.in	Fri Apr 21 00:11:09 2006
+--- src/config.h.in	Thu Apr 26 16:40:34 2007
+***************
+*** 176,181 ****
+--- 176,182 ----
+  #undef HAVE_SYSCONF
+  #undef HAVE_SYSCTL
+  #undef HAVE_SYSINFO
++ #undef HAVE_SYSINFO_MEM_UNIT
+  #undef HAVE_TGETENT
+  #undef HAVE_TOWLOWER
+  #undef HAVE_TOWUPPER
+*** ../vim-7.0.235/src/option.c	Fri Mar  2 20:00:06 2007
+--- src/option.c	Tue May  1 13:26:10 2007
+***************
+*** 3030,3036 ****
+  #else
+  # ifdef HAVE_TOTAL_MEM
+  	    /* Use amount of memory available to Vim. */
+! 	    n = (mch_total_mem(FALSE) >> 11);
+  # else
+  	    n = (0x7fffffff >> 11);
+  # endif
+--- 3030,3036 ----
+  #else
+  # ifdef HAVE_TOTAL_MEM
+  	    /* Use amount of memory available to Vim. */
+! 	    n = (mch_total_mem(FALSE) >> 1);
+  # else
+  	    n = (0x7fffffff >> 11);
+  # endif
+*** ../vim-7.0.235/src/os_unix.c	Thu Apr 26 16:28:43 2007
+--- src/os_unix.c	Thu Apr 26 16:37:43 2007
+***************
+*** 428,435 ****
+  # endif
+  
+  /*
+!  * Return total amount of memory available.  Doesn't change when memory has
+!  * been allocated.
+   */
+  /* ARGSUSED */
+      long_u
+--- 428,435 ----
+  # endif
+  
+  /*
+!  * Return total amount of memory available in Kbyte.
+!  * Doesn't change when memory has been allocated.
+   */
+  /* ARGSUSED */
+      long_u
+***************
+*** 437,445 ****
+      int special;
+  {
+  # ifdef __EMX__
+!     return ulimit(3, 0L);   /* always 32MB? */
+  # else
+      long_u	mem = 0;
+  
+  #  ifdef HAVE_SYSCTL
+      int		mib[2], physmem;
+--- 437,446 ----
+      int special;
+  {
+  # ifdef __EMX__
+!     return ulimit(3, 0L) >> 10;   /* always 32MB? */
+  # else
+      long_u	mem = 0;
++     long_u	shiftright = 10;  /* how much to shift "mem" right for Kbyte */
+  
+  #  ifdef HAVE_SYSCTL
+      int		mib[2], physmem;
+***************
+*** 460,466 ****
+--- 461,479 ----
+  
+  	/* Linux way of getting amount of RAM available */
+  	if (sysinfo(&sinfo) == 0)
++ 	{
++ #   ifdef HAVE_SYSINFO_MEM_UNIT
++ 	    /* avoid overflow as much as possible */
++ 	    while (shiftright > 0 && (sinfo.mem_unit & 1) == 0)
++ 	    {
++ 		sinfo.mem_unit = sinfo.mem_unit >> 1;
++ 		--shiftright;
++ 	    }
++ 	    mem = sinfo.totalram * sinfo.mem_unit;
++ #   else
+  	    mem = sinfo.totalram;
++ #   endif
++ 	}
+      }
+  #  endif
+  
+***************
+*** 473,479 ****
+--- 486,500 ----
+  	pagesize = sysconf(_SC_PAGESIZE);
+  	pagecount = sysconf(_SC_PHYS_PAGES);
+  	if (pagesize > 0 && pagecount > 0)
++ 	{
++ 	    /* avoid overflow as much as possible */
++ 	    while (shiftright > 0 && (pagesize & 1) == 0)
++ 	    {
++ 		pagesize = pagesize >> 1;
++ 		--shiftright;
++ 	    }
+  	    mem = (long_u)pagesize * pagecount;
++ 	}
+      }
+  #  endif
+  
+***************
+*** 488,502 ****
+  #   ifdef RLIM_INFINITY
+  		&& rlp.rlim_cur != RLIM_INFINITY
+  #   endif
+! 		&& (long_u)rlp.rlim_cur < mem
+  	   )
+! 	    return (long_u)rlp.rlim_cur;
+      }
+  #  endif
+  
+      if (mem > 0)
+! 	return mem;
+!     return (long_u)0x7fffffff;
+  # endif
+  }
+  #endif
+--- 509,526 ----
+  #   ifdef RLIM_INFINITY
+  		&& rlp.rlim_cur != RLIM_INFINITY
+  #   endif
+! 		&& ((long_u)rlp.rlim_cur >> 10) < (mem >> shiftright)
+  	   )
+! 	{
+! 	    mem = (long_u)rlp.rlim_cur;
+! 	    shiftright = 10;
+! 	}
+      }
+  #  endif
+  
+      if (mem > 0)
+! 	return mem >> shiftright;
+!     return (long_u)0x1fffff;
+  # endif
+  }
+  #endif
+*** ../vim-7.0.235/src/version.c	Sun Apr 29 13:55:43 2007
+--- src/version.c	Tue May  1 13:32:44 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     236,
+  /**/
+
+-- 
+A day without sunshine is like, well, night.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

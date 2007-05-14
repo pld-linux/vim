@@ -1,0 +1,62 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.238
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.238
+Problem:    Crash when ":match" pattern runs into 'maxmempattern'. (Yakov
+	    Lerner)
+Solution:   Don't free the regexp program of match_hl.
+Files:	    src/screen.c
+
+
+*** ../vim-7.0.237/src/screen.c	Tue Nov 28 16:16:03 2006
+--- src/screen.c	Tue May  1 21:36:50 2007
+***************
+*** 6477,6485 ****
+  	if (called_emsg)
+  	{
+  	    /* Error while handling regexp: stop using this regexp. */
+! 	    vim_free(shl->rm.regprog);
+  	    shl->rm.regprog = NULL;
+! 	    no_hlsearch = TRUE;
+  	    break;
+  	}
+  	if (nmatched == 0)
+--- 6477,6491 ----
+  	if (called_emsg)
+  	{
+  	    /* Error while handling regexp: stop using this regexp. */
+! 	    if (shl == &search_hl)
+! 	    {
+! 		/* don't free the regprog in match_hl[], it's a copy */
+! 		vim_free(shl->rm.regprog);
+! 		no_hlsearch = TRUE;
+! 	    }
+  	    shl->rm.regprog = NULL;
+! 	    shl->lnum = 0;
+! 	    got_int = FALSE;  /* avoid the "Type :quit to exit Vim" message */
+  	    break;
+  	}
+  	if (nmatched == 0)
+*** ../vim-7.0.237/src/version.c	Tue May  1 19:06:39 2007
+--- src/version.c	Tue May  1 21:39:48 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     238,
+  /**/
+
+-- 
+Change is inevitable, except from a vending machine.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

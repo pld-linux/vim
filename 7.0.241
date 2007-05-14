@@ -1,0 +1,47 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.241
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.241
+Problem:    ":windo throw 'foo'" loops forever. (Andy Wokula)
+Solution:   Detect that win_goto() doesn't work.
+Files:	    src/ex_cmds2.c
+
+
+*** ../vim-7.0.240/src/ex_cmds2.c	Tue Feb 13 06:21:24 2007
+--- src/ex_cmds2.c	Wed May  2 22:04:38 2007
+***************
+*** 2287,2292 ****
+--- 2287,2294 ----
+  		if (!win_valid(wp))
+  		    break;
+  		win_goto(wp);
++ 		if (curwin != wp)
++ 		    break;  /* something must be wrong */
+  		wp = curwin->w_next;
+  	    }
+  	    else if (eap->cmdidx == CMD_tabdo)
+*** ../vim-7.0.240/src/version.c	Wed May  2 21:52:18 2007
+--- src/version.c	Thu May  3 22:12:17 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     241,
+  /**/
+
+-- 
+Well, you come from nothing, you go back to nothing...  What have you
+lost?  Nothing!
+				-- Monty Python: The life of Brian
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

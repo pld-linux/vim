@@ -1,0 +1,80 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.242 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.242 (extra)
+Problem:    Win32: Using "-register" in a Vim that does not support OLE causes
+	    a crash.
+Solution:   Don't use EMSG() but mch_errmsg().  Check p_go for being NULL.
+	    (partly by Michael Wookey)
+Files:	    src/gui_w32.c
+
+
+*** ../vim-7.0.241/src/gui_w32.c	Tue Aug 29 21:30:15 2006
+--- src/gui_w32.c	Fri May  4 22:26:13 2007
+***************
+*** 1140,1147 ****
+      static void
+  ole_error(char *arg)
+  {
+!     EMSG2(_("E243: Argument not supported: \"-%s\"; Use the OLE version."),
+! 									 arg);
+  }
+  #endif
+  
+--- 1140,1152 ----
+      static void
+  ole_error(char *arg)
+  {
+!     char buf[IOSIZE];
+! 
+!     /* Can't use EMSG() here, we have not finished initialisation yet. */
+!     vim_snprintf(buf, IOSIZE,
+! 	    _("E243: Argument not supported: \"-%s\"; Use the OLE version."),
+! 	    arg);
+!     mch_errmsg(buf);
+  }
+  #endif
+  
+***************
+*** 3164,3171 ****
+  
+      /*
+       * Check button names.  A long one will make the dialog wider.
+       */
+!     vertical = (vim_strchr(p_go, GO_VERTICAL) != NULL);
+      if (!vertical)
+      {
+  	// Place buttons horizontally if they fit.
+--- 3169,3177 ----
+  
+      /*
+       * Check button names.  A long one will make the dialog wider.
++      * When called early (-register error message) p_go isn't initialized.
+       */
+!     vertical = (p_go != NULL && vim_strchr(p_go, GO_VERTICAL) != NULL);
+      if (!vertical)
+      {
+  	// Place buttons horizontally if they fit.
+*** ../vim-7.0.241/src/version.c	Thu May  3 22:13:03 2007
+--- src/version.c	Thu May  3 22:32:06 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     242,
+  /**/
+
+-- 
+Microsoft is to software what McDonalds is to gourmet cooking
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

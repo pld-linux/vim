@@ -1,0 +1,116 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.240
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.240
+Problem:    Crash when splitting a window in the GUI. (opposite of 7.0.227)
+Solution:   Don't call out_flush() from win_alloc().  Also avoid this for
+	    win_delete().  Also block autocommands while the window structure
+	    is invalid.
+Files:	    src/window.c
+
+
+*** ../vim-7.0.239/src/window.c	Thu Apr 26 16:11:47 2007
+--- src/window.c	Tue May  1 19:23:22 2007
+***************
+*** 722,727 ****
+--- 722,733 ----
+  	need_status = STATUS_HEIGHT;
+      }
+  
++ #ifdef FEAT_GUI
++     /* May be needed for the scrollbars that are going to change. */
++     if (gui.in_use)
++ 	out_flush();
++ #endif
++ 
+  #ifdef FEAT_VERTSPLIT
+      if (flags & WSP_VERT)
+      {
+***************
+*** 4071,4076 ****
+--- 4077,4088 ----
+  
+      if (newwin != NULL)
+      {
++ #ifdef FEAT_AUTOCMD
++ 	/* Don't execute autocommands while the window is not properly
++ 	 * initialized yet.  gui_create_scrollbar() may trigger a FocusGained
++ 	 * event. */
++ 	++autocmd_block;
++ #endif
+  	/*
+  	 * link the window in the window list
+  	 */
+***************
+*** 4100,4106 ****
+  #ifdef FEAT_GUI
+  	if (gui.in_use)
+  	{
+- 	    out_flush();
+  	    gui_create_scrollbar(&newwin->w_scrollbars[SBAR_LEFT],
+  		    SBAR_LEFT, newwin);
+  	    gui_create_scrollbar(&newwin->w_scrollbars[SBAR_RIGHT],
+--- 4112,4117 ----
+***************
+*** 4114,4119 ****
+--- 4125,4133 ----
+  #ifdef FEAT_FOLDING
+  	foldInitWin(newwin);
+  #endif
++ #ifdef FEAT_AUTOCMD
++ 	--autocmd_block;
++ #endif
+      }
+      return newwin;
+  }
+***************
+*** 4130,4135 ****
+--- 4144,4155 ----
+  {
+      int		i;
+  
++ #ifdef FEAT_AUTOCMD
++     /* Don't execute autocommands while the window is halfway being deleted.
++      * gui_mch_destroy_scrollbar() may trigger a FocusGained event. */
++     ++autocmd_block;
++ #endif
++ 
+  #ifdef FEAT_MZSCHEME
+      mzscheme_window_free(wp);
+  #endif
+***************
+*** 4188,4193 ****
+--- 4208,4217 ----
+  
+      win_remove(wp, tp);
+      vim_free(wp);
++ 
++ #ifdef FEAT_AUTOCMD
++     --autocmd_block;
++ #endif
+  }
+  
+  /*
+*** ../vim-7.0.239/src/version.c	Tue May  1 23:22:32 2007
+--- src/version.c	Wed May  2 21:51:10 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     240,
+  /**/
+
+-- 
+Just remember...if the world didn't suck, we'd all fall off.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

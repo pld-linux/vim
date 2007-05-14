@@ -1,0 +1,119 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.239
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.239
+Problem:    When using local directories and tab pages ":mksession" uses a
+	    short file name when it shouldn't.  Window-local options from a
+	    modeline may be applied to the wrong window. (Teemu Likonen)
+Solution:   Add the did_lcd flag, use the full path when it's set.  Don't use
+	    window-local options from the modeline when using the current
+	    window for another buffer in ":doautoall".
+Files:	    src/fileio.c,  src/ex_docmd.c
+
+
+*** ../vim-7.0.238/src/fileio.c	Tue Feb 27 16:51:07 2007
+--- src/fileio.c	Tue May  1 22:35:34 2007
+***************
+*** 8086,8092 ****
+  
+  	    /* execute the autocommands for this buffer */
+  	    retval = do_doautocmd(eap->arg, FALSE);
+! 	    do_modelines(0);
+  
+  	    /* restore the current window */
+  	    aucmd_restbuf(&aco);
+--- 8087,8096 ----
+  
+  	    /* execute the autocommands for this buffer */
+  	    retval = do_doautocmd(eap->arg, FALSE);
+! 
+! 	    /* Execute the modeline settings, but don't set window-local
+! 	     * options if we are using the current window for another buffer. */
+! 	    do_modelines(aco.save_curwin == NULL ? OPT_NOWIN : 0);
+  
+  	    /* restore the current window */
+  	    aucmd_restbuf(&aco);
+*** ../vim-7.0.238/src/ex_docmd.c	Tue Mar 27 16:57:54 2007
+--- src/ex_docmd.c	Tue Mar 27 16:49:06 2007
+***************
+*** 375,380 ****
+--- 375,381 ----
+  static int	put_view __ARGS((FILE *fd, win_T *wp, int add_edit, unsigned *flagp));
+  static void	ex_loadview __ARGS((exarg_T *eap));
+  static char_u	*get_view_file __ARGS((int c));
++ static int	did_lcd;	/* whether ":lcd" was produced for a session */
+  #else
+  # define ex_loadview		ex_ni
+  #endif
+***************
+*** 8573,8578 ****
+--- 8574,8581 ----
+      }
+  
+  #ifdef FEAT_SESSION
++     did_lcd = FALSE;
++ 
+      /* ":mkview" or ":mkview 9": generate file name with 'viewdir' */
+      if (eap->cmdidx == CMD_mkview
+  	    && (*eap->arg == NUL
+***************
+*** 10327,10332 ****
+--- 10330,10336 ----
+  		|| ses_put_fname(fd, wp->w_localdir, flagp) == FAIL
+  		|| put_eol(fd) == FAIL)
+  	    return FAIL;
++ 	did_lcd = TRUE;
+      }
+  
+      return OK;
+***************
+*** 10384,10394 ****
+      char_u	*name;
+  
+      /* Use the short file name if the current directory is known at the time
+!      * the session file will be sourced.  Don't do this for ":mkview", we
+!      * don't know the current directory. */
+      if (buf->b_sfname != NULL
+  	    && flagp == &ssop_flags
+! 	    && (ssop_flags & (SSOP_CURDIR | SSOP_SESDIR)))
+  	name = buf->b_sfname;
+      else
+  	name = buf->b_ffname;
+--- 10388,10401 ----
+      char_u	*name;
+  
+      /* Use the short file name if the current directory is known at the time
+!      * the session file will be sourced.
+!      * Don't do this for ":mkview", we don't know the current directory.
+!      * Don't do this after ":lcd", we don't keep track of what the current
+!      * directory is. */
+      if (buf->b_sfname != NULL
+  	    && flagp == &ssop_flags
+! 	    && (ssop_flags & (SSOP_CURDIR | SSOP_SESDIR))
+! 	    && !did_lcd)
+  	name = buf->b_sfname;
+      else
+  	name = buf->b_ffname;
+*** ../vim-7.0.238/src/version.c	Tue May  1 22:06:41 2007
+--- src/version.c	Tue May  1 23:21:32 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     239,
+  /**/
+
+-- 
+Those who live by the sword get shot by those who don't.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

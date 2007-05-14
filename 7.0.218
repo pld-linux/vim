@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.218
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.218
+Problem:    "%B" in 'statusline' always shows zero in Insert mode. (DervishD)
+Solution:   Remove the exception for Insert mode, check the column for being
+	    valid instead.
+Files:	    src/buffer.c
+
+
+*** ../vim-7.0.217/src/buffer.c	Tue Mar  6 20:27:03 2007
+--- src/buffer.c	Thu Mar 15 22:50:54 2007
+***************
+*** 3710,3716 ****
+  	case STL_BYTEVAL_X:
+  	    base = 'X';
+  	case STL_BYTEVAL:
+! 	    if (((State & INSERT) && wp == curwin) || empty_line)
+  		num = 0;
+  	    else
+  	    {
+--- 3710,3716 ----
+  	case STL_BYTEVAL_X:
+  	    base = 'X';
+  	case STL_BYTEVAL:
+! 	    if (wp->w_cursor.col > STRLEN(linecont))
+  		num = 0;
+  	    else
+  	    {
+*** ../vim-7.0.217/src/version.c	Thu Mar 15 21:38:30 2007
+--- src/version.c	Thu Mar 15 22:54:05 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     218,
+  /**/
+
+-- 
+Vim is like Emacs without all the typing.  (John "Johann" Spetz)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

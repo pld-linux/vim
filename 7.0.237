@@ -1,0 +1,103 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.237
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.237
+Problem:    For root it is recommended to not use 'modeline', but in
+	    not-compatible mode the default is on.
+Solution:   Let 'modeline' default to off for root.
+Files:	    runtime/doc/options.txt, src/option.c
+
+
+*** ../vim-7.0.236/runtime/doc/options.txt	Tue Oct 10 18:43:50 2006
+--- runtime/doc/options.txt	Tue May  1 13:29:08 2007
+***************
+*** 1,4 ****
+! *options.txt*	For Vim version 7.0.  Last change: 2006 May 04
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+--- 1,4 ----
+! *options.txt*	For Vim version 7.0.  Last change: 2007 May 01
+  
+  
+  		  VIM REFERENCE MANUAL	  by Bram Moolenaar
+***************
+*** 528,534 ****
+  ':' is removed.  Thus to include "\:" you have to specify "\\:".
+  
+  No other commands than "set" are supported, for security reasons (somebody
+! might create a Trojan horse text file with modelines).
+  
+  Hint: If you would like to do something else than setting an option, you could
+  define an autocommand that checks the file for a specific string.  For
+--- 528,539 ----
+  ':' is removed.  Thus to include "\:" you have to specify "\\:".
+  
+  No other commands than "set" are supported, for security reasons (somebody
+! might create a Trojan horse text file with modelines).  And not all options
+! can be set.  For some options a flag is set, so that when it's used the
+! |sandbox| is effective.  Still, there is always a small risc that a modeline
+! causes trouble.  E.g., when some joker sets 'textwidth' to 5 all your lines
+! are wrapped unexpectedly.  So disable modelines before editing untrusted text.
+! The mail ftplugin does this, for example.
+  
+  Hint: If you would like to do something else than setting an option, you could
+  define an autocommand that checks the file for a specific string.  For
+***************
+*** 4520,4526 ****
+  	languages, no matter what you set 'mkspellmem' to.
+  
+  				   *'modeline'* *'ml'* *'nomodeline'* *'noml'*
+! 'modeline' 'ml'		boolean	(Vim default: on, Vi default: off)
+  			local to buffer
+  						*'modelines'* *'mls'*
+  'modelines' 'mls'	number	(default 5)
+--- 4557,4564 ----
+  	languages, no matter what you set 'mkspellmem' to.
+  
+  				   *'modeline'* *'ml'* *'nomodeline'* *'noml'*
+! 'modeline' 'ml'		boolean	(Vim default: on (off for root),
+! 				 Vi default: off)
+  			local to buffer
+  						*'modelines'* *'mls'*
+  'modelines' 'mls'	number	(default 5)
+*** ../vim-7.0.236/src/option.c	Tue May  1 13:39:14 2007
+--- src/option.c	Tue May  1 13:26:10 2007
+***************
+*** 3429,3434 ****
+--- 3429,3439 ----
+  	    /* the cast to long is required for Manx C, long_i is needed for
+  	     * MSVC */
+  	    *(int *)varp = (int)(long)(long_i)options[opt_idx].def_val[dvi];
++ #ifdef UNIX
++ 	    /* 'modeline' defaults to off for root */
++ 	    if (options[opt_idx].indir == PV_ML && getuid() == ROOT_UID)
++ 		*(int *)varp = FALSE;
++ #endif
+  	    /* May also set global value for local option. */
+  	    if (both)
+  		*(int *)get_varp_scope(&(options[opt_idx]), OPT_GLOBAL) =
+*** ../vim-7.0.236/src/version.c	Tue May  1 13:39:14 2007
+--- src/version.c	Tue May  1 19:03:09 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     237,
+  /**/
+
+-- 
+The users that I support would double-click on a landmine to find out
+what happens.				-- A system administrator
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

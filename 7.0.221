@@ -1,0 +1,82 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.221
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.221
+Problem:    finddir() uses 'path' by default, where "." means relative to the
+	    current file.  But it works relative to the current directory.
+	    (Tye Zdrojewski)
+Solution:   Add the current buffer name to find_file_in_path_option() for the
+	    relative file name.
+Files:	    runtime/doc/eval.txt, src/eval.c
+
+
+*** ../vim-7.0.220/runtime/doc/eval.txt	Sun Feb  4 02:59:04 2007
+--- runtime/doc/eval.txt	Mon Mar 26 20:49:06 2007
+***************
+*** 2541,2550 ****
+  
+  
+  finddir({name}[, {path}[, {count}]])				*finddir()*
+! 		Find directory {name} in {path}.  Returns the path of the
+! 		first found match.  When the found directory is below the
+! 		current directory a relative path is returned.  Otherwise a
+! 		full path is returned.
+  		If {path} is omitted or empty then 'path' is used.
+  		If the optional {count} is given, find {count}'s occurrence of
+  		{name} in {path} instead of the first one.
+--- 2565,2576 ----
+  
+  
+  finddir({name}[, {path}[, {count}]])				*finddir()*
+! 		Find directory {name} in {path}.  Supports both downwards and
+! 		upwards recursive directory searches.  See |file-searching|
+! 		for the syntax of {path}.
+! 		Returns the path of the first found match.  When the found
+! 		directory is below the current directory a relative path is
+! 		returned.  Otherwise a full path is returned.
+  		If {path} is omitted or empty then 'path' is used.
+  		If the optional {count} is given, find {count}'s occurrence of
+  		{name} in {path} instead of the first one.
+*** ../vim-7.0.220/src/eval.c	Sun Mar 25 17:50:22 2007
+--- src/eval.c	Sun Mar 25 17:43:53 2007
+***************
+*** 9195,9201 ****
+  		vim_free(fresult);
+  	    fresult = find_file_in_path_option(first ? fname : NULL,
+  					       first ? (int)STRLEN(fname) : 0,
+! 					0, first, path, dir, NULL,
+  					dir ? (char_u *)"" : curbuf->b_p_sua);
+  	    first = FALSE;
+  
+--- 9195,9201 ----
+  		vim_free(fresult);
+  	    fresult = find_file_in_path_option(first ? fname : NULL,
+  					       first ? (int)STRLEN(fname) : 0,
+! 					0, first, path, dir, curbuf->b_ffname,
+  					dir ? (char_u *)"" : curbuf->b_p_sua);
+  	    first = FALSE;
+  
+*** ../vim-7.0.220/src/version.c	Sun Mar 25 17:50:22 2007
+--- src/version.c	Tue Mar 27 10:16:35 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     221,
+  /**/
+
+-- 
+Beer & pretzels can't be served at the same time in any bar or restaurant.
+		[real standing law in North Dakota, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

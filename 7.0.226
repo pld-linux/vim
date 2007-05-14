@@ -1,0 +1,49 @@
+To: vim-dev@vim.org
+Subject: patch 7.0.226
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.0.226
+Problem:    Display flickering when updating signs through the netbeans
+	    interface. (Xavier de Gaye)
+Solution:   Remove the redraw_later(CLEAR) call.
+Files:	    src/netbeans.c
+
+
+*** ../vim-7.0.225/src/netbeans.c	Tue Nov 14 18:29:00 2006
+--- src/netbeans.c	Sat Apr 21 18:14:00 2007
+***************
+*** 2143,2150 ****
+  		    coloncmd(":sign jump %d buffer=%d", serNum,
+  						       buf->bufp->b_fnum);
+  	    }
+- 	    /* XXX only redraw what changed. */
+- 	    redraw_later(CLEAR);
+  #endif
+  /* =====================================================================*/
+  	}
+--- 2143,2148 ----
+*** ../vim-7.0.225/src/version.c	Thu Apr 26 10:55:46 2007
+--- src/version.c	Thu Apr 26 11:00:01 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     226,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+15. Your heart races faster and beats irregularly each time you see a new WWW
+    site address in print or on TV, even though you've never had heart
+    problems before.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
