@@ -1,0 +1,25 @@
+--- ./src/vimtutor~	2005-12-30 03:36:48.000000000 +0200
++++ ./src/vimtutor	2006-03-05 14:16:46.590263101 +0200
+@@ -39,18 +39,11 @@
+ # remove the copy of the tutor on exit
+ trap "rm -rf $TODELETE" 0 1 2 3 9 11 13 15
+ 
+-# Vim could be called "vim" or "vi".  Also check for "vim6", for people who
+-# have Vim 5.x installed as "vim" and Vim 6.0 as "vim6".
+-testvim=`which vim6 2>/dev/null`
+-if test -f "$testvim"; then
+-	VIM=vim6
++# Vim could be called "vim" or "vi".
++if [ -x /usr/bin/vim ]; then
++	VIM=vim
+ else
+-	testvim=`which vim`
+-	if test -f "$testvim"; then
+-		VIM=vim
+-	else
+-		VIM=vi
+-	fi
++	VIM=vi
+ fi
+ 
+ # Use Vim to copy the tutor, it knows the value of $VIMRUNTIME

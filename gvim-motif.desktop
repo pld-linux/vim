@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Gvim Motif
+Comment=The vi editor for X Window System with Motif L&F
+Comment[pl]=Edytor vi dla Systemu X Window jako aplikacja Motif
+Exec=gvim.motif
+Terminal=false
+Icon=vim
+MimeType=text/plain;
+Type=Application
+Categories=Motif;TextEditor;
+# vi: encoding=utf-8
