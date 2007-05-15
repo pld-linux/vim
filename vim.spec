@@ -394,6 +394,7 @@ Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Athena
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	gvim
 Provides:	vi-editor
 Obsoletes:	vim-X11
 
@@ -421,6 +422,7 @@ Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Motif
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	gvim
 Provides:	vi-editor
 Obsoletes:	vim-X11
 
@@ -450,6 +452,7 @@ Requires(post,postun):	gtk+2
 Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	gvim
 Provides:	vi-editor
 Obsoletes:	vim-X11
 
@@ -480,6 +483,7 @@ Requires(post,postun):	gtk+2
 Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	gvim
 Provides:	vi-editor
 Obsoletes:	vim-X11
 
@@ -507,6 +511,7 @@ Summary(pl.UTF-8):	Vim dla X Window zbudowany jako element bonobo
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Provides:	gvim
 Provides:	vi-editor
 Obsoletes:	vim-X11
 
