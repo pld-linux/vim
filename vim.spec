@@ -10,16 +10,16 @@
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	perl		# without Perl interp
-%bcond_with	python		# with Python interp
-%bcond_with	ruby		# with Ruby interp
-%bcond_with	tcl		# with Tcl interp
+%bcond_without	python		# with Python interp
+%bcond_without	ruby		# with Ruby interp
+%bcond_without	tcl		# with Tcl interp
 %bcond_with	bonobo		# with bonobo component (breaks other things)
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.1
 %define		_patchlevel	0
-%define		_rel		2
+%define		_rel		3
 
 # cflags get changed while configuring
 %undefine	configure_cache
