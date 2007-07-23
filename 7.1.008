@@ -1,0 +1,82 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.008 (correction
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Oops, forgot the src/version.c change.
+
+Patch 7.1.008
+Problem:    getfsize() returns a negative number for very big files.
+Solution:   Check for overflow and return -2.
+Files:	    runtime/doc/eval.txt, src/eval.c
+
+
+*** ../vim-7.1.007/runtime/doc/eval.txt	Sat May 12 16:38:23 2007
+--- runtime/doc/eval.txt	Sat Jun  9 15:48:40 2007
+***************
+*** 1,4 ****
+! *eval.txt*      For Vim version 7.1.  Last change: 2007 May 11
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *eval.txt*      For Vim version 7.1.  Last change: 2007 Jun 09
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 2824,2829 ****
+--- 2824,2831 ----
+  		given file {fname}.
+  		If {fname} is a directory, 0 is returned.
+  		If the file {fname} can't be found, -1 is returned.
++ 		If the size of {fname} is too big to fit in a Number then -2
++ 		is returned.
+  
+  getfontname([{name}])					*getfontname()*
+  		Without an argument returns the name of the normal font being
+*** ../vim-7.1.007/src/eval.c	Thu May 10 21:30:00 2007
+--- src/eval.c	Sat Jun  9 15:46:46 2007
+***************
+*** 10136,10142 ****
+--- 10136,10148 ----
+  	if (mch_isdir(fname))
+  	    rettv->vval.v_number = 0;
+  	else
++ 	{
+  	    rettv->vval.v_number = (varnumber_T)st.st_size;
++ 
++ 	    /* non-perfect check for overflow */
++ 	    if ((off_t)rettv->vval.v_number != (off_t)st.st_size)
++ 		rettv->vval.v_number = -2;
++ 	}
+      }
+      else
+  	  rettv->vval.v_number = -1;
+*** ../vim-7.1.007/src/version.c	Tue Jun 19 16:33:53 2007
+--- src/version.c	Tue Jun 19 17:30:50 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     8,
+  /**/
+
+
+-- 
+ZOOT:  I'm afraid our life must seem very dull and quiet compared to yours.
+       We are but eightscore young blondes, all between sixteen and
+       nineteen-and-a-half, cut off in this castle, with no one to protect us.
+       Oooh.  It is a lonely life ... bathing ...  dressing ... undressing ...
+       making exciting underwear....
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.016
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.016 (after patch 7.1.012)
+Problem:    Error message about setting 'diff' to a string.
+Solution:   Don't pass an empty string to set_option_value() when setting
+	    'diff'.
+Files:	    src/quickfix.c, src/popupmnu.c
+
+
+*** ../vim-7.1.015/src/quickfix.c	Sun Feb  4 02:58:00 2007
+--- src/quickfix.c	Thu Jun 28 18:56:16 2007
+***************
+*** 2331,2337 ****
+  	    set_option_value((char_u *)"bt", 0L, (char_u *)"quickfix",
+  								   OPT_LOCAL);
+  	    set_option_value((char_u *)"bh", 0L, (char_u *)"wipe", OPT_LOCAL);
+! 	    set_option_value((char_u *)"diff", 0L, (char_u *)"", OPT_LOCAL);
+  	}
+  
+  	/* Only set the height when still in the same tab page and there is no
+--- 2331,2337 ----
+  	    set_option_value((char_u *)"bt", 0L, (char_u *)"quickfix",
+  								   OPT_LOCAL);
+  	    set_option_value((char_u *)"bh", 0L, (char_u *)"wipe", OPT_LOCAL);
+! 	    set_option_value((char_u *)"diff", 0L, NULL, OPT_LOCAL);
+  	}
+  
+  	/* Only set the height when still in the same tab page and there is no
+*** ../vim-7.1.015/src/popupmnu.c	Tue Mar 27 12:42:05 2007
+--- src/popupmnu.c	Thu Jun 28 19:00:51 2007
+***************
+*** 466,472 ****
+  			set_option_value((char_u *)"bh", 0L,
+  						 (char_u *)"wipe", OPT_LOCAL);
+  			set_option_value((char_u *)"diff", 0L,
+! 						     (char_u *)"", OPT_LOCAL);
+  		    }
+  		}
+  		if (res == OK)
+--- 466,472 ----
+  			set_option_value((char_u *)"bh", 0L,
+  						 (char_u *)"wipe", OPT_LOCAL);
+  			set_option_value((char_u *)"diff", 0L,
+! 							     NULL, OPT_LOCAL);
+  		    }
+  		}
+  		if (res == OK)
+*** ../vim-7.1.015/src/version.c	Thu Jun 28 13:02:22 2007
+--- src/version.c	Thu Jun 28 21:20:20 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     16,
+  /**/
+
+-- 
+We do not stumble over mountains, but over molehills.
+				Confucius
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

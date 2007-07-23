@@ -1,0 +1,85 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.006
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.006
+Problem:    Resetting 'modified' in a StdinReadPost autocommand doesn't work.
+Solution:   Set 'modified' before the autocommands instead of after it.
+Files:	    src/buffer.c
+
+
+*** ../vim-7.1.005/src/buffer.c	Thu May 10 18:43:46 2007
+--- src/buffer.c	Fri Jun  8 20:59:04 2007
+***************
+*** 171,176 ****
+--- 171,183 ----
+  	    /* Put the cursor on the first line. */
+  	    curwin->w_cursor.lnum = 1;
+  	    curwin->w_cursor.col = 0;
++ 
++ 	    /* Set or reset 'modified' before executing autocommands, so that
++ 	     * it can be changed there. */
++ 	    if (!readonlymode && !bufempty())
++ 		changed();
++ 	    else if (retval != FAIL)
++ 		unchanged(curbuf, FALSE);
+  #ifdef FEAT_AUTOCMD
+  # ifdef FEAT_EVAL
+  	    apply_autocmds_retval(EVENT_STDINREADPOST, NULL, NULL, FALSE,
+***************
+*** 194,209 ****
+      /* When reading stdin, the buffer contents always needs writing, so set
+       * the changed flag.  Unless in readonly mode: "ls | gview -".
+       * When interrupted and 'cpoptions' contains 'i' set changed flag. */
+!     if ((read_stdin && !readonlymode && !bufempty())
+  #ifdef FEAT_AUTOCMD
+  		|| modified_was_set	/* ":set modified" used in autocmd */
+  # ifdef FEAT_EVAL
+  		|| (aborting() && vim_strchr(p_cpo, CPO_INTMOD) != NULL)
+  # endif
+  #endif
+! 		|| (got_int && vim_strchr(p_cpo, CPO_INTMOD) != NULL))
+  	changed();
+!     else if (retval != FAIL)
+  	unchanged(curbuf, FALSE);
+      save_file_ff(curbuf);		/* keep this fileformat */
+  
+--- 201,216 ----
+      /* When reading stdin, the buffer contents always needs writing, so set
+       * the changed flag.  Unless in readonly mode: "ls | gview -".
+       * When interrupted and 'cpoptions' contains 'i' set changed flag. */
+!     if ((got_int && vim_strchr(p_cpo, CPO_INTMOD) != NULL)
+  #ifdef FEAT_AUTOCMD
+  		|| modified_was_set	/* ":set modified" used in autocmd */
+  # ifdef FEAT_EVAL
+  		|| (aborting() && vim_strchr(p_cpo, CPO_INTMOD) != NULL)
+  # endif
+  #endif
+!        )
+  	changed();
+!     else if (retval != FAIL && !read_stdin)
+  	unchanged(curbuf, FALSE);
+      save_file_ff(curbuf);		/* keep this fileformat */
+  
+*** ../vim-7.1.005/src/version.c	Tue Jun 19 12:58:55 2007
+--- src/version.c	Tue Jun 19 15:37:53 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     6,
+  /**/
+
+-- 
+If I tell you "you have a beautiful body", would you hold it against me?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

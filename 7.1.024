@@ -1,0 +1,47 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.024
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.024
+Problem:    Using a pointer that has become invalid. (Chris Monson)
+Solution:   Obtain the line pointer again after we looked at another line.
+Files:	    src/search.c
+
+
+*** ../vim-7.1.023/src/search.c	Tue Jul 10 12:36:51 2007
+--- src/search.c	Thu Jul  5 21:18:55 2007
+***************
+*** 2124,2129 ****
+--- 2128,2136 ----
+  			else if (!backwards)
+  			    inquote = TRUE;
+  		    }
++ 
++ 		    /* ml_get() only keeps one line, need to get linep again */
++ 		    linep = ml_get(pos.lnum);
+  		}
+  	    }
+  	}
+*** ../vim-7.1.023/src/version.c	Tue Jul 10 12:36:51 2007
+--- src/version.c	Tue Jul 10 13:06:02 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     24,
+  /**/
+
+-- 
+Q: Why does /dev/null accept only integers?
+A: You can't sink a float.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

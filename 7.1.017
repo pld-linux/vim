@@ -1,0 +1,212 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.017
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.017
+Problem:    ":confirm w" does give a prompt when 'readonly' is set, but not
+	    when the file permissions are read-only.  (Michael Schaap)
+Solution:   Provide a dialog in both situations.  (Chris Lubinski)
+Files:	    src/ex_cmds.c, src/fileio.c, src/proto/fileio.pro
+
+
+*** ../vim-7.1.016/src/ex_cmds.c	Tue Jun 19 11:54:23 2007
+--- src/ex_cmds.c	Tue Jun 19 22:37:25 2007
+***************
+*** 2912,2933 ****
+  }
+  
+  /*
+!  * Check if a buffer is read-only.  Ask for overruling in a dialog.
+!  * Return TRUE and give an error message when the buffer is readonly.
+   */
+      static int
+  check_readonly(forceit, buf)
+      int		*forceit;
+      buf_T	*buf;
+  {
+!     if (!*forceit && buf->b_p_ro)
+      {
+  #if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+  	if ((p_confirm || cmdmod.confirm) && buf->b_fname != NULL)
+  	{
+  	    char_u	buff[IOSIZE];
+  
+! 	    dialog_msg(buff, _("'readonly' option is set for \"%s\".\nDo you wish to write anyway?"),
+  		    buf->b_fname);
+  
+  	    if (vim_dialog_yesno(VIM_QUESTION, NULL, buff, 2) == VIM_YES)
+--- 2912,2946 ----
+  }
+  
+  /*
+!  * Check if a buffer is read-only (either 'readonly' option is set or file is
+!  * read-only). Ask for overruling in a dialog. Return TRUE and give an error
+!  * message when the buffer is readonly.
+   */
+      static int
+  check_readonly(forceit, buf)
+      int		*forceit;
+      buf_T	*buf;
+  {
+!     struct stat	st;
+! 
+!     /* Handle a file being readonly when the 'readonly' option is set or when
+!      * the file exists and permissions are read-only.
+!      * We will send 0777 to check_file_readonly(), as the "perm" variable is
+!      * important for device checks but not here. */
+!     if (!*forceit && (buf->b_p_ro
+! 		|| (mch_stat((char *)buf->b_ffname, &st) >= 0
+! 		    && check_file_readonly(buf->b_ffname, 0777))))
+      {
+  #if defined(FEAT_GUI_DIALOG) || defined(FEAT_CON_DIALOG)
+  	if ((p_confirm || cmdmod.confirm) && buf->b_fname != NULL)
+  	{
+  	    char_u	buff[IOSIZE];
+  
+! 	    if (buf->b_p_ro)
+! 		dialog_msg(buff, _("'readonly' option is set for \"%s\".\nDo you wish to write anyway?"),
+! 		    buf->b_fname);
+! 	    else
+! 		dialog_msg(buff, _("File permissions of \"%s\" are read-only.\nIt may still be possible to write it.\nDo you wish to try?"),
+  		    buf->b_fname);
+  
+  	    if (vim_dialog_yesno(VIM_QUESTION, NULL, buff, 2) == VIM_YES)
+***************
+*** 2941,2949 ****
+--- 2954,2967 ----
+  	}
+  	else
+  #endif
++ 	if (buf->b_p_ro)
+  	    EMSG(_(e_readonly));
++ 	else
++ 	    EMSG2(_("E505: \"%s\" is read-only (add ! to override)"),
++ 		    buf->b_fname);
+  	return TRUE;
+      }
++ 
+      return FALSE;
+  }
+  
+*** ../vim-7.1.016/src/fileio.c	Thu May 10 19:32:17 2007
+--- src/fileio.c	Thu Jun 28 21:54:18 2007
+***************
+*** 424,430 ****
+  	 */
+  	if (!p_odev && mch_nodetype(fname) == NODE_WRITABLE)
+  	{
+! 	    filemess(curbuf, fname, (char_u *)_("is a device (disabled with 'opendevice' option"), 0);
+  	    msg_end();
+  	    msg_scroll = msg_save;
+  	    return FAIL;
+--- 424,430 ----
+  	 */
+  	if (!p_odev && mch_nodetype(fname) == NODE_WRITABLE)
+  	{
+! 	    filemess(curbuf, fname, (char_u *)_("is a device (disabled with 'opendevice' option)"), 0);
+  	    msg_end();
+  	    msg_scroll = msg_save;
+  	    return FAIL;
+***************
+*** 2734,2739 ****
+--- 2734,2765 ----
+  #endif
+  
+  /*
++  * Return TRUE if a file appears to be read-only from the file permissions.
++  */
++     int
++ check_file_readonly(fname, perm)
++     char_u	*fname;		/* full path to file */
++     int		perm;		/* known permissions on file */
++ {
++ #ifndef USE_MCH_ACCESS
++     int	    fd = 0;
++ #endif
++ 
++     return (
++ #ifdef USE_MCH_ACCESS
++ # ifdef UNIX
++ 	(perm & 0222) == 0 ||
++ # endif
++ 	mch_access((char *)fname, W_OK)
++ #else
++ 	(fd = mch_open((char *)fname, O_RDWR | O_EXTRA, 0)) < 0
++ 					? TRUE : (close(fd), FALSE)
++ #endif
++ 	);
++ }
++ 
++ 
++ /*
+   * buf_write() - write to file "fname" lines "start" through "end"
+   *
+   * We do our own buffering here because fwrite() is so slow.
+***************
+*** 3219,3235 ****
+  	 * Check if the file is really writable (when renaming the file to
+  	 * make a backup we won't discover it later).
+  	 */
+! 	file_readonly = (
+! # ifdef USE_MCH_ACCESS
+! #  ifdef UNIX
+! 		    (perm & 0222) == 0 ||
+! #  endif
+! 		    mch_access((char *)fname, W_OK)
+! # else
+! 		    (fd = mch_open((char *)fname, O_RDWR | O_EXTRA, 0)) < 0
+! 						   ? TRUE : (close(fd), FALSE)
+! # endif
+! 		    );
+  	if (!forceit && file_readonly)
+  	{
+  	    if (vim_strchr(p_cpo, CPO_FWRITE) != NULL)
+--- 3245,3252 ----
+  	 * Check if the file is really writable (when renaming the file to
+  	 * make a backup we won't discover it later).
+  	 */
+! 	file_readonly = check_file_readonly(fname, (int)perm);
+! 
+  	if (!forceit && file_readonly)
+  	{
+  	    if (vim_strchr(p_cpo, CPO_FWRITE) != NULL)
+*** ../vim-7.1.016/src/proto/fileio.pro	Sat May  5 19:59:00 2007
+--- src/proto/fileio.pro	Thu Jun 28 21:09:59 2007
+***************
+*** 2,7 ****
+--- 2,8 ----
+  void filemess __ARGS((buf_T *buf, char_u *name, char_u *s, int attr));
+  int readfile __ARGS((char_u *fname, char_u *sfname, linenr_T from, linenr_T lines_to_skip, linenr_T lines_to_read, exarg_T *eap, int flags));
+  int prep_exarg __ARGS((exarg_T *eap, buf_T *buf));
++ int check_file_readonly __ARGS((char_u *fname, int perm));
+  int buf_write __ARGS((buf_T *buf, char_u *fname, char_u *sfname, linenr_T start, linenr_T end, exarg_T *eap, int append, int forceit, int reset_changed, int filtering));
+  void msg_add_fname __ARGS((buf_T *buf, char_u *fname));
+  void msg_add_lines __ARGS((int insert_space, long lnum, long nchars));
+*** ../vim-7.1.016/src/version.c	Thu Jun 28 21:23:52 2007
+--- src/version.c	Thu Jun 28 21:49:29 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     17,
+  /**/
+
+-- 
+CUSTOMER:     Well, can you hang around a couple of minutes?  He won't be
+              long.
+MORTICIAN:    Naaah, I got to go on to Robinson's -- they've lost nine today.
+CUSTOMER:     Well, when is your next round?
+MORTICIAN:    Thursday.
+DEAD PERSON:  I think I'll go for a walk.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

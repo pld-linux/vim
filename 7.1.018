@@ -1,0 +1,60 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.018
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.018
+Problem:    When 'virtualedit' is set a "p" of a block just past the end of
+	    the line inserts before the cursor. (Engelke)
+Solution:   Check for the cursor being just after the line (Chris Lubinski)
+Files:	    src/ops.c
+
+
+*** ../vim-7.1.017/src/ops.c	Thu May 10 20:34:55 2007
+--- src/ops.c	Tue Jun 19 22:40:45 2007
+***************
+*** 3404,3410 ****
+  
+  #ifdef FEAT_VIRTUALEDIT
+  	col += curwin->w_cursor.coladd;
+! 	if (ve_flags == VE_ALL && curwin->w_cursor.coladd > 0)
+  	{
+  	    if (dir == FORWARD && c == NUL)
+  		++col;
+--- 3404,3412 ----
+  
+  #ifdef FEAT_VIRTUALEDIT
+  	col += curwin->w_cursor.coladd;
+! 	if (ve_flags == VE_ALL
+! 		&& (curwin->w_cursor.coladd > 0
+! 		    || endcol2 == curwin->w_cursor.col))
+  	{
+  	    if (dir == FORWARD && c == NUL)
+  		++col;
+*** ../vim-7.1.017/src/version.c	Thu Jun 28 21:57:08 2007
+--- src/version.c	Thu Jun 28 22:12:49 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     18,
+  /**/
+
+-- 
+    [clop clop]
+MORTICIAN:  Who's that then?
+CUSTOMER:   I don't know.
+MORTICIAN:  Must be a king.
+CUSTOMER:   Why?
+MORTICIAN:  He hasn't got shit all over him.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

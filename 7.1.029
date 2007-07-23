@@ -1,0 +1,84 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.029
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.029 (after 7.1.019)
+Problem:    Can't compile when all interfaces are used. (Taylor Venable)
+Solution:   Only check for ex_script_ni when it's defined.
+Files:	    src/ex_docmd.c
+
+
+*** ../vim-7.1.028/src/ex_docmd.c	Thu Jul  5 09:53:20 2007
+--- src/ex_docmd.c	Sun Jul 15 17:20:09 2007
+***************
+*** 133,138 ****
+--- 133,139 ----
+  static void	get_flags __ARGS((exarg_T *eap));
+  #if !defined(FEAT_PERL) || !defined(FEAT_PYTHON) || !defined(FEAT_TCL) \
+  	|| !defined(FEAT_RUBY) || !defined(FEAT_MZSCHEME)
++ # define HAVE_EX_SCRIPT_NI
+  static void	ex_script_ni __ARGS((exarg_T *eap));
+  #endif
+  static char_u	*invalid_range __ARGS((exarg_T *eap));
+***************
+*** 2119,2125 ****
+  	    !USER_CMDIDX(ea.cmdidx) &&
+  #endif
+  	    (cmdnames[ea.cmdidx].cmd_func == ex_ni
+! 	     || cmdnames[ea.cmdidx].cmd_func == ex_script_ni));
+  
+  #ifndef FEAT_EVAL
+      /*
+--- 2120,2129 ----
+  	    !USER_CMDIDX(ea.cmdidx) &&
+  #endif
+  	    (cmdnames[ea.cmdidx].cmd_func == ex_ni
+! #ifdef HAVE_EX_SCRIPT_NI
+! 	     || cmdnames[ea.cmdidx].cmd_func == ex_script_ni
+! #endif
+! 	     ));
+  
+  #ifndef FEAT_EVAL
+      /*
+***************
+*** 3998,4005 ****
+  	eap->errmsg = (char_u *)N_("E319: Sorry, the command is not available in this version");
+  }
+  
+! #if !defined(FEAT_PERL) || !defined(FEAT_PYTHON) || !defined(FEAT_TCL) \
+! 	|| !defined(FEAT_RUBY) || !defined(FEAT_MZSCHEME)
+  /*
+   * Function called for script command which is Not Implemented.  NI!
+   * Skips over ":perl <<EOF" constructs.
+--- 3999,4005 ----
+  	eap->errmsg = (char_u *)N_("E319: Sorry, the command is not available in this version");
+  }
+  
+! #ifdef HAVE_EX_SCRIPT_NI
+  /*
+   * Function called for script command which is Not Implemented.  NI!
+   * Skips over ":perl <<EOF" constructs.
+*** ../vim-7.1.028/src/version.c	Tue Jul 10 17:25:20 2007
+--- src/version.c	Mon Jul 16 20:37:48 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     29,
+  /**/
+
+-- 
+I used to wonder about the meaning of life.  But I looked it
+up in the dictionary under "L" and there it was - the meaning
+of life.  It was less than I expected.              - Dogbert
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

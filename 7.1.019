@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.019
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.019
+Problem:    ":py" asks for an argument, ":py asd" then gives the error that
+	    ":py" isn't implemented.  Should already happen for ":py".
+Solution:   Compare with ex_script_ni. (Chris Lubinski)
+Files:	    src/ex_docmd.c
+
+
+*** ../vim-7.1.018/src/ex_docmd.c	Thu May 10 18:53:03 2007
+--- src/ex_docmd.c	Sat Jun 23 13:36:37 2007
+***************
+*** 2118,2124 ****
+  #ifdef FEAT_USR_CMDS
+  	    !USER_CMDIDX(ea.cmdidx) &&
+  #endif
+! 	    cmdnames[ea.cmdidx].cmd_func == ex_ni);
+  
+  #ifndef FEAT_EVAL
+      /*
+--- 2118,2125 ----
+  #ifdef FEAT_USR_CMDS
+  	    !USER_CMDIDX(ea.cmdidx) &&
+  #endif
+! 	    (cmdnames[ea.cmdidx].cmd_func == ex_ni
+! 	     || cmdnames[ea.cmdidx].cmd_func == ex_script_ni));
+  
+  #ifndef FEAT_EVAL
+      /*
+*** ../vim-7.1.018/src/version.c	Thu Jun 28 22:14:28 2007
+--- src/version.c	Thu Jul  5 09:48:11 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     19,
+  /**/
+
+-- 
+MARTHA'S WAY: Don't throw out all that leftover wine. Freeze into ice cubes
+              for future use in casseroles and sauces.
+MY WAY:       What leftover wine?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

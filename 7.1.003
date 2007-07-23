@@ -1,0 +1,48 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.003 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.003 (extra)
+Problem:    The "Tear off this menu" message appears in the message history
+	    when using a menu. (Yongwei Wu)
+Solution:   Disable message history when displaying the menu tip.
+Files:	    src/gui_w32.c
+
+
+*** ../vim-7.1.002/src/gui_w32.c	Thu May 10 22:17:22 2007
+--- src/gui_w32.c	Sat Jun  9 13:43:07 2007
+***************
+*** 1051,1057 ****
+--- 1051,1059 ----
+  	    if (pMenu != NULL && pMenu->strings[MENU_INDEX_TIP] != 0
+  		    && GetMenuState(s_menuBar, pMenu->id, MF_BYCOMMAND) != -1)
+  	    {
++ 		++msg_hist_off;
+  		msg(pMenu->strings[MENU_INDEX_TIP]);
++ 		--msg_hist_off;
+  		setcursor();
+  		out_flush();
+  		did_menu_tip = TRUE;
+*** ../vim-7.1.002/src/version.c	Tue May 15 09:14:33 2007
+--- src/version.c	Tue Jun 19 10:08:17 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     3,
+  /**/
+
+-- 
+In his lifetime van Gogh painted 486 oil paintings. Oddly enough, 8975
+of them are to be found in the United States.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

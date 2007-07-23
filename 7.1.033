@@ -1,0 +1,48 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.033
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.033
+Problem:    A buffer is marked modified when it was first deleted and then
+	    added again using a ":next" command. (John Mullin)
+Solution:   When checking if a buffer is modified use the BF_NEVERLOADED flag.
+Files:	    src/option.c
+
+
+*** ../vim-7.1.032/src/option.c	Tue Jun 19 20:56:52 2007
+--- src/option.c	Sun Jul 22 16:42:47 2007
+***************
+*** 10624,10629 ****
+--- 10624,10632 ----
+  file_ff_differs(buf)
+      buf_T	*buf;
+  {
++     /* In a buffer that was never loaded the options are not valid. */
++     if (buf->b_flags & BF_NEVERLOADED)
++ 	return FALSE;
+      if ((buf->b_flags & BF_NEW)
+  	    && buf->b_ml.ml_line_count == 1
+  	    && *ml_get_buf(buf, (linenr_T)1, FALSE) == NUL)
+*** ../vim-7.1.032/src/version.c	Tue Jul 17 18:14:14 2007
+--- src/version.c	Mon Jul 23 09:45:44 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     33,
+  /**/
+
+-- 
+How To Keep A Healthy Level Of Insanity:
+8. Don't use any punctuation marks.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

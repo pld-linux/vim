@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.025
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.025
+Problem:    search() and searchpos() don't use match under cursor at start of
+	    line when using 'bc' flags. (Viktor Kojouharov)
+Solution:   Don't go to the previous line when the 'c' flag is present.
+	    Also fix that "j" doesn't move the cursor to the right column.
+Files:	    src/eval.c, src/search.c
+
+
+*** ../vim-7.1.024/src/eval.c	Tue Jun 19 17:23:46 2007
+--- src/eval.c	Thu Jul  5 21:16:31 2007
+***************
+*** 13925,13930 ****
+--- 13925,13932 ----
+      /* If 'n' flag is used: restore cursor position. */
+      if (flags & SP_NOMOVE)
+  	curwin->w_cursor = save_cursor;
++     else
++ 	curwin->w_set_curswant = TRUE;
+  theend:
+      p_ws = save_p_ws;
+  
+*** ../vim-7.1.024/src/search.c	Tue Jul 10 13:07:08 2007
+--- src/search.c	Thu Jul  5 21:18:55 2007
+***************
+*** 573,580 ****
+  	/*
+  	 * Start searching in current line, unless searching backwards and
+  	 * we're in column 0.
+  	 */
+! 	if (dir == BACKWARD && start_pos.col == 0)
+  	{
+  	    lnum = pos->lnum - 1;
+  	    at_first_line = FALSE;
+--- 573,584 ----
+  	/*
+  	 * Start searching in current line, unless searching backwards and
+  	 * we're in column 0.
++ 	 * If we are searching backwards, in column 0, and not including the
++ 	 * current position, gain some efficiency by skipping back a line.
++ 	 * Otherwise begin the search in the current line.
+  	 */
+! 	if (dir == BACKWARD && start_pos.col == 0
+! 					     && (options & SEARCH_START) == 0)
+  	{
+  	    lnum = pos->lnum - 1;
+  	    at_first_line = FALSE;
+*** ../vim-7.1.024/src/version.c	Tue Jul 10 13:07:08 2007
+--- src/version.c	Tue Jul 10 13:26:13 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     25,
+  /**/
+
+-- 
+SIGFUN -- signature too funny (core dumped)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

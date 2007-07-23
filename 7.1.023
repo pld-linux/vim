@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.023
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.023
+Problem:    "dw" in a line with one character deletes the line.  Vi and nvi
+	    don't do this.  (Kjell Arne Rekaa)
+Solution:   Check for one-character words especially.
+Files:	    src/search.c
+
+
+*** ../vim-7.1.022/src/search.c	Tue Jun 19 12:58:55 2007
+--- src/search.c	Thu Jul  5 21:18:55 2007
+***************
+*** 2795,2801 ****
+  	i = inc_cursor();
+  	if (i == -1 || (i >= 1 && last_line)) /* started at last char in file */
+  	    return FAIL;
+! 	if (i == 1 && eol && count == 0)      /* started at last char in line */
+  	    return OK;
+  
+  	/*
+--- 2802,2808 ----
+  	i = inc_cursor();
+  	if (i == -1 || (i >= 1 && last_line)) /* started at last char in file */
+  	    return FAIL;
+! 	if (i >= 1 && eol && count == 0)      /* started at last char in line */
+  	    return OK;
+  
+  	/*
+*** ../vim-7.1.022/src/version.c	Sat Jul  7 13:57:39 2007
+--- src/version.c	Tue Jul 10 12:35:36 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     23,
+  /**/
+
+-- 
+BRIDGEKEEPER: What is your favorite editor?
+GAWAIN:       Emacs ...  No, Viiiiiiiiiiimmmmmmm!
+           "Monty Python and the Holy editor wars" PYTHON (MONTY) SOFTWARE LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

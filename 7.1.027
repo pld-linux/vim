@@ -1,0 +1,120 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.027
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.027
+Problem:    On Sun systems opening /dev/fd/N doesn't work, and they are used
+	    by process substitutions.
+Solution:   Allow opening specific character special files for Sun systems.
+	    (Gary Johnson)
+Files:	    src/fileio.c, src/os_unix.h
+
+
+*** ../vim-7.1.026/src/fileio.c	Thu Jun 28 21:57:08 2007
+--- src/fileio.c	Mon Jul  9 11:19:50 2007
+***************
+*** 44,49 ****
+--- 44,53 ----
+  /* Is there any system that doesn't have access()? */
+  #define USE_MCH_ACCESS
+  
++ #if defined(sun) && defined(S_ISCHR)
++ # define OPEN_CHR_FILES
++ static int is_dev_fd_file(char_u *fname);
++ #endif
+  #ifdef FEAT_MBYTE
+  static char_u *next_fenc __ARGS((char_u **pp));
+  # ifdef FEAT_EVAL
+***************
+*** 406,411 ****
+--- 410,419 ----
+  # ifdef S_ISSOCK
+  		      && !S_ISSOCK(perm)	    /* ... or socket */
+  # endif
++ # ifdef OPEN_CHR_FILES
++ 		      && !(S_ISCHR(perm) && is_dev_fd_file(fname))
++ 			/* ... or a character special file named /dev/fd/<n> */
++ # endif
+  						)
+  	{
+  	    if (S_ISDIR(perm))
+***************
+*** 2265,2270 ****
+--- 2273,2285 ----
+  	    }
+  #  endif
+  # endif
++ # ifdef OPEN_CHR_FILES
++ 	    if (S_ISCHR(perm))			    /* or character special */
++ 	    {
++ 		STRCAT(IObuff, _("[character special]"));
++ 		c = TRUE;
++ 	    }
++ # endif
+  #endif
+  	    if (curbuf->b_p_ro)
+  	    {
+***************
+*** 2463,2468 ****
+--- 2478,2502 ----
+  	return FAIL;
+      return OK;
+  }
++ 
++ #ifdef OPEN_CHR_FILES
++ /*
++  * Returns TRUE if the file name argument is of the form "/dev/fd/\d\+",
++  * which is the name of files used for process substitution output by
++  * some shells on some operating systems, e.g., bash on SunOS.
++  * Do not accept "/dev/fd/[012]", opening these may hang Vim.
++  */
++     static int
++ is_dev_fd_file(fname)
++     char_u	*fname;
++ {
++     return (STRNCMP(fname, "/dev/fd/", 8) == 0
++ 	    && VIM_ISDIGIT(fname[8])
++ 	    && *skipdigits(fname + 9) == NUL
++ 	    && (fname[9] != NUL
++ 		|| (fname[8] != '0' && fname[8] != '1' && fname[8] != '2')));
++ }
++ #endif
+  
+  #ifdef FEAT_MBYTE
+  
+*** ../vim-7.1.026/src/os_unix.h	Thu May 10 19:43:10 2007
+--- src/os_unix.h	Sat Jul  7 13:08:56 2007
+***************
+*** 508,513 ****
+--- 508,516 ----
+  #if !defined(S_ISFIFO) && defined(S_IFIFO)
+  # define	S_ISFIFO(m) (((m) & S_IFMT) == S_IFIFO)
+  #endif
++ #if !defined(S_ISCHR) && defined(S_IFCHR)
++ # define	S_ISCHR(m) (((m) & S_IFMT) == S_IFCHR)
++ #endif
+  
+  /* Note: Some systems need both string.h and strings.h (Savage).  However,
+   * some systems can't handle both, only use string.h in that case. */
+*** ../vim-7.1.026/src/version.c	Tue Jul 10 14:02:51 2007
+--- src/version.c	Tue Jul 10 17:00:43 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     27,
+  /**/
+
+-- 
+Every exit is an entrance into something else.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

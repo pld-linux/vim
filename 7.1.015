@@ -1,0 +1,97 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.015
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.015
+Problem:    MzScheme interface: current-library-collection-paths produces no
+	    list.  Interface doesn't build on a Mac.
+Solution:   Use a list instead of a pair. (Bernhard Fisseni)  Use "-framework"
+	    argument for MZSCHEME_LIBS in configure.
+Files:	    src/configure.in, src/if_mzsch.c, src/auto/configure
+
+
+*** ../vim-7.1.014/src/configure.in	Sat May 12 16:30:49 2007
+--- src/configure.in	Sun Jun 10 16:47:43 2007
+***************
+*** 423,429 ****
+    fi
+  
+    if test "X$vi_cv_path_mzscheme_pfx" != "X"; then
+!     if test -f "${vi_cv_path_mzscheme_pfx}/lib/libmzgc.a"; then
+        MZSCHEME_LIBS="${vi_cv_path_mzscheme_pfx}/lib/libmzscheme.a ${vi_cv_path_mzscheme_pfx}/lib/libmzgc.a"
+      else
+        MZSCHEME_LIBS="-L${vi_cv_path_mzscheme_pfx}/lib -lmzscheme -lmzgc"
+--- 423,431 ----
+    fi
+  
+    if test "X$vi_cv_path_mzscheme_pfx" != "X"; then
+!     if test "x$MACOSX" = "xyes"; then
+!       MZSCHEME_LIBS="-framework PLT_MzScheme"
+!     elif test -f "${vi_cv_path_mzscheme_pfx}/lib/libmzgc.a"; then
+        MZSCHEME_LIBS="${vi_cv_path_mzscheme_pfx}/lib/libmzscheme.a ${vi_cv_path_mzscheme_pfx}/lib/libmzgc.a"
+      else
+        MZSCHEME_LIBS="-L${vi_cv_path_mzscheme_pfx}/lib -lmzscheme -lmzgc"
+*** ../vim-7.1.014/src/if_mzsch.c	Sat May 12 17:29:20 2007
+--- src/if_mzsch.c	Sun Jun 10 16:39:51 2007
+***************
+*** 773,780 ****
+  #ifdef MZSCHEME_COLLECTS
+      /* setup 'current-library-collection-paths' parameter */
+      scheme_set_param(scheme_config, MZCONFIG_COLLECTION_PATHS,
+! 	    scheme_make_pair(scheme_make_string(MZSCHEME_COLLECTS),
+! 		scheme_null));
+  #endif
+  #ifdef HAVE_SANDBOX
+      /* setup sandbox guards */
+--- 773,779 ----
+  #ifdef MZSCHEME_COLLECTS
+      /* setup 'current-library-collection-paths' parameter */
+      scheme_set_param(scheme_config, MZCONFIG_COLLECTION_PATHS,
+! 	    scheme_build_list(0, scheme_make_string(MZSCHEME_COLLECTS)));
+  #endif
+  #ifdef HAVE_SANDBOX
+      /* setup sandbox guards */
+*** ../vim-7.1.014/src/auto/configure	Sat May 12 16:23:27 2007
+--- src/auto/configure	Sun Jun 10 16:49:58 2007
+***************
+*** 3843,3849 ****
+    fi
+  
+    if test "X$vi_cv_path_mzscheme_pfx" != "X"; then
+!     if test -f "${vi_cv_path_mzscheme_pfx}/lib/libmzgc.a"; then
+        MZSCHEME_LIBS="${vi_cv_path_mzscheme_pfx}/lib/libmzscheme.a ${vi_cv_path_mzscheme_pfx}/lib/libmzgc.a"
+      else
+        MZSCHEME_LIBS="-L${vi_cv_path_mzscheme_pfx}/lib -lmzscheme -lmzgc"
+--- 3843,3851 ----
+    fi
+  
+    if test "X$vi_cv_path_mzscheme_pfx" != "X"; then
+!     if test "x$MACOSX" = "xyes"; then
+!       MZSCHEME_LIBS="-framework PLT_MzScheme"
+!     elif test -f "${vi_cv_path_mzscheme_pfx}/lib/libmzgc.a"; then
+        MZSCHEME_LIBS="${vi_cv_path_mzscheme_pfx}/lib/libmzscheme.a ${vi_cv_path_mzscheme_pfx}/lib/libmzgc.a"
+      else
+        MZSCHEME_LIBS="-L${vi_cv_path_mzscheme_pfx}/lib -lmzscheme -lmzgc"
+*** ../vim-7.1.014/src/version.c	Thu Jun 28 12:44:56 2007
+--- src/version.c	Thu Jun 28 13:00:52 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     15,
+  /**/
+
+-- 
+You know you use Vim too much when you have this alias in your
+~/.bashrc file: alias :e=/bin/vim             (Eljay Love-Jensen)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

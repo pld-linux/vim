@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.026
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.026
+Problem:    "[p" doesn't work in Visual mode. (David Brown)
+Solution:   Use checkclearop() instead of checkclearopq().
+Files:	    src/normal.c
+
+
+*** ../vim-7.1.025/src/normal.c	Thu May 10 18:45:26 2007
+--- src/normal.c	Wed Jul  4 21:16:36 2007
+***************
+*** 6379,6385 ****
+       */
+      else if (cap->nchar == 'p' || cap->nchar == 'P')
+      {
+! 	if (!checkclearopq(cap->oap))
+  	{
+  	    prep_redo_cmd(cap);
+  	    do_put(cap->oap->regname,
+--- 6379,6385 ----
+       */
+      else if (cap->nchar == 'p' || cap->nchar == 'P')
+      {
+! 	if (!checkclearop(cap->oap))
+  	{
+  	    prep_redo_cmd(cap);
+  	    do_put(cap->oap->regname,
+*** ../vim-7.1.025/src/version.c	Tue Jul 10 13:27:46 2007
+--- src/version.c	Tue Jul 10 14:01:52 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     26,
+  /**/
+
+-- 
+BRIDGEKEEPER: What is the air-speed velocity of an unladen swallow?
+ARTHUR:       What do you mean?  An African or European swallow?
+BRIDGEKEEPER: Er ...  I don't know that ... Aaaaarrrrrrggghhh!
+   BRIDGEKEEPER is cast into the gorge.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
