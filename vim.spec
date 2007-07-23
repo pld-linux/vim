@@ -19,7 +19,7 @@
 #
 %define		_ver		7.1
 %define		_patchlevel	0
-%define		_rel		4
+%define		_rel		33
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -93,6 +93,7 @@ Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-selinux.patch
 Patch106:	%{name}-autopaste.patch
 Patch107:	%{name}-ft-cron.patch
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 33
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -115,7 +116,7 @@ BuildRequires:	libbonoboui-devel >= 2.2.0
 BuildRequires:	libgnomeui-devel >= 2.2.0.1
 BuildRequires:	nautilus-devel >= 2.2.0
 %endif
-BuildRequires:	rpmbuild(macros) >= 1.311
+BuildRequires:	rpmbuild(macros) >= 1.351
 %if %{with static}
 BuildRequires:	acl-static
 BuildRequires:	attr-static
@@ -525,6 +526,10 @@ element bonobo.
 
 %prep
 %setup -q -n %{name}71 -b1 -b2
+
+# official patches
+%patchset_patch 1 33
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
