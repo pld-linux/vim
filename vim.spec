@@ -93,7 +93,7 @@ Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-selinux.patch
 Patch106:	%{name}-autopaste.patch
 Patch107:	%{name}-ft-cron.patch
-%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 33
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 %{_patchlevel}
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -528,7 +528,7 @@ element bonobo.
 %setup -q -n %{name}71 -b1 -b2
 
 # official patches
-%patchset_patch 1 33
+%patchset_patch 1 %{_patchlevel}
 
 %patch0 -p1
 %patch1 -p1
