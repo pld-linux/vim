@@ -19,7 +19,7 @@
 #
 %define		_ver		7.1
 %define		_patchlevel	33
-%define		_rel		33
+%define		_rel		1
 
 # cflags get changed while configuring
 %undefine	configure_cache
