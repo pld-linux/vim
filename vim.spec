@@ -1,7 +1,6 @@
 # TODO:
 # - merge with AC-branch
 # - some nice icon
-# - bonobo patches need update
 # - create vim-full (better name, anybody?) or/and other packages
 #   for scripting languages support
 #
@@ -15,12 +14,11 @@
 %bcond_with	python		# with Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
-%bcond_with	bonobo		# with bonobo component (breaks other things)
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.1
-%define		_patchlevel	035
+%define		_patchlevel	063
 %define		_rel		2
 
 # cflags get changed while configuring
@@ -87,10 +85,7 @@ Patch20:	%{name}-tutor-lessdeps.patch
 Patch21:	%{name}-nagios.patch
 Patch22:	%{name}-filetypes.patch
 Patch23:	%{name}-man_installation.patch
-Patch100:	%{name}-bonobo-20050909.patch
-Patch101:	%{name}-bonobo.patch
 Patch102:	%{name}-gtkfilechooser.patch
-Patch103:	%{name}-gtkfilechooser-bonobo.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-selinux.patch
 Patch106:	%{name}-autopaste.patch
@@ -112,12 +107,6 @@ BuildRequires:	ncurses-devel
 %{?with_tcl:BuildRequires:	tcl-devel}
 %{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 Obsoletes:	kvim
-%if %{with bonobo}
-BuildRequires:	ORBit2-devel
-BuildRequires:	libbonoboui-devel >= 2.2.0
-BuildRequires:	libgnomeui-devel >= 2.2.0.1
-BuildRequires:	nautilus-devel >= 2.2.0
-%endif
 BuildRequires:	rpmbuild(macros) >= 1.351
 %if %{with static}
 BuildRequires:	acl-static
@@ -508,24 +497,6 @@ GNOME, что позволяет запускать VIM как приложен�
 дозволяє запускати VIM як прикладну програму X Window System - з
 повністю графічним інтерфейсом та підтримкою миші.
 
-%package -n gvim-bonobo
-Summary:	Vim for X Window built as bonobo component
-Summary(pl.UTF-8):	Vim dla X Window zbudowany jako element bonobo
-Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
-Requires:	iconv
-Provides:	gvim
-Provides:	vi-editor
-Obsoletes:	vim-X11
-
-%description -n gvim-bonobo
-The classic Unix text editor now also under X Window System! This
-version is build as bonobo component.
-
-%description -n gvim-bonobo -l pl.UTF-8
-Wersja edytora Vim pracująca w środowisku X Window, zbudowana jako
-element bonobo.
-
 %prep
 %setup -q -n %{name}71 -b1 -b2
 
@@ -557,14 +528,6 @@ element bonobo.
 %patch22 -p1
 %patch23 -p1
 
-# bonobo
-%if %{with bonobo}
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
-%patch103 -p1
-%endif
-
 # home etc
 %{?with_home_etc:%patch104 -p1}
 
@@ -592,33 +555,6 @@ cp -f configure auto
 
 install -d bin
 
-%if %{with bonobo}
-%{__make} distclean
-%configure \
-	--with-features=huge \
-	--enable-gui=gnome2 \
-	--enable-bonobo \
-	--enable-gtk2-check \
-	--enable-gnome-check \
-	--with-x \
-	%{!?with_perl:--disable-perlinterp} \
-	%{?with_perl:--enable-perlinterp} \
-	%{!?with_python:--disable-pythoninterp} \
-	%{?with_python:--enable-pythoninterp} \
-	%{!?with_ruby:--disable-rubyinterp} \
-	%{?with_ruby:--enable-rubyinterp} \
-	%{!?with_tcl:--disable-tclinterp} \
-	%{?with_tcl:--enable-tclinterp} \
-	--disable-gpm \
-	--enable-cscope \
-	--enable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--with-compiledby="PLD Linux Distribution"
-
-%{__make} vim-component vim-factory Vim_Control.server
-mv vim-component vim-factory Vim_Control.server bin/
-%endif
-
 %if %{with static}
 %{__make} distclean
 LDFLAGS="%{rpmldflags} -static"
@@ -632,7 +568,6 @@ LDFLAGS="%{rpmldflags} -static"
 	--disable-cscope \
 	--disable-gpm \
 	--disable-multibyte \
-	%{?with_bonobo:--disable-bonobo} \
 	--with-features=small \
 	--with-tlib="ncurses -ltinfo" \
 	--disable-nls \
@@ -657,7 +592,6 @@ LDFLAGS="%{rpmldflags}"
 	%{?with_ruby:--enable-rubyinterp} \
 	%{!?with_tcl:--disable-tclinterp} \
 	%{?with_tcl:--enable-tclinterp} \
-	%{?with_bonobo:--disable-bonobo} \
 	--enable-cscope \
 	--enable-gpm \
 	--with-features=huge \
@@ -685,7 +619,6 @@ mv -f vim bin/vim.ncurses
 	%{?with_ruby:--enable-rubyinterp} \
 	%{!?with_tcl:--disable-tclinterp} \
 	%{?with_tcl:--enable-tclinterp} \
-	%{?with_bonobo:--disable-bonobo} \
 	--enable-cscope \
 	--enable-fontset \
 	--disable-gpm \
@@ -714,7 +647,6 @@ mv -f vim bin/gvim.athena
 	%{?with_ruby:--enable-rubyinterp} \
 	%{!?with_tcl:--disable-tclinterp} \
 	%{?with_tcl:--enable-tclinterp} \
-	%{?with_bonobo:--disable-bonobo} \
 	--enable-multibyte \
 	--enable-cscope \
 	--enable-fontset \
@@ -744,7 +676,6 @@ mv -f vim bin/gvim.motif
 	%{?with_ruby:--enable-rubyinterp} \
 	%{!?with_tcl:--disable-tclinterp} \
 	%{?with_tcl:--enable-tclinterp} \
-	%{?with_bonobo:--disable-bonobo} \
 	--disable-gpm \
 	--enable-cscope \
 	--with-tlib="ncurses -ltinfo" \
@@ -761,7 +692,6 @@ mv -f vim bin/gvim.gtk
 %configure \
 	--with-features=huge \
 	--enable-gui=gnome2 \
-	%{?with_bonobo:--disable-bonobo} \
 	--enable-gtk2-check \
 	--enable-gnome-check \
 	--with-x \
@@ -864,13 +794,6 @@ install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,32x32,48x48}/apps
 install runtime/vim16x16.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/16x16/apps/vim.png
 install runtime/vim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/vim.png
 install runtime/vim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/vim.png
-
-# Bonobo
-%if %{with bonobo}
-install -d $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
-install src/bin/Vim_Control.server $RPM_BUILD_ROOT%{_libdir}/bonobo/servers
-install src/bin/vim-{component,factory} $RPM_BUILD_ROOT%{_bindir}
-%endif
 
 bzip2 -dc %{SOURCE3} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
@@ -1154,12 +1077,4 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.gnome
 %{_desktopdir}/gvim-gnome.desktop
-%endif
-
-%if %{with bonobo}
-%files -n gvim-bonobo
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/vim-component
-%attr(755,root,root) %{_bindir}/vim-factory
-%{_libdir}/bonobo/servers/*
 %endif
