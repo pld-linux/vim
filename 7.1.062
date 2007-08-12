@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.062
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.062 (after 7.1.038)
+Problem:    Indents of C comments can be wrong. (John Mullin)
+Solution:   Adjust ind_len. (Chris Lubinski)
+Files:	    src/misc1.c
+
+
+*** ../vim-7.1.061/src/misc1.c	Mon Aug  6 22:27:13 2007
+--- src/misc1.c	Fri Aug 10 19:41:42 2007
+***************
+*** 222,228 ****
+  	 * than old) */
+  	while (vim_iswhite(*p))
+  	    (void)*p++;
+! 	todo = size-ind_done;
+      }
+      else
+      {
+--- 222,231 ----
+  	 * than old) */
+  	while (vim_iswhite(*p))
+  	    (void)*p++;
+! 	todo = size - ind_done;
+! 	ind_len += todo;    /* Set total length of indent in characters,
+! 			     * which may have been undercounted until now  */
+! 
+      }
+      else
+      {
+*** ../vim-7.1.061/src/version.c	Sat Aug 11 13:57:31 2007
+--- src/version.c	Sat Aug 11 14:30:52 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     62,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+120. You ask a friend, "What's that big shiny thing?" He says, "It's the sun."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

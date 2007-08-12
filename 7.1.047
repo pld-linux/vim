@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.047
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.047
+Problem:    vim_regcomp() called with invalid argument. (Xiaozhou Liu)
+Solution:   Change TRUE to RE_MAGIC + RE_STRING.
+Files:	    src/ex_eval.c
+
+
+*** ../vim-7.1.046/src/ex_eval.c	Thu May 10 20:23:50 2007
+--- src/ex_eval.c	Sat Jul 28 13:09:00 2007
+***************
+*** 1551,1557 ****
+  		}
+  		save_cpo  = p_cpo;
+  		p_cpo = (char_u *)"";
+! 		regmatch.regprog = vim_regcomp(pat, TRUE);
+  		regmatch.rm_ic = FALSE;
+  		if (end != NULL)
+  		    *end = save_char;
+--- 1551,1557 ----
+  		}
+  		save_cpo  = p_cpo;
+  		p_cpo = (char_u *)"";
+! 		regmatch.regprog = vim_regcomp(pat, RE_MAGIC + RE_STRING);
+  		regmatch.rm_ic = FALSE;
+  		if (end != NULL)
+  		    *end = save_char;
+*** ../vim-7.1.046/src/version.c	Mon Jul 30 22:32:11 2007
+--- src/version.c	Wed Aug  1 15:46:28 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     47,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+80. At parties, you introduce your spouse as your "service provider."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

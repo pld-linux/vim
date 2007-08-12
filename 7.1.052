@@ -1,0 +1,89 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.052
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.052
+Problem:    When creating a new match not all fields are initialized, which
+	    may lead to unpredictable results.
+Solution:   Initialise rmm_ic and rmm_maxcol.
+Files:	    src/window.c
+
+
+*** ../vim-7.1.051/src/window.c	Thu Jul 26 22:55:11 2007
+--- src/window.c	Sun Aug  5 17:17:51 2007
+***************
+*** 6200,6206 ****
+      matchitem_T *prev;
+      matchitem_T *m;
+      int		hlg_id;
+!     regmmatch_T match;
+  
+      if (*grp == NUL || *pat == NUL)
+  	return -1;
+--- 6243,6249 ----
+      matchitem_T *prev;
+      matchitem_T *m;
+      int		hlg_id;
+!     regprog_T	*regprog;
+  
+      if (*grp == NUL || *pat == NUL)
+  	return -1;
+***************
+*** 6227,6233 ****
+  	EMSG2(_(e_nogroup), grp);
+  	return -1;
+      }
+!     if ((match.regprog = vim_regcomp(pat, RE_MAGIC)) == NULL)
+      {
+  	EMSG2(_(e_invarg2), pat);
+  	return -1;
+--- 6270,6276 ----
+  	EMSG2(_(e_nogroup), grp);
+  	return -1;
+      }
+!     if ((regprog = vim_regcomp(pat, RE_MAGIC)) == NULL)
+      {
+  	EMSG2(_(e_invarg2), pat);
+  	return -1;
+***************
+*** 6250,6256 ****
+      m->priority = prio;
+      m->pattern = vim_strsave(pat);
+      m->hlg_id = hlg_id;
+!     m->match.regprog = match.regprog;
+  
+      /* Insert new match.  The match list is in ascending order with regard to
+       * the match priorities. */
+--- 6293,6301 ----
+      m->priority = prio;
+      m->pattern = vim_strsave(pat);
+      m->hlg_id = hlg_id;
+!     m->match.regprog = regprog;
+!     m->match.rmm_ic = FALSE;
+!     m->match.rmm_maxcol = 0;
+  
+      /* Insert new match.  The match list is in ascending order with regard to
+       * the match priorities. */
+*** ../vim-7.1.051/src/version.c	Sun Aug  5 18:32:21 2007
+--- src/version.c	Sun Aug  5 18:47:55 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     52,
+  /**/
+
+-- 
+From "know your smileys":
+ 8-O 	"Omigod!!" (done "rm -rf *" ?)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

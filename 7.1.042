@@ -1,0 +1,75 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.042
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.042 (after 7.1.040)
+Problem:    Internal error when using matchadd(). (David Larson)
+Solution:   Check the third argument to be present before using the fourth
+	    argument. (Martin Toft)
+Files:	    src/eval.c
+
+
+*** ../vim-7.1.041/src/eval.c	Thu Jul 26 22:55:11 2007
+--- src/eval.c	Fri Jul 27 21:29:39 2007
+***************
+*** 7108,7114 ****
+      {"getftype",	1, 1, f_getftype},
+      {"getline",		1, 2, f_getline},
+      {"getloclist",	1, 1, f_getqflist},
+!     {"getmatches",  	0, 0, f_getmatches},
+      {"getpos",		1, 1, f_getpos},
+      {"getqflist",	0, 0, f_getqflist},
+      {"getreg",		0, 2, f_getreg},
+--- 7108,7114 ----
+      {"getftype",	1, 1, f_getftype},
+      {"getline",		1, 2, f_getline},
+      {"getloclist",	1, 1, f_getqflist},
+!     {"getmatches",	0, 0, f_getmatches},
+      {"getpos",		1, 1, f_getpos},
+      {"getqflist",	0, 0, f_getqflist},
+      {"getreg",		0, 2, f_getreg},
+***************
+*** 12526,12534 ****
+      if (grp == NULL || pat == NULL)
+  	return;
+      if (argvars[2].v_type != VAR_UNKNOWN)
+  	prio = get_tv_number_chk(&argvars[2], &error);
+!     if (argvars[3].v_type != VAR_UNKNOWN)
+! 	id = get_tv_number_chk(&argvars[3], &error);
+      if (error == TRUE)
+  	return;
+      if (id >= 1 && id <= 3)
+--- 12526,12536 ----
+      if (grp == NULL || pat == NULL)
+  	return;
+      if (argvars[2].v_type != VAR_UNKNOWN)
++     {
+  	prio = get_tv_number_chk(&argvars[2], &error);
+! 	if (argvars[3].v_type != VAR_UNKNOWN)
+! 	    id = get_tv_number_chk(&argvars[3], &error);
+!     }
+      if (error == TRUE)
+  	return;
+      if (id >= 1 && id <= 3)
+*** ../vim-7.1.041/src/version.c	Thu Jul 26 23:10:50 2007
+--- src/version.c	Fri Jul 27 21:31:13 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     42,
+  /**/
+
+-- 
+The future isn't what it used to be.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

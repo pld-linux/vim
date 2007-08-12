@@ -1,0 +1,222 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.061
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.061
+Problem:    Win32: When 'encoding' is "latin1" 'ignorecase' doesn't work for
+	    characters with umlaut. (Joachim Hofmann)
+Solution:   Do not use islower()/isupper()/tolower()/toupper() but our own
+	    functions. (Chris Lubinski)
+Files:	    src/mbyte.c, src/regexp.c, src/vim.h
+
+
+*** ../vim-7.1.060/src/mbyte.c	Thu May 10 19:45:20 2007
+--- src/mbyte.c	Sat Aug  4 13:44:36 2007
+***************
+*** 2320,2326 ****
+  		/* Single byte: first check normally, then with ignore case. */
+  		if (s1[i] != s2[i])
+  		{
+! 		    cdiff = TOLOWER_LOC(s1[i]) - TOLOWER_LOC(s2[i]);
+  		    if (cdiff != 0)
+  			return cdiff;
+  		}
+--- 2320,2326 ----
+  		/* Single byte: first check normally, then with ignore case. */
+  		if (s1[i] != s2[i])
+  		{
+! 		    cdiff = MB_TOLOWER(s1[i]) - MB_TOLOWER(s2[i]);
+  		    if (cdiff != 0)
+  			return cdiff;
+  		}
+*** ../vim-7.1.060/src/regexp.c	Mon Aug  6 22:27:13 2007
+--- src/regexp.c	Sun Aug  5 15:43:27 2007
+***************
+*** 2220,2226 ****
+  				break;
+  			    case CLASS_LOWER:
+  				for (cu = 1; cu <= 255; cu++)
+! 				    if (islower(cu))
+  					regc(cu);
+  				break;
+  			    case CLASS_PRINT:
+--- 2220,2226 ----
+  				break;
+  			    case CLASS_LOWER:
+  				for (cu = 1; cu <= 255; cu++)
+! 				    if (MB_ISLOWER(cu))
+  					regc(cu);
+  				break;
+  			    case CLASS_PRINT:
+***************
+*** 2240,2246 ****
+  				break;
+  			    case CLASS_UPPER:
+  				for (cu = 1; cu <= 255; cu++)
+! 				    if (isupper(cu))
+  					regc(cu);
+  				break;
+  			    case CLASS_XDIGIT:
+--- 2240,2246 ----
+  				break;
+  			    case CLASS_UPPER:
+  				for (cu = 1; cu <= 255; cu++)
+! 				    if (MB_ISUPPER(cu))
+  					regc(cu);
+  				break;
+  			    case CLASS_XDIGIT:
+***************
+*** 3465,3471 ****
+  			(enc_utf8 && utf_fold(prog->regstart) == utf_fold(c)))
+  			|| (c < 255 && prog->regstart < 255 &&
+  #endif
+! 			    TOLOWER_LOC(prog->regstart) == TOLOWER_LOC(c)))))
+  	    retval = regtry(prog, col);
+  	else
+  	    retval = 0;
+--- 3465,3471 ----
+  			(enc_utf8 && utf_fold(prog->regstart) == utf_fold(c)))
+  			|| (c < 255 && prog->regstart < 255 &&
+  #endif
+! 			    MB_TOLOWER(prog->regstart) == MB_TOLOWER(c)))))
+  	    retval = regtry(prog, col);
+  	else
+  	    retval = 0;
+***************
+*** 4200,4206 ****
+  #ifdef FEAT_MBYTE
+  			    !enc_utf8 &&
+  #endif
+! 			    TOLOWER_LOC(*opnd) != TOLOWER_LOC(*reginput))))
+  		    status = RA_NOMATCH;
+  		else if (*opnd == NUL)
+  		{
+--- 4200,4206 ----
+  #ifdef FEAT_MBYTE
+  			    !enc_utf8 &&
+  #endif
+! 			    MB_TOLOWER(*opnd) != MB_TOLOWER(*reginput))))
+  		    status = RA_NOMATCH;
+  		else if (*opnd == NUL)
+  		{
+***************
+*** 4733,4742 ****
+  		    rst.nextb = *OPERAND(next);
+  		    if (ireg_ic)
+  		    {
+! 			if (isupper(rst.nextb))
+! 			    rst.nextb_ic = TOLOWER_LOC(rst.nextb);
+  			else
+! 			    rst.nextb_ic = TOUPPER_LOC(rst.nextb);
+  		    }
+  		    else
+  			rst.nextb_ic = rst.nextb;
+--- 4733,4742 ----
+  		    rst.nextb = *OPERAND(next);
+  		    if (ireg_ic)
+  		    {
+! 			if (MB_ISUPPER(rst.nextb))
+! 			    rst.nextb_ic = MB_TOLOWER(rst.nextb);
+  			else
+! 			    rst.nextb_ic = MB_TOUPPER(rst.nextb);
+  		    }
+  		    else
+  			rst.nextb_ic = rst.nextb;
+***************
+*** 5558,5568 ****
+  	    int	    cu, cl;
+  
+  	    /* This doesn't do a multi-byte character, because a MULTIBYTECODE
+! 	     * would have been used for it. */
+  	    if (ireg_ic)
+  	    {
+! 		cu = TOUPPER_LOC(*opnd);
+! 		cl = TOLOWER_LOC(*opnd);
+  		while (count < maxcount && (*scan == cu || *scan == cl))
+  		{
+  		    count++;
+--- 5558,5569 ----
+  	    int	    cu, cl;
+  
+  	    /* This doesn't do a multi-byte character, because a MULTIBYTECODE
+! 	     * would have been used for it.  It does handle single-byte
+! 	     * characters, such as latin1. */
+  	    if (ireg_ic)
+  	    {
+! 		cu = MB_TOUPPER(*opnd);
+! 		cl = MB_TOLOWER(*opnd);
+  		while (count < maxcount && (*scan == cu || *scan == cl))
+  		{
+  		    count++;
+***************
+*** 6490,6499 ****
+  	cc = utf_fold(c);
+      else
+  #endif
+! 	 if (isupper(c))
+! 	cc = TOLOWER_LOC(c);
+!     else if (islower(c))
+! 	cc = TOUPPER_LOC(c);
+      else
+  	return vim_strchr(s, c);
+  
+--- 6491,6500 ----
+  	cc = utf_fold(c);
+      else
+  #endif
+! 	 if (MB_ISUPPER(c))
+! 	cc = MB_TOLOWER(c);
+!     else if (MB_ISLOWER(c))
+! 	cc = MB_TOUPPER(c);
+      else
+  	return vim_strchr(s, c);
+  
+*** ../vim-7.1.060/src/vim.h	Sat May 12 15:08:22 2007
+--- src/vim.h	Sat Aug  4 13:57:36 2007
+***************
+*** 1380,1387 ****
+  #endif
+  
+  #ifdef FEAT_MBYTE
+! # define MB_STRICMP(d, s)	(has_mbyte ? mb_strnicmp((char_u *)(d), (char_u *)(s), (int)MAXCOL) : STRICMP((d), (s)))
+! # define MB_STRNICMP(d, s, n)	(has_mbyte ? mb_strnicmp((char_u *)(d), (char_u *)(s), (int)(n)) : STRNICMP((d), (s), (n)))
+  #else
+  # define MB_STRICMP(d, s)	STRICMP((d), (s))
+  # define MB_STRNICMP(d, s, n)	STRNICMP((d), (s), (n))
+--- 1380,1393 ----
+  #endif
+  
+  #ifdef FEAT_MBYTE
+! /* We need to call mb_stricmp() even when we aren't dealing with a multi-byte
+!  * encoding because mb_stricmp() takes care of all ascii and non-ascii
+!  * encodings, including characters with umluats in latin1, etc., while
+!  * STRICMP() only handles the system locale version, which often does not
+!  * handle non-ascii properly. */
+! 
+! # define MB_STRICMP(d, s)	mb_strnicmp((char_u *)(d), (char_u *)(s), (int)MAXCOL)
+! # define MB_STRNICMP(d, s, n)	mb_strnicmp((char_u *)(d), (char_u *)(s), (int)(n))
+  #else
+  # define MB_STRICMP(d, s)	STRICMP((d), (s))
+  # define MB_STRNICMP(d, s, n)	STRNICMP((d), (s), (n))
+*** ../vim-7.1.060/src/version.c	Sat Aug 11 13:37:36 2007
+--- src/version.c	Sat Aug 11 13:55:24 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     61,
+  /**/
+
+-- 
+Support your right to bare arms!  Wear short sleeves!
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

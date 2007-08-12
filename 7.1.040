@@ -1,0 +1,1843 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.040
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.040
+Problem:    ":match" only supports three matches.
+Solution:   Add functions clearmatches(), getmatches(), matchadd(),
+	    matchdelete() and setmatches().  Changed the data structures for
+	    this.  A small bug in syntax.c is fixed, so newly created
+	    highlight groups can have their name resolved correctly from their
+	    ID.  (Martin Toft)
+Files:	    runtime/doc/eval.txt, runtime/doc/pattern.txt,
+	    runtime/doc/usr_41.txt, src/eval.c, src/ex_docmd.c,
+	    src/proto/window.pro, src/screen.c, src/structs.h, src/syntax.c,
+	    src/testdir/Makefile, src/testdir/test63.in,
+	    src/testdir/test63.ok, src/window.c
+
+
+*** ../vim-7.1.039/runtime/doc/eval.txt	Tue Jul 17 16:31:15 2007
+--- runtime/doc/eval.txt	Wed Jul 25 21:05:56 2007
+***************
+*** 1,4 ****
+! *eval.txt*      For Vim version 7.1.  Last change: 2007 Jul 11
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *eval.txt*      For Vim version 7.1.  Last change: 2007 Jul 25
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 1557,1562 ****
+--- 1557,1563 ----
+  changenr()			Number  current change number
+  char2nr( {expr})		Number	ASCII value of first char in {expr}
+  cindent( {lnum})		Number	C indent for line {lnum}
++ clearmatches()			None	clear all matches
+  col( {expr})			Number	column nr of cursor or mark
+  complete({startcol}, {matches})	String  set Insert mode completion
+  complete_add( {expr})		Number	add completion match
+***************
+*** 1622,1627 ****
+--- 1623,1629 ----
+  getline( {lnum})		String	line {lnum} of current buffer
+  getline( {lnum}, {end})		List	lines {lnum} to {end} of current buffer
+  getloclist({nr})		List	list of location list items
++ getmatches()			List	list of current matches
+  getpos( {expr})			List	position of cursor, mark, etc.
+  getqflist()			List	list of quickfix items
+  getreg( [{regname} [, 1]])	String	contents of register
+***************
+*** 1676,1682 ****
+--- 1678,1687 ----
+  				String	check for mappings matching {name}
+  match( {expr}, {pat}[, {start}[, {count}]])
+  				Number	position where {pat} matches in {expr}
++ matchadd( {group}, {pattern}[, {priority}[, {id}]])
++ 				Number	highlight {pattern} with {group}
+  matcharg( {nr})			List	arguments of |:match|
++ matchdelete( {id})		Number	delete match identified by {id}
+  matchend( {expr}, {pat}[, {start}[, {count}]])
+  				Number	position where {pat} ends in {expr}
+  matchlist( {expr}, {pat}[, {start}[, {count}]])
+***************
+*** 1731,1736 ****
+--- 1736,1742 ----
+  setline( {lnum}, {line})	Number	set line {lnum} to {line}
+  setloclist( {nr}, {list}[, {action}])
+  				Number	modify location list using {list}
++ setmatches( {list})		Number	restore a list of matches
+  setpos( {expr}, {list})		none	set the {expr} position to {list}
+  setqflist( {list}[, {action}])	Number	modify quickfix list using {list}
+  setreg( {n}, {v}[, {opt}])	Number	set register to value and type
+***************
+*** 2012,2017 ****
+--- 2018,2027 ----
+  		feature, -1 is returned.
+  		See |C-indenting|.
+  
++ clearmatches()						*clearmatches()*
++ 		Clears all matches previously defined by |matchadd()| and the
++ 		|:match| commands.
++ 
+  							*col()*
+  col({expr})	The result is a Number, which is the byte index of the column
+  		position given with {expr}.  The accepted positions are:
+***************
+*** 2918,2923 ****
+--- 2928,2955 ----
+  		returned.  For an invalid window number {nr}, an empty list is
+  		returned. Otherwise, same as getqflist().
+  
++ getmatches()						*getmatches()*
++ 		Returns a |List| with all matches previously defined by
++ 		|matchadd()| and the |:match| commands.  |getmatches()| is
++ 		useful in combination with |setmatches()|, as |setmatches()|
++ 		can restore a list of matches saved by |getmatches()|.
++ 		Example: >
++ 			:echo getmatches()
++ <			[{'group': 'MyGroup1', 'pattern': 'TODO',
++ 			'priority': 10, 'id': 1}, {'group': 'MyGroup2',
++ 			'pattern': 'FIXME', 'priority': 10, 'id': 2}] >
++ 			:let m = getmatches()
++ 			:call clearmatches()
++ 			:echo getmatches()
++ <			[] >
++ 			:call setmatches(m)
++ 			:echo getmatches()
++ <			[{'group': 'MyGroup1', 'pattern': 'TODO',
++ 			'priority': 10, 'id': 1}, {'group': 'MyGroup2',
++ 			'pattern': 'FIXME', 'priority': 10, 'id': 2}] >
++ 			:unlet m
++ <
++ 
+  getqflist()						*getqflist()*
+  		Returns a list with all the current quickfix errors.  Each
+  		list item is a dictionary with these entries:
+***************
+*** 3622,3627 ****
+--- 3654,3697 ----
+  		the pattern.  'smartcase' is NOT used.  The matching is always
+  		done like 'magic' is set and 'cpoptions' is empty.
+  
++ 					*matchadd()* *E798* *E799* *E801*
++ matchadd({group}, {pattern}[, {priority}[, {id}]])
++ 		Defines a pattern to be highlighted in the current window (a
++ 		"match").  It will be highlighted with {group}.  Returns an
++ 		identification number (ID), which can be used to delete the
++ 		match using |matchdelete()|.
++ 
++ 		The optional {priority} argument assigns a priority to the
++ 		match.  A match with a high priority will have its
++ 		highlighting overrule that of a match with a lower priority.
++ 		A priority is specified as an integer (negative numbers are no
++ 		exception).  If the {priority} argument is not specified, the
++ 		default priority is 10.  The priority of 'hlsearch' is zero,
++ 		hence all matches with a priority greater than zero will
++ 		overrule it.  Syntax highlighting (see 'syntax') is a separate
++ 		mechanism, and regardless of the chosen priority a match will
++ 		always overrule syntax highlighting.
++ 
++ 		The optional {id} argument allows the request for a specific
++ 		match ID.  If a specified ID is already taken, an error
++ 		message will appear and the match will not be added.  An ID
++ 		is specified as a positive integer (zero excluded).  IDs 1, 2
++ 		and 3 are reserved for |:match|, |:2match| and |:3match|,
++ 		respectively.  If the {id} argument is not specified,
++ 		|matchadd()| automatically chooses a free ID.
++ 
++ 		The number of matches is not limited, as it is the case with
++ 		the |:match| commands.
++ 
++ 		Example: >
++ 			:highlight MyGroup ctermbg=green guibg=green
++ 			:let m = matchadd("MyGroup", "TODO")
++ <		Deletion of the pattern: >
++ 			:call matchdelete(m)
++ 
++ <		A list of matches defined by |matchadd()| and |:match| are
++ 		available from |getmatches()|.  All matches can be deleted in
++ 		one operation by |clearmatches()|.
+  
+  matcharg({nr})							*matcharg()*
+  		Selects the {nr} match item, as set with a |:match|,
+***************
+*** 3631,3638 ****
+  			The pattern used.
+  		When {nr} is not 1, 2 or 3 returns an empty |List|.
+  		When there is no match item set returns ['', ''].
+! 		This is usef to save and restore a |:match|.
+! 
+  
+  matchend({expr}, {pat}[, {start}[, {count}]])			*matchend()*
+  		Same as match(), but return the index of first character after
+--- 3701,3715 ----
+  			The pattern used.
+  		When {nr} is not 1, 2 or 3 returns an empty |List|.
+  		When there is no match item set returns ['', ''].
+! 		This is useful to save and restore a |:match|.
+! 		Highlighting matches using the |:match| commands are limited
+! 		to three matches. |matchadd()| does not have this limitation.
+! 
+! matchdelete({id})			       *matchdelete()* *E802* *E803*
+! 		Deletes a match with ID {id} previously defined by |matchadd()|
+! 		or one of the |:match| commands.  Returns 0 if succesfull,
+! 		otherwise -1.  See example for |matchadd()|.  All matches can
+! 		be deleted in one operation by |clearmatches()|.
+  
+  matchend({expr}, {pat}[, {start}[, {count}]])			*matchend()*
+  		Same as match(), but return the index of first character after
+***************
+*** 4385,4391 ****
+  		When {nr} is zero the current window is used. For a location
+  		list window, the displayed location list is modified.  For an
+  		invalid window number {nr}, -1 is returned.
+! 		Otherwise, same as setqflist().
+  
+  							*setpos()*
+  setpos({expr}, {list})
+--- 4462,4474 ----
+  		When {nr} is zero the current window is used. For a location
+  		list window, the displayed location list is modified.  For an
+  		invalid window number {nr}, -1 is returned.
+! 		Otherwise, same as |setqflist()|.
+! 		Also see |location-list|.
+! 
+! setmatches({list})					*setmatches()*
+! 		Restores a list of matches saved by |getmatches()|.  Returns 0
+! 		if succesfull, otherwise -1.  All current matches are cleared
+! 		before the list is restored.  See example for |getmatches()|.
+  
+  							*setpos()*
+  setpos({expr}, {list})
+*** ../vim-7.1.039/runtime/doc/pattern.txt	Sat May 12 16:57:31 2007
+--- runtime/doc/pattern.txt	Tue Jul 24 15:47:01 2007
+***************
+*** 1212,1218 ****
+  		{group} must exist at the moment this command is executed.
+  
+  		The {group} highlighting still applies when a character is
+! 		to be highlighted for 'hlsearch'.
+  
+  		Note that highlighting the last used search pattern with
+  		'hlsearch' is used in all windows, while the pattern defined
+--- 1212,1221 ----
+  		{group} must exist at the moment this command is executed.
+  
+  		The {group} highlighting still applies when a character is
+! 		to be highlighted for 'hlsearch', as the highlighting for
+! 		matches is given higher priority than that of 'hlsearch'.
+! 		Syntax highlighting (see 'syntax') is also overruled by
+! 		matches.
+  
+  		Note that highlighting the last used search pattern with
+  		'hlsearch' is used in all windows, while the pattern defined
+***************
+*** 1226,1233 ****
+  		display you may get unexpected results.  That is because Vim
+  		looks for a match in the line where redrawing starts.
+  
+! 		Also see |matcharg()|, it returns the highlight group and
+! 		pattern of a previous :match command.
+  
+  		Another example, which highlights all characters in virtual
+  		column 72 and more: >
+--- 1229,1243 ----
+  		display you may get unexpected results.  That is because Vim
+  		looks for a match in the line where redrawing starts.
+  
+! 		Also see |matcharg()|and |getmatches()|. The former returns
+! 		the highlight group and pattern of a previous |:match|
+! 		command.  The latter returns a list with highlight groups and
+! 		patterns defined by both |matchadd()| and |:match|.
+! 
+! 		Highlighting matches using |:match| are limited to three
+! 		matches (aside from |:match|, |:2match| and |:3match|are
+! 		available). |matchadd()| does not have this limitation and in
+! 		addition makes it possible to prioritize matches.
+  
+  		Another example, which highlights all characters in virtual
+  		column 72 and more: >
+*** ../vim-7.1.039/runtime/doc/usr_41.txt	Sat May 12 15:54:55 2007
+--- runtime/doc/usr_41.txt	Tue Jul 24 15:47:01 2007
+***************
+*** 763,775 ****
+--- 763,784 ----
+  	foldtextresult()	get the text displayed for a closed fold
+  
+  Syntax and highlighting:
++ 	clearmatches()		clear all matches defined by |matchadd()| and
++ 				the |:match| commands
++ 	getmatches()		get all matches defined by |matchadd()| and
++ 				the |:match| commands
+  	hlexists()		check if a highlight group exists
+  	hlID()			get ID of a highlight group
+  	synID()			get syntax ID at a specific position
+  	synIDattr()		get a specific attribute of a syntax ID
+  	synIDtrans()		get translated syntax ID
+  	diff_hlID()		get highlight ID for diff mode at a position
++ 	matchadd()		define a pattern to highlight (a "match")
+  	matcharg()		get info about |:match| arguments
++ 	matchdelete()		delete a match defined by |matchadd()| or a
++ 				|:match| command
++ 	setmatches()		restore a list of matches saved by
++ 				|getmatches()|
+  
+  Spelling:
+  	spellbadword()		locate badly spelled word at or after cursor
+*** ../vim-7.1.039/src/eval.c	Tue Jul 24 14:32:44 2007
+--- src/eval.c	Tue Jul 24 20:40:52 2007
+***************
+*** 475,480 ****
+--- 475,481 ----
+  static void f_changenr __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_char2nr __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_cindent __ARGS((typval_T *argvars, typval_T *rettv));
++ static void f_clearmatches __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_col __ARGS((typval_T *argvars, typval_T *rettv));
+  #if defined(FEAT_INS_EXPAND)
+  static void f_complete __ARGS((typval_T *argvars, typval_T *rettv));
+***************
+*** 529,534 ****
+--- 530,536 ----
+  static void f_getftime __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_getftype __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_getline __ARGS((typval_T *argvars, typval_T *rettv));
++ static void f_getmatches __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_getpos __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_getqflist __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_getreg __ARGS((typval_T *argvars, typval_T *rettv));
+***************
+*** 577,583 ****
+--- 579,587 ----
+  static void f_maparg __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_mapcheck __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_match __ARGS((typval_T *argvars, typval_T *rettv));
++ static void f_matchadd __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_matcharg __ARGS((typval_T *argvars, typval_T *rettv));
++ static void f_matchdelete __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_matchend __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_matchlist __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_matchstr __ARGS((typval_T *argvars, typval_T *rettv));
+***************
+*** 618,623 ****
+--- 622,628 ----
+  static void f_setcmdpos __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_setline __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_setloclist __ARGS((typval_T *argvars, typval_T *rettv));
++ static void f_setmatches __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_setpos __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_setqflist __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_setreg __ARGS((typval_T *argvars, typval_T *rettv));
+***************
+*** 7046,7051 ****
+--- 7051,7057 ----
+      {"changenr",	0, 0, f_changenr},
+      {"char2nr",		1, 1, f_char2nr},
+      {"cindent",		1, 1, f_cindent},
++     {"clearmatches",	0, 0, f_clearmatches},
+      {"col",		1, 1, f_col},
+  #if defined(FEAT_INS_EXPAND)
+      {"complete",	2, 2, f_complete},
+***************
+*** 7102,7107 ****
+--- 7108,7114 ----
+      {"getftype",	1, 1, f_getftype},
+      {"getline",		1, 2, f_getline},
+      {"getloclist",	1, 1, f_getqflist},
++     {"getmatches",  	0, 0, f_getmatches},
+      {"getpos",		1, 1, f_getpos},
+      {"getqflist",	0, 0, f_getqflist},
+      {"getreg",		0, 2, f_getreg},
+***************
+*** 7152,7158 ****
+--- 7159,7167 ----
+      {"maparg",		1, 3, f_maparg},
+      {"mapcheck",	1, 3, f_mapcheck},
+      {"match",		2, 4, f_match},
++     {"matchadd",	2, 4, f_matchadd},
+      {"matcharg",	1, 1, f_matcharg},
++     {"matchdelete",	1, 1, f_matchdelete},
+      {"matchend",	2, 4, f_matchend},
+      {"matchlist",	2, 4, f_matchlist},
+      {"matchstr",	2, 4, f_matchstr},
+***************
+*** 7193,7198 ****
+--- 7202,7208 ----
+      {"setcmdpos",	1, 1, f_setcmdpos},
+      {"setline",		2, 2, f_setline},
+      {"setloclist",	2, 3, f_setloclist},
++     {"setmatches",	1, 1, f_setmatches},
+      {"setpos",		2, 2, f_setpos},
+      {"setqflist",	1, 2, f_setqflist},
+      {"setreg",		2, 3, f_setreg},
+***************
+*** 8243,8248 ****
+--- 8253,8272 ----
+  }
+  
+  /*
++  * "clearmatches()" function
++  */
++ /*ARGSUSED*/
++     static void
++ f_clearmatches(argvars, rettv)
++     typval_T	*argvars;
++     typval_T	*rettv;
++ {
++ #ifdef FEAT_SEARCH_EXTRA
++     clear_matches(curwin);
++ #endif
++ }
++ 
++ /*
+   * "col(string)" function
+   */
+      static void
+***************
+*** 10278,10283 ****
+--- 10302,10341 ----
+  }
+  
+  /*
++  * "getmatches()" function
++  */
++ /*ARGSUSED*/
++     static void
++ f_getmatches(argvars, rettv)
++     typval_T	*argvars;
++     typval_T	*rettv;
++ {
++ #ifdef FEAT_SEARCH_EXTRA
++     dict_T	*dict;
++     matchitem_T	*cur = curwin->w_match_head;
++ 
++     rettv->vval.v_number = 0;
++ 
++     if (rettv_list_alloc(rettv) == OK)
++     {
++ 	while (cur != NULL)
++ 	{
++ 	    dict = dict_alloc();
++ 	    if (dict == NULL)
++ 		return;
++ 	    ++dict->dv_refcount;
++ 	    dict_add_nr_str(dict, "group", 0L, syn_id2name(cur->hlg_id));
++ 	    dict_add_nr_str(dict, "pattern", 0L, cur->pattern);
++ 	    dict_add_nr_str(dict, "priority", (long)cur->priority, NULL);
++ 	    dict_add_nr_str(dict, "id", (long)cur->id, NULL);
++ 	    list_append_dict(rettv->vval.v_list, dict);
++ 	    cur = cur->next;
++ 	}
++     }
++ #endif
++ }
++ 
++ /*
+   * "getpos(string)" function
+   */
+      static void
+***************
+*** 12448,12453 ****
+--- 12506,12547 ----
+  }
+  
+  /*
++  * "matchadd()" function
++  */
++     static void
++ f_matchadd(argvars, rettv)
++     typval_T	*argvars;
++     typval_T	*rettv;
++ {
++ #ifdef FEAT_SEARCH_EXTRA
++     char_u	buf[NUMBUFLEN];
++     char_u	*grp = get_tv_string_buf_chk(&argvars[0], buf);	/* group */
++     char_u	*pat = get_tv_string_buf_chk(&argvars[1], buf);	/* pattern */
++     int		prio = 10;	/* default priority */
++     int		id = -1;
++     int		error = FALSE;
++ 
++     rettv->vval.v_number = -1;
++ 
++     if (grp == NULL || pat == NULL)
++ 	return;
++     if (argvars[2].v_type != VAR_UNKNOWN)
++ 	prio = get_tv_number_chk(&argvars[2], &error);
++     if (argvars[3].v_type != VAR_UNKNOWN)
++ 	id = get_tv_number_chk(&argvars[3], &error);
++     if (error == TRUE)
++ 	return;
++     if (id >= 1 && id <= 3)
++     {
++ 	EMSGN("E798: ID is reserved for \":match\": %ld", id);
++ 	return;
++     }
++ 
++     rettv->vval.v_number = match_add(curwin, grp, pat, prio, id);
++ #endif
++ }
++ 
++ /*
+   * "matcharg()" function
+   */
+      static void
+***************
+*** 12458,12477 ****
+      if (rettv_list_alloc(rettv) == OK)
+      {
+  #ifdef FEAT_SEARCH_EXTRA
+! 	int	mi = get_tv_number(&argvars[0]);
+  
+! 	if (mi >= 1 && mi <= 3)
+  	{
+! 	    list_append_string(rettv->vval.v_list,
+! 				 syn_id2name(curwin->w_match_id[mi - 1]), -1);
+! 	    list_append_string(rettv->vval.v_list,
+! 					     curwin->w_match_pat[mi - 1], -1);
+  	}
+  #endif
+      }
+  }
+  
+  /*
+   * "matchend()" function
+   */
+      static void
+--- 12552,12593 ----
+      if (rettv_list_alloc(rettv) == OK)
+      {
+  #ifdef FEAT_SEARCH_EXTRA
+! 	int	    id = get_tv_number(&argvars[0]);
+! 	matchitem_T *m;
+  
+! 	if (id >= 1 && id <= 3)
+  	{
+! 	    if ((m = (matchitem_T *)get_match(curwin, id)) != NULL)
+! 	    {
+! 		list_append_string(rettv->vval.v_list,
+! 						syn_id2name(m->hlg_id), -1);
+! 		list_append_string(rettv->vval.v_list, m->pattern, -1);
+! 	    }
+! 	    else
+! 	    {
+! 		list_append_string(rettv->vval.v_list, NUL, -1);
+! 		list_append_string(rettv->vval.v_list, NUL, -1);
+! 	    }
+  	}
+  #endif
+      }
+  }
+  
+  /*
++  * "matchdelete()" function
++  */
++     static void
++ f_matchdelete(argvars, rettv)
++     typval_T	*argvars;
++     typval_T	*rettv;
++ {
++ #ifdef FEAT_SEARCH_EXTRA
++     rettv->vval.v_number = match_delete(curwin,
++ 				       (int)get_tv_number(&argvars[0]), TRUE);
++ #endif
++ }
++ 
++ /*
+   * "matchend()" function
+   */
+      static void
+***************
+*** 14506,14511 ****
+--- 14622,14687 ----
+      win = find_win_by_nr(&argvars[0], NULL);
+      if (win != NULL)
+  	set_qf_ll_list(win, &argvars[1], &argvars[2], rettv);
++ }
++ 
++ /*
++  * "setmatches()" function
++  */
++     static void
++ f_setmatches(argvars, rettv)
++     typval_T	*argvars;
++     typval_T	*rettv;
++ {
++ #ifdef FEAT_SEARCH_EXTRA
++     list_T	*l;
++     listitem_T	*li;
++     dict_T	*d;
++ 
++     rettv->vval.v_number = -1;
++     if (argvars[0].v_type != VAR_LIST)
++     {
++ 	EMSG(_(e_listreq));
++ 	return;
++     }
++     if ((l = argvars[0].vval.v_list) != NULL)
++     {
++ 
++ 	/* To some extent make sure that we are dealing with a list from
++ 	 * "getmatches()". */
++ 	li = l->lv_first;
++ 	while (li != NULL)
++ 	{
++ 	    if (li->li_tv.v_type != VAR_DICT
++ 		    || (d = li->li_tv.vval.v_dict) == NULL)
++ 	    {
++ 		EMSG(_(e_invarg));
++ 		return;
++ 	    }
++ 	    if (!(dict_find(d, (char_u *)"group", -1) != NULL
++ 			&& dict_find(d, (char_u *)"pattern", -1) != NULL
++ 			&& dict_find(d, (char_u *)"priority", -1) != NULL
++ 			&& dict_find(d, (char_u *)"id", -1) != NULL))
++ 	    {
++ 		EMSG(_(e_invarg));
++ 		return;
++ 	    }
++ 	    li = li->li_next;
++ 	}
++ 
++ 	clear_matches(curwin);
++ 	li = l->lv_first;
++ 	while (li != NULL)
++ 	{
++ 	    d = li->li_tv.vval.v_dict;
++ 	    match_add(curwin, get_dict_string(d, (char_u *)"group", FALSE),
++ 		    get_dict_string(d, (char_u *)"pattern", FALSE),
++ 		    (int)get_dict_number(d, (char_u *)"priority"),
++ 		    (int)get_dict_number(d, (char_u *)"id"));
++ 	    li = li->li_next;
++ 	}
++ 	rettv->vval.v_number = 0;
++     }
++ #endif
+  }
+  
+  /*
+*** ../vim-7.1.039/src/ex_docmd.c	Tue Jul 24 14:32:44 2007
+--- src/ex_docmd.c	Tue Jul 24 15:47:01 2007
+***************
+*** 10817,10828 ****
+      exarg_T	*eap;
+  {
+      char_u	*p;
+      char_u	*end;
+      int		c;
+!     int		mi;
+  
+      if (eap->line2 <= 3)
+! 	mi = eap->line2 - 1;
+      else
+      {
+  	EMSG(e_invcmd);
+--- 10817,10829 ----
+      exarg_T	*eap;
+  {
+      char_u	*p;
++     char_u	*g;
+      char_u	*end;
+      int		c;
+!     int		id;
+  
+      if (eap->line2 <= 3)
+! 	id = eap->line2;
+      else
+      {
+  	EMSG(e_invcmd);
+***************
+*** 10831,10843 ****
+  
+      /* First clear any old pattern. */
+      if (!eap->skip)
+!     {
+! 	vim_free(curwin->w_match[mi].regprog);
+! 	curwin->w_match[mi].regprog = NULL;
+! 	vim_free(curwin->w_match_pat[mi]);
+! 	curwin->w_match_pat[mi] = NULL;
+! 	redraw_later(SOME_VALID);	/* always need a redraw */
+!     }
+  
+      if (ends_excmd(*eap->arg))
+  	end = eap->arg;
+--- 10832,10838 ----
+  
+      /* First clear any old pattern. */
+      if (!eap->skip)
+! 	match_delete(curwin, id, FALSE);
+  
+      if (ends_excmd(*eap->arg))
+  	end = eap->arg;
+***************
+*** 10848,10862 ****
+      {
+  	p = skiptowhite(eap->arg);
+  	if (!eap->skip)
+! 	{
+! 	    curwin->w_match_id[mi] = syn_namen2id(eap->arg,
+! 							 (int)(p - eap->arg));
+! 	    if (curwin->w_match_id[mi] == 0)
+! 	    {
+! 		EMSG2(_(e_nogroup), eap->arg);
+! 		return;
+! 	    }
+! 	}
+  	p = skipwhite(p);
+  	if (*p == NUL)
+  	{
+--- 10843,10849 ----
+      {
+  	p = skiptowhite(eap->arg);
+  	if (!eap->skip)
+! 	    g = vim_strnsave(eap->arg, (int)(p - eap->arg));
+  	p = skipwhite(p);
+  	if (*p == NUL)
+  	{
+***************
+*** 10880,10893 ****
+  
+  	    c = *end;
+  	    *end = NUL;
+! 	    curwin->w_match[mi].regprog = vim_regcomp(p + 1, RE_MAGIC);
+! 	    if (curwin->w_match[mi].regprog == NULL)
+! 	    {
+! 		EMSG2(_(e_invarg2), p);
+! 		*end = c;
+! 		return;
+! 	    }
+! 	    curwin->w_match_pat[mi] = vim_strsave(p + 1);
+  	    *end = c;
+  	}
+      }
+--- 10867,10874 ----
+  
+  	    c = *end;
+  	    *end = NUL;
+! 	    match_add(curwin, g, p + 1, 10, id);
+! 	    vim_free(g);
+  	    *end = c;
+  	}
+      }
+*** ../vim-7.1.039/src/proto/window.pro	Sat May  5 19:52:36 2007
+--- src/proto/window.pro	Tue Jul 24 16:38:19 2007
+***************
+*** 59,62 ****
+--- 59,66 ----
+  int only_one_window __ARGS((void));
+  void check_lnums __ARGS((int do_curwin));
+  int win_hasvertsplit __ARGS((void));
++ int match_add __ARGS((win_T *wp, char_u *grp, char_u *pat, int prio, int id));
++ int match_delete __ARGS((win_T *wp, int id, int perr));
++ void clear_matches __ARGS((win_T *wp));
++ matchitem_T *get_match __ARGS((win_T *wp, int id));
+  /* vim: set ft=c : */
+*** ../vim-7.1.039/src/screen.c	Tue Jun 19 17:49:12 2007
+--- src/screen.c	Thu Jul 26 21:55:40 2007
+***************
+*** 100,126 ****
+  static int	screen_cur_row, screen_cur_col;	/* last known cursor position */
+  
+  #ifdef FEAT_SEARCH_EXTRA
+- /*
+-  * Struct used for highlighting 'hlsearch' matches for the last use search
+-  * pattern or a ":match" item.
+-  * For 'hlsearch' there is one pattern for all windows.  For ":match" there is
+-  * a different pattern for each window.
+-  */
+- typedef struct
+- {
+-     regmmatch_T	rm;	/* points to the regexp program; contains last found
+- 			   match (may continue in next line) */
+-     buf_T	*buf;	/* the buffer to search for a match */
+-     linenr_T	lnum;	/* the line to search for a match */
+-     int		attr;	/* attributes to be used for a match */
+-     int		attr_cur; /* attributes currently active in win_line() */
+-     linenr_T	first_lnum;	/* first lnum to search for multi-line pat */
+-     colnr_T	startcol; /* in win_line() points to char where HL starts */
+-     colnr_T	endcol;	 /* in win_line() points to char where HL ends */
+- } match_T;
+- 
+  static match_T search_hl;	/* used for 'hlsearch' highlight matching */
+- static match_T match_hl[3];	/* used for ":match" highlight matching */
+  #endif
+  
+  #ifdef FEAT_FOLDING
+--- 100,106 ----
+***************
+*** 155,160 ****
+--- 135,141 ----
+  static void redraw_custum_statusline __ARGS((win_T *wp));
+  #endif
+  #ifdef FEAT_SEARCH_EXTRA
++ #define SEARCH_HL_PRIORITY 0
+  static void start_search_hl __ARGS((void));
+  static void end_search_hl __ARGS((void));
+  static void prepare_search_hl __ARGS((win_T *wp, linenr_T lnum));
+***************
+*** 787,792 ****
+--- 768,774 ----
+  					   w_topline got smaller a bit */
+  #endif
+  #ifdef FEAT_SEARCH_EXTRA
++     matchitem_T *cur;		/* points to the match list */
+      int		top_to_mod = FALSE;    /* redraw above mod_top */
+  #endif
+  
+***************
+*** 848,865 ****
+  #endif
+  
+  #ifdef FEAT_SEARCH_EXTRA
+!     /* Setup for ":match" and 'hlsearch' highlighting.  Disable any previous
+       * match */
+!     for (i = 0; i < 3; ++i)
+      {
+! 	match_hl[i].rm = wp->w_match[i];
+! 	if (wp->w_match_id[i] == 0)
+! 	    match_hl[i].attr = 0;
+  	else
+! 	    match_hl[i].attr = syn_id2attr(wp->w_match_id[i]);
+! 	match_hl[i].buf = buf;
+! 	match_hl[i].lnum = 0;
+! 	match_hl[i].first_lnum = 0;
+      }
+      search_hl.buf = buf;
+      search_hl.lnum = 0;
+--- 830,849 ----
+  #endif
+  
+  #ifdef FEAT_SEARCH_EXTRA
+!     /* Setup for match and 'hlsearch' highlighting.  Disable any previous
+       * match */
+!     cur = wp->w_match_head;
+!     while (cur != NULL)
+      {
+! 	cur->hl.rm = cur->match;
+! 	if (cur->hlg_id == 0)
+! 	    cur->hl.attr = 0;
+  	else
+! 	    cur->hl.attr = syn_id2attr(cur->hlg_id);
+! 	cur->hl.buf = buf;
+! 	cur->hl.lnum = 0;
+! 	cur->hl.first_lnum = 0;
+! 	cur = cur->next;
+      }
+      search_hl.buf = buf;
+      search_hl.lnum = 0;
+***************
+*** 923,941 ****
+  	     * change in one line may make the Search highlighting in a
+  	     * previous line invalid.  Simple solution: redraw all visible
+  	     * lines above the change.
+! 	     * Same for a ":match" pattern.
+  	     */
+  	    if (search_hl.rm.regprog != NULL
+  					&& re_multiline(search_hl.rm.regprog))
+  		top_to_mod = TRUE;
+  	    else
+! 		for (i = 0; i < 3; ++i)
+! 		    if (match_hl[i].rm.regprog != NULL
+! 				      && re_multiline(match_hl[i].rm.regprog))
+  		    {
+  			top_to_mod = TRUE;
+  			break;
+  		    }
+  #endif
+  	}
+  #ifdef FEAT_FOLDING
+--- 907,931 ----
+  	     * change in one line may make the Search highlighting in a
+  	     * previous line invalid.  Simple solution: redraw all visible
+  	     * lines above the change.
+! 	     * Same for a match pattern.
+  	     */
+  	    if (search_hl.rm.regprog != NULL
+  					&& re_multiline(search_hl.rm.regprog))
+  		top_to_mod = TRUE;
+  	    else
+! 	    {
+! 		cur = wp->w_match_head;
+! 		while (cur != NULL)
+! 		{
+! 		    if (cur->match.regprog != NULL
+! 					   && re_multiline(cur->match.regprog))
+  		    {
+  			top_to_mod = TRUE;
+  			break;
+  		    }
++ 		    cur = cur->next;
++ 		}
++ 	    }
+  #endif
+  	}
+  #ifdef FEAT_FOLDING
+***************
+*** 2626,2635 ****
+      int		line_attr = 0;		/* atrribute for the whole line */
+  #endif
+  #ifdef FEAT_SEARCH_EXTRA
+!     match_T	*shl;			/* points to search_hl or match_hl */
+! #endif
+! #if defined(FEAT_SEARCH_EXTRA) || defined(FEAT_MBYTE)
+!     int		i;
+  #endif
+  #ifdef FEAT_ARABIC
+      int		prev_c = 0;		/* previous Arabic character */
+--- 2634,2646 ----
+      int		line_attr = 0;		/* atrribute for the whole line */
+  #endif
+  #ifdef FEAT_SEARCH_EXTRA
+!     matchitem_T *cur;			/* points to the match list */
+!     match_T	*shl;			/* points to search_hl or a match */
+!     int		shl_flag;		/* flag to indicate whether search_hl
+! 					   has been processed or not */
+!     int		prevcol_hl_flag;	/* flag to indicate whether prevcol
+! 					   equals startcol of search_hl or one
+! 					   of the matches */
+  #endif
+  #ifdef FEAT_ARABIC
+      int		prev_c = 0;		/* previous Arabic character */
+***************
+*** 3074,3085 ****
+  
+  #ifdef FEAT_SEARCH_EXTRA
+      /*
+!      * Handle highlighting the last used search pattern and ":match".
+!      * Do this for both search_hl and match_hl[3].
+       */
+!     for (i = 3; i >= 0; --i)
+      {
+! 	shl = (i == 3) ? &search_hl : &match_hl[i];
+  	shl->startcol = MAXCOL;
+  	shl->endcol = MAXCOL;
+  	shl->attr_cur = 0;
+--- 3085,3104 ----
+  
+  #ifdef FEAT_SEARCH_EXTRA
+      /*
+!      * Handle highlighting the last used search pattern and matches.
+!      * Do this for both search_hl and the match list.
+       */
+!     cur = wp->w_match_head;
+!     shl_flag = FALSE;
+!     while (cur != NULL || shl_flag == FALSE)
+      {
+! 	if (shl_flag == FALSE)
+! 	{
+! 	    shl = &search_hl;
+! 	    shl_flag = TRUE;
+! 	}
+! 	else
+! 	    shl = &cur->hl;
+  	shl->startcol = MAXCOL;
+  	shl->endcol = MAXCOL;
+  	shl->attr_cur = 0;
+***************
+*** 3122,3127 ****
+--- 3141,3148 ----
+  		area_highlighting = TRUE;
+  	    }
+  	}
++ 	if (shl != &search_hl && cur != NULL)
++ 	    cur = cur->next;
+      }
+  #endif
+  
+***************
+*** 3388,3400 ****
+  		 * After end, check for start/end of next match.
+  		 * When another match, have to check for start again.
+  		 * Watch out for matching an empty string!
+! 		 * Do this first for search_hl, then for match_hl, so that
+! 		 * ":match" overrules 'hlsearch'.
+  		 */
+  		v = (long)(ptr - line);
+! 		for (i = 3; i >= 0; --i)
+! 		{
+! 		    shl = (i == 3) ? &search_hl : &match_hl[i];
+  		    while (shl->rm.regprog != NULL)
+  		    {
+  			if (shl->startcol != MAXCOL
+--- 3409,3432 ----
+  		 * After end, check for start/end of next match.
+  		 * When another match, have to check for start again.
+  		 * Watch out for matching an empty string!
+! 		 * Do this for 'search_hl' and the match list (ordered by
+! 		 * priority).
+  		 */
+  		v = (long)(ptr - line);
+! 		cur = wp->w_match_head;
+! 		shl_flag = FALSE;
+! 		while (cur != NULL || shl_flag == FALSE)
+! 		{
+! 		    if (shl_flag == FALSE
+! 			    && ((cur != NULL
+! 				    && cur->priority > SEARCH_HL_PRIORITY)
+! 				|| cur == NULL))
+! 		    {
+! 			shl = &search_hl;
+! 			shl_flag = TRUE;
+! 		    }
+! 		    else
+! 			shl = &cur->hl;
+  		    while (shl->rm.regprog != NULL)
+  		    {
+  			if (shl->startcol != MAXCOL
+***************
+*** 3442,3458 ****
+  			}
+  			break;
+  		    }
+  		}
+  
+! 		/* ":match" highlighting overrules 'hlsearch' */
+! 		for (i = 0; i <= 3; ++i)
+! 		    if (i == 3)
+! 			search_attr = search_hl.attr_cur;
+! 		    else if (match_hl[i].attr_cur != 0)
+  		    {
+! 			search_attr = match_hl[i].attr_cur;
+! 			break;
+  		    }
+  	    }
+  #endif
+  
+--- 3474,3505 ----
+  			}
+  			break;
+  		    }
++ 		    if (shl != &search_hl && cur != NULL)
++ 			cur = cur->next;
+  		}
+  
+! 		/* Use attributes from match with highest priority among
+! 		 * 'search_hl' and the match list. */
+! 		search_attr = search_hl.attr_cur;
+! 		cur = wp->w_match_head;
+! 		shl_flag = FALSE;
+! 		while (cur != NULL || shl_flag == FALSE)
+! 		{
+! 		    if (shl_flag == FALSE
+! 			    && ((cur != NULL
+! 				    && cur->priority > SEARCH_HL_PRIORITY)
+! 				|| cur == NULL))
+  		    {
+! 			shl = &search_hl;
+! 			shl_flag = TRUE;
+  		    }
++ 		    else
++ 			shl = &cur->hl;
++ 		    if (shl->attr_cur != 0)
++ 			search_attr = shl->attr_cur;
++ 		    if (shl != &search_hl && cur != NULL)
++ 			cur = cur->next;
++ 		}
+  	    }
+  #endif
+  
+***************
+*** 3613,3618 ****
+--- 3660,3667 ----
+  			 * Draw it as a space with a composing char. */
+  			if (utf_iscomposing(mb_c))
+  			{
++ 			    int i;
++ 
+  			    for (i = Screen_mco - 1; i > 0; --i)
+  				u8cc[i] = u8cc[i - 1];
+  			    u8cc[0] = mb_c;
+***************
+*** 4256,4269 ****
+  	     * highlight match at end of line. If it's beyond the last
+  	     * char on the screen, just overwrite that one (tricky!)  Not
+  	     * needed when a '$' was displayed for 'list'. */
+  	    if (lcs_eol == lcs_eol_one
+  		    && ((area_attr != 0 && vcol == fromcol && c == NUL)
+  #ifdef FEAT_SEARCH_EXTRA
+  			/* highlight 'hlsearch' match at end of line */
+! 			|| ((prevcol == (long)search_hl.startcol
+! 				|| prevcol == (long)match_hl[0].startcol
+! 				|| prevcol == (long)match_hl[1].startcol
+! 				|| prevcol == (long)match_hl[2].startcol)
+  # if defined(LINE_ATTR)
+  			    && did_line_attr <= 1
+  # endif
+--- 4305,4333 ----
+  	     * highlight match at end of line. If it's beyond the last
+  	     * char on the screen, just overwrite that one (tricky!)  Not
+  	     * needed when a '$' was displayed for 'list'. */
++ #ifdef FEAT_SEARCH_EXTRA
++ 	    prevcol_hl_flag = FALSE;
++ 	    if (prevcol == (long)search_hl.startcol)
++ 		prevcol_hl_flag = TRUE;
++ 	    else
++ 	    {
++ 		cur = wp->w_match_head;
++ 		while (cur != NULL)
++ 		{
++ 		    if (prevcol == (long)cur->hl.startcol)
++ 		    {
++ 			prevcol_hl_flag = TRUE;
++ 			break;
++ 		    }
++ 		    cur = cur->next;
++ 		}
++ 	    }
++ #endif
+  	    if (lcs_eol == lcs_eol_one
+  		    && ((area_attr != 0 && vcol == fromcol && c == NUL)
+  #ifdef FEAT_SEARCH_EXTRA
+  			/* highlight 'hlsearch' match at end of line */
+! 			|| (prevcol_hl_flag == TRUE
+  # if defined(LINE_ATTR)
+  			    && did_line_attr <= 1
+  # endif
+***************
+*** 4304,4318 ****
+  #ifdef FEAT_SEARCH_EXTRA
+  		if (area_attr == 0)
+  		{
+! 		    for (i = 0; i <= 3; ++i)
+! 		    {
+! 			if (i == 3)
+! 			    char_attr = search_hl.attr;
+! 			else if ((ptr - line) - 1 == (long)match_hl[i].startcol)
+  			{
+! 			    char_attr = match_hl[i].attr;
+! 			    break;
+  			}
+  		    }
+  		}
+  #endif
+--- 4368,4394 ----
+  #ifdef FEAT_SEARCH_EXTRA
+  		if (area_attr == 0)
+  		{
+! 		    /* Use attributes from match with highest priority among
+! 		     * 'search_hl' and the match list. */
+! 		    char_attr = search_hl.attr;
+! 		    cur = wp->w_match_head;
+! 		    shl_flag = FALSE;
+! 		    while (cur != NULL || shl_flag == FALSE)
+! 		    {
+! 			if (shl_flag == FALSE
+! 				&& ((cur != NULL
+! 					&& cur->priority > SEARCH_HL_PRIORITY)
+! 				    || cur == NULL))
+  			{
+! 			    shl = &search_hl;
+! 			    shl_flag = TRUE;
+  			}
++ 			else
++ 			    shl = &cur->hl;
++ 			if ((ptr - line) - 1 == (long)shl->startcol)
++ 			    char_attr = shl->attr;
++ 			if (shl != &search_hl && cur != NULL)
++ 			    cur = cur->next;
+  		    }
+  		}
+  #endif
+***************
+*** 4462,4467 ****
+--- 4538,4545 ----
+  	    {
+  		if (mb_utf8)
+  		{
++ 		    int i;
++ 
+  		    ScreenLinesUC[off] = mb_c;
+  		    if ((c & 0xff) == 0)
+  			ScreenLines[off] = 0x80;   /* avoid storing zero */
+***************
+*** 6320,6326 ****
+  
+  #ifdef FEAT_SEARCH_EXTRA
+  /*
+!  * Prepare for 'searchhl' highlighting.
+   */
+      static void
+  start_search_hl()
+--- 6398,6404 ----
+  
+  #ifdef FEAT_SEARCH_EXTRA
+  /*
+!  * Prepare for 'hlsearch' highlighting.
+   */
+      static void
+  start_search_hl()
+***************
+*** 6333,6339 ****
+  }
+  
+  /*
+!  * Clean up for 'searchhl' highlighting.
+   */
+      static void
+  end_search_hl()
+--- 6411,6417 ----
+  }
+  
+  /*
+!  * Clean up for 'hlsearch' highlighting.
+   */
+      static void
+  end_search_hl()
+***************
+*** 6353,6370 ****
+      win_T	*wp;
+      linenr_T	lnum;
+  {
+!     match_T	*shl;		/* points to search_hl or match_hl */
+      int		n;
+-     int		i;
+  
+      /*
+       * When using a multi-line pattern, start searching at the top
+       * of the window or just after a closed fold.
+!      * Do this both for search_hl and match_hl[3].
+       */
+!     for (i = 3; i >= 0; --i)
+      {
+! 	shl = (i == 3) ? &search_hl : &match_hl[i];
+  	if (shl->rm.regprog != NULL
+  		&& shl->lnum == 0
+  		&& re_multiline(shl->rm.regprog))
+--- 6431,6458 ----
+      win_T	*wp;
+      linenr_T	lnum;
+  {
+!     matchitem_T *cur;		/* points to the match list */
+!     match_T	*shl;		/* points to search_hl or a match */
+!     int		shl_flag;	/* flag to indicate whether search_hl
+! 				   has been processed or not */
+      int		n;
+  
+      /*
+       * When using a multi-line pattern, start searching at the top
+       * of the window or just after a closed fold.
+!      * Do this both for search_hl and the match list.
+       */
+!     cur = wp->w_match_head;
+!     shl_flag = FALSE;
+!     while (cur != NULL || shl_flag == FALSE)
+      {
+! 	if (shl_flag == FALSE)
+! 	{
+! 	    shl = &search_hl;
+! 	    shl_flag = TRUE;
+! 	}
+! 	else
+! 	    shl = &cur->hl;
+  	if (shl->rm.regprog != NULL
+  		&& shl->lnum == 0
+  		&& re_multiline(shl->rm.regprog))
+***************
+*** 6399,6409 ****
+  		}
+  	    }
+  	}
+      }
+  }
+  
+  /*
+!  * Search for a next 'searchl' or ":match" match.
+   * Uses shl->buf.
+   * Sets shl->lnum and shl->rm contents.
+   * Note: Assumes a previous match is always before "lnum", unless
+--- 6487,6499 ----
+  		}
+  	    }
+  	}
++ 	if (shl != &search_hl && cur != NULL)
++ 	    cur = cur->next;
+      }
+  }
+  
+  /*
+!  * Search for a next 'hlsearch' or match.
+   * Uses shl->buf.
+   * Sets shl->lnum and shl->rm contents.
+   * Note: Assumes a previous match is always before "lnum", unless
+***************
+*** 6413,6419 ****
+      static void
+  next_search_hl(win, shl, lnum, mincol)
+      win_T	*win;
+!     match_T	*shl;		/* points to search_hl or match_hl */
+      linenr_T	lnum;
+      colnr_T	mincol;		/* minimal column for a match */
+  {
+--- 6503,6509 ----
+      static void
+  next_search_hl(win, shl, lnum, mincol)
+      win_T	*win;
+!     match_T	*shl;		/* points to search_hl or a match */
+      linenr_T	lnum;
+      colnr_T	mincol;		/* minimal column for a match */
+  {
+***************
+*** 6481,6487 ****
+  	    /* Error while handling regexp: stop using this regexp. */
+  	    if (shl == &search_hl)
+  	    {
+! 		/* don't free the regprog in match_hl[], it's a copy */
+  		vim_free(shl->rm.regprog);
+  		no_hlsearch = TRUE;
+  	    }
+--- 6571,6577 ----
+  	    /* Error while handling regexp: stop using this regexp. */
+  	    if (shl == &search_hl)
+  	    {
+! 		/* don't free regprog in the match list, it's a copy */
+  		vim_free(shl->rm.regprog);
+  		no_hlsearch = TRUE;
+  	    }
+*** ../vim-7.1.039/src/structs.h	Thu May 10 20:32:30 2007
+--- src/structs.h	Wed Jul 25 21:08:46 2007
+***************
+*** 1694,1699 ****
+--- 1694,1734 ----
+  #define FR_COL	2	/* frame with a column of windows */
+  
+  /*
++  * Struct used for highlighting 'hlsearch' matches, matches defined by
++  * ":match" and matches defined by match functions.
++  * For 'hlsearch' there is one pattern for all windows.  For ":match" and the
++  * match functions there is a different pattern for each window.
++  */
++ typedef struct
++ {
++     regmmatch_T	rm;	/* points to the regexp program; contains last found
++ 			   match (may continue in next line) */
++     buf_T	*buf;	/* the buffer to search for a match */
++     linenr_T	lnum;	/* the line to search for a match */
++     int		attr;	/* attributes to be used for a match */
++     int		attr_cur; /* attributes currently active in win_line() */
++     linenr_T	first_lnum;	/* first lnum to search for multi-line pat */
++     colnr_T	startcol; /* in win_line() points to char where HL starts */
++     colnr_T	endcol;	 /* in win_line() points to char where HL ends */
++ } match_T;
++ 
++ /*
++  * matchitem_T provides a linked list for storing match items for ":match" and
++  * the match functions.
++  */
++ typedef struct matchitem matchitem_T;
++ struct matchitem
++ {
++     matchitem_T	*next;
++     int		id;	    /* match ID */
++     int		priority;   /* match priority */
++     char_u	*pattern;   /* pattern to highlight */
++     int		hlg_id;	    /* highlight group ID */
++     regmmatch_T	match;	    /* regexp program for pattern */
++     match_T	hl;	    /* struct for doing the actual highlighting */
++ };
++ 
++ /*
+   * Structure which contains all information that belongs to a window
+   *
+   * All row numbers are relative to the start of the window, except w_winrow.
+***************
+*** 1934,1942 ****
+  #endif
+  
+  #ifdef FEAT_SEARCH_EXTRA
+!     regmmatch_T	w_match[3];	    /* regexp programs for ":match" */
+!     char_u	*(w_match_pat[3]);  /* patterns for ":match" */
+!     int		w_match_id[3];	    /* highlight IDs for ":match" */
+  #endif
+  
+      /*
+--- 1969,1976 ----
+  #endif
+  
+  #ifdef FEAT_SEARCH_EXTRA
+!     matchitem_T	*w_match_head;		/* head of match list */
+!     int		w_next_match_id;	/* next match ID */
+  #endif
+  
+      /*
+*** ../vim-7.1.039/src/syntax.c	Tue Jul 24 14:32:44 2007
+--- src/syntax.c	Tue Jul 24 15:47:01 2007
+***************
+*** 8504,8510 ****
+  syn_id2name(id)
+      int		id;
+  {
+!     if (id <= 0 || id >= highlight_ga.ga_len)
+  	return (char_u *)"";
+      return HL_TABLE()[id - 1].sg_name;
+  }
+--- 8504,8510 ----
+  syn_id2name(id)
+      int		id;
+  {
+!     if (id <= 0 || id > highlight_ga.ga_len)
+  	return (char_u *)"";
+      return HL_TABLE()[id - 1].sg_name;
+  }
+*** ../vim-7.1.039/src/testdir/Makefile	Sun Apr 30 20:48:47 2006
+--- src/testdir/Makefile	Tue Jul 24 15:34:33 2007
+***************
+*** 1,5 ****
+  #
+! # Makefile to run al tests for Vim
+  #
+  
+  VIMPROG = ../vim
+--- 1,5 ----
+  #
+! # Makefile to run all tests for Vim
+  #
+  
+  VIMPROG = ../vim
+***************
+*** 15,21 ****
+  		test43.out test44.out test45.out test46.out test47.out \
+  		test48.out test49.out test51.out test52.out test53.out \
+  		test54.out test55.out test56.out test57.out test58.out \
+! 		test59.out test60.out test61.out test62.out
+  
+  SCRIPTS_GUI = test16.out
+  
+--- 15,21 ----
+  		test43.out test44.out test45.out test46.out test47.out \
+  		test48.out test49.out test51.out test52.out test53.out \
+  		test54.out test55.out test56.out test57.out test58.out \
+! 		test59.out test60.out test61.out test62.out test63.out
+  
+  SCRIPTS_GUI = test16.out
+  
+*** ../vim-7.1.039/src/testdir/test63.in	Tue Jul 24 16:45:02 2007
+--- src/testdir/test63.in	Tue Jul 24 15:32:30 2007
+***************
+*** 0 ****
+--- 1,157 ----
++ Test for ":match", ":2match", ":3match", "clearmatches()", "getmatches()",
++ "matchadd()", "matcharg()", "matchdelete()", and "setmatches()".
++ 
++ STARTTEST
++ :so small.vim
++ :" --- Check that "matcharg()" returns the correct group and pattern if a match
++ :" --- is defined.
++ :let @r = "*** Test 1: "
++ :highlight MyGroup1 ctermbg=red
++ :highlight MyGroup2 ctermbg=green
++ :highlight MyGroup3 ctermbg=blue
++ :match MyGroup1 /TODO/
++ :2match MyGroup2 /FIXME/
++ :3match MyGroup3 /XXX/
++ :if matcharg(1) == ['MyGroup1', 'TODO'] && matcharg(2) == ['MyGroup2', 'FIXME'] && matcharg(3) == ['MyGroup3', 'XXX']
++ :  let @r .= "OK\n"
++ :else
++ :  let @r .= "FAILED\n"
++ :endif
++ :" --- Check that "matcharg()" returns an empty list if the argument is not 1,
++ :" --- 2 or 3 (only 0 and 4 are tested).
++ :let @r .= "*** Test 2: "
++ :if matcharg(0) == [] && matcharg(4) == []
++ :  let @r .= "OK\n"
++ :else
++ :  let @r .= "FAILED\n"
++ :endif
++ :" --- Check that "matcharg()" returns ['', ''] if a match is not defined.
++ :let @r .= "*** Test 3: "
++ :match
++ :2match
++ :3match
++ :if matcharg(1) == ['', ''] && matcharg(2) == ['', ''] && matcharg(3) == ['', '']
++ :  let @r .= "OK\n"
++ :else
++ :  let @r .= "FAILED\n"
++ :endif
++ :" --- Check that "matchadd()" and "getmatches()" agree on added matches and
++ :" --- that default values apply.
++ :let @r .= "*** Test 4: "
++ :let m1 = matchadd("MyGroup1", "TODO")
++ :let m2 = matchadd("MyGroup2", "FIXME", 42)
++ :let m3 = matchadd("MyGroup3", "XXX", 60, 17)
++ :if getmatches() == [{'group': 'MyGroup1', 'pattern': 'TODO', 'priority': 10, 'id': 4}, {'group': 'MyGroup2', 'pattern': 'FIXME', 'priority': 42, 'id': 5}, {'group': 'MyGroup3', 'pattern': 'XXX', 'priority': 60, 'id': 17}]
++ :  let @r .= "OK\n"
++ :else
++ :  let @r .= "FAILED\n"
++ :endif
++ :" --- Check that "matchdelete()" deletes the matches defined in the previous
++ :" --- test correctly.
++ :let @r .= "*** Test 5: "
++ :call matchdelete(m1)
++ :call matchdelete(m2)
++ :call matchdelete(m3)
++ :unlet m1
++ :unlet m2
++ :unlet m3
++ :if getmatches() == []
++ :  let @r .= "OK\n"
++ :else
++ :  let @r .= "FAILED\n"
++ :endif
++ :" --- Check that "matchdelete()" returns 0 if succesfull and otherwise -1.
++ :let @r .= "*** Test 6: "
++ :let m = matchadd("MyGroup1", "TODO")
++ :let r1 = matchdelete(m)
++ :let r2 = matchdelete(42)
++ :if r1 == 0 && r2 == -1
++ :  let @r .= "OK\n"
++ :else
++ :  let @r .= "FAILED\n"
++ :endif
++ :unlet m
++ :unlet r1
++ :unlet r2
++ :" --- Check that "clearmatches()" clears all matches defined by ":match" and
++ :" --- "matchadd()".
++ :let @r .= "*** Test 7: "
++ :let m1 = matchadd("MyGroup1", "TODO")
++ :let m2 = matchadd("MyGroup2", "FIXME", 42)
++ :let m3 = matchadd("MyGroup3", "XXX", 60, 17)
++ :match MyGroup1 /COFFEE/
++ :2match MyGroup2 /HUMPPA/
++ :3match MyGroup3 /VIM/
++ :call clearmatches()
++ :if getmatches() == []
++ :  let @r .= "OK\n"
++ :else
++ :  let @r .= "FAILED\n"
++ :endif
++ :unlet m1
++ :unlet m2
++ :unlet m3
++ :" --- Check that "setmatches()" restores a list of matches saved by
++ :" --- "getmatches()" without changes. (Matches with equal priority must also
++ :" --- remain in the same order.)
++ :let @r .= "*** Test 8: "
++ :let m1 = matchadd("MyGroup1", "TODO")
++ :let m2 = matchadd("MyGroup2", "FIXME", 42)
++ :let m3 = matchadd("MyGroup3", "XXX", 60, 17)
++ :match MyGroup1 /COFFEE/
++ :2match MyGroup2 /HUMPPA/
++ :3match MyGroup3 /VIM/
++ :let ml = getmatches()
++ :call clearmatches()
++ :call setmatches(ml)
++ :if getmatches() == ml
++ :  let @r .= "OK\n"
++ :else
++ :  let @r .= "FAILED\n"
++ :endif
++ :call clearmatches()
++ :unlet m1
++ :unlet m2
++ :unlet m3
++ :unlet ml
++ :" --- Check that "setmatches()" will not add two matches with the same ID. The
++ :" --- expected behaviour (for now) is to add the first match but not the
++ :" --- second and to return 0 (even though it is a matter of debate whether
++ :" --- this can be considered succesfull behaviour).
++ :let @r .= "*** Test 9: "
++ :let r1 = setmatches([{'group': 'MyGroup1', 'pattern': 'TODO', 'priority': 10, 'id': 1}, {'group': 'MyGroup2', 'pattern': 'FIXME', 'priority': 10, 'id': 1}])
++ :if getmatches() == [{'group': 'MyGroup1', 'pattern': 'TODO', 'priority': 10, 'id': 1}] && r1 == 0
++ :  let @r .= "OK\n"
++ :else
++ :  let @r .= "FAILED\n"
++ :endif
++ :call clearmatches()
++ :unlet r1
++ :" --- Check that "setmatches()" returns 0 if succesfull and otherwise -1.
++ :" --- (A range of valid and invalid input values are tried out to generate the
++ :" --- return values.)
++ :let @r .= "*** Test 10: "
++ :let rs1 = setmatches([])
++ :let rs2 = setmatches([{'group': 'MyGroup1', 'pattern': 'TODO', 'priority': 10, 'id': 1}])
++ :call clearmatches()
++ :let rf1 = setmatches(0)
++ :let rf2 = setmatches([0])
++ :let rf3 = setmatches([{'wrong key': 'wrong value'}])
++ :if rs1 == 0 && rs2 == 0 && rf1 == -1 && rf2 == -1 && rf3 == -1
++ :  let @r .= "OK\n"
++ :else
++ :  let @r .= "FAILED\n"
++ :endif
++ :unlet rs1
++ :unlet rs2
++ :unlet rf1
++ :unlet rf2
++ :unlet rf3
++ :highlight clear MyGroup1
++ :highlight clear MyGroup2
++ :highlight clear MyGroup3
++ G"rp
++ :/^Results/,$wq! test.out
++ ENDTEST
++ 
++ Results of test63:
+*** ../vim-7.1.039/src/testdir/test63.ok	Tue Jul 24 16:45:02 2007
+--- src/testdir/test63.ok	Tue Jul 24 15:32:30 2007
+***************
+*** 0 ****
+--- 1,11 ----
++ Results of test63:
++ *** Test 1: OK
++ *** Test 2: OK
++ *** Test 3: OK
++ *** Test 4: OK
++ *** Test 5: OK
++ *** Test 6: OK
++ *** Test 7: OK
++ *** Test 8: OK
++ *** Test 9: OK
++ *** Test 10: OK
+*** ../vim-7.1.039/src/window.c	Thu May 10 18:42:26 2007
+--- src/window.c	Tue Jul 24 20:38:58 2007
+***************
+*** 75,80 ****
+--- 75,81 ----
+  static win_T *restore_snapshot_rec __ARGS((frame_T *sn, frame_T *fr));
+  
+  #endif /* FEAT_WINDOWS */
++ 
+  static win_T *win_alloc __ARGS((win_T *after));
+  static void win_new_height __ARGS((win_T *, int));
+  
+***************
+*** 4128,4133 ****
+--- 4129,4138 ----
+  #ifdef FEAT_AUTOCMD
+  	--autocmd_block;
+  #endif
++ #ifdef FEAT_SEARCH_EXTRA
++ 	newwin->w_match_head = NULL;
++ 	newwin->w_next_match_id = 4;
++ #endif
+      }
+      return newwin;
+  }
+***************
+*** 4185,4195 ****
+  	vim_free(wp->w_tagstack[i].tagname);
+  
+      vim_free(wp->w_localdir);
+  #ifdef FEAT_SEARCH_EXTRA
+!     vim_free(wp->w_match[0].regprog);
+!     vim_free(wp->w_match[1].regprog);
+!     vim_free(wp->w_match[2].regprog);
+  #endif
+  #ifdef FEAT_JUMPLIST
+      free_jumplist(wp);
+  #endif
+--- 4190,4200 ----
+  	vim_free(wp->w_tagstack[i].tagname);
+  
+      vim_free(wp->w_localdir);
++ 
+  #ifdef FEAT_SEARCH_EXTRA
+!     clear_matches(wp);
+  #endif
++ 
+  #ifdef FEAT_JUMPLIST
+      free_jumplist(wp);
+  #endif
+***************
+*** 6172,6176 ****
+--- 6177,6351 ----
+  		return TRUE;
+  
+      return FALSE;
++ }
++ #endif
++ 
++ #if defined(FEAT_SEARCH_EXTRA) || defined(PROTO)
++ /*
++  * Add match to the match list of window 'wp'.  The pattern 'pat' will be
++  * highligted with the group 'grp' with priority 'prio'.
++  * Optionally, a desired ID 'id' can be specified (greater than or equal to 1).
++  * If no particular ID is desired, -1 must be specified for 'id'.
++  * Return ID of added match, -1 on failure.
++  */
++     int
++ match_add(wp, grp, pat, prio, id)
++     win_T	*wp;
++     char_u	*grp;
++     char_u	*pat;
++     int		prio;
++     int		id;
++ {
++     matchitem_T *cur;
++     matchitem_T *prev;
++     matchitem_T *m;
++     int		hlg_id;
++     regmmatch_T match;
++ 
++     if (*grp == NUL || *pat == NUL)
++ 	return -1;
++     if (id < -1 || id == 0)
++     {
++ 	EMSGN("E799: Invalid ID: %ld (must be greater than or equal to 1)", id);
++ 	return -1;
++     }
++     if (id != -1)
++     {
++ 	cur = wp->w_match_head;
++ 	while (cur != NULL)
++ 	{
++ 	    if (cur->id == id)
++ 	    {
++ 		EMSGN("E801: ID already taken: %ld", id);
++ 		return -1;
++ 	    }
++ 	    cur = cur->next;
++ 	}
++     }
++     if ((hlg_id = syn_namen2id(grp, STRLEN(grp))) == 0)
++     {
++ 	EMSG2(_(e_nogroup), grp);
++ 	return -1;
++     }
++     if ((match.regprog = vim_regcomp(pat, RE_MAGIC)) == NULL)
++     {
++ 	EMSG2(_(e_invarg2), pat);
++ 	return -1;
++     }
++ 
++     /* Find available match ID. */
++     while (id == -1)
++     {
++ 	cur = wp->w_match_head;
++ 	while (cur != NULL && cur->id != wp->w_next_match_id)
++ 	    cur = cur->next;
++ 	if (cur == NULL)
++ 	    id = wp->w_next_match_id;
++ 	wp->w_next_match_id++;
++     }
++ 
++     /* Build new match. */
++     m = (matchitem_T *)alloc(sizeof(matchitem_T));
++     m->id = id;
++     m->priority = prio;
++     m->pattern = vim_strsave(pat);
++     m->hlg_id = hlg_id;
++     m->match.regprog = match.regprog;
++ 
++     /* Insert new match.  The match list is in ascending order with regard to
++      * the match priorities. */
++     cur = wp->w_match_head;
++     prev = cur;
++     while (cur != NULL && prio >= cur->priority)
++     {
++ 	prev = cur;
++ 	cur = cur->next;
++     }
++     if (cur == prev)
++ 	wp->w_match_head = m;
++     else
++ 	prev->next = m;
++     m->next = cur;
++ 
++     redraw_later(SOME_VALID);
++     return id;
++ }
++ 
++ /*
++  * Delete match with ID 'id' in the match list of window 'wp'.
++  * Print error messages if 'perr' is TRUE.
++  */
++     int
++ match_delete(wp, id, perr)
++     win_T	*wp;
++     int		id;
++     int		perr;
++ {
++     matchitem_T *cur = wp->w_match_head;
++     matchitem_T *prev = cur;
++ 
++     if (id < 1)
++     {
++ 	if (perr == TRUE)
++ 	    EMSGN("E802: Invalid ID: %ld (must be greater than or equal to 1)",
++ 									  id);
++ 	return -1;
++     }
++     while (cur != NULL && cur->id != id)
++     {
++ 	prev = cur;
++ 	cur = cur->next;
++     }
++     if (cur == NULL)
++     {
++ 	if (perr == TRUE)
++ 	    EMSGN("E803: ID not found: %ld", id);
++ 	return -1;
++     }
++     if (cur == prev)
++ 	wp->w_match_head = cur->next;
++     else
++ 	prev->next = cur->next;
++     vim_free(cur->match.regprog);
++     vim_free(cur->pattern);
++     vim_free(cur);
++     redraw_later(SOME_VALID);
++     return 0;
++ }
++ 
++ /*
++  * Delete all matches in the match list of window 'wp'.
++  */
++     void
++ clear_matches(wp)
++     win_T	*wp;
++ {
++     matchitem_T *m;
++ 
++     while (wp->w_match_head != NULL)
++     {
++ 	m = wp->w_match_head->next;
++ 	vim_free(wp->w_match_head->match.regprog);
++ 	vim_free(wp->w_match_head->pattern);
++ 	vim_free(wp->w_match_head);
++ 	wp->w_match_head = m;
++     }
++     redraw_later(SOME_VALID);
++ }
++ 
++ /*
++  * Get match from ID 'id' in window 'wp'.
++  * Return NULL if match not found.
++  */
++     matchitem_T *
++ get_match(wp, id)
++     win_T	*wp;
++     int		id;
++ {
++     matchitem_T *cur = wp->w_match_head;
++ 
++     while (cur != NULL && cur->id != id)
++ 	cur = cur->next;
++     return cur;
+  }
+  #endif
+*** ../vim-7.1.039/src/version.c	Wed Jul 25 22:55:22 2007
+--- src/version.c	Thu Jul 26 22:50:54 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     40,
+  /**/
+
+-- 
+It is hard to understand how a cemetery raised its burial
+cost and blamed it on the cost of living.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,106 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.056
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.056
+Problem:    More prompt does not behave correctly after scrolling back.
+	    (Randall W. Morris)
+Solution:   Avoid lines_left becomes negative. (Chris Lubinski)  Don't check
+	    mp_last when deciding to show the more prompt. (Martin Toft)
+Files:	    src/message.c
+
+
+*** ../vim-7.1.055/src/message.c	Sun Aug  5 19:20:04 2007
+--- src/message.c	Tue Aug  7 21:52:10 2007
+***************
+*** 1878,1884 ****
+  		/* output postponed text */
+  		t_puts(&t_col, t_s, s, attr);
+  
+! 	    /* When no more prompt an no more room, truncate here */
+  	    if (msg_no_more && lines_left == 0)
+  		break;
+  
+--- 1878,1884 ----
+  		/* output postponed text */
+  		t_puts(&t_col, t_s, s, attr);
+  
+! 	    /* When no more prompt and no more room, truncate here */
+  	    if (msg_no_more && lines_left == 0)
+  		break;
+  
+***************
+*** 1927,1933 ****
+  	     * If screen is completely filled and 'more' is set then wait
+  	     * for a character.
+  	     */
+! 	    --lines_left;
+  	    if (p_more && lines_left == 0 && State != HITRETURN
+  					    && !msg_no_more && !exmode_active)
+  	    {
+--- 1927,1934 ----
+  	     * If screen is completely filled and 'more' is set then wait
+  	     * for a character.
+  	     */
+! 	    if (lines_left > 0)
+! 		--lines_left;
+  	    if (p_more && lines_left == 0 && State != HITRETURN
+  					    && !msg_no_more && !exmode_active)
+  	    {
+***************
+*** 2234,2240 ****
+  {
+      msgchunk_T	*mp;
+  
+!     /* Only show somethign if there is more than one line, otherwise it looks
+       * weird, typing a command without output results in one line. */
+      mp = msg_sb_start(last_msgchunk);
+      if (mp == NULL || mp->sb_prev == NULL)
+--- 2235,2241 ----
+  {
+      msgchunk_T	*mp;
+  
+!     /* Only show something if there is more than one line, otherwise it looks
+       * weird, typing a command without output results in one line. */
+      mp = msg_sb_start(last_msgchunk);
+      if (mp == NULL || mp->sb_prev == NULL)
+***************
+*** 2622,2628 ****
+  		}
+  	    }
+  
+! 	    if (scroll < 0 || (scroll == 0 && mp_last != NULL))
+  	    {
+  		/* displayed the requested text, more prompt again */
+  		screen_fill((int)Rows - 1, (int)Rows, 0,
+--- 2623,2629 ----
+  		}
+  	    }
+  
+! 	    if (scroll <= 0)
+  	    {
+  		/* displayed the requested text, more prompt again */
+  		screen_fill((int)Rows - 1, (int)Rows, 0,
+*** ../vim-7.1.055/src/version.c	Mon Aug  6 22:27:13 2007
+--- src/version.c	Tue Aug  7 21:57:02 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     56,
+  /**/
+
+-- 
+From "know your smileys":
+ :-| :-|   Deja' vu!
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

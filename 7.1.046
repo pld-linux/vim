@@ -1,0 +1,60 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.046
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.046
+Problem:    ":s" command removes combining characters. (Ron Aaron)
+Solution:   Copy composing characters individually. (Chris Lubinski)
+Files:	    src/regexp.c
+
+
+*** ../vim-7.1.045/src/regexp.c	Thu May 10 19:58:01 2007
+--- src/regexp.c	Fri Jul 27 21:17:47 2007
+***************
+*** 7014,7020 ****
+  #ifdef FEAT_MBYTE
+  			    if (has_mbyte)
+  			    {
+! 				int l = mb_ptr2len(s) - 1;
+  
+  				s += l;
+  				len -= l;
+--- 7014,7027 ----
+  #ifdef FEAT_MBYTE
+  			    if (has_mbyte)
+  			    {
+! 				int l;
+! 
+! 				/* Copy composing characters separately, one
+! 				 * at a time. */
+! 				if (enc_utf8)
+! 				    l = utf_ptr2len(s) - 1;
+! 				else
+! 				    l = mb_ptr2len(s) - 1;
+  
+  				s += l;
+  				len -= l;
+*** ../vim-7.1.045/src/version.c	Mon Jul 30 21:59:50 2007
+--- src/version.c	Mon Jul 30 22:30:02 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     46,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+57. You begin to wonder how on earth your service provider is allowed to call
+    200 hours per month "unlimited."
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

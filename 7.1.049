@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.049
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.049
+Problem:    Cannot compile GTK2 version with Hangul input feature.
+Solution:   Don't define FEAT_XFONTSET when using GTK2.
+Files:	    src/feature.h
+
+
+*** ../vim-7.1.048/src/feature.h	Thu May 10 19:43:24 2007
+--- src/feature.h	Fri Aug  3 19:32:56 2007
+***************
+*** 673,679 ****
+  # define ESC_CHG_TO_ENG_MODE		/* if defined, when ESC pressed,
+  					 * turn to english mode
+  					 */
+! # if !defined(FEAT_XFONTSET) && defined(HAVE_X11)
+  #  define FEAT_XFONTSET			/* Hangul input requires xfontset */
+  # endif
+  # if defined(FEAT_XIM) && !defined(LINT)
+--- 673,679 ----
+  # define ESC_CHG_TO_ENG_MODE		/* if defined, when ESC pressed,
+  					 * turn to english mode
+  					 */
+! # if !defined(FEAT_XFONTSET) && defined(HAVE_X11) && !defined(HAVE_GTK2)
+  #  define FEAT_XFONTSET			/* Hangul input requires xfontset */
+  # endif
+  # if defined(FEAT_XIM) && !defined(LINT)
+*** ../vim-7.1.048/src/version.c	Thu Aug  2 23:00:06 2007
+--- src/version.c	Fri Aug  3 21:58:23 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     49,
+  /**/
+
+-- 
+From "know your smileys":
+ :-O>-o   Smiley American tourist (note big mouth and camera)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
