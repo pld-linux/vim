@@ -10,7 +10,7 @@
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
-%bcond_with	perl		# without Perl interp
+%bcond_with	perl		# with Perl interp
 %bcond_with	python		# with Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
@@ -308,6 +308,7 @@ Group:		Applications/Editors/Vim
 # mktemp is for vimtutor
 Requires:	mktemp
 Requires:	vi-editor
+Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
 
 %description rt
