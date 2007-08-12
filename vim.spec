@@ -2,6 +2,8 @@
 # - merge with AC-branch
 # - some nice icon
 # - bonobo patches need update
+# - create vim-full (better name, anybody?) or/and other packages
+#   for scripting languages support
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -9,17 +11,17 @@
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
-%bcond_without	perl		# without Perl interp
-%bcond_without	python		# with Python interp
-%bcond_without	ruby		# with Ruby interp
-%bcond_without	tcl		# with Tcl interp
+%bcond_with	perl		# without Perl interp
+%bcond_with	python		# with Python interp
+%bcond_with	ruby		# with Ruby interp
+%bcond_with	tcl		# with Tcl interp
 %bcond_with	bonobo		# with bonobo component (breaks other things)
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.1
 %define		_patchlevel	035
-%define		_rel		1
+%define		_rel		2
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -921,25 +923,25 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/rvim
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/vimdiff
-%{_mandir}/man1/eview.1*
+#%{_mandir}/man1/eview.1*
 %{_mandir}/man1/evim.1*
 %{_mandir}/man1/rvim.1*
 %{_mandir}/man1/vimdiff.1*
 %lang(fi) %{_mandir}/fi/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/eview.1*
+#%lang(fr) %{_mandir}/fr/man1/eview.1*
 %lang(fr) %{_mandir}/fr/man1/evim.1*
 %lang(fr) %{_mandir}/fr/man1/rvim.1*
 %lang(fr) %{_mandir}/fr/man1/vimdiff.1*
 %lang(id) %{_mandir}/id/man1/rvim.1*
-%lang(it) %{_mandir}/it/man1/eview.1*
+#%lang(it) %{_mandir}/it/man1/eview.1*
 %lang(it) %{_mandir}/it/man1/evim.1*
 %lang(it) %{_mandir}/it/man1/rvim.1*
 %lang(it) %{_mandir}/it/man1/vimdiff.1*
-%lang(pl) %{_mandir}/pl/man1/eview.1*
+#%lang(pl) %{_mandir}/pl/man1/eview.1*
 %lang(pl) %{_mandir}/pl/man1/evim.1*
 %lang(pl) %{_mandir}/pl/man1/rvim.1*
 %lang(pl) %{_mandir}/pl/man1/vimdiff.1*
-%lang(ru) %{_mandir}/ru/man1/eview.1*
+#%lang(ru) %{_mandir}/ru/man1/eview.1*
 %lang(ru) %{_mandir}/ru/man1/evim.1*
 %lang(ru) %{_mandir}/ru/man1/rvim.1*
 %lang(ru) %{_mandir}/ru/man1/vimdiff.1*
