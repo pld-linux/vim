@@ -1,0 +1,113 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.073
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.073 (after 7.1.062)
+Problem:    Wrong cursor position and crash when 'preserveindent' is set.
+	    (Charles Campbell)
+Solution:   Handle the situation that we start without indent. (Chris
+	    Lubinski)
+Files:	    src/misc1.c
+
+
+*** ../vim-7.1.072/src/misc1.c	Sat Aug 11 14:32:10 2007
+--- src/misc1.c	Tue Aug 14 21:21:49 2007
+***************
+*** 104,110 ****
+      int		ind_done = 0;	    /* measured in spaces */
+      int		tab_pad;
+      int		retval = FALSE;
+!     int		orig_char_len = 0;  /* number of initial whitespace chars when
+  				       'et' and 'pi' are both set */
+  
+      /*
+--- 104,110 ----
+      int		ind_done = 0;	    /* measured in spaces */
+      int		tab_pad;
+      int		retval = FALSE;
+!     int		orig_char_len = -1; /* number of initial whitespace chars when
+  				       'et' and 'pi' are both set */
+  
+      /*
+***************
+*** 159,165 ****
+  
+  	    /* Fill to next tabstop with a tab, if possible */
+  	    tab_pad = (int)curbuf->b_p_ts - (ind_done % (int)curbuf->b_p_ts);
+! 	    if (todo >= tab_pad && orig_char_len == 0)
+  	    {
+  		doit = TRUE;
+  		todo -= tab_pad;
+--- 159,165 ----
+  
+  	    /* Fill to next tabstop with a tab, if possible */
+  	    tab_pad = (int)curbuf->b_p_ts - (ind_done % (int)curbuf->b_p_ts);
+! 	    if (todo >= tab_pad && orig_char_len == -1)
+  	    {
+  		doit = TRUE;
+  		todo -= tab_pad;
+***************
+*** 206,216 ****
+      /* If 'preserveindent' and 'expandtab' are both set keep the original
+       * characters and allocate accordingly.  We will fill the rest with spaces
+       * after the if (!curbuf->b_p_et) below. */
+!     if (orig_char_len != 0)
+      {
+  	newline = alloc(orig_char_len + size - ind_done + line_len);
+  	if (newline == NULL)
+  	    return FALSE;
+  	p = oldline;
+  	s = newline;
+  	while (orig_char_len > 0)
+--- 206,220 ----
+      /* If 'preserveindent' and 'expandtab' are both set keep the original
+       * characters and allocate accordingly.  We will fill the rest with spaces
+       * after the if (!curbuf->b_p_et) below. */
+!     if (orig_char_len != -1)
+      {
+  	newline = alloc(orig_char_len + size - ind_done + line_len);
+  	if (newline == NULL)
+  	    return FALSE;
++ 	todo = size - ind_done;
++ 	ind_len = orig_char_len + todo;    /* Set total length of indent in
++ 					    * characters, which may have been
++ 					    * undercounted until now  */
+  	p = oldline;
+  	s = newline;
+  	while (orig_char_len > 0)
+***************
+*** 222,230 ****
+  	 * than old) */
+  	while (vim_iswhite(*p))
+  	    (void)*p++;
+- 	todo = size - ind_done;
+- 	ind_len += todo;    /* Set total length of indent in characters,
+- 			     * which may have been undercounted until now  */
+  
+      }
+      else
+--- 226,231 ----
+*** ../vim-7.1.072/src/version.c	Tue Aug 14 17:54:37 2007
+--- src/version.c	Tue Aug 14 22:14:54 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     73,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+157. You fum through a magazine, you first check to see if it has a web
+     address.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

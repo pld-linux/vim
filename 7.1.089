@@ -1,0 +1,494 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.089
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.089
+Problem:    ":let loaded_getscriptPlugin" doesn't clear to eol, result is
+	    "#1in".
+Solution:   Clear to the end of the screen after displaying the first variable
+	    value.
+Files:	    src/eval.c
+
+
+*** ../vim-7.1.088/src/eval.c	Tue Aug 14 22:40:13 2007
+--- src/eval.c	Wed Aug 29 22:40:15 2007
+***************
+*** 369,385 ****
+  static int ex_let_vars __ARGS((char_u *arg, typval_T *tv, int copy, int semicolon, int var_count, char_u *nextchars));
+  static char_u *skip_var_list __ARGS((char_u *arg, int *var_count, int *semicolon));
+  static char_u *skip_var_one __ARGS((char_u *arg));
+! static void list_hashtable_vars __ARGS((hashtab_T *ht, char_u *prefix, int empty));
+! static void list_glob_vars __ARGS((void));
+! static void list_buf_vars __ARGS((void));
+! static void list_win_vars __ARGS((void));
+  #ifdef FEAT_WINDOWS
+! static void list_tab_vars __ARGS((void));
+  #endif
+! static void list_vim_vars __ARGS((void));
+! static void list_script_vars __ARGS((void));
+! static void list_func_vars __ARGS((void));
+! static char_u *list_arg_vars __ARGS((exarg_T *eap, char_u *arg));
+  static char_u *ex_let_one __ARGS((char_u *arg, typval_T *tv, int copy, char_u *endchars, char_u *op));
+  static int check_changedtick __ARGS((char_u *arg));
+  static char_u *get_lval __ARGS((char_u *name, typval_T *rettv, lval_T *lp, int unlet, int skip, int quiet, int fne_flags));
+--- 369,385 ----
+  static int ex_let_vars __ARGS((char_u *arg, typval_T *tv, int copy, int semicolon, int var_count, char_u *nextchars));
+  static char_u *skip_var_list __ARGS((char_u *arg, int *var_count, int *semicolon));
+  static char_u *skip_var_one __ARGS((char_u *arg));
+! static void list_hashtable_vars __ARGS((hashtab_T *ht, char_u *prefix, int empty, int *first));
+! static void list_glob_vars __ARGS((int *first));
+! static void list_buf_vars __ARGS((int *first));
+! static void list_win_vars __ARGS((int *first));
+  #ifdef FEAT_WINDOWS
+! static void list_tab_vars __ARGS((int *first));
+  #endif
+! static void list_vim_vars __ARGS((int *first));
+! static void list_script_vars __ARGS((int *first));
+! static void list_func_vars __ARGS((int *first));
+! static char_u *list_arg_vars __ARGS((exarg_T *eap, char_u *arg, int *first));
+  static char_u *ex_let_one __ARGS((char_u *arg, typval_T *tv, int copy, char_u *endchars, char_u *op));
+  static int check_changedtick __ARGS((char_u *arg));
+  static char_u *get_lval __ARGS((char_u *name, typval_T *rettv, lval_T *lp, int unlet, int skip, int quiet, int fne_flags));
+***************
+*** 704,711 ****
+  static hashtab_T *find_var_ht __ARGS((char_u *name, char_u **varname));
+  static void vars_clear_ext __ARGS((hashtab_T *ht, int free_val));
+  static void delete_var __ARGS((hashtab_T *ht, hashitem_T *hi));
+! static void list_one_var __ARGS((dictitem_T *v, char_u *prefix));
+! static void list_one_var_a __ARGS((char_u *prefix, char_u *name, int type, char_u *string));
+  static void set_var __ARGS((char_u *name, typval_T *varp, int copy));
+  static int var_check_ro __ARGS((int flags, char_u *name));
+  static int var_check_fixed __ARGS((int flags, char_u *name));
+--- 704,711 ----
+  static hashtab_T *find_var_ht __ARGS((char_u *name, char_u **varname));
+  static void vars_clear_ext __ARGS((hashtab_T *ht, int free_val));
+  static void delete_var __ARGS((hashtab_T *ht, hashitem_T *hi));
+! static void list_one_var __ARGS((dictitem_T *v, char_u *prefix, int *first));
+! static void list_one_var_a __ARGS((char_u *prefix, char_u *name, int type, char_u *string, int *first));
+  static void set_var __ARGS((char_u *name, typval_T *varp, int copy));
+  static int var_check_ro __ARGS((int flags, char_u *name));
+  static int var_check_fixed __ARGS((int flags, char_u *name));
+***************
+*** 1699,1704 ****
+--- 1699,1705 ----
+      int		semicolon = 0;
+      char_u	op[2];
+      char_u	*argend;
++     int		first = TRUE;
+  
+      argend = skip_var_list(arg, &var_count, &semicolon);
+      if (argend == NULL)
+***************
+*** 1715,1733 ****
+  	    EMSG(_(e_invarg));
+  	else if (!ends_excmd(*arg))
+  	    /* ":let var1 var2" */
+! 	    arg = list_arg_vars(eap, arg);
+  	else if (!eap->skip)
+  	{
+  	    /* ":let" */
+! 	    list_glob_vars();
+! 	    list_buf_vars();
+! 	    list_win_vars();
+  #ifdef FEAT_WINDOWS
+! 	    list_tab_vars();
+  #endif
+! 	    list_script_vars();
+! 	    list_func_vars();
+! 	    list_vim_vars();
+  	}
+  	eap->nextcmd = check_nextcmd(arg);
+      }
+--- 1716,1734 ----
+  	    EMSG(_(e_invarg));
+  	else if (!ends_excmd(*arg))
+  	    /* ":let var1 var2" */
+! 	    arg = list_arg_vars(eap, arg, &first);
+  	else if (!eap->skip)
+  	{
+  	    /* ":let" */
+! 	    list_glob_vars(&first);
+! 	    list_buf_vars(&first);
+! 	    list_win_vars(&first);
+  #ifdef FEAT_WINDOWS
+! 	    list_tab_vars(&first);
+  #endif
+! 	    list_script_vars(&first);
+! 	    list_func_vars(&first);
+! 	    list_vim_vars(&first);
+  	}
+  	eap->nextcmd = check_nextcmd(arg);
+      }
+***************
+*** 1932,1941 ****
+   * If "empty" is TRUE also list NULL strings as empty strings.
+   */
+      static void
+! list_hashtable_vars(ht, prefix, empty)
+      hashtab_T	*ht;
+      char_u	*prefix;
+      int		empty;
+  {
+      hashitem_T	*hi;
+      dictitem_T	*di;
+--- 1933,1943 ----
+   * If "empty" is TRUE also list NULL strings as empty strings.
+   */
+      static void
+! list_hashtable_vars(ht, prefix, empty, first)
+      hashtab_T	*ht;
+      char_u	*prefix;
+      int		empty;
++     int		*first;
+  {
+      hashitem_T	*hi;
+      dictitem_T	*di;
+***************
+*** 1950,1956 ****
+  	    di = HI2DI(hi);
+  	    if (empty || di->di_tv.v_type != VAR_STRING
+  					   || di->di_tv.vval.v_string != NULL)
+! 		list_one_var(di, prefix);
+  	}
+      }
+  }
+--- 1952,1958 ----
+  	    di = HI2DI(hi);
+  	    if (empty || di->di_tv.v_type != VAR_STRING
+  					   || di->di_tv.vval.v_string != NULL)
+! 		list_one_var(di, prefix, first);
+  	}
+      }
+  }
+***************
+*** 1959,1990 ****
+   * List global variables.
+   */
+      static void
+! list_glob_vars()
+  {
+!     list_hashtable_vars(&globvarht, (char_u *)"", TRUE);
+  }
+  
+  /*
+   * List buffer variables.
+   */
+      static void
+! list_buf_vars()
+  {
+      char_u	numbuf[NUMBUFLEN];
+  
+!     list_hashtable_vars(&curbuf->b_vars.dv_hashtab, (char_u *)"b:", TRUE);
+  
+      sprintf((char *)numbuf, "%ld", (long)curbuf->b_changedtick);
+!     list_one_var_a((char_u *)"b:", (char_u *)"changedtick", VAR_NUMBER, numbuf);
+  }
+  
+  /*
+   * List window variables.
+   */
+      static void
+! list_win_vars()
+  {
+!     list_hashtable_vars(&curwin->w_vars.dv_hashtab, (char_u *)"w:", TRUE);
+  }
+  
+  #ifdef FEAT_WINDOWS
+--- 1961,1998 ----
+   * List global variables.
+   */
+      static void
+! list_glob_vars(first)
+!     int *first;
+  {
+!     list_hashtable_vars(&globvarht, (char_u *)"", TRUE, first);
+  }
+  
+  /*
+   * List buffer variables.
+   */
+      static void
+! list_buf_vars(first)
+!     int *first;
+  {
+      char_u	numbuf[NUMBUFLEN];
+  
+!     list_hashtable_vars(&curbuf->b_vars.dv_hashtab, (char_u *)"b:",
+! 								 TRUE, first);
+  
+      sprintf((char *)numbuf, "%ld", (long)curbuf->b_changedtick);
+!     list_one_var_a((char_u *)"b:", (char_u *)"changedtick", VAR_NUMBER,
+! 							       numbuf, first);
+  }
+  
+  /*
+   * List window variables.
+   */
+      static void
+! list_win_vars(first)
+!     int *first;
+  {
+!     list_hashtable_vars(&curwin->w_vars.dv_hashtab,
+! 						 (char_u *)"w:", TRUE, first);
+  }
+  
+  #ifdef FEAT_WINDOWS
+***************
+*** 1992,2000 ****
+   * List tab page variables.
+   */
+      static void
+! list_tab_vars()
+  {
+!     list_hashtable_vars(&curtab->tp_vars.dv_hashtab, (char_u *)"t:", TRUE);
+  }
+  #endif
+  
+--- 2000,2010 ----
+   * List tab page variables.
+   */
+      static void
+! list_tab_vars(first)
+!     int *first;
+  {
+!     list_hashtable_vars(&curtab->tp_vars.dv_hashtab,
+! 						 (char_u *)"t:", TRUE, first);
+  }
+  #endif
+  
+***************
+*** 2002,2040 ****
+   * List Vim variables.
+   */
+      static void
+! list_vim_vars()
+  {
+!     list_hashtable_vars(&vimvarht, (char_u *)"v:", FALSE);
+  }
+  
+  /*
+   * List script-local variables, if there is a script.
+   */
+      static void
+! list_script_vars()
+  {
+      if (current_SID > 0 && current_SID <= ga_scripts.ga_len)
+! 	list_hashtable_vars(&SCRIPT_VARS(current_SID), (char_u *)"s:", FALSE);
+  }
+  
+  /*
+   * List function variables, if there is a function.
+   */
+      static void
+! list_func_vars()
+  {
+      if (current_funccal != NULL)
+  	list_hashtable_vars(&current_funccal->l_vars.dv_hashtab,
+! 						       (char_u *)"l:", FALSE);
+  }
+  
+  /*
+   * List variables in "arg".
+   */
+      static char_u *
+! list_arg_vars(eap, arg)
+      exarg_T	*eap;
+      char_u	*arg;
+  {
+      int		error = FALSE;
+      int		len;
+--- 2012,2055 ----
+   * List Vim variables.
+   */
+      static void
+! list_vim_vars(first)
+!     int *first;
+  {
+!     list_hashtable_vars(&vimvarht, (char_u *)"v:", FALSE, first);
+  }
+  
+  /*
+   * List script-local variables, if there is a script.
+   */
+      static void
+! list_script_vars(first)
+!     int *first;
+  {
+      if (current_SID > 0 && current_SID <= ga_scripts.ga_len)
+! 	list_hashtable_vars(&SCRIPT_VARS(current_SID),
+! 						(char_u *)"s:", FALSE, first);
+  }
+  
+  /*
+   * List function variables, if there is a function.
+   */
+      static void
+! list_func_vars(first)
+!     int *first;
+  {
+      if (current_funccal != NULL)
+  	list_hashtable_vars(&current_funccal->l_vars.dv_hashtab,
+! 						(char_u *)"l:", FALSE, first);
+  }
+  
+  /*
+   * List variables in "arg".
+   */
+      static char_u *
+! list_arg_vars(eap, arg, first)
+      exarg_T	*eap;
+      char_u	*arg;
++     int		*first;
+  {
+      int		error = FALSE;
+      int		len;
+***************
+*** 2091,2105 ****
+  			{
+  			    switch (*name)
+  			    {
+! 				case 'g': list_glob_vars(); break;
+! 				case 'b': list_buf_vars(); break;
+! 				case 'w': list_win_vars(); break;
+  #ifdef FEAT_WINDOWS
+! 				case 't': list_tab_vars(); break;
+  #endif
+! 				case 'v': list_vim_vars(); break;
+! 				case 's': list_script_vars(); break;
+! 				case 'l': list_func_vars(); break;
+  				default:
+  					  EMSG2(_("E738: Can't list variables for %s"), name);
+  			    }
+--- 2106,2120 ----
+  			{
+  			    switch (*name)
+  			    {
+! 				case 'g': list_glob_vars(first); break;
+! 				case 'b': list_buf_vars(first); break;
+! 				case 'w': list_win_vars(first); break;
+  #ifdef FEAT_WINDOWS
+! 				case 't': list_tab_vars(first); break;
+  #endif
+! 				case 'v': list_vim_vars(first); break;
+! 				case 's': list_script_vars(first); break;
+! 				case 'l': list_func_vars(first); break;
+  				default:
+  					  EMSG2(_("E738: Can't list variables for %s"), name);
+  			    }
+***************
+*** 2116,2122 ****
+  			    *arg = NUL;
+  			    list_one_var_a((char_u *)"",
+  				    arg == arg_subsc ? name : name_start,
+! 				    tv.v_type, s == NULL ? (char_u *)"" : s);
+  			    *arg = c;
+  			    vim_free(tf);
+  			}
+--- 2131,2139 ----
+  			    *arg = NUL;
+  			    list_one_var_a((char_u *)"",
+  				    arg == arg_subsc ? name : name_start,
+! 				    tv.v_type,
+! 				    s == NULL ? (char_u *)"" : s,
+! 				    first);
+  			    *arg = c;
+  			    vim_free(tf);
+  			}
+***************
+*** 18001,18009 ****
+   * List the value of one internal variable.
+   */
+      static void
+! list_one_var(v, prefix)
+      dictitem_T	*v;
+      char_u	*prefix;
+  {
+      char_u	*tofree;
+      char_u	*s;
+--- 18024,18033 ----
+   * List the value of one internal variable.
+   */
+      static void
+! list_one_var(v, prefix, first)
+      dictitem_T	*v;
+      char_u	*prefix;
++     int		*first;
+  {
+      char_u	*tofree;
+      char_u	*s;
+***************
+*** 18011,18026 ****
+  
+      s = echo_string(&v->di_tv, &tofree, numbuf, ++current_copyID);
+      list_one_var_a(prefix, v->di_key, v->di_tv.v_type,
+! 						s == NULL ? (char_u *)"" : s);
+      vim_free(tofree);
+  }
+  
+      static void
+! list_one_var_a(prefix, name, type, string)
+      char_u	*prefix;
+      char_u	*name;
+      int		type;
+      char_u	*string;
+  {
+      /* don't use msg() or msg_attr() to avoid overwriting "v:statusmsg" */
+      msg_start();
+--- 18035,18051 ----
+  
+      s = echo_string(&v->di_tv, &tofree, numbuf, ++current_copyID);
+      list_one_var_a(prefix, v->di_key, v->di_tv.v_type,
+! 					 s == NULL ? (char_u *)"" : s, first);
+      vim_free(tofree);
+  }
+  
+      static void
+! list_one_var_a(prefix, name, type, string, first)
+      char_u	*prefix;
+      char_u	*name;
+      int		type;
+      char_u	*string;
++     int		*first;  /* when TRUE clear rest of screen and set to FALSE */
+  {
+      /* don't use msg() or msg_attr() to avoid overwriting "v:statusmsg" */
+      msg_start();
+***************
+*** 18052,18057 ****
+--- 18077,18087 ----
+  
+      if (type == VAR_FUNC)
+  	msg_puts((char_u *)"()");
++     if (*first)
++     {
++ 	msg_clr_eos();
++ 	*first = FALSE;
++     }
+  }
+  
+  /*
+*** ../vim-7.1.088/src/version.c	Thu Aug 30 10:34:19 2007
+--- src/version.c	Thu Aug 30 11:06:32 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     89,
+  /**/
+
+-- 
+Edison's greatest achievement came in 1879, when he invented the
+electric company.  Edison's design was a brilliant adaptation of the
+simple electrical circuit: the electric company sends electricity
+through a wire to a customer, then immediately gets the electricity
+back through another wire
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.094
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.094
+Problem:    When checking if syntax highlighting is present, looking in the
+	    current buffer instead of the specified one.
+Solution:   Use "buf" instead of "curbuf".
+Files:	    src/syntax.c
+
+
+*** ../vim-7.1.093/src/syntax.c	Tue Aug 21 17:29:04 2007
+--- src/syntax.c	Wed Aug 29 23:27:52 2007
+***************
+*** 5987,5994 ****
+  {
+      return (buf->b_syn_patterns.ga_len != 0
+  	    || buf->b_syn_clusters.ga_len != 0
+! 	    || curbuf->b_keywtab.ht_used > 0
+! 	    || curbuf->b_keywtab_ic.ht_used > 0);
+  }
+  
+  #if defined(FEAT_CMDL_COMPL) || defined(PROTO)
+--- 5987,5994 ----
+  {
+      return (buf->b_syn_patterns.ga_len != 0
+  	    || buf->b_syn_clusters.ga_len != 0
+! 	    || buf->b_keywtab.ht_used > 0
+! 	    || buf->b_keywtab_ic.ht_used > 0);
+  }
+  
+  #if defined(FEAT_CMDL_COMPL) || defined(PROTO)
+*** ../vim-7.1.093/src/version.c	Thu Aug 30 13:51:52 2007
+--- src/version.c	Thu Aug 30 19:35:52 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     94,
+  /**/
+
+-- 
+MAN:     You don't frighten us, English pig-dog!  Go and boil your bottoms,
+         son of a silly person.  I blow my nose on you, so-called Arthur-king,
+         you and your silly English K...kaniggets.
+   He puts hands to his ears and blows a raspberry.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

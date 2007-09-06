@@ -1,0 +1,210 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.095
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.095
+Problem:    The FocusLost and FocusGained autocommands are triggered
+	    asynchronously in the GUI.  This may cause arbitrary problems.
+Solution:   Put the focus event in the input buffer and handle it when ready
+	    for it.
+Files:	    src/eval.c, src/getchar.c, src/gui.c, src/gui_gtk_x11.c,
+	    src/keymap.h
+
+
+*** ../vim-7.1.094/src/eval.c	Thu Aug 30 11:10:38 2007
+--- src/eval.c	Mon Sep  3 22:48:09 2007
+***************
+*** 9912,9929 ****
+  
+      ++no_mapping;
+      ++allow_keys;
+!     if (argvars[0].v_type == VAR_UNKNOWN)
+! 	/* getchar(): blocking wait. */
+! 	n = safe_vgetc();
+!     else if (get_tv_number_chk(&argvars[0], &error) == 1)
+! 	/* getchar(1): only check if char avail */
+! 	n = vpeekc();
+!     else if (error || vpeekc() == NUL)
+! 	/* illegal argument or getchar(0) and no char avail: return zero */
+! 	n = 0;
+!     else
+! 	/* getchar(0) and char avail: return char */
+! 	n = safe_vgetc();
+      --no_mapping;
+      --allow_keys;
+  
+--- 9912,9935 ----
+  
+      ++no_mapping;
+      ++allow_keys;
+!     for (;;)
+!     {
+! 	if (argvars[0].v_type == VAR_UNKNOWN)
+! 	    /* getchar(): blocking wait. */
+! 	    n = safe_vgetc();
+! 	else if (get_tv_number_chk(&argvars[0], &error) == 1)
+! 	    /* getchar(1): only check if char avail */
+! 	    n = vpeekc();
+! 	else if (error || vpeekc() == NUL)
+! 	    /* illegal argument or getchar(0) and no char avail: return zero */
+! 	    n = 0;
+! 	else
+! 	    /* getchar(0) and char avail: return char */
+! 	    n = safe_vgetc();
+! 	if (n == K_IGNORE)
+! 	    continue;
+! 	break;
+!     }
+      --no_mapping;
+      --allow_keys;
+  
+*** ../vim-7.1.094/src/getchar.c	Thu May 10 18:43:02 2007
+--- src/getchar.c	Wed Aug 29 22:38:49 2007
+***************
+*** 1596,1603 ****
+  		continue;
+  	    }
+  #endif
+- 
+  #ifdef FEAT_GUI
+  	    /* Translate K_CSI to CSI.  The special key is only used to avoid
+  	     * it being recognized as the start of a special key. */
+  	    if (c == K_CSI)
+--- 1596,1610 ----
+  		continue;
+  	    }
+  #endif
+  #ifdef FEAT_GUI
++ 	    /* The caller doesn't need to know that the focus event is delayed
++ 	     * until getting a character. */
++ 	    if (c == K_FOCUSGAINED || c == K_FOCUSLOST)
++ 	    {
++ 		ui_focus_change(c == K_FOCUSGAINED);
++ 		continue;
++ 	    }
++ 
+  	    /* Translate K_CSI to CSI.  The special key is only used to avoid
+  	     * it being recognized as the start of a special key. */
+  	    if (c == K_CSI)
+*** ../vim-7.1.094/src/gui.c	Thu Aug 30 13:51:52 2007
+--- src/gui.c	Thu Aug 30 14:10:48 2007
+***************
+*** 4519,4525 ****
+      xim_set_focus(in_focus);
+  # endif
+  
+!     ui_focus_change(in_focus);
+  #endif
+  }
+  
+--- 4519,4536 ----
+      xim_set_focus(in_focus);
+  # endif
+  
+!     /* Put events in the input queue only when allowed.
+!      * ui_focus_change() isn't called directly, because it invokes
+!      * autocommands and that must not happen asynchronously. */
+!     if (!hold_gui_events)
+!     {
+! 	char_u  bytes[3];
+! 
+! 	bytes[0] = CSI;
+! 	bytes[1] = KS_EXTRA;
+! 	bytes[2] = in_focus ? (int)KE_FOCUSGAINED : (int)KE_FOCUSLOST;
+! 	add_to_input_buf(bytes, 3);
+!     }
+  #endif
+  }
+  
+*** ../vim-7.1.094/src/gui_gtk_x11.c	Tue Jun 19 18:07:52 2007
+--- src/gui_gtk_x11.c	Wed Aug 29 22:43:34 2007
+***************
+*** 813,822 ****
+      if (blink_state == BLINK_NONE)
+  	gui_mch_start_blink();
+  
+!     /* make sure keyboard input goes to the draw area (if this is focus for a window) */
+      if (widget != gui.drawarea)
+  	gtk_widget_grab_focus(gui.drawarea);
+  
+      return TRUE;
+  }
+  
+--- 813,827 ----
+      if (blink_state == BLINK_NONE)
+  	gui_mch_start_blink();
+  
+!     /* make sure keyboard input goes to the draw area (if this is focus for a
+!      * window) */
+      if (widget != gui.drawarea)
+  	gtk_widget_grab_focus(gui.drawarea);
+  
++     /* make sure the input buffer is read */
++     if (gtk_main_level() > 0)
++ 	gtk_main_quit();
++ 
+      return TRUE;
+  }
+  
+***************
+*** 828,833 ****
+--- 833,842 ----
+  
+      if (blink_state != BLINK_NONE)
+  	gui_mch_stop_blink();
++ 
++     /* make sure the input buffer is read */
++     if (gtk_main_level() > 0)
++ 	gtk_main_quit();
+  
+      return TRUE;
+  }
+*** ../vim-7.1.094/src/keymap.h	Sat May  5 19:34:22 2007
+--- src/keymap.h	Wed Aug 29 22:17:51 2007
+***************
+*** 254,259 ****
+--- 254,261 ----
+      , KE_DROP		/* DnD data is available */
+      , KE_CURSORHOLD	/* CursorHold event */
+      , KE_NOP		/* doesn't do something */
++     , KE_FOCUSGAINED	/* focus gained */
++     , KE_FOCUSLOST	/* focus lost */
+  };
+  
+  /*
+***************
+*** 445,450 ****
+--- 447,454 ----
+  #define K_CMDWIN	TERMCAP2KEY(KS_EXTRA, KE_CMDWIN)
+  
+  #define K_DROP		TERMCAP2KEY(KS_EXTRA, KE_DROP)
++ #define K_FOCUSGAINED	TERMCAP2KEY(KS_EXTRA, KE_FOCUSGAINED)
++ #define K_FOCUSLOST	TERMCAP2KEY(KS_EXTRA, KE_FOCUSLOST)
+  
+  #define K_CURSORHOLD	TERMCAP2KEY(KS_EXTRA, KE_CURSORHOLD)
+  
+*** ../vim-7.1.094/src/version.c	Thu Aug 30 19:36:52 2007
+--- src/version.c	Wed Sep  5 21:42:41 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     95,
+  /**/
+
+-- 
+ARTHUR:      Who are you?
+TALL KNIGHT: We are the Knights Who Say "Ni"!
+BEDEVERE:    No!  Not the Knights Who Say "Ni"!
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

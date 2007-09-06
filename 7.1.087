@@ -1,0 +1,151 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.087
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.087
+Problem:    Reading past ":cscope find" command.  Writing past end of a buffer.
+Solution:   Check length of the argument before using the pattern.  Use
+	    vim_strncpy().  (Dominique Pelle)
+Files:	    if_cscope.c
+
+
+*** ../vim-7.1.086/src/if_cscope.c	Sun Mar 11 15:48:29 2007
+--- src/if_cscope.c	Sun Aug 19 22:17:09 2007
+***************
+*** 73,78 ****
+--- 73,80 ----
+  
+  
+  static csinfo_T	    csinfo[CSCOPE_MAX_CONNECTIONS];
++ static int	    eap_arg_len;    /* length of eap->arg, set in
++ 				       cs_lookup_cmd() */
+  static cscmd_T	    cs_cmds[] =
+  {
+      { "add",	cs_add,
+***************
+*** 260,273 ****
+  
+      if ((p = cs_manage_matches(NULL, NULL, -1, Get)) == NULL)
+  	return TRUE;
+! 
+!     if ((int)strlen(p) > size)
+!     {
+! 	strncpy((char *)buf, p, size - 1);
+! 	buf[size] = '\0';
+!     }
+!     else
+! 	(void)strcpy((char *)buf, p);
+  
+      return FALSE;
+  } /* cs_fgets */
+--- 262,268 ----
+  
+      if ((p = cs_manage_matches(NULL, NULL, -1, Get)) == NULL)
+  	return TRUE;
+!     vim_strncpy(buf, (char_u *)p, size - 1);
+  
+      return FALSE;
+  } /* cs_fgets */
+***************
+*** 386,392 ****
+   * PRIVATE: cs_add
+   *
+   * add cscope database or a directory name (to look for cscope.out)
+!  * the the cscope connection list
+   *
+   * MAXPATHL 256
+   */
+--- 381,387 ----
+   * PRIVATE: cs_add
+   *
+   * add cscope database or a directory name (to look for cscope.out)
+!  * to the cscope connection list
+   *
+   * MAXPATHL 256
+   */
+***************
+*** 966,972 ****
+      }
+  
+      pat = opt + strlen(opt) + 1;
+!     if (pat == NULL || (pat != NULL && pat[0] == '\0'))
+      {
+  	cs_usage_msg(Find);
+  	return FALSE;
+--- 961,967 ----
+      }
+  
+      pat = opt + strlen(opt) + 1;
+!     if (pat >= (char *)eap->arg + eap_arg_len)
+      {
+  	cs_usage_msg(Find);
+  	return FALSE;
+***************
+*** 1317,1323 ****
+  #else
+  	    /* compare pathnames first */
+  	    && ((fullpathcmp(csinfo[j].fname, fname, FALSE) & FPC_SAME)
+! 		/* if not Windows 9x, test index file atributes too */
+  		|| (!mch_windows95()
+  		    && csinfo[j].nVolume == bhfi.dwVolumeSerialNumber
+  		    && csinfo[j].nIndexHigh == bhfi.nFileIndexHigh
+--- 1312,1318 ----
+  #else
+  	    /* compare pathnames first */
+  	    && ((fullpathcmp(csinfo[j].fname, fname, FALSE) & FPC_SAME)
+! 		/* if not Windows 9x, test index file attributes too */
+  		|| (!mch_windows95()
+  		    && csinfo[j].nVolume == bhfi.dwVolumeSerialNumber
+  		    && csinfo[j].nIndexHigh == bhfi.nFileIndexHigh
+***************
+*** 1401,1406 ****
+--- 1396,1404 ----
+      if (eap->arg == NULL)
+  	return NULL;
+  
++     /* Store length of eap->arg before it gets modified by strtok(). */
++     eap_arg_len = STRLEN(eap->arg);
++ 
+      if ((stok = strtok((char *)(eap->arg), (const char *)" ")) == NULL)
+  	return NULL;
+  
+***************
+*** 2195,2201 ****
+  	    cs_add_common(dblist[i], pplist[i], fllist[i]);
+  	    if (p_csverbose)
+  	    {
+! 		/* dont' use smsg_attr because want to display
+  		 * connection number in the same line as
+  		 * "Added cscope database..."
+  		 */
+--- 2193,2199 ----
+  	    cs_add_common(dblist[i], pplist[i], fllist[i]);
+  	    if (p_csverbose)
+  	    {
+! 		/* don't use smsg_attr() because we want to display the
+  		 * connection number in the same line as
+  		 * "Added cscope database..."
+  		 */
+*** ../vim-7.1.086/src/version.c	Tue Aug 21 17:29:04 2007
+--- src/version.c	Tue Aug 21 17:59:42 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     87,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+223. You set up a web-cam as your home's security system.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

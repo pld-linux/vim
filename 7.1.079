@@ -1,0 +1,84 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.079
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.079
+Problem:    When the locale is "C" and 'encoding' is "latin1" then the "@"
+	    character in 'isfname', 'isprint', etc. doesn't pick up accented
+	    characters.
+Solution:   Instead of isalpha() use MB_ISLOWER() and MB_ISUPPER().
+Files:	    src/charset.c, src/macros.h
+
+
+*** ../vim-7.1.078/src/charset.c	Mon Aug  6 22:27:12 2007
+--- src/charset.c	Tue Aug 14 13:43:30 2007
+***************
+*** 207,213 ****
+  	    }
+  	    while (c <= c2)
+  	    {
+! 		if (!do_isalpha || isalpha(c)
+  #ifdef FEAT_FKMAP
+  			|| (p_altkeymap && (F_isalpha(c) || F_isdigit(c)))
+  #endif
+--- 207,216 ----
+  	    }
+  	    while (c <= c2)
+  	    {
+! 		/* Use the MB_ functions here, because isalpha() doesn't
+! 		 * work properly when 'encoding' is "latin1" and the locale is
+! 		 * "C".  */
+! 		if (!do_isalpha || MB_ISLOWER(c) || MB_ISUPPER(c)
+  #ifdef FEAT_FKMAP
+  			|| (p_altkeymap && (F_isalpha(c) || F_isdigit(c)))
+  #endif
+*** ../vim-7.1.078/src/macros.h	Thu May 10 19:21:00 2007
+--- src/macros.h	Sat Aug  4 13:44:18 2007
+***************
+*** 54,63 ****
+  
+  /*
+   * toupper() and tolower() that use the current locale.
+!  * On some systems toupper()/tolower() only work on lower/uppercase characters
+   * Careful: Only call TOUPPER_LOC() and TOLOWER_LOC() with a character in the
+   * range 0 - 255.  toupper()/tolower() on some systems can't handle others.
+!  * Note: for UTF-8 use utf_toupper() and utf_tolower().
+   */
+  #ifdef MSWIN
+  #  define TOUPPER_LOC(c)	toupper_tab[(c) & 255]
+--- 54,65 ----
+  
+  /*
+   * toupper() and tolower() that use the current locale.
+!  * On some systems toupper()/tolower() only work on lower/uppercase
+!  * characters, first use islower() or isupper() then.
+   * Careful: Only call TOUPPER_LOC() and TOLOWER_LOC() with a character in the
+   * range 0 - 255.  toupper()/tolower() on some systems can't handle others.
+!  * Note: It is often better to use MB_TOLOWER() and MB_TOUPPER(), because many
+!  * toupper() and tolower() implementations only work for ASCII.
+   */
+  #ifdef MSWIN
+  #  define TOUPPER_LOC(c)	toupper_tab[(c) & 255]
+*** ../vim-7.1.078/src/version.c	Wed Aug 15 20:07:53 2007
+--- src/version.c	Wed Aug 15 20:39:18 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     79,
+  /**/
+
+-- 
+You're as much use as a condom machine at the Vatican.
+                  -- Rimmer to Holly in Red Dwarf 'Queeg'
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

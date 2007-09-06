@@ -1,0 +1,551 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.093
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.093
+Problem:    Reading past end of a screen line when determining cell width.
+	    (Dominique Pelle)
+Solution:   Add an argument to mb_off2cells() for the maximum offset.
+Files:	    src/globals.h, src/gui.c, src/mbyte.c, src/proto/mbyte.pro,
+	    src/screen.c
+
+
+*** ../vim-7.1.092/src/globals.h	Thu Aug 30 12:24:21 2007
+--- src/globals.h	Wed Aug 29 22:27:45 2007
+***************
+*** 801,807 ****
+  EXTERN int (*mb_char2bytes) __ARGS((int c, char_u *buf)) INIT(= latin_char2bytes);
+  EXTERN int (*mb_ptr2cells) __ARGS((char_u *p)) INIT(= latin_ptr2cells);
+  EXTERN int (*mb_char2cells) __ARGS((int c)) INIT(= latin_char2cells);
+! EXTERN int (*mb_off2cells) __ARGS((unsigned off)) INIT(= latin_off2cells);
+  EXTERN int (*mb_ptr2char) __ARGS((char_u *p)) INIT(= latin_ptr2char);
+  EXTERN int (*mb_head_off) __ARGS((char_u *base, char_u *p)) INIT(= latin_head_off);
+  
+--- 801,807 ----
+  EXTERN int (*mb_char2bytes) __ARGS((int c, char_u *buf)) INIT(= latin_char2bytes);
+  EXTERN int (*mb_ptr2cells) __ARGS((char_u *p)) INIT(= latin_ptr2cells);
+  EXTERN int (*mb_char2cells) __ARGS((int c)) INIT(= latin_char2cells);
+! EXTERN int (*mb_off2cells) __ARGS((unsigned off, unsigned max_off)) INIT(= latin_off2cells);
+  EXTERN int (*mb_ptr2char) __ARGS((char_u *p)) INIT(= latin_ptr2char);
+  EXTERN int (*mb_head_off) __ARGS((char_u *base, char_u *p)) INIT(= latin_head_off);
+  
+*** ../vim-7.1.092/src/gui.c	Wed Aug 15 20:07:53 2007
+--- src/gui.c	Wed Aug 29 22:16:51 2007
+***************
+*** 1080,1086 ****
+  		cur_width = gui.char_width;
+  	    }
+  #ifdef FEAT_MBYTE
+! 	    if (has_mbyte && (*mb_off2cells)(LineOffset[gui.row] + gui.col) > 1)
+  	    {
+  		/* Double wide character. */
+  		if (shape_table[idx].shape != SHAPE_VER)
+--- 1080,1087 ----
+  		cur_width = gui.char_width;
+  	    }
+  #ifdef FEAT_MBYTE
+! 	    if (has_mbyte && (*mb_off2cells)(LineOffset[gui.row] + gui.col,
+! 				    LineOffset[gui.row] + screen_Columns) > 1)
+  	    {
+  		/* Double wide character. */
+  		if (shape_table[idx].shape != SHAPE_VER)
+***************
+*** 1159,1165 ****
+  #endif
+  
+  # if defined(FEAT_GUI_TABLINE) && (defined(FEAT_GUI_MSWIN) \
+!  	|| defined(FEAT_GUI_MOTIF) || defined(FEAT_GUI_MAC))
+      if (gui_has_tabline())
+  	text_area_y += gui.tabline_height;
+  #endif
+--- 1160,1166 ----
+  #endif
+  
+  # if defined(FEAT_GUI_TABLINE) && (defined(FEAT_GUI_MSWIN) \
+! 	|| defined(FEAT_GUI_MOTIF) || defined(FEAT_GUI_MAC))
+      if (gui_has_tabline())
+  	text_area_y += gui.tabline_height;
+  #endif
+*** ../vim-7.1.092/src/mbyte.c	Sat Aug 11 13:57:31 2007
+--- src/mbyte.c	Thu Aug 30 13:48:30 2007
+***************
+*** 1310,1329 ****
+  /*
+   * mb_off2cells() function pointer.
+   * Return number of display cells for char at ScreenLines[off].
+!  * Caller must make sure "off" and "off + 1" are valid!
+   */
+  /*ARGSUSED*/
+      int
+! latin_off2cells(off)
+      unsigned	off;
+  {
+      return 1;
+  }
+  
+      int
+! dbcs_off2cells(off)
+      unsigned	off;
+  {
+      /* Number of cells is equal to number of bytes, except for euc-jp when
+       * the first byte is 0x8e. */
+      if (enc_dbcs == DBCS_JPNU && ScreenLines[off] == 0x8e)
+--- 1310,1335 ----
+  /*
+   * mb_off2cells() function pointer.
+   * Return number of display cells for char at ScreenLines[off].
+!  * We make sure that the offset used is less than "max_off".
+   */
+  /*ARGSUSED*/
+      int
+! latin_off2cells(off, max_off)
+      unsigned	off;
++     unsigned	max_off;
+  {
+      return 1;
+  }
+  
+      int
+! dbcs_off2cells(off, max_off)
+      unsigned	off;
++     unsigned	max_off;
+  {
++     /* never check beyond end of the line */
++     if (off >= max_off)
++ 	return 1;
++ 
+      /* Number of cells is equal to number of bytes, except for euc-jp when
+       * the first byte is 0x8e. */
+      if (enc_dbcs == DBCS_JPNU && ScreenLines[off] == 0x8e)
+***************
+*** 1332,1341 ****
+  }
+  
+      int
+! utf_off2cells(off)
+      unsigned	off;
+  {
+!     return ScreenLines[off + 1] == 0 ? 2 : 1;
+  }
+  
+  /*
+--- 1338,1348 ----
+  }
+  
+      int
+! utf_off2cells(off, max_off)
+      unsigned	off;
++     unsigned	max_off;
+  {
+!     return (off + 1 < max_off && ScreenLines[off + 1] == 0) ? 2 : 1;
+  }
+  
+  /*
+***************
+*** 2899,2910 ****
+      if (composing_hangul)
+  	return TRUE;
+  #endif
+!     if (enc_dbcs != 0)
+! 	return dbcs_off2cells(LineOffset[row] + col) > 1;
+!     if (enc_utf8)
+! 	return (col + 1 < Columns
+! 		&& ScreenLines[LineOffset[row] + col + 1] == 0);
+!     return FALSE;
+  }
+  
+  # if defined(FEAT_CLIPBOARD) || defined(FEAT_GUI) || defined(FEAT_RIGHTLEFT) \
+--- 2906,2913 ----
+      if (composing_hangul)
+  	return TRUE;
+  #endif
+!     return (*mb_off2cells)(LineOffset[row] + col,
+! 					LineOffset[row] + screen_Columns) > 1;
+  }
+  
+  # if defined(FEAT_CLIPBOARD) || defined(FEAT_GUI) || defined(FEAT_RIGHTLEFT) \
+*** ../vim-7.1.092/src/proto/mbyte.pro	Sat May  5 20:02:52 2007
+--- src/proto/mbyte.pro	Wed Aug 29 20:49:02 2007
+***************
+*** 12,20 ****
+  int utf_ptr2cells __ARGS((char_u *p));
+  int dbcs_ptr2cells __ARGS((char_u *p));
+  int latin_char2cells __ARGS((int c));
+! int latin_off2cells __ARGS((unsigned off));
+! int dbcs_off2cells __ARGS((unsigned off));
+! int utf_off2cells __ARGS((unsigned off));
+  int latin_ptr2char __ARGS((char_u *p));
+  int utf_ptr2char __ARGS((char_u *p));
+  int mb_ptr2char_adv __ARGS((char_u **pp));
+--- 12,20 ----
+  int utf_ptr2cells __ARGS((char_u *p));
+  int dbcs_ptr2cells __ARGS((char_u *p));
+  int latin_char2cells __ARGS((int c));
+! int latin_off2cells __ARGS((unsigned off, unsigned max_off));
+! int dbcs_off2cells __ARGS((unsigned off, unsigned max_off));
+! int utf_off2cells __ARGS((unsigned off, unsigned max_off));
+  int latin_ptr2char __ARGS((char_u *p));
+  int utf_ptr2char __ARGS((char_u *p));
+  int mb_ptr2char_adv __ARGS((char_u **pp));
+*** ../vim-7.1.092/src/screen.c	Sun Aug  5 20:10:16 2007
+--- src/screen.c	Thu Aug 30 10:31:26 2007
+***************
+*** 1024,1030 ****
+  	    type = VALID;
+      }
+  
+!     /* Trick: we want to avoid clearning the screen twice.  screenclear() will
+       * set "screen_cleared" to TRUE.  The special value MAYBE (which is still
+       * non-zero and thus not FALSE) will indicate that screenclear() was not
+       * called. */
+--- 1024,1030 ----
+  	    type = VALID;
+      }
+  
+!     /* Trick: we want to avoid clearing the screen twice.  screenclear() will
+       * set "screen_cleared" to TRUE.  The special value MAYBE (which is still
+       * non-zero and thus not FALSE) will indicate that screenclear() was not
+       * called. */
+***************
+*** 4632,4638 ****
+  
+  	/*
+  	 * At end of screen line and there is more to come: Display the line
+! 	 * so far.  If there is no more to display it is catched above.
+  	 */
+  	if ((
+  #ifdef FEAT_RIGHTLEFT
+--- 4632,4638 ----
+  
+  	/*
+  	 * At end of screen line and there is more to come: Display the line
+! 	 * so far.  If there is no more to display it is caught above.
+  	 */
+  	if ((
+  #ifdef FEAT_RIGHTLEFT
+***************
+*** 4709,4717 ****
+  #endif
+  #ifdef FEAT_MBYTE
+  			 && !(has_mbyte
+! 			     && ((*mb_off2cells)(LineOffset[screen_row]) == 2
+  				 || (*mb_off2cells)(LineOffset[screen_row - 1]
+! 							+ (int)Columns - 2) == 2))
+  #endif
+  		   )
+  		{
+--- 4709,4721 ----
+  #endif
+  #ifdef FEAT_MBYTE
+  			 && !(has_mbyte
+! 			     && ((*mb_off2cells)(LineOffset[screen_row],
+! 				     LineOffset[screen_row] + screen_Columns)
+! 									  == 2
+  				 || (*mb_off2cells)(LineOffset[screen_row - 1]
+! 							+ (int)Columns - 2,
+! 				     LineOffset[screen_row] + screen_Columns)
+! 									== 2))
+  #endif
+  		   )
+  		{
+***************
+*** 4871,4876 ****
+--- 4875,4884 ----
+  {
+      unsigned	    off_from;
+      unsigned	    off_to;
++ #ifdef FEAT_MBYTE
++     unsigned	    max_off_from;
++     unsigned	    max_off_to;
++ #endif
+      int		    col = 0;
+  #if defined(FEAT_GUI) || defined(UNIX) || defined(FEAT_VERTSPLIT)
+      int		    hl;
+***************
+*** 4897,4902 ****
+--- 4905,4914 ----
+  
+      off_from = (unsigned)(current_ScreenLine - ScreenLines);
+      off_to = LineOffset[row] + coloff;
++ #ifdef FEAT_MBYTE
++     max_off_from = off_from + screen_Columns;
++     max_off_to = LineOffset[row] + screen_Columns;
++ #endif
+  
+  #ifdef FEAT_RIGHTLEFT
+      if (rlflag)
+***************
+*** 4931,4937 ****
+      {
+  #ifdef FEAT_MBYTE
+  	if (has_mbyte && (col + 1 < endcol))
+! 	    char_cells = (*mb_off2cells)(off_from);
+  	else
+  	    char_cells = 1;
+  #endif
+--- 4943,4949 ----
+      {
+  #ifdef FEAT_MBYTE
+  	if (has_mbyte && (col + 1 < endcol))
+! 	    char_cells = (*mb_off2cells)(off_from, max_off_from);
+  	else
+  	    char_cells = 1;
+  #endif
+***************
+*** 5008,5014 ****
+  		 * ScreenLinesUC[] is sufficient. */
+  		if (char_cells == 1
+  			&& col + 1 < endcol
+! 			&& (*mb_off2cells)(off_to) > 1)
+  		{
+  		    /* Writing a single-cell character over a double-cell
+  		     * character: need to redraw the next cell. */
+--- 5020,5026 ----
+  		 * ScreenLinesUC[] is sufficient. */
+  		if (char_cells == 1
+  			&& col + 1 < endcol
+! 			&& (*mb_off2cells)(off_to, max_off_to) > 1)
+  		{
+  		    /* Writing a single-cell character over a double-cell
+  		     * character: need to redraw the next cell. */
+***************
+*** 5017,5024 ****
+  		}
+  		else if (char_cells == 2
+  			&& col + 2 < endcol
+! 			&& (*mb_off2cells)(off_to) == 1
+! 			&& (*mb_off2cells)(off_to + 1) > 1)
+  		{
+  		    /* Writing the second half of a double-cell character over
+  		     * a double-cell character: need to redraw the second
+--- 5029,5036 ----
+  		}
+  		else if (char_cells == 2
+  			&& col + 2 < endcol
+! 			&& (*mb_off2cells)(off_to, max_off_to) == 1
+! 			&& (*mb_off2cells)(off_to + 1, max_off_to) > 1)
+  		{
+  		    /* Writing the second half of a double-cell character over
+  		     * a double-cell character: need to redraw the second
+***************
+*** 5037,5046 ****
+  	     * char over the left halve of an existing one. */
+  	    if (has_mbyte && col + char_cells == endcol
+  		    && ((char_cells == 1
+! 			    && (*mb_off2cells)(off_to) > 1)
+  			|| (char_cells == 2
+! 			    && (*mb_off2cells)(off_to) == 1
+! 			    && (*mb_off2cells)(off_to + 1) > 1)))
+  		clear_next = TRUE;
+  #endif
+  
+--- 5049,5058 ----
+  	     * char over the left halve of an existing one. */
+  	    if (has_mbyte && col + char_cells == endcol
+  		    && ((char_cells == 1
+! 			    && (*mb_off2cells)(off_to, max_off_to) > 1)
+  			|| (char_cells == 2
+! 			    && (*mb_off2cells)(off_to, max_off_to) == 1
+! 			    && (*mb_off2cells)(off_to + 1, max_off_to) > 1)))
+  		clear_next = TRUE;
+  #endif
+  
+***************
+*** 5180,5189 ****
+  			/* find previous character by counting from first
+  			 * column and get its width. */
+  			unsigned off = LineOffset[row];
+  
+  			while (off < off_to)
+  			{
+! 			    prev_cells = (*mb_off2cells)(off);
+  			    off += prev_cells;
+  			}
+  		    }
+--- 5192,5202 ----
+  			/* find previous character by counting from first
+  			 * column and get its width. */
+  			unsigned off = LineOffset[row];
++ 			unsigned max_off = LineOffset[row] + screen_Columns;
+  
+  			while (off < off_to)
+  			{
+! 			    prev_cells = (*mb_off2cells)(off, max_off);
+  			    off += prev_cells;
+  			}
+  		    }
+***************
+*** 5369,5375 ****
+  static int skip_status_match_char __ARGS((expand_T *xp, char_u *s));
+  
+  /*
+!  * Get the lenght of an item as it will be shown in the status line.
+   */
+      static int
+  status_match_len(xp, s)
+--- 5382,5388 ----
+  static int skip_status_match_char __ARGS((expand_T *xp, char_u *s));
+  
+  /*
+!  * Get the length of an item as it will be shown in the status line.
+   */
+      static int
+  status_match_len(xp, s)
+***************
+*** 5435,5441 ****
+      int		row;
+      char_u	*buf;
+      int		len;
+!     int		clen;		/* lenght in screen cells */
+      int		fillchar;
+      int		attr;
+      int		i;
+--- 5448,5454 ----
+      int		row;
+      char_u	*buf;
+      int		len;
+!     int		clen;		/* length in screen cells */
+      int		fillchar;
+      int		attr;
+      int		i;
+***************
+*** 6187,6192 ****
+--- 6200,6206 ----
+      char_u	*ptr = text;
+      int		c;
+  #ifdef FEAT_MBYTE
++     unsigned	max_off;
+      int		mbyte_blen = 1;
+      int		mbyte_cells = 1;
+      int		u8c = 0;
+***************
+*** 6203,6208 ****
+--- 6217,6225 ----
+  	return;
+  
+      off = LineOffset[row] + col;
++ #ifdef FEAT_MBYTE
++     max_off = LineOffset[row] + screen_Columns;
++ #endif
+      while (col < screen_Columns
+  	    && (len < 0 || (int)(ptr - text) < len)
+  	    && *ptr != NUL)
+***************
+*** 6326,6344 ****
+  	    else if (has_mbyte
+  		    && (len < 0 ? ptr[mbyte_blen] == NUL
+  					     : ptr + mbyte_blen >= text + len)
+! 		    && ((mbyte_cells == 1 && (*mb_off2cells)(off) > 1)
+  			|| (mbyte_cells == 2
+! 			    && (*mb_off2cells)(off) == 1
+! 			    && (*mb_off2cells)(off + 1) > 1)))
+  		clear_next_cell = TRUE;
+  
+  	    /* Make sure we never leave a second byte of a double-byte behind,
+  	     * it confuses mb_off2cells(). */
+  	    if (enc_dbcs
+! 		    && ((mbyte_cells == 1 && (*mb_off2cells)(off) > 1)
+  			|| (mbyte_cells == 2
+! 			    && (*mb_off2cells)(off) == 1
+! 			    && (*mb_off2cells)(off + 1) > 1)))
+  		ScreenLines[off + mbyte_blen] = 0;
+  #endif
+  	    ScreenLines[off] = c;
+--- 6343,6361 ----
+  	    else if (has_mbyte
+  		    && (len < 0 ? ptr[mbyte_blen] == NUL
+  					     : ptr + mbyte_blen >= text + len)
+! 		    && ((mbyte_cells == 1 && (*mb_off2cells)(off, max_off) > 1)
+  			|| (mbyte_cells == 2
+! 			    && (*mb_off2cells)(off, max_off) == 1
+! 			    && (*mb_off2cells)(off + 1, max_off) > 1)))
+  		clear_next_cell = TRUE;
+  
+  	    /* Make sure we never leave a second byte of a double-byte behind,
+  	     * it confuses mb_off2cells(). */
+  	    if (enc_dbcs
+! 		    && ((mbyte_cells == 1 && (*mb_off2cells)(off, max_off) > 1)
+  			|| (mbyte_cells == 2
+! 			    && (*mb_off2cells)(off, max_off) == 1
+! 			    && (*mb_off2cells)(off + 1, max_off) > 1)))
+  		ScreenLines[off + mbyte_blen] = 0;
+  #endif
+  	    ScreenLines[off] = c;
+***************
+*** 6924,6929 ****
+--- 6941,6949 ----
+  {
+      int		r, c;
+      int		off;
++ #ifdef FEAT_MBYTE
++     int		max_off;
++ #endif
+  
+      /* Can't use ScreenLines unless initialized */
+      if (ScreenLines == NULL)
+***************
+*** 6934,6943 ****
+      for (r = row; r < row + height; ++r)
+      {
+  	off = LineOffset[r];
+  	for (c = col; c < col + width; ++c)
+  	{
+  #ifdef FEAT_MBYTE
+! 	    if (enc_dbcs != 0 && dbcs_off2cells(off + c) > 1)
+  	    {
+  		screen_char_2(off + c, r, c);
+  		++c;
+--- 6954,6966 ----
+      for (r = row; r < row + height; ++r)
+      {
+  	off = LineOffset[r];
++ #ifdef FEAT_MBYTE
++ 	max_off = off + screen_Columns;
++ #endif
+  	for (c = col; c < col + width; ++c)
+  	{
+  #ifdef FEAT_MBYTE
+! 	    if (enc_dbcs != 0 && dbcs_off2cells(off + c, max_off) > 1)
+  	    {
+  		screen_char_2(off + c, r, c);
+  		++c;
+***************
+*** 6947,6953 ****
+  	    {
+  		screen_char(off + c, r, c);
+  #ifdef FEAT_MBYTE
+! 		if (utf_off2cells(off + c) > 1)
+  		    ++c;
+  #endif
+  	    }
+--- 6970,6976 ----
+  	    {
+  		screen_char(off + c, r, c);
+  #ifdef FEAT_MBYTE
+! 		if (utf_off2cells(off + c, max_off) > 1)
+  		    ++c;
+  #endif
+  	    }
+*** ../vim-7.1.092/src/version.c	Thu Aug 30 12:50:00 2007
+--- src/version.c	Thu Aug 30 13:45:25 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     93,
+  /**/
+
+-- 
+There is a fine line between courage and foolishness.
+Unfortunately, it's not a fence.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

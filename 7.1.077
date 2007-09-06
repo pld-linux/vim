@@ -1,0 +1,50 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.077
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.077
+Problem:    Using "can_spell" without initializing it. (Dominique Pelle)
+Solution:   Set a default for get_syntax_attr().
+Files:	    src/syntax.c
+
+
+*** ../vim-7.1.076/src/syntax.c	Thu Jul 26 22:55:11 2007
+--- src/syntax.c	Sun Aug 12 19:49:07 2007
+***************
+*** 1727,1732 ****
+--- 1727,1739 ----
+  {
+      int	    attr = 0;
+  
++     if (can_spell != NULL)
++ 	/* Default: Only do spelling when there is no @Spell cluster or when
++ 	 * ":syn spell toplevel" was used. */
++ 	*can_spell = syn_buf->b_syn_spell == SYNSPL_DEFAULT
++ 		    ? (syn_buf->b_spell_cluster_id == 0)
++ 		    : (syn_buf->b_syn_spell == SYNSPL_TOP);
++ 
+      /* check for out of memory situation */
+      if (syn_buf->b_sst_array == NULL)
+  	return 0;
+*** ../vim-7.1.076/src/version.c	Tue Aug 14 22:54:00 2007
+--- src/version.c	Tue Aug 14 23:06:26 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     77,
+  /**/
+
+-- 
+Send $25.00 for handy leaflet on how to make money by selling leaflets
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,89 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.096
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.096
+Problem:    Reading past end of a string when resizing Vim. (Dominique Pelle)
+Solution:   Check the string pointer before getting the char it points to.
+Files:	    src/message.c
+
+
+*** ../vim-7.1.095/src/message.c	Tue Aug  7 21:59:26 2007
+--- src/message.c	Thu Aug 30 22:53:03 2007
+***************
+*** 944,949 ****
+--- 944,950 ----
+  		c = K_IGNORE;
+  	    }
+  #endif
++ 
+  	    /*
+  	     * Allow scrolling back in the messages.
+  	     * Also accept scroll-down commands when messages fill the screen,
+***************
+*** 1840,1845 ****
+--- 1841,1847 ----
+      char_u	*sb_str = str;
+      int		sb_col = msg_col;
+      int		wrap;
++     int		did_last_char;
+  
+      did_wait_return = FALSE;
+      while ((maxlen < 0 || (int)(s - str) < maxlen) && *s != NUL)
+***************
+*** 1909,1915 ****
+--- 1911,1920 ----
+  		else
+  #endif
+  		    msg_screen_putchar(*s++, attr);
++ 		did_last_char = TRUE;
+  	    }
++ 	    else
++ 		did_last_char = FALSE;
+  
+  	    if (p_more)
+  		/* store text for scrolling back */
+***************
+*** 1944,1954 ****
+  
+  	    /* When we displayed a char in last column need to check if there
+  	     * is still more. */
+! 	    if (*s >= ' '
+! #ifdef FEAT_RIGHTLEFT
+! 		    && !cmdmsg_rl
+! #endif
+! 	       )
+  		continue;
+  	}
+  
+--- 1949,1955 ----
+  
+  	    /* When we displayed a char in last column need to check if there
+  	     * is still more. */
+! 	    if (did_last_char)
+  		continue;
+  	}
+  
+*** ../vim-7.1.095/src/version.c	Wed Sep  5 21:45:54 2007
+--- src/version.c	Thu Sep  6 12:31:28 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     96,
+  /**/
+
+-- 
+Yah, well, we had to carve our electrons out of driftwood we'd
+find.  In the winter.  Uphill.  Both ways.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

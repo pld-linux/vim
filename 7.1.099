@@ -1,0 +1,137 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.099
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.099
+Problem:    When the 'keymap' and 'paste' options have a non-default value,
+	    ":mkexrc" and ":mksession" do not correctly set the options.
+Solution:   Set the options with side effects before other options.
+Files:	    src/option.c
+
+ 
+*** ../vim-7.1.098/src/option.c	Thu Sep  6 13:32:53 2007
+--- src/option.c	Wed Sep  5 22:34:27 2007
+***************
+*** 427,432 ****
+--- 427,434 ----
+  #define P_NOGLOB       0x100000L/* do not use local value for global vimrc */
+  #define P_NFNAME       0x200000L/* only normal file name chars allowed */
+  #define P_INSECURE     0x400000L/* option was set from a modeline */
++ #define P_PRI_MKRC     0x800000L/* priority for :mkvimrc (setting option has
++ 				   side effects) */
+  
+  #define ISK_LATIN1  (char_u *)"@,48-57,_,192-255"
+  
+***************
+*** 773,778 ****
+--- 775,782 ----
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
++ 			    /* P_PRI_MKRC isn't needed here, optval_default()
++ 			     * always returns TRUE for 'compatible' */
+      {"compatible",  "cp",   P_BOOL|P_RALL,
+  			    (char_u *)&p_cp, PV_NONE,
+  			    {(char_u *)TRUE, (char_u *)FALSE}},
+***************
+*** 1515,1521 ****
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
+!     {"keymap",	    "kmp",  P_STRING|P_ALLOCED|P_VI_DEF|P_RBUF|P_RSTAT|P_NFNAME,
+  #ifdef FEAT_KEYMAP
+  			    (char_u *)&p_keymap, PV_KMAP,
+  			    {(char_u *)"", (char_u *)0L}
+--- 1519,1525 ----
+  			    {(char_u *)0L, (char_u *)0L}
+  #endif
+  			    },
+!     {"keymap",	    "kmp",  P_STRING|P_ALLOCED|P_VI_DEF|P_RBUF|P_RSTAT|P_NFNAME|P_PRI_MKRC,
+  #ifdef FEAT_KEYMAP
+  			    (char_u *)&p_keymap, PV_KMAP,
+  			    {(char_u *)"", (char_u *)0L}
+***************
+*** 1836,1842 ****
+      {"paragraphs",  "para", P_STRING|P_VI_DEF,
+  			    (char_u *)&p_para, PV_NONE,
+  			    {(char_u *)"IPLPPPQPP LIpplpipbp", (char_u *)0L}},
+!     {"paste",	    NULL,   P_BOOL|P_VI_DEF,
+  			    (char_u *)&p_paste, PV_NONE,
+  			    {(char_u *)FALSE, (char_u *)0L}},
+      {"pastetoggle", "pt",   P_STRING|P_VI_DEF,
+--- 1840,1846 ----
+      {"paragraphs",  "para", P_STRING|P_VI_DEF,
+  			    (char_u *)&p_para, PV_NONE,
+  			    {(char_u *)"IPLPPPQPP LIpplpipbp", (char_u *)0L}},
+!     {"paste",	    NULL,   P_BOOL|P_VI_DEF|P_PRI_MKRC,
+  			    (char_u *)&p_paste, PV_NONE,
+  			    {(char_u *)FALSE, (char_u *)0L}},
+      {"pastetoggle", "pt",   P_STRING|P_VI_DEF,
+***************
+*** 8535,8547 ****
+      char_u		*varp_local = NULL;	/* fresh value */
+      char		*cmd;
+      int			round;
+  
+      /*
+       * The options that don't have a default (terminal name, columns, lines)
+       * are never written.  Terminal options are also not written.
+       */
+!     for (p = &options[0]; !istermoption(p); p++)
+! 	if (!(p->flags & P_NO_MKRC) && !istermoption(p))
+  	{
+  	    /* skip global option when only doing locals */
+  	    if (p->indir == PV_NONE && !(opt_flags & OPT_GLOBAL))
+--- 8539,8558 ----
+      char_u		*varp_local = NULL;	/* fresh value */
+      char		*cmd;
+      int			round;
++     int			pri;
+  
+      /*
+       * The options that don't have a default (terminal name, columns, lines)
+       * are never written.  Terminal options are also not written.
++      * Do the loop over "options[]" twice: once for options with the
++      * P_PRI_MKRC flag and once without.
+       */
+!     for (pri = 1; pri >= 0; --pri)
+!     {
+!       for (p = &options[0]; !istermoption(p); p++)
+! 	if (!(p->flags & P_NO_MKRC)
+! 		&& !istermoption(p)
+! 		&& ((pri == 1) == ((p->flags & P_PRI_MKRC) != 0)))
+  	{
+  	    /* skip global option when only doing locals */
+  	    if (p->indir == PV_NONE && !(opt_flags & OPT_GLOBAL))
+***************
+*** 8637,8642 ****
+--- 8648,8654 ----
+  		}
+  	    }
+  	}
++     }
+      return OK;
+  }
+  
+*** ../vim-7.1.098/src/version.c	Thu Sep  6 14:25:50 2007
+--- src/version.c	Thu Sep  6 16:32:31 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     99,
+  /**/
+
+-- 
+Not too long ago, a keyboard was something to make music with...
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

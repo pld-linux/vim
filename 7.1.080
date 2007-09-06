@@ -1,0 +1,104 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.080 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.080 (extra)
+Problem:    Compiler warnings for using "const char *" for "char *".
+Solution:   Add type casts. (Chris Sutcliffe)
+Files:	    src/GvimExt/gvimext.cpp
+
+
+*** ../vim-7.1.079/src/GvimExt/gvimext.cpp	Thu May 10 21:09:38 2007
+--- src/GvimExt/gvimext.cpp	Thu Aug 16 21:25:56 2007
+***************
+*** 69,82 ****
+  
+      // Registry didn't work, use the search path.
+      if (name[0] == 0)
+! 	strcpy(name, searchpath("gvim.exe"));
+  
+      if (!runtime)
+      {
+  	// Only when looking for the executable, not the runtime dir, we can
+  	// search for the batch file or a name without a path.
+  	if (name[0] == 0)
+! 	    strcpy(name, searchpath("gvim.bat"));
+  	if (name[0] == 0)
+  	    strcpy(name, "gvim");	// finds gvim.bat or gvim.exe
+  
+--- 69,82 ----
+  
+      // Registry didn't work, use the search path.
+      if (name[0] == 0)
+! 	strcpy(name, searchpath((char *)"gvim.exe"));
+  
+      if (!runtime)
+      {
+  	// Only when looking for the executable, not the runtime dir, we can
+  	// search for the batch file or a name without a path.
+  	if (name[0] == 0)
+! 	    strcpy(name, searchpath((char *)"gvim.bat"));
+  	if (name[0] == 0)
+  	    strcpy(name, "gvim");	// finds gvim.bat or gvim.exe
+  
+***************
+*** 152,160 ****
+  	FARPROC	    *ptr;
+      } libintl_entry[] =
+      {
+! 	{"gettext",		(FARPROC*)&dyn_libintl_gettext},
+! 	{"textdomain",		(FARPROC*)&dyn_libintl_textdomain},
+! 	{"bindtextdomain",	(FARPROC*)&dyn_libintl_bindtextdomain},
+  	{NULL, NULL}
+      };
+  
+--- 152,160 ----
+  	FARPROC	    *ptr;
+      } libintl_entry[] =
+      {
+! 	{(char *)"gettext",		(FARPROC*)&dyn_libintl_gettext},
+! 	{(char *)"textdomain",		(FARPROC*)&dyn_libintl_textdomain},
+! 	{(char *)"bindtextdomain",	(FARPROC*)&dyn_libintl_bindtextdomain},
+  	{NULL, NULL}
+      };
+  
+***************
+*** 835,841 ****
+  		    (LPTSTR)location) > (HINSTANCE)32)
+  	    return location;
+      }
+!     return "";
+  }
+  # endif
+  #endif
+--- 835,841 ----
+  		    (LPTSTR)location) > (HINSTANCE)32)
+  	    return location;
+      }
+!     return (char *)"";
+  }
+  # endif
+  #endif
+*** ../vim-7.1.079/src/version.c	Wed Aug 15 20:40:45 2007
+--- src/version.c	Sat Aug 18 16:58:36 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     80,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+192. Your boss asks you to "go fer" coffee and you come up with 235 FTP sites.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

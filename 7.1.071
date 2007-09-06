@@ -1,0 +1,169 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.071
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.071 (after 7.1.040)
+Problem:    Regexp patterns are not tested.
+Solution:   Add a basic test, to be expanded later.
+	    Also add (commented-out) support for valgrind.
+Files:	    src/testdir/Makefile, src/testdir/test64.in, src/testdir/test64.ok
+
+
+*** ../vim-7.1.070/src/testdir/Makefile	Thu Jul 26 22:55:11 2007
+--- src/testdir/Makefile	Tue Aug 14 15:16:08 2007
+***************
+*** 4,9 ****
+--- 4,13 ----
+  
+  VIMPROG = ../vim
+  
++ # Uncomment this line for using valgrind.
++ # The output goes into a file "valgrind.$PID" (sorry, no test number).
++ # VALGRIND = valgrind --tool=memcheck --num-callers=15 --logfile=valgrind
++ 
+  SCRIPTS = test1.out test2.out test3.out test4.out test5.out test6.out \
+  		test7.out test8.out test9.out test10.out test11.out \
+  		test12.out  test13.out test14.out test15.out test17.out \
+***************
+*** 15,21 ****
+  		test43.out test44.out test45.out test46.out test47.out \
+  		test48.out test49.out test51.out test52.out test53.out \
+  		test54.out test55.out test56.out test57.out test58.out \
+! 		test59.out test60.out test61.out test62.out test63.out
+  
+  SCRIPTS_GUI = test16.out
+  
+--- 19,26 ----
+  		test43.out test44.out test45.out test46.out test47.out \
+  		test48.out test49.out test51.out test52.out test53.out \
+  		test54.out test55.out test56.out test57.out test58.out \
+! 		test59.out test60.out test61.out test62.out test63.out \
+! 		test64.out
+  
+  SCRIPTS_GUI = test16.out
+  
+***************
+*** 38,44 ****
+  
+  test1.out: test1.in
+  	-rm -f $*.failed tiny.vim small.vim mbyte.vim test.ok X* viminfo
+! 	$(VIMPROG) -u unix.vim -U NONE --noplugin -s dotest.in $*.in
+  	@/bin/sh -c "if diff test.out $*.ok; \
+  		then mv -f test.out $*.out; \
+  		else echo; \
+--- 43,49 ----
+  
+  test1.out: test1.in
+  	-rm -f $*.failed tiny.vim small.vim mbyte.vim test.ok X* viminfo
+! 	$(VALGRIND) $(VIMPROG) -u unix.vim -U NONE --noplugin -s dotest.in $*.in
+  	@/bin/sh -c "if diff test.out $*.ok; \
+  		then mv -f test.out $*.out; \
+  		else echo; \
+***************
+*** 51,57 ****
+  	cp $*.ok test.ok
+  	# Sleep a moment to avoid that the xterm title is messed up
+  	@-sleep .2
+! 	-$(VIMPROG) -u unix.vim -U NONE --noplugin -s dotest.in $*.in
+  	@/bin/sh -c "if test -f test.out; then\
+  		  if diff test.out $*.ok; \
+  		  then mv -f test.out $*.out; \
+--- 56,62 ----
+  	cp $*.ok test.ok
+  	# Sleep a moment to avoid that the xterm title is messed up
+  	@-sleep .2
+! 	-$(VALGRIND) $(VIMPROG) -u unix.vim -U NONE --noplugin -s dotest.in $*.in
+  	@/bin/sh -c "if test -f test.out; then\
+  		  if diff test.out $*.ok; \
+  		  then mv -f test.out $*.out; \
+*** ../vim-7.1.070/src/testdir/test64.in	Tue Aug 14 17:26:28 2007
+--- src/testdir/test64.in	Tue Aug 14 16:03:44 2007
+***************
+*** 0 ****
+--- 1,52 ----
++ Test for regexp patterns.
++ 
++ A pattern that gives the expected result produces OK, so that we know it was
++ actually tried.
++ 
++ STARTTEST
++ :so small.vim
++ :" tl is a List of Lists with:
++ :"    regexp pattern
++ :"    text to test the pattern on
++ :"    expected match (optional)
++ :"    expected submatch 1 (optional)
++ :"    expected submatch 2 (optional)
++ :"    etc.
++ :"  When there is no match use only the first two items.
++ :let tl = []
++ :call add(tl, ['b', 'abcdef', 'b'])
++ :call add(tl, ['bc*', 'abccccdef', 'bcccc'])
++ :call add(tl, ['bc\{-}', 'abccccdef', 'b'])
++ :call add(tl, ['bc\{-}\(d\)', 'abccccdef', 'bccccd', 'd'])
++ :call add(tl, ['x', 'abcdef'])
++ :"
++ :for t in tl
++ :  let l = matchlist(t[1], t[0])
++ :" check the match itself
++ :  if len(l) == 0 && len(t) > 2
++ :    $put ='ERROR: pat: \"' . t[0] . '\", text: \"' . t[1] . '\", did not match, expected: \"' . t[2] . '\"'
++ :  elseif len(l) > 0 && len(t) == 2
++ :    $put ='ERROR: pat: \"' . t[0] . '\", text: \"' . t[1] . '\", match: \"' . l[0] . '\", expected no match'
++ :  elseif len(t) > 2 && l[0] != t[2]
++ :    $put ='ERROR: pat: \"' . t[0] . '\", text: \"' . t[1] . '\", match: \"' . l[0] . '\", expected: \"' . t[2] . '\"'
++ :  else
++ :    $put ='OK'
++ :  endif
++ :  if len(l) > 0
++ :"   check all the nine submatches
++ :    for i in range(1, 9)
++ :      if len(t) <= i + 2
++ :        let e = ''
++ :      else
++ :        let e = t[i + 2]
++ :      endif
++ :      if l[i] != e
++ :        $put ='ERROR: pat: \"' . t[0] . '\", text: \"' . t[1] . '\", submatch ' . i . ': \"' . l[i] . '\", expected: \"' . e . '\"'
++ :      endif
++ :    endfor
++ :  endif
++ :endfor
++ :/^Results/,$wq! test.out
++ ENDTEST
++ 
++ Results of test64:
+*** ../vim-7.1.070/src/testdir/test64.ok	Tue Aug 14 17:26:28 2007
+--- src/testdir/test64.ok	Tue Aug 14 16:01:47 2007
+***************
+*** 0 ****
+--- 1,6 ----
++ Results of test64:
++ OK
++ OK
++ OK
++ OK
++ OK
+*** ../vim-7.1.070/src/version.c	Tue Aug 14 16:57:04 2007
+--- src/version.c	Tue Aug 14 17:25:20 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     71,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+150. You find yourself counting emoticons to get to sleep.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

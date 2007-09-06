@@ -1,0 +1,50 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.064
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.064
+Problem:    On Interix some files appear not to exist.
+Solution:   Remove the top bit from st_mode. (Ligesh)
+Files:	    src/os_unix.c
+
+
+*** ../vim-7.1.063/src/os_unix.c	Thu May 10 19:42:47 2007
+--- src/os_unix.c	Fri Aug 10 19:32:20 2007
+***************
+*** 2499,2505 ****
+--- 2499,2511 ----
+      if (stat((char *)name, &statb))
+  #endif
+  	return -1;
++ #ifdef __INTERIX
++     /* The top bit makes the value negative, which means the file doesn't
++      * exist.  Remove the bit, we don't use it. */
++     return statb.st_mode & ~S_ADDACE;
++ #else
+      return statb.st_mode;
++ #endif
+  }
+  
+  /*
+*** ../vim-7.1.063/src/version.c	Sat Aug 11 15:59:44 2007
+--- src/version.c	Sat Aug 11 22:21:35 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     64,
+  /**/
+
+-- 
+I have a watch cat! Just break in and she'll watch.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

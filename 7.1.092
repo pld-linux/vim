@@ -1,0 +1,92 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.092 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.092 (extra, after 7.1.088)
+Problem:    Wrong arguments for MoveWindowStructure().
+Solution:   Remove "TRUE". (Michael Henry)
+Files:	    src/gui_mac.c
+
+
+*** ../vim-7.1.091/src/gui_mac.c	Thu Aug 30 10:34:19 2007
+--- src/gui_mac.c	Thu Aug 30 12:48:41 2007
+***************
+*** 3149,3155 ****
+      /* TODO:  Should make sure the window is move within range
+       *	      e.g.: y > ~16 [Menu bar], x > 0, x < screen width
+       */
+!     MoveWindowStructure(gui.VimWindow, x, y, TRUE);
+  }
+  
+      void
+--- 3149,3155 ----
+      /* TODO:  Should make sure the window is move within range
+       *	      e.g.: y > ~16 [Menu bar], x > 0, x < screen width
+       */
+!     MoveWindowStructure(gui.VimWindow, x, y);
+  }
+  
+      void
+***************
+*** 5293,5299 ****
+      short	itemType;
+      short	useIcon;
+      short	width;
+!     short	totalButtonWidth = 0;   /* the width of all button together
+  					   including spacing */
+      short	widestButton = 0;
+      short	dfltButtonEdge     = 20;  /* gut feeling */
+--- 5293,5299 ----
+      short	itemType;
+      short	useIcon;
+      short	width;
+!     short	totalButtonWidth = 0;   /* the width of all buttons together
+  					   including spacing */
+      short	widestButton = 0;
+      short	dfltButtonEdge     = 20;  /* gut feeling */
+***************
+*** 5483,5489 ****
+      {
+  
+  	macMoveDialogItem(theDialog, button, buttonItm.box.left, buttonItm.box.top, &box);
+! 	/* With vertical, it's better to have all button the same lenght */
+  	if (vertical)
+  	{
+  	    macSizeDialogItem(theDialog, button, widestButton, 0);
+--- 5483,5489 ----
+      {
+  
+  	macMoveDialogItem(theDialog, button, buttonItm.box.left, buttonItm.box.top, &box);
+! 	/* With vertical, it's better to have all buttons the same length */
+  	if (vertical)
+  	{
+  	    macSizeDialogItem(theDialog, button, widestButton, 0);
+*** ../vim-7.1.091/src/version.c	Thu Aug 30 12:24:21 2007
+--- src/version.c	Thu Aug 30 12:47:24 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     92,
+  /**/
+
+-- 
+       In war we're tough and able.
+       Quite indefatigable
+       Between our quests
+       We sequin vests
+       And impersonate Clark Gable
+       It's a busy life in Camelot.
+       I have to push the pram a lot.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

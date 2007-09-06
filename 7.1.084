@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.084
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.084
+Problem:    Using the "-nb" argument twice causes netbeans not to get
+	    fileOpened events.
+Solution:   Change "&" to "&&". (Xavier de Gaye)
+Files:	    src/ex_cmds.c
+
+
+*** ../vim-7.1.083/src/ex_cmds.c	Wed Jul 25 22:55:22 2007
+--- src/ex_cmds.c	Tue Aug 21 15:02:43 2007
+***************
+*** 3776,3782 ****
+  	    workshop_file_opened((char *)curbuf->b_ffname, curbuf->b_p_ro);
+  # endif
+  # ifdef FEAT_NETBEANS_INTG
+! 	if (usingNetbeans & ((flags & ECMD_SET_HELP) != ECMD_SET_HELP))
+  	    netbeans_file_opened(curbuf);
+  # endif
+      }
+--- 3787,3793 ----
+  	    workshop_file_opened((char *)curbuf->b_ffname, curbuf->b_p_ro);
+  # endif
+  # ifdef FEAT_NETBEANS_INTG
+! 	if (usingNetbeans && ((flags & ECMD_SET_HELP) != ECMD_SET_HELP))
+  	    netbeans_file_opened(curbuf);
+  # endif
+      }
+*** ../vim-7.1.083/src/version.c	Sun Aug 19 22:42:27 2007
+--- src/version.c	Tue Aug 21 15:04:03 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     84,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+220. Your wife asks for sex and you tell her where to find you on IRC.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
