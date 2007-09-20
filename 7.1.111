@@ -1,0 +1,105 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.111
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.111
+Problem:    When using ":vimgrep" with the "j" flag folds from another buffer
+	    may be displayed. (A.Politz)
+Solution:   When not jumping to another buffer update the folds.
+Files:	    src/quickfix.c
+
+
+*** ../vim-7.1.110/src/quickfix.c	Thu Jun 28 21:23:52 2007
+--- src/quickfix.c	Fri Sep 14 22:16:23 2007
+***************
+*** 1612,1619 ****
+  	}
+  
+  	/*
+! 	 * If there is only one window and is the quickfix window, create a new
+! 	 * one above the quickfix window.
+  	 */
+  	if (((firstwin == lastwin) && bt_quickfix(curbuf)) || !usable_win)
+  	{
+--- 1612,1619 ----
+  	}
+  
+  	/*
+! 	 * If there is only one window and it is the quickfix window, create a
+! 	 * new one above the quickfix window.
+  	 */
+  	if (((firstwin == lastwin) && bt_quickfix(curbuf)) || !usable_win)
+  	{
+***************
+*** 2981,2986 ****
+--- 2981,2987 ----
+      buf_T	*buf;
+      int		duplicate_name = FALSE;
+      int		using_dummy;
++     int		redraw_for_dummy = FALSE;
+      int		found_match;
+      buf_T	*first_match_buf = NULL;
+      time_t	seconds = 0;
+***************
+*** 3097,3102 ****
+--- 3098,3104 ----
+  	    /* Remember that a buffer with this name already exists. */
+  	    duplicate_name = (buf != NULL);
+  	    using_dummy = TRUE;
++ 	    redraw_for_dummy = TRUE;
+  
+  #if defined(FEAT_AUTOCMD) && defined(FEAT_SYN_HL)
+  	    /* Don't do Filetype autocommands to avoid loading syntax and
+***************
+*** 3243,3252 ****
+--- 3245,3272 ----
+      if (qi->qf_lists[qi->qf_curlist].qf_count > 0)
+      {
+  	if ((flags & VGR_NOJUMP) == 0)
++ 	{
++ 	    buf = curbuf;
+  	    qf_jump(qi, 0, 0, eap->forceit);
++ 	    if (buf != curbuf)
++ 		/* If we jumped to another buffer redrawing will already be
++ 		 * taken care of. */
++ 		redraw_for_dummy = FALSE;
++ 	}
+      }
+      else
+  	EMSG2(_(e_nomatch2), s);
++ 
++     /* If we loaded a dummy buffer into the current window, the autocommands
++      * may have messed up things, need to redraw and recompute folds. */
++     if (redraw_for_dummy)
++     {
++ #ifdef FEAT_FOLDING
++ 	foldUpdateAll(curwin);
++ #else
++ 	redraw_later(NOT_VALID);
++ #endif
++     }
+  
+  theend:
+      vim_free(regmatch.regprog);
+*** ../vim-7.1.110/src/version.c	Sat Sep 15 14:48:57 2007
+--- src/version.c	Sun Sep 16 13:23:48 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     111,
+  /**/
+
+-- 
+Trees moving back and forth is what makes the wind blow.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

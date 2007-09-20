@@ -1,0 +1,64 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.112
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.112
+Problem:    Using input() with a wrong argument may crash Vim. (A.Politz)
+Solution:   Init the input() return value to NULL.
+Files:	    src/eval.c
+
+
+*** ../vim-7.1.111/src/eval.c	Thu Sep 13 20:39:58 2007
+--- src/eval.c	Sat Sep 15 19:04:51 2007
+***************
+*** 11565,11578 ****
+      char_u	*xp_arg = NULL;
+  
+      rettv->v_type = VAR_STRING;
+  
+  #ifdef NO_CONSOLE_INPUT
+      /* While starting up, there is no place to enter text. */
+      if (no_console_input())
+-     {
+- 	rettv->vval.v_string = NULL;
+  	return;
+-     }
+  #endif
+  
+      cmd_silent = FALSE;		/* Want to see the prompt. */
+--- 11566,11577 ----
+      char_u	*xp_arg = NULL;
+  
+      rettv->v_type = VAR_STRING;
++     rettv->vval.v_string = NULL;
+  
+  #ifdef NO_CONSOLE_INPUT
+      /* While starting up, there is no place to enter text. */
+      if (no_console_input())
+  	return;
+  #endif
+  
+      cmd_silent = FALSE;		/* Want to see the prompt. */
+*** ../vim-7.1.111/src/version.c	Sun Sep 16 13:26:56 2007
+--- src/version.c	Sun Sep 16 14:19:04 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     112,
+  /**/
+
+-- 
+The early bird gets the worm. If you want something else for
+breakfast, get up later.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

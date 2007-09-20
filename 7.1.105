@@ -1,0 +1,86 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.105
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.105
+Problem:    Internal error when using "0 ? {'a': 1} : {}". (A.Politz)
+Solution:   When parsing a dictionary value without using the value, don't try
+	    obtaining the key name.
+Files:	    src/eval.c
+
+
+*** ../vim-7.1.104/src/eval.c	Thu Sep  6 14:25:50 2007
+--- src/eval.c	Thu Sep 13 20:29:31 2007
+***************
+*** 6746,6765 ****
+  	    clear_tv(&tvkey);
+  	    goto failret;
+  	}
+! 	key = get_tv_string_buf_chk(&tvkey, buf);
+! 	if (key == NULL || *key == NUL)
+  	{
+! 	    /* "key" is NULL when get_tv_string_buf_chk() gave an errmsg */
+! 	    if (key != NULL)
+! 		EMSG(_(e_emptykey));
+! 	    clear_tv(&tvkey);
+! 	    goto failret;
+  	}
+  
+  	*arg = skipwhite(*arg + 1);
+  	if (eval1(arg, &tv, evaluate) == FAIL)	/* recursive! */
+  	{
+! 	    clear_tv(&tvkey);
+  	    goto failret;
+  	}
+  	if (evaluate)
+--- 6746,6769 ----
+  	    clear_tv(&tvkey);
+  	    goto failret;
+  	}
+! 	if (evaluate)
+  	{
+! 	    key = get_tv_string_buf_chk(&tvkey, buf);
+! 	    if (key == NULL || *key == NUL)
+! 	    {
+! 		/* "key" is NULL when get_tv_string_buf_chk() gave an errmsg */
+! 		if (key != NULL)
+! 		    EMSG(_(e_emptykey));
+! 		clear_tv(&tvkey);
+! 		goto failret;
+! 	    }
+  	}
+  
+  	*arg = skipwhite(*arg + 1);
+  	if (eval1(arg, &tv, evaluate) == FAIL)	/* recursive! */
+  	{
+! 	    if (evaluate)
+! 		clear_tv(&tvkey);
+  	    goto failret;
+  	}
+  	if (evaluate)
+*** ../vim-7.1.104/src/version.c	Thu Sep 13 18:25:08 2007
+--- src/version.c	Thu Sep 13 20:36:38 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     105,
+  /**/
+
+-- 
+DENNIS:  Listen -- strange women lying in ponds distributing swords is no
+         basis for a system of government.  Supreme executive power derives
+         from a mandate from the masses, not from some farcical aquatic
+         ceremony.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

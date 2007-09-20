@@ -1,0 +1,119 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.116
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.116
+Problem:    Cannot display Unicode characters above 0x10000.
+Solution:   Remove the replacement with a question mark when UNICODE16 is not
+	    defined. (partly by Nicolas Weber)
+Files:	    src/screen.c
+
+
+*** ../vim-7.1.115/src/screen.c	Thu Aug 30 13:51:52 2007
+--- src/screen.c	Mon Sep 10 22:29:42 2007
+***************
+*** 2305,2313 ****
+--- 2305,2315 ----
+  			prev_c = u8c;
+  #endif
+  		    /* Non-BMP character: display as ? or fullwidth ?. */
++ #ifdef UNICODE16
+  		    if (u8c >= 0x10000)
+  			ScreenLinesUC[idx] = (cells == 2) ? 0xff1f : (int)'?';
+  		    else
++ #endif
+  			ScreenLinesUC[idx] = u8c;
+  		    for (i = 0; i < Screen_mco; ++i)
+  		    {
+***************
+*** 3678,3690 ****
+  		    if ((mb_l == 1 && c >= 0x80)
+  			    || (mb_l >= 1 && mb_c == 0)
+  			    || (mb_l > 1 && (!vim_isprintc(mb_c)
+! 							 || mb_c >= 0x10000)))
+  		    {
+  			/*
+  			 * Illegal UTF-8 byte: display as <xx>.
+  			 * Non-BMP character : display as ? or fullwidth ?.
+  			 */
+  			if (mb_c < 0x10000)
+  			{
+  			    transchar_hex(extra, mb_c);
+  # ifdef FEAT_RIGHTLEFT
+--- 3680,3697 ----
+  		    if ((mb_l == 1 && c >= 0x80)
+  			    || (mb_l >= 1 && mb_c == 0)
+  			    || (mb_l > 1 && (!vim_isprintc(mb_c)
+! # ifdef UNICODE16
+! 							 || mb_c >= 0x10000
+! # endif
+! 							 )))
+  		    {
+  			/*
+  			 * Illegal UTF-8 byte: display as <xx>.
+  			 * Non-BMP character : display as ? or fullwidth ?.
+  			 */
++ # ifdef UNICODE16
+  			if (mb_c < 0x10000)
++ # endif
+  			{
+  			    transchar_hex(extra, mb_c);
+  # ifdef FEAT_RIGHTLEFT
+***************
+*** 3692,3702 ****
+--- 3699,3711 ----
+  				rl_mirror(extra);
+  # endif
+  			}
++ # ifdef UNICODE16
+  			else if (utf_char2cells(mb_c) != 2)
+  			    STRCPY(extra, "?");
+  			else
+  			    /* 0xff1f in UTF-8: full-width '?' */
+  			    STRCPY(extra, "\357\274\237");
++ # endif
+  
+  			p_extra = extra;
+  			c = *p_extra;
+***************
+*** 6245,6250 ****
+--- 6254,6260 ----
+  		else
+  		    u8c = utfc_ptr2char(ptr, u8cc);
+  		mbyte_cells = utf_char2cells(u8c);
++ # ifdef UNICODE16
+  		/* Non-BMP character: display as ? or fullwidth ?. */
+  		if (u8c >= 0x10000)
+  		{
+***************
+*** 6252,6257 ****
+--- 6262,6268 ----
+  		    if (attr == 0)
+  			attr = hl_attr(HLF_8);
+  		}
++ # endif
+  # ifdef FEAT_ARABIC
+  		if (p_arshape && !p_tbidi && ARABIC_CHAR(u8c))
+  		{
+*** ../vim-7.1.116/src/version.c	Mon Sep 17 22:19:43 2007
+--- src/version.c	Mon Sep 17 22:37:31 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     116,
+  /**/
+
+-- 
+There can't be a crisis today, my schedule is already full.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

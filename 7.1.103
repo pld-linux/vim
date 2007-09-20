@@ -1,0 +1,57 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.103
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.103
+Problem:    Using "dw" with the cursor past the end of the last line (using
+            CTRL-\ CTRL-O from Insert mode) deletes a character. (Tim Chase)
+Solution:   Don't move the cursor back when the movement failed.
+Files:      src/normal.c
+
+
+*** ../vim-7.1.102/src/normal.c	Tue Aug 14 22:54:00 2007
+--- src/normal.c	Tue Sep 11 19:32:42 2007
+***************
+*** 8364,8370 ****
+  	n = fwd_word(cap->count1, cap->arg, cap->oap->op_type != OP_NOP);
+  
+      /* Don't leave the cursor on the NUL past a line */
+!     if (curwin->w_cursor.col && gchar_cursor() == NUL)
+      {
+  	--curwin->w_cursor.col;
+  	cap->oap->inclusive = TRUE;
+--- 8364,8370 ----
+  	n = fwd_word(cap->count1, cap->arg, cap->oap->op_type != OP_NOP);
+  
+      /* Don't leave the cursor on the NUL past a line */
+!     if (n != FAIL && curwin->w_cursor.col > 0 && gchar_cursor() == NUL)
+      {
+  	--curwin->w_cursor.col;
+  	cap->oap->inclusive = TRUE;
+*** ../vim-7.1.102/src/version.c	Thu Sep 13 15:19:32 2007
+--- src/version.c	Thu Sep 13 15:32:05 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     103,
+  /**/
+
+-- 
+ARTHUR:  Then who is your lord?
+WOMAN:   We don't have a lord.
+ARTHUR:  What?
+DENNIS:  I told you.  We're an anarcho-syndicalist commune.  We take it in
+         turns to act as a sort of executive officer for the week.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

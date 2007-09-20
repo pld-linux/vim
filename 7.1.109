@@ -1,0 +1,69 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.109
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.109
+Problem:    GTK: when there are many tab pages, clicking on the arrow left of
+	    the labels moves to the next tab page on the right. (Simeon Bird)
+Solution:   Check the X coordinate of the click and pass -1 as value for the
+	    left arrow.
+Files:	    src/gui_gtk_x11.c, src/term.c
+
+
+*** ../vim-7.1.108/src/gui_gtk_x11.c	Wed Sep  5 21:45:54 2007
+--- src/gui_gtk_x11.c	Fri Sep 14 20:59:55 2007
+***************
+*** 3223,3230 ****
+  	{
+  	    if (clicked_page == 0)
+  	    {
+! 		/* Click after all tabs moves to next tab page. */
+! 		if (send_tabline_event(0) && gtk_main_level() > 0)
+  		    gtk_main_quit();
+  	    }
+  #ifndef HAVE_GTK2
+--- 3223,3231 ----
+  	{
+  	    if (clicked_page == 0)
+  	    {
+! 		/* Click after all tabs moves to next tab page.  When "x" is
+! 		 * small guess it's the left button. */
+! 		if (send_tabline_event(x < 50 ? -1 : 0) && gtk_main_level() > 0)
+  		    gtk_main_quit();
+  	    }
+  #ifndef HAVE_GTK2
+*** ../vim-7.1.108/src/term.c	Thu May 10 20:48:32 2007
+--- src/term.c	Fri Sep 14 20:56:40 2007
+***************
+*** 4809,4814 ****
+--- 4809,4816 ----
+  	    if (num_bytes == -1)
+  		return -1;
+  	    current_tab = (int)bytes[0];
++ 	    if (current_tab == 255)	/* -1 in a byte gives 255 */
++ 		current_tab = -1;
+  	    slen += num_bytes;
+  	}
+  	else if (key_name[0] == (int)KS_TABMENU)
+*** ../vim-7.1.108/src/version.c	Fri Sep 14 19:56:18 2007
+--- src/version.c	Sat Sep 15 14:05:25 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     109,
+  /**/
+
+-- 
+No letters of the alphabet were harmed in the creation of this message.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.101
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.101
+Problem:    Ruby: The Buffer.line= method does not work.
+Solution:   Add the "self" argument to set_current_line(). (Jonathan Hankins)
+Files:	    src/if_ruby.c
+
+
+*** ../vim-7.1.100/src/if_ruby.c	Sat May 12 15:01:49 2007
+--- src/if_ruby.c	Mon Sep 10 10:40:38 2007
+***************
+*** 789,795 ****
+      return get_buffer_line(curbuf, curwin->w_cursor.lnum);
+  }
+  
+! static VALUE set_current_line(VALUE str)
+  {
+      return set_buffer_line(curbuf, curwin->w_cursor.lnum, str);
+  }
+--- 789,795 ----
+      return get_buffer_line(curbuf, curwin->w_cursor.lnum);
+  }
+  
+! static VALUE set_current_line(VALUE self, VALUE str)
+  {
+      return set_buffer_line(curbuf, curwin->w_cursor.lnum, str);
+  }
+*** ../vim-7.1.100/src/version.c	Thu Sep  6 17:38:06 2007
+--- src/version.c	Thu Sep 13 14:59:47 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     101,
+  /**/
+
+-- 
+The question is:  What do you do with your life?
+The wrong answer is: Become the richest guy in the graveyard.
+				(billionaire and Oracle founder Larry Ellison)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
