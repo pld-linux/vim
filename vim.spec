@@ -10,8 +10,8 @@
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
-%bcond_with	perl		# with Perl interp
-%bcond_with	python		# with Python interp
+%bcond_without	perl		# without Perl interp
+%bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
 %bcond_without	selinux		# without selinux support
@@ -103,11 +103,11 @@ BuildRequires:	ncurses-devel
 %{?with_motif:BuildRequires:	openmotif-devel}
 %{?with_perl:BuildRequires:	perl-devel}
 %{?with_python:BuildRequires:	python-devel >= 2.5}
+BuildRequires:	rpmbuild(macros) >= 1.351
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
+%{?with_athena:BuildRequires:	XFree86-devel}
 Obsoletes:	kvim
-BuildRequires:	rpmbuild(macros) >= 1.351
 %if %{with static}
 BuildRequires:	acl-static
 BuildRequires:	attr-static
