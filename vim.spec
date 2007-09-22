@@ -1,8 +1,20 @@
 # TODO:
-# - merge with AC-branch
 # - some nice icon
 # - create vim-full (better name, anybody?) or/and other packages
 #   for scripting languages support
+# - unpackaged files:
+%if 0
+   /usr/share/man/fr/man1/eview.1
+   /usr/share/man/it/man1/eview.1
+   /usr/share/man/man1/eview.1
+   /usr/share/man/pl/man1/eview.1
+   /usr/share/man/ru/man1/eview.1
+   /usr/share/vim/vim71/lang/menu_sl_si.cp1250.vim
+   /usr/share/vim/vim71/lang/menu_sl_si.latin2.vim
+   /usr/share/vim/vim71/lang/menu_sl_si.utf-8.vim
+   /usr/share/vim/vim71/lang/zh_CN.UTF-8/LC_MESSAGES/vim.mo
+   /usr/share/vim/vim71/lang/zh_TW.UTF-8/LC_MESSAGES/vim.mo
+%endif
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
