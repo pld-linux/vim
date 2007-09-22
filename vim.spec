@@ -103,11 +103,11 @@ BuildRequires:	ncurses-devel
 %{?with_motif:BuildRequires:	openmotif-devel}
 %{?with_perl:BuildRequires:	perl-devel}
 %{?with_python:BuildRequires:	python-devel >= 2.5}
+BuildRequires:	rpmbuild(macros) >= 1.351
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
 %{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 Obsoletes:	kvim
-BuildRequires:	rpmbuild(macros) >= 1.351
 %if %{with static}
 BuildRequires:	acl-static
 BuildRequires:	attr-static
