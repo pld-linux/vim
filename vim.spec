@@ -1,20 +1,8 @@
 # TODO:
+# - merge with AC-branch
 # - some nice icon
 # - create vim-full (better name, anybody?) or/and other packages
 #   for scripting languages support
-# - unpackaged files:
-%if 0
-   /usr/share/man/fr/man1/eview.1
-   /usr/share/man/it/man1/eview.1
-   /usr/share/man/man1/eview.1
-   /usr/share/man/pl/man1/eview.1
-   /usr/share/man/ru/man1/eview.1
-   /usr/share/vim/vim71/lang/menu_sl_si.cp1250.vim
-   /usr/share/vim/vim71/lang/menu_sl_si.latin2.vim
-   /usr/share/vim/vim71/lang/menu_sl_si.utf-8.vim
-   /usr/share/vim/vim71/lang/zh_CN.UTF-8/LC_MESSAGES/vim.mo
-   /usr/share/vim/vim71/lang/zh_TW.UTF-8/LC_MESSAGES/vim.mo
-%endif
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -22,16 +10,16 @@
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
-%bcond_with	perl		# with Perl interp
-%bcond_with	python		# with Python interp
+%bcond_without	perl		# without Perl interp
+%bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.1
-%define		_patchlevel	116
-%define		_rel		2
+%define		_patchlevel	145
+%define		_rel		1
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -118,7 +106,7 @@ BuildRequires:	ncurses-devel
 BuildRequires:	rpmbuild(macros) >= 1.351
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
+%{?with_athena:BuildRequires:	XFree86-devel}
 Obsoletes:	kvim
 %if %{with static}
 BuildRequires:	acl-static
