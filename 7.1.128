@@ -1,0 +1,67 @@
+To: vim-dev@vim.org
+Subject: About patch 7.1.128 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.128 (extra)
+Problem:    Build problems with new version of Cygwin.
+Solution:   Remove -D__IID_DEFINED__, like with MingW. (Guopeng Wen)
+Files:	    src/Make_cyg.mak
+
+
+*** ../vim-7.1.127/src/Make_cyg.mak	Sun Apr 30 20:46:49 2006
+--- src/Make_cyg.mak	Sat Sep 29 13:09:34 2007
+***************
+*** 1,6 ****
+  #
+  # Makefile for VIM on Win32, using Cygnus gcc
+! # Last updated by Dan Sharp.  Last Change: 2006 Apr 30
+  #
+  # Also read INSTALLpc.txt!
+  #
+--- 1,6 ----
+  #
+  # Makefile for VIM on Win32, using Cygnus gcc
+! # Last updated by Dan Sharp.  Last Change: 2007 Sep 29
+  #
+  # Also read INSTALLpc.txt!
+  #
+***************
+*** 503,509 ****
+  	$(CC) -c $(CFLAGS) if_cscope.c -o $(OUTDIR)/if_cscope.o
+  
+  $(OUTDIR)/if_ole.o:	if_ole.cpp $(INCL)
+! 	$(CC) -c $(CFLAGS) -D__IID_DEFINED__ if_ole.cpp -o $(OUTDIR)/if_ole.o
+  
+  if_perl.c: if_perl.xs typemap
+  	$(PERL)/bin/perl `cygpath -d $(PERL)/lib/ExtUtils/xsubpp` \
+--- 503,509 ----
+  	$(CC) -c $(CFLAGS) if_cscope.c -o $(OUTDIR)/if_cscope.o
+  
+  $(OUTDIR)/if_ole.o:	if_ole.cpp $(INCL)
+! 	$(CC) -c $(CFLAGS) if_ole.cpp -o $(OUTDIR)/if_ole.o
+  
+  if_perl.c: if_perl.xs typemap
+  	$(PERL)/bin/perl `cygpath -d $(PERL)/lib/ExtUtils/xsubpp` \
+*** ../vim-7.1.127/src/version.c	Sun Sep 30 22:10:45 2007
+--- src/version.c	Sun Sep 30 22:27:51 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     128,
+  /**/
+
+-- 
+Mynd you, m00se bites Kan be pretty nasti ...
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

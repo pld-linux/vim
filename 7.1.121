@@ -1,0 +1,81 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.121
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.121
+Problem:    Using ":cd %:h" when editing a file in the current directory
+	    results in an error message for using an empty string.
+Solution:   When "%:h" results in an empty string use ".".
+Files:	    src/eval.c
+
+
+*** ../vim-7.1.120/src/eval.c	Tue Sep 25 17:54:41 2007
+--- src/eval.c	Sun Sep 16 19:24:49 2007
+***************
+*** 21308,21321 ****
+  	*usedlen += 2;
+  	s = get_past_head(*fnamep);
+  	while (tail > s && after_pathsep(s, tail))
+! 	    --tail;
+  	*fnamelen = (int)(tail - *fnamep);
+  #ifdef VMS
+  	if (*fnamelen > 0)
+  	    *fnamelen += 1; /* the path separator is part of the path */
+  #endif
+! 	while (tail > s && !after_pathsep(s, tail))
+! 	    mb_ptr_back(*fnamep, tail);
+      }
+  
+      /* ":8" - shortname  */
+--- 21308,21334 ----
+  	*usedlen += 2;
+  	s = get_past_head(*fnamep);
+  	while (tail > s && after_pathsep(s, tail))
+! 	    mb_ptr_back(*fnamep, tail);
+  	*fnamelen = (int)(tail - *fnamep);
+  #ifdef VMS
+  	if (*fnamelen > 0)
+  	    *fnamelen += 1; /* the path separator is part of the path */
+  #endif
+! 	if (*fnamelen == 0)
+! 	{
+! 	    /* Result is empty.  Turn it into "." to make ":cd %:h" work. */
+! 	    p = vim_strsave((char_u *)".");
+! 	    if (p == NULL)
+! 		return -1;
+! 	    vim_free(*bufp);
+! 	    *bufp = *fnamep = tail = p;
+! 	    *fnamelen = 1;
+! 	}
+! 	else
+! 	{
+! 	    while (tail > s && !after_pathsep(s, tail))
+! 		mb_ptr_back(*fnamep, tail);
+! 	}
+      }
+  
+      /* ":8" - shortname  */
+*** ../vim-7.1.120/src/version.c	Tue Sep 25 17:54:41 2007
+--- src/version.c	Tue Sep 25 20:38:08 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     121,
+  /**/
+
+-- 
+It is illegal for anyone to try and stop a child from playfully jumping over
+puddles of water.
+		[real standing law in California, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

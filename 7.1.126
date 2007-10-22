@@ -1,0 +1,469 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.126
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.126
+Problem:    ":vimgrep */*" fails when a BufRead autocommand changes directory.
+	    (Bernhard Kuhn)
+Solution:   Change back to the original directory after loading a file.
+	    Also: use shorten_fname1() to avoid duplicating code.
+Files:	    src/buffer.c, src/ex_docmd.c, src/fileio.c, src/gui_gtk.c,
+	    src/gui_w48.c, src/proto/ex_docmd.pro, src/proto/fileio.pro,
+	    src/quickfix.c
+
+
+*** ../vim-7.1.125/src/buffer.c	Sat Sep 29 14:15:00 2007
+--- src/buffer.c	Wed Sep 26 20:05:38 2007
+***************
+*** 4261,4272 ****
+  do_arg_all(count, forceit, keep_tabs)
+      int	count;
+      int	forceit;		/* hide buffers in current windows */
+!     int keep_tabs;		/* keep curren tabs, for ":tab drop file" */
+  {
+      int		i;
+      win_T	*wp, *wpnext;
+      char_u	*opened;	/* array of flags for which args are open */
+!     int		opened_len;	/* lenght of opened[] */
+      int		use_firstwin = FALSE;	/* use first window for arglist */
+      int		split_ret = OK;
+      int		p_ea_save;
+--- 4261,4272 ----
+  do_arg_all(count, forceit, keep_tabs)
+      int	count;
+      int	forceit;		/* hide buffers in current windows */
+!     int keep_tabs;		/* keep current tabs, for ":tab drop file" */
+  {
+      int		i;
+      win_T	*wp, *wpnext;
+      char_u	*opened;	/* array of flags for which args are open */
+!     int		opened_len;	/* length of opened[] */
+      int		use_firstwin = FALSE;	/* use first window for arglist */
+      int		split_ret = OK;
+      int		p_ea_save;
+***************
+*** 4946,4955 ****
+  	/* Expand "~/" in the file name at "line + 1" to a full path.
+  	 * Then try shortening it by comparing with the current directory */
+  	expand_env(xline, NameBuff, MAXPATHL);
+! 	mch_dirname(IObuff, IOSIZE);
+! 	sfname = shorten_fname(NameBuff, IObuff);
+! 	if (sfname == NULL)
+! 	    sfname = NameBuff;
+  
+  	buf = buflist_new(NameBuff, sfname, (linenr_T)0, BLN_LISTED);
+  	if (buf != NULL)	/* just in case... */
+--- 4946,4952 ----
+  	/* Expand "~/" in the file name at "line + 1" to a full path.
+  	 * Then try shortening it by comparing with the current directory */
+  	expand_env(xline, NameBuff, MAXPATHL);
+! 	sfname = shorten_fname1(NameBuff);
+  
+  	buf = buflist_new(NameBuff, sfname, (linenr_T)0, BLN_LISTED);
+  	if (buf != NULL)	/* just in case... */
+*** ../vim-7.1.125/src/ex_docmd.c	Wed Sep 26 22:35:06 2007
+--- src/ex_docmd.c	Wed Sep 26 20:29:36 2007
+***************
+*** 276,282 ****
+  static void	ex_swapname __ARGS((exarg_T *eap));
+  static void	ex_syncbind __ARGS((exarg_T *eap));
+  static void	ex_read __ARGS((exarg_T *eap));
+- static void	ex_cd __ARGS((exarg_T *eap));
+  static void	ex_pwd __ARGS((exarg_T *eap));
+  static void	ex_equal __ARGS((exarg_T *eap));
+  static void	ex_sleep __ARGS((exarg_T *eap));
+--- 276,281 ----
+***************
+*** 7778,7784 ****
+  /*
+   * ":cd", ":lcd", ":chdir" and ":lchdir".
+   */
+!     static void
+  ex_cd(eap)
+      exarg_T	*eap;
+  {
+--- 7777,7783 ----
+  /*
+   * ":cd", ":lcd", ":chdir" and ":lchdir".
+   */
+!     void
+  ex_cd(eap)
+      exarg_T	*eap;
+  {
+*** ../vim-7.1.125/src/fileio.c	Sat Sep 29 14:15:00 2007
+--- src/fileio.c	Wed Sep 26 20:02:54 2007
+***************
+*** 114,120 ****
+  {
+      int		bw_fd;		/* file descriptor */
+      char_u	*bw_buf;	/* buffer with data to be written */
+!     int		bw_len;	/* lenght of data */
+  #ifdef HAS_BW_FLAGS
+      int		bw_flags;	/* FIO_ flags */
+  #endif
+--- 114,120 ----
+  {
+      int		bw_fd;		/* file descriptor */
+      char_u	*bw_buf;	/* buffer with data to be written */
+!     int		bw_len;		/* length of data */
+  #ifdef HAS_BW_FLAGS
+      int		bw_flags;	/* FIO_ flags */
+  #endif
+***************
+*** 5552,5557 ****
+--- 5553,5579 ----
+      return (int)(p - buf);
+  }
+  #endif
++ 
++ /*
++  * Try to find a shortname by comparing the fullname with the current
++  * directory.
++  * Returns "full_path" or pointer into "full_path" if shortened.
++  */
++     char_u *
++ shorten_fname1(full_path)
++     char_u	*full_path;
++ {
++     char_u	dirname[MAXPATHL];
++     char_u	*p = full_path;
++ 
++     if (mch_dirname(dirname, MAXPATHL) == OK)
++     {
++ 	p = shorten_fname(full_path, dirname);
++ 	if (p == NULL || *p == NUL)
++ 	    p = full_path;
++     }
++     return p;
++ }
+  
+  /*
+   * Try to find a shortname by comparing the fullname with the current
+*** ../vim-7.1.125/src/gui_gtk.c	Tue Aug 14 14:59:41 2007
+--- src/gui_gtk.c	Wed Sep 26 20:07:58 2007
+***************
+*** 1272,1278 ****
+      GtkWidget		*fc;
+  #endif
+      char_u		dirbuf[MAXPATHL];
+-     char_u		*p;
+  
+  # ifdef HAVE_GTK2
+      title = CONVERT_TO_UTF8(title);
+--- 1272,1277 ----
+***************
+*** 1363,1373 ****
+  	return NULL;
+  
+      /* shorten the file name if possible */
+!     mch_dirname(dirbuf, MAXPATHL);
+!     p = shorten_fname(gui.browse_fname, dirbuf);
+!     if (p == NULL)
+! 	p = gui.browse_fname;
+!     return vim_strsave(p);
+  }
+  
+  #if defined(HAVE_GTK2) || defined(PROTO)
+--- 1362,1368 ----
+  	return NULL;
+  
+      /* shorten the file name if possible */
+!     return vim_strsave(shorten_fname1(gui.browse_fname));
+  }
+  
+  #if defined(HAVE_GTK2) || defined(PROTO)
+***************
+*** 1427,1437 ****
+  	return NULL;
+  
+      /* shorten the file name if possible */
+!     mch_dirname(dirbuf, MAXPATHL);
+!     p = shorten_fname(dirname, dirbuf);
+!     if (p == NULL || *p == NUL)
+! 	p = dirname;
+!     p = vim_strsave(p);
+      g_free(dirname);
+      return p;
+  
+--- 1422,1428 ----
+  	return NULL;
+  
+      /* shorten the file name if possible */
+!     p = vim_strsave(shorten_fname1(dirname));
+      g_free(dirname);
+      return p;
+  
+*** ../vim-7.1.125/src/gui_w48.c	Thu May 10 19:17:07 2007
+--- src/gui_w48.c	Wed Sep 26 20:09:33 2007
+***************
+*** 3301,3311 ****
+      SetFocus(s_hwnd);
+  
+      /* Shorten the file name if possible */
+!     mch_dirname(IObuff, IOSIZE);
+!     p = shorten_fname((char_u *)fileBuf, IObuff);
+!     if (p == NULL)
+! 	p = (char_u *)fileBuf;
+!     return vim_strsave(p);
+  }
+  # endif /* FEAT_MBYTE */
+  
+--- 3301,3307 ----
+      SetFocus(s_hwnd);
+  
+      /* Shorten the file name if possible */
+!     return vim_strsave(shorten_fname1((char_u *)fileBuf));
+  }
+  # endif /* FEAT_MBYTE */
+  
+***************
+*** 3450,3460 ****
+      SetFocus(s_hwnd);
+  
+      /* Shorten the file name if possible */
+!     mch_dirname(IObuff, IOSIZE);
+!     p = shorten_fname((char_u *)fileBuf, IObuff);
+!     if (p == NULL)
+! 	p = (char_u *)fileBuf;
+!     return vim_strsave(p);
+  }
+  #endif /* FEAT_BROWSE */
+  
+--- 3446,3452 ----
+      SetFocus(s_hwnd);
+  
+      /* Shorten the file name if possible */
+!     return vim_strsave(shorten_fname1((char_u *)fileBuf));
+  }
+  #endif /* FEAT_BROWSE */
+  
+*** ../vim-7.1.125/src/proto/ex_docmd.pro	Sun May  6 14:46:22 2007
+--- src/proto/ex_docmd.pro	Wed Sep 26 20:30:10 2007
+***************
+*** 39,44 ****
+--- 39,45 ----
+  void tabpage_new __ARGS((void));
+  void do_exedit __ARGS((exarg_T *eap, win_T *old_curwin));
+  void free_cd_dir __ARGS((void));
++ void ex_cd __ARGS((exarg_T *eap));
+  void do_sleep __ARGS((long msec));
+  int vim_mkdir_emsg __ARGS((char_u *name, int prot));
+  FILE *open_exfile __ARGS((char_u *fname, int forceit, char *mode));
+*** ../vim-7.1.125/src/proto/fileio.pro	Sat Sep 29 14:15:00 2007
+--- src/proto/fileio.pro	Wed Sep 26 20:05:02 2007
+***************
+*** 6,11 ****
+--- 6,12 ----
+  int buf_write __ARGS((buf_T *buf, char_u *fname, char_u *sfname, linenr_T start, linenr_T end, exarg_T *eap, int append, int forceit, int reset_changed, int filtering));
+  void msg_add_fname __ARGS((buf_T *buf, char_u *fname));
+  void msg_add_lines __ARGS((int insert_space, long lnum, long nchars));
++ char_u *shorten_fname1 __ARGS((char_u *full_path));
+  char_u *shorten_fname __ARGS((char_u *full_path, char_u *dir_name));
+  void shorten_fnames __ARGS((int force));
+  void shorten_filenames __ARGS((char_u **fnames, int count));
+*** ../vim-7.1.125/src/quickfix.c	Sun Sep 16 13:26:56 2007
+--- src/quickfix.c	Sun Sep 30 13:58:38 2007
+***************
+*** 2972,2977 ****
+--- 2972,2978 ----
+      regmmatch_T	regmatch;
+      int		fcount;
+      char_u	**fnames;
++     char_u	*fname;
+      char_u	*s;
+      char_u	*p;
+      int		fi;
+***************
+*** 2995,3000 ****
+--- 2996,3004 ----
+      int		flags = 0;
+      colnr_T	col;
+      long	tomatch;
++     char_u	dirname_start[MAXPATHL];
++     char_u	dirname_now[MAXPATHL];
++     char_u	*target_dir = NULL;
+  
+      switch (eap->cmdidx)
+      {
+***************
+*** 3069,3085 ****
+  	goto theend;
+      }
+  
+      seconds = (time_t)0;
+      for (fi = 0; fi < fcount && !got_int && tomatch > 0; ++fi)
+      {
+  	if (time(NULL) > seconds)
+  	{
+! 	    /* Display the file name every second or so. */
+  	    seconds = time(NULL);
+  	    msg_start();
+! 	    p = msg_strtrunc(fnames[fi], TRUE);
+  	    if (p == NULL)
+! 		msg_outtrans(fnames[fi]);
+  	    else
+  	    {
+  		msg_outtrans(p);
+--- 3073,3095 ----
+  	goto theend;
+      }
+  
++     /* Remember the current directory, because a BufRead autocommand that does
++      * ":lcd %:p:h" changes the meaning of short path names. */
++     mch_dirname(dirname_start, MAXPATHL);
++ 
+      seconds = (time_t)0;
+      for (fi = 0; fi < fcount && !got_int && tomatch > 0; ++fi)
+      {
++ 	fname = shorten_fname1(fnames[fi]);
+  	if (time(NULL) > seconds)
+  	{
+! 	    /* Display the file name every second or so, show the user we are
+! 	     * working on it. */
+  	    seconds = time(NULL);
+  	    msg_start();
+! 	    p = msg_strtrunc(fname, TRUE);
+  	    if (p == NULL)
+! 		msg_outtrans(fname);
+  	    else
+  	    {
+  		msg_outtrans(p);
+***************
+*** 3111,3117 ****
+  
+  	    /* Load file into a buffer, so that 'fileencoding' is detected,
+  	     * autocommands applied, etc. */
+! 	    buf = load_dummy_buffer(fnames[fi]);
+  
+  	    p_mls = save_mls;
+  #if defined(FEAT_AUTOCMD) && defined(FEAT_SYN_HL)
+--- 3121,3139 ----
+  
+  	    /* Load file into a buffer, so that 'fileencoding' is detected,
+  	     * autocommands applied, etc. */
+! 	    buf = load_dummy_buffer(fname);
+! 
+! 	    /* When autocommands changed directory: go back.  We assume it was
+! 	     * ":lcd %:p:h". */
+! 	    mch_dirname(dirname_now, MAXPATHL);
+! 	    if (STRCMP(dirname_start, dirname_now) != 0)
+! 	    {
+! 		exarg_T ea;
+! 
+! 		ea.arg = dirname_start;
+! 		ea.cmdidx = CMD_lcd;
+! 		ex_cd(&ea);
+! 	    }
+  
+  	    p_mls = save_mls;
+  #if defined(FEAT_AUTOCMD) && defined(FEAT_SYN_HL)
+***************
+*** 3125,3131 ****
+  	if (buf == NULL)
+  	{
+  	    if (!got_int)
+! 		smsg((char_u *)_("Cannot open file \"%s\""), fnames[fi]);
+  	}
+  	else
+  	{
+--- 3147,3153 ----
+  	if (buf == NULL)
+  	{
+  	    if (!got_int)
+! 		smsg((char_u *)_("Cannot open file \"%s\""), fname);
+  	}
+  	else
+  	{
+***************
+*** 3139,3147 ****
+  		while (vim_regexec_multi(&regmatch, curwin, buf, lnum,
+  								     col) > 0)
+  		{
+  		    if (qf_add_entry(qi, &prevp,
+  				NULL,       /* dir */
+! 				fnames[fi],
+  				0,
+  				ml_get_buf(buf,
+  				     regmatch.startpos[0].lnum + lnum, FALSE),
+--- 3161,3170 ----
+  		while (vim_regexec_multi(&regmatch, curwin, buf, lnum,
+  								     col) > 0)
+  		{
++ 		    ;
+  		    if (qf_add_entry(qi, &prevp,
+  				NULL,       /* dir */
+! 				fname,
+  				0,
+  				ml_get_buf(buf,
+  				     regmatch.startpos[0].lnum + lnum, FALSE),
+***************
+*** 3209,3214 ****
+--- 3232,3244 ----
+  
+  		if (buf != NULL)
+  		{
++ 		    /* If the buffer is still loaded we need to use the
++ 		     * directory we jumped to below. */
++ 		    if (buf == first_match_buf
++ 			    && target_dir == NULL
++ 			    && STRCMP(dirname_start, dirname_now) != 0)
++ 			target_dir = vim_strsave(dirname_now);
++ 
+  		    /* The buffer is still loaded, the Filetype autocommands
+  		     * need to be done now, in that buffer.  And the modelines
+  		     * need to be done (again).  But not the window-local
+***************
+*** 3252,3257 ****
+--- 3282,3297 ----
+  		/* If we jumped to another buffer redrawing will already be
+  		 * taken care of. */
+  		redraw_for_dummy = FALSE;
++ 
++ 	    /* Jump to the directory used after loading the buffer. */
++ 	    if (curbuf == first_match_buf && target_dir != NULL)
++ 	    {
++ 		exarg_T ea;
++ 
++ 		ea.arg = target_dir;
++ 		ea.cmdidx = CMD_lcd;
++ 		ex_cd(&ea);
++ 	    }
+  	}
+      }
+      else
+***************
+*** 3269,3274 ****
+--- 3309,3315 ----
+      }
+  
+  theend:
++     vim_free(target_dir);
+      vim_free(regmatch.regprog);
+  }
+  
+*** ../vim-7.1.125/src/version.c	Sat Sep 29 14:15:00 2007
+--- src/version.c	Sun Sep 30 13:41:30 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     126,
+  /**/
+
+-- 
+The MS-Windows registry is no more hostile than any other bunch of state
+information... that is held in a binary format... a format that nobody
+understands... and is replicated and cached in a complex and largely
+undocumented way... and contains large amounts of duplicate and obfuscated
+information...  (Ben Peterson)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,66 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.138
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.138
+Problem:    The Perl Msg() function doesn't stop when "q" is typed at the more
+	    prompt. (Hari Krishna Dara)
+Solution:   Check got_int.
+Files:	    src/if_perl.xs
+
+
+*** ../vim-7.1.137/src/if_perl.xs	Sat Sep 15 14:48:57 2007
+--- src/if_perl.xs	Wed Oct  3 17:00:16 2007
+***************
+*** 445,457 ****
+      char *next;
+      char *token = (char *)s;
+  
+!     while ((next = strchr(token, '\n')))
+      {
+  	*next++ = '\0';			/* replace \n with \0 */
+  	msg_attr((char_u *)token, attr);
+  	token = next;
+      }
+!     if (*token)
+  	msg_attr((char_u *)token, attr);
+  }
+  
+--- 445,457 ----
+      char *next;
+      char *token = (char *)s;
+  
+!     while ((next = strchr(token, '\n')) && !got_int)
+      {
+  	*next++ = '\0';			/* replace \n with \0 */
+  	msg_attr((char_u *)token, attr);
+  	token = next;
+      }
+!     if (*token && !got_int)
+  	msg_attr((char_u *)token, attr);
+  }
+  
+*** ../vim-7.1.137/src/version.c	Sun Oct  7 15:44:28 2007
+--- src/version.c	Tue Oct  9 10:45:08 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     138,
+  /**/
+
+-- 
+A consultant is a person who takes your money and annoys your employees while
+tirelessly searching for the best way to extend the consulting contract.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

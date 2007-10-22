@@ -1,0 +1,56 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.133
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.133 (after 7.1.126)
+Problem:    shorten_fname1() linked when it's not needed.
+Solution:   Add #ifdef.
+Files:	    src/fileio.c
+
+
+*** ../vim-7.1.132/src/fileio.c	Sun Sep 30 14:00:41 2007
+--- src/fileio.c	Sun Sep 30 16:32:43 2007
+***************
+*** 5553,5558 ****
+--- 5554,5561 ----
+  }
+  #endif
+  
++ #if defined(FEAT_VIMINFO) || defined(FEAT_BROWSE) || \
++     defined(FEAT_QUICKFIX) || defined(PROTO)
+  /*
+   * Try to find a shortname by comparing the fullname with the current
+   * directory.
+***************
+*** 5573,5578 ****
+--- 5576,5582 ----
+      }
+      return p;
+  }
++ #endif
+  
+  /*
+   * Try to find a shortname by comparing the fullname with the current
+*** ../vim-7.1.132/src/version.c	Tue Oct  2 22:07:58 2007
+--- src/version.c	Wed Oct  3 12:46:59 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     133,
+  /**/
+
+-- 
+"Beware of bugs in the above code; I have only proved
+it correct, not tried it." -- Donald Knuth
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

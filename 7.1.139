@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.139
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.139
+Problem:    When using marker folding and ending Insert mode with CTRL-C the
+	    current fold is truncated. (Fred Kater)
+Solution:   Ignore got_int while updating folds.
+Files:	    src/fold.c
+
+
+*** ../vim-7.1.138/src/fold.c	Thu May 10 21:02:13 2007
+--- src/fold.c	Sun Oct 14 15:27:13 2007
+***************
+*** 858,864 ****
+--- 858,871 ----
+  	    || foldmethodIsDiff(wp)
+  #endif
+  	    || foldmethodIsSyntax(wp))
++     {
++ 	int save_got_int = got_int;
++ 
++ 	/* reset got_int here, otherwise it won't work */
++ 	got_int = FALSE;
+  	foldUpdateIEMS(wp, top, bot);
++ 	got_int |= save_got_int;
++     }
+  }
+  
+  /* foldUpdateAll() {{{2 */
+*** ../vim-7.1.138/src/version.c	Tue Oct  9 10:46:39 2007
+--- src/version.c	Sun Oct 14 15:31:18 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     139,
+  /**/
+
+-- 
+If Pacman had affected us as kids we'd be running around in dark rooms,
+munching pills and listening to repetitive music.
+                       -- Marcus Brigstocke
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

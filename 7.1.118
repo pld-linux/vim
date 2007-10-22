@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.118
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.118 (after 7.1.107)
+Problem:    Compiler warning for Visual C compiler.
+Solution:   Add typecast. (Mike Williams)
+Files:	    src/ops.c
+
+
+*** ../vim-7.1.117/src/ops.c	Thu Sep 13 22:40:47 2007
+--- src/ops.c	Mon Sep 24 18:30:09 2007
+***************
+*** 2605,2611 ****
+  	/* Auto-indenting may have changed the indent.  If the cursor was past
+  	 * the indent, exclude that indent change from the inserted text. */
+  	firstline = ml_get(oap->start.lnum);
+! 	if (bd.textcol > pre_indent)
+  	{
+  	    long new_indent = (long)(skipwhite(firstline) - firstline);
+  
+--- 2605,2611 ----
+  	/* Auto-indenting may have changed the indent.  If the cursor was past
+  	 * the indent, exclude that indent change from the inserted text. */
+  	firstline = ml_get(oap->start.lnum);
+! 	if (bd.textcol > (colnr_T)pre_indent)
+  	{
+  	    long new_indent = (long)(skipwhite(firstline) - firstline);
+  
+*** ../vim-7.1.117/src/version.c	Tue Sep 25 12:50:00 2007
+--- src/version.c	Tue Sep 25 14:18:37 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     118,
+  /**/
+
+-- 
+BRIDGEKEEPER: What is your favorite editor?
+GAWAIN:       Emacs ...  No, Viiiiiiiiiiimmmmmmm!
+           "Monty Python and the Holy editor wars" PYTHON (MONTY) SOFTWARE LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

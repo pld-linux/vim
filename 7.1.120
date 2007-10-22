@@ -1,0 +1,558 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.120
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.120
+Problem:    Can't properly check memory leaks while running tests.
+Solution:   Add an argument to garbagecollect().  Delete functions and
+	    variables in the test scripts.
+Files:	    runtime/doc/eval.txt, src/eval.c, src/globals.h, src/main.c,
+	    src/testdir/Makefile, src/testdir/test14.in,
+	    src/testdir/test26.in, src/testdir/test34.in,
+	    src/testdir/test45.in, src/testdir/test47.in,
+	    src/testdir/test49.in, src/testdir/test55.in,
+	    src/testdir/test56.in, src/testdir/test58.in,
+	    src/testdir/test59.in, src/testdir/test60.in,
+	    src/testdir/test60.vim, src/testdir/test62.in,
+	    src/testdir/test63.in, src/testdir/test64.in
+
+
+*** ../vim-7.1.119/runtime/doc/eval.txt	Thu Jul 26 22:55:11 2007
+--- runtime/doc/eval.txt	Tue Sep 25 17:40:30 2007
+***************
+*** 1,4 ****
+! *eval.txt*      For Vim version 7.1.  Last change: 2007 Jul 25
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *eval.txt*      For Vim version 7.1.  Last change: 2007 Sep 25
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 1603,1609 ****
+  foldtextresult( {lnum})		String	text for closed fold at {lnum}
+  foreground( )			Number	bring the Vim window to the foreground
+  function( {name})		Funcref reference to function {name}
+! garbagecollect()		none	free memory, breaking cyclic references
+  get( {list}, {idx} [, {def}])	any	get item {idx} from {list} or {def}
+  get( {dict}, {key} [, {def}])	any	get item {key} from {dict} or {def}
+  getbufline( {expr}, {lnum} [, {end}])
+--- 1603,1609 ----
+  foldtextresult( {lnum})		String	text for closed fold at {lnum}
+  foreground( )			Number	bring the Vim window to the foreground
+  function( {name})		Funcref reference to function {name}
+! garbagecollect( [at_exit])	none	free memory, breaking cyclic references
+  get( {list}, {idx} [, {def}])	any	get item {idx} from {list} or {def}
+  get( {dict}, {key} [, {def}])	any	get item {key} from {dict} or {def}
+  getbufline( {expr}, {lnum} [, {end}])
+***************
+*** 2673,2679 ****
+  		{name} can be a user defined function or an internal function.
+  
+  
+! garbagecollect()					*garbagecollect()*
+  		Cleanup unused |Lists| and |Dictionaries| that have circular
+  		references.  There is hardly ever a need to invoke this
+  		function, as it is automatically done when Vim runs out of
+--- 2673,2679 ----
+  		{name} can be a user defined function or an internal function.
+  
+  
+! garbagecollect([at_exit])				*garbagecollect()*
+  		Cleanup unused |Lists| and |Dictionaries| that have circular
+  		references.  There is hardly ever a need to invoke this
+  		function, as it is automatically done when Vim runs out of
+***************
+*** 2683,2688 ****
+--- 2683,2691 ----
+  		This is useful if you have deleted a very big |List| and/or
+  		|Dictionary| with circular references in a script that runs
+  		for a long time.
++ 		When the optional "at_exit" argument is one, garbage
++ 		collection will also be done when exiting Vim, if it wasn't
++ 		done before.  This is useful when checking for memory leaks.
+  
+  get({list}, {idx} [, {default}])			*get()*
+  		Get item {idx} from |List| {list}.  When this item is not
+*** ../vim-7.1.119/src/eval.c	Tue Sep 25 12:50:00 2007
+--- src/eval.c	Sun Sep 16 19:24:49 2007
+***************
+*** 6128,6133 ****
+--- 6128,6134 ----
+      /* Only do this once. */
+      want_garbage_collect = FALSE;
+      may_garbage_collect = FALSE;
++     garbage_collect_at_exit = FALSE;
+  
+      /*
+       * 1. Go through all accessible variables and mark all lists and dicts
+***************
+*** 7110,7116 ****
+      {"foldtextresult",	1, 1, f_foldtextresult},
+      {"foreground",	0, 0, f_foreground},
+      {"function",	1, 1, f_function},
+!     {"garbagecollect",	0, 0, f_garbagecollect},
+      {"get",		2, 3, f_get},
+      {"getbufline",	2, 3, f_getbufline},
+      {"getbufvar",	2, 2, f_getbufvar},
+--- 7111,7117 ----
+      {"foldtextresult",	1, 1, f_foldtextresult},
+      {"foreground",	0, 0, f_foreground},
+      {"function",	1, 1, f_function},
+!     {"garbagecollect",	0, 1, f_garbagecollect},
+      {"get",		2, 3, f_get},
+      {"getbufline",	2, 3, f_getbufline},
+      {"getbufvar",	2, 2, f_getbufvar},
+***************
+*** 9719,9724 ****
+--- 9720,9728 ----
+      /* This is postponed until we are back at the toplevel, because we may be
+       * using Lists and Dicts internally.  E.g.: ":echo [garbagecollect()]". */
+      want_garbage_collect = TRUE;
++ 
++     if (argvars[0].v_type != VAR_UNKNOWN && get_tv_number(&argvars[0]) == 1)
++ 	garbage_collect_at_exit = TRUE;
+  }
+  
+  /*
+*** ../vim-7.1.119/src/globals.h	Thu Aug 30 13:51:52 2007
+--- src/globals.h	Sun Sep 16 18:42:41 2007
+***************
+*** 301,313 ****
+  #endif
+  
+  #ifdef FEAT_EVAL
+! /* Garbage collection can only take place when we are sure there are no Lists
+   * or Dictionaries being used internally.  This is flagged with
+   * "may_garbage_collect" when we are at the toplevel.
+   * "want_garbage_collect" is set by the garbagecollect() function, which means
+!  * we do garbage collection before waiting for a char at the toplevel. */
+  EXTERN int	may_garbage_collect INIT(= FALSE);
+  EXTERN int	want_garbage_collect INIT(= FALSE);
+  
+  /* ID of script being sourced or was sourced to define the current function. */
+  EXTERN scid_T	current_SID INIT(= 0);
+--- 301,317 ----
+  #endif
+  
+  #ifdef FEAT_EVAL
+! /*
+!  * Garbage collection can only take place when we are sure there are no Lists
+   * or Dictionaries being used internally.  This is flagged with
+   * "may_garbage_collect" when we are at the toplevel.
+   * "want_garbage_collect" is set by the garbagecollect() function, which means
+!  * we do garbage collection before waiting for a char at the toplevel.
+!  * "garbage_collect_at_exit" indicates garbagecollect(1) was called.
+!  */
+  EXTERN int	may_garbage_collect INIT(= FALSE);
+  EXTERN int	want_garbage_collect INIT(= FALSE);
++ EXTERN int	garbage_collect_at_exit INIT(= FALSE);
+  
+  /* ID of script being sourced or was sourced to define the current function. */
+  EXTERN scid_T	current_SID INIT(= 0);
+*** ../vim-7.1.119/src/main.c	Thu Sep  6 17:38:06 2007
+--- src/main.c	Sun Sep 16 18:44:54 2007
+***************
+*** 1334,1339 ****
+--- 1334,1343 ----
+  #ifdef FEAT_CSCOPE
+      cs_end();
+  #endif
++ #ifdef FEAT_EVAL
++     if (garbage_collect_at_exit)
++ 	garbage_collect();
++ #endif
+  
+      mch_exit(exitval);
+  }
+*** ../vim-7.1.119/src/testdir/Makefile	Tue Aug 14 17:28:14 2007
+--- src/testdir/Makefile	Mon Sep 17 20:04:13 2007
+***************
+*** 6,12 ****
+  
+  # Uncomment this line for using valgrind.
+  # The output goes into a file "valgrind.$PID" (sorry, no test number).
+! # VALGRIND = valgrind --tool=memcheck --num-callers=15 --logfile=valgrind
+  
+  SCRIPTS = test1.out test2.out test3.out test4.out test5.out test6.out \
+  		test7.out test8.out test9.out test10.out test11.out \
+--- 6,12 ----
+  
+  # Uncomment this line for using valgrind.
+  # The output goes into a file "valgrind.$PID" (sorry, no test number).
+! # VALGRIND = valgrind --tool=memcheck --leak-check=yes --num-callers=15 --logfile=valgrind
+  
+  SCRIPTS = test1.out test2.out test3.out test4.out test5.out test6.out \
+  		test7.out test8.out test9.out test10.out test11.out \
+***************
+*** 39,45 ****
+  $(SCRIPTS) $(SCRIPTS_GUI): $(VIMPROG)
+  
+  clean:
+! 	-rm -rf *.out *.failed *.rej *.orig test.log tiny.vim small.vim mbyte.vim test.ok X* viminfo
+  
+  test1.out: test1.in
+  	-rm -f $*.failed tiny.vim small.vim mbyte.vim test.ok X* viminfo
+--- 39,45 ----
+  $(SCRIPTS) $(SCRIPTS_GUI): $(VIMPROG)
+  
+  clean:
+! 	-rm -rf *.out *.failed *.rej *.orig test.log tiny.vim small.vim mbyte.vim test.ok X* valgrind.pid* viminfo
+  
+  test1.out: test1.in
+  	-rm -f $*.failed tiny.vim small.vim mbyte.vim test.ok X* viminfo
+***************
+*** 65,70 ****
+--- 65,74 ----
+  		else echo $* NO OUTPUT >>test.log; \
+  		fi"
+  	-rm -rf X* test.ok viminfo
++ 
++ test49.out: test49.vim
++ 
++ test60.out: test60.vim
+  
+  nolog:
+  	-echo Test results: >test.log
+*** ../vim-7.1.119/src/testdir/test14.in	Sun Jun 13 20:24:08 2004
+--- src/testdir/test14.in	Sun Sep 16 15:57:54 2007
+***************
+*** 18,23 ****
+--- 18,24 ----
+  : let tt = "o\<C-V>65\<C-V>x42\<C-V>o103 \<C-V>33a\<C-V>xfg\<C-V>o78\<Esc>"
+  :endif
+  :exe "normal " . tt
++ :unlet tt
+  :.w >>test.out
+  :set vb
+  /^Piece
+*** ../vim-7.1.119/src/testdir/test26.in	Sun Jun 13 17:05:48 2004
+--- src/testdir/test26.in	Sun Sep 16 16:54:19 2007
+***************
+*** 37,42 ****
+--- 37,43 ----
+  :    endif
+  :  endif
+  :endwhile
++ :unlet i j
+  :'t,$w! test.out
+  :qa!
+  ENDTEST
+*** ../vim-7.1.119/src/testdir/test34.in	Sun Apr 30 20:46:14 2006
+--- src/testdir/test34.in	Sun Sep 16 21:25:47 2007
+***************
+*** 52,58 ****
+  ---*---
+  (one
+  (two
+! [(one again:$-5,$wq! test.out
+  ENDTEST
+  
+  here
+--- 52,66 ----
+  ---*---
+  (one
+  (two
+! [(one again:$-5,$w! test.out
+! :delfunc Table
+! :delfunc Compute
+! :delfunc Expr1
+! :delfunc Expr2
+! :delfunc ListItem
+! :delfunc ListReset
+! :unlet retval counter
+! :q!
+  ENDTEST
+  
+  here
+*** ../vim-7.1.119/src/testdir/test45.in	Sun Jun 13 19:57:02 2004
+--- src/testdir/test45.in	Sun Sep 16 18:27:20 2007
+***************
+*** 55,60 ****
+--- 55,61 ----
+  /kk$
+  :call append("$", foldlevel("."))
+  :/^last/+1,$w! test.out
++ :delfun Flvl
+  :qa!
+  ENDTEST
+  
+*** ../vim-7.1.119/src/testdir/test47.in	Sun Jun 13 18:40:29 2004
+--- src/testdir/test47.in	Sun Sep 16 18:32:03 2007
+***************
+*** 34,39 ****
+--- 34,40 ----
+  :call append("$", two)
+  :call append("$", three)
+  :$-2,$w! test.out
++ :unlet one two three
+  :qa!
+  ENDTEST
+  
+*** ../vim-7.1.119/src/testdir/test49.in	Sun Jun 13 18:10:00 2004
+--- src/testdir/test49.in	Sun Sep 16 23:30:35 2007
+***************
+*** 1,13 ****
+  This is a test of the script language.
+  
+  If after adding a new test, the test output doesn't appear properly in
+! test49.failed, try to add one ore more "G"s at the line before ENDTEST.
+  
+  STARTTEST
+  :so small.vim
+  :se nocp nomore viminfo+=nviminfo
+  :so test49.vim
+! GGGGGGGGGG"rp:.-,$wq! test.out
+  ENDTEST
+  
+  Results of test49.vim:
+--- 1,29 ----
+  This is a test of the script language.
+  
+  If after adding a new test, the test output doesn't appear properly in
+! test49.failed, try to add one ore more "G"s at the line ending in "test.out"
+  
+  STARTTEST
+  :so small.vim
+  :se nocp nomore viminfo+=nviminfo
+  :so test49.vim
+! GGGGGGGGGGGGGG"rp:.-,$w! test.out
+! :"
+! :" make valgrind happy
+! :redir => funclist
+! :silent func
+! :redir END
+! :for line in split(funclist, "\n")
+! :  let name = matchstr(line, 'function \zs[A-Z]\w*\ze(')
+! :  if name != ''
+! :    exe "delfunc " . name
+! :  endif
+! :endfor
+! :for v in keys(g:)
+! :  silent! exe "unlet " . v
+! :endfor
+! :unlet v
+! :qa!
+  ENDTEST
+  
+  Results of test49.vim:
+*** ../vim-7.1.119/src/testdir/test55.in	Sat May  5 20:03:56 2007
+--- src/testdir/test55.in	Mon Sep 17 19:53:48 2007
+***************
+*** 345,350 ****
+--- 345,354 ----
+  :endfun
+  :call Test(1, 2, [3, 4], {5: 6})  " This may take a while
+  :"
++ :delfunc Test
++ :unlet dict
++ :call garbagecollect(1)
++ :"
+  :/^start:/,$wq! test.out
+  ENDTEST
+  
+*** ../vim-7.1.119/src/testdir/test56.in	Tue Sep  5 13:36:02 2006
+--- src/testdir/test56.in	Sun Sep 16 17:54:20 2007
+***************
+*** 17,21 ****
+  fun s:DoNothing()
+    call append(line('$'), "nothing line")
+  endfun
+! nnoremap <buffer> _x	:call <SID>DoNothing()<bar>call <SID>DoLast()<cr>
+  end:
+--- 17,21 ----
+  fun s:DoNothing()
+    call append(line('$'), "nothing line")
+  endfun
+! nnoremap <buffer> _x	:call <SID>DoNothing()<bar>call <SID>DoLast()<bar>delfunc <SID>DoNothing<bar>delfunc <SID>DoLast<cr>
+  end:
+*** ../vim-7.1.119/src/testdir/test58.in	Wed Apr  5 22:38:56 2006
+--- src/testdir/test58.in	Sun Sep 16 18:17:03 2007
+***************
+*** 86,91 ****
+--- 86,92 ----
+  :$put =str
+  `m]s:let [str, a] = spellbadword()
+  :$put =str
++ :unlet str a
+  :"
+  :" Postponed prefixes
+  :call TestOne('2', '1')
+***************
+*** 99,104 ****
+--- 100,109 ----
+  :"
+  :" NOSLITSUGS
+  :call TestOne('8', '8')
++ :"
++ :" clean up for valgrind
++ :delfunc TestOne
++ :set spl= enc=latin1
+  :"
+  gg:/^test output:/,$wq! test.out
+  ENDTEST
+*** ../vim-7.1.119/src/testdir/test59.in	Wed Apr  5 22:27:11 2006
+--- src/testdir/test59.in	Sun Sep 16 18:17:23 2007
+***************
+*** 90,95 ****
+--- 90,96 ----
+  :$put =str
+  `m]s:let [str, a] = spellbadword()
+  :$put =str
++ :unlet str a
+  :"
+  :" Postponed prefixes
+  :call TestOne('2', '1')
+***************
+*** 100,105 ****
+--- 101,110 ----
+  :call TestOne('5', '5')
+  :call TestOne('6', '6')
+  :call TestOne('7', '7')
++ :"
++ :" clean up for valgrind
++ :delfunc TestOne
++ :set spl= enc=latin1
+  :"
+  gg:/^test output:/,$wq! test.out
+  ENDTEST
+*** ../vim-7.1.119/src/testdir/test60.in	Fri May  5 23:11:11 2006
+--- src/testdir/test60.in	Mon Sep 17 19:58:43 2007
+***************
+*** 569,574 ****
+--- 569,577 ----
+      redir END
+  endfunction
+  :call TestExists()
++ :delfunc TestExists
++ :delfunc RunTest
++ :delfunc TestFuncArg
+  :edit! test.out
+  :set ff=unix
+  :w
+*** ../vim-7.1.119/src/testdir/test60.vim	Fri Jan 13 00:14:55 2006
+--- src/testdir/test60.vim	Mon Sep 17 19:56:02 2007
+***************
+*** 94,97 ****
+--- 94,98 ----
+  else
+      echo "FAILED"
+  endif
++ unlet str
+  
+*** ../vim-7.1.119/src/testdir/test62.in	Sun Apr 30 20:28:14 2006
+--- src/testdir/test62.in	Sun Sep 16 17:24:04 2007
+***************
+*** 7,12 ****
+--- 7,13 ----
+  :let nr = tabpagenr()
+  :q
+  :call append(line('$'), 'tab page ' . nr)
++ :unlet nr
+  :"
+  :" Open three tab pages and use ":tabdo"
+  :0tabnew
+***************
+*** 23,28 ****
+--- 24,30 ----
+  :q!
+  :call append(line('$'), line1)
+  :call append(line('$'), line2)
++ :unlet line1 line2
+  :"
+  :"
+  :/^Results/,$w! test.out
+*** ../vim-7.1.119/src/testdir/test63.in	Thu Jul 26 22:55:11 2007
+--- src/testdir/test63.in	Sun Sep 16 17:11:07 2007
+***************
+*** 60,66 ****
+  :else
+  :  let @r .= "FAILED\n"
+  :endif
+! :" --- Check that "matchdelete()" returns 0 if succesfull and otherwise -1.
+  :let @r .= "*** Test 6: "
+  :let m = matchadd("MyGroup1", "TODO")
+  :let r1 = matchdelete(m)
+--- 60,66 ----
+  :else
+  :  let @r .= "FAILED\n"
+  :endif
+! :" --- Check that "matchdelete()" returns 0 if successful and otherwise -1.
+  :let @r .= "*** Test 6: "
+  :let m = matchadd("MyGroup1", "TODO")
+  :let r1 = matchdelete(m)
+***************
+*** 117,123 ****
+  :" --- Check that "setmatches()" will not add two matches with the same ID. The
+  :" --- expected behaviour (for now) is to add the first match but not the
+  :" --- second and to return 0 (even though it is a matter of debate whether
+! :" --- this can be considered succesfull behaviour).
+  :let @r .= "*** Test 9: "
+  :let r1 = setmatches([{'group': 'MyGroup1', 'pattern': 'TODO', 'priority': 10, 'id': 1}, {'group': 'MyGroup2', 'pattern': 'FIXME', 'priority': 10, 'id': 1}])
+  :if getmatches() == [{'group': 'MyGroup1', 'pattern': 'TODO', 'priority': 10, 'id': 1}] && r1 == 0
+--- 117,123 ----
+  :" --- Check that "setmatches()" will not add two matches with the same ID. The
+  :" --- expected behaviour (for now) is to add the first match but not the
+  :" --- second and to return 0 (even though it is a matter of debate whether
+! :" --- this can be considered successful behaviour).
+  :let @r .= "*** Test 9: "
+  :let r1 = setmatches([{'group': 'MyGroup1', 'pattern': 'TODO', 'priority': 10, 'id': 1}, {'group': 'MyGroup2', 'pattern': 'FIXME', 'priority': 10, 'id': 1}])
+  :if getmatches() == [{'group': 'MyGroup1', 'pattern': 'TODO', 'priority': 10, 'id': 1}] && r1 == 0
+***************
+*** 127,133 ****
+  :endif
+  :call clearmatches()
+  :unlet r1
+! :" --- Check that "setmatches()" returns 0 if succesfull and otherwise -1.
+  :" --- (A range of valid and invalid input values are tried out to generate the
+  :" --- return values.)
+  :let @r .= "*** Test 10: "
+--- 127,133 ----
+  :endif
+  :call clearmatches()
+  :unlet r1
+! :" --- Check that "setmatches()" returns 0 if successful and otherwise -1.
+  :" --- (A range of valid and invalid input values are tried out to generate the
+  :" --- return values.)
+  :let @r .= "*** Test 10: "
+*** ../vim-7.1.119/src/testdir/test64.in	Tue Aug 14 17:28:14 2007
+--- src/testdir/test64.in	Sun Sep 16 17:43:03 2007
+***************
+*** 44,51 ****
+--- 44,53 ----
+  :        $put ='ERROR: pat: \"' . t[0] . '\", text: \"' . t[1] . '\", submatch ' . i . ': \"' . l[i] . '\", expected: \"' . e . '\"'
+  :      endif
+  :    endfor
++ :    unlet i
+  :  endif
+  :endfor
++ :unlet t tl e l
+  :/^Results/,$wq! test.out
+  ENDTEST
+  
+*** ../vim-7.1.119/src/version.c	Tue Sep 25 14:50:19 2007
+--- src/version.c	Tue Sep 25 17:36:22 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     120,
+  /**/
+
+-- 
+BEDEVERE: How do you know so much about swallows?
+ARTHUR:   Well you have to know these things when you're a king, you know.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

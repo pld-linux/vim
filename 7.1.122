@@ -1,0 +1,98 @@
+To: vim-dev@vim.org
+Subject: patch 7.1.122
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.122
+Problem:    Mac: building Vim.app fails.  Using wrong architecture.
+Solution:   Use line continuation for the gui_bundle dependency.  Detect the
+	    system architecture with "uname -a".
+Files:	    src/main.aap
+
+
+*** ../vim-7.1.121/src/main.aap	Thu May 10 18:48:19 2007
+--- src/main.aap	Tue Sep 25 21:26:03 2007
+***************
+*** 56,64 ****
+      config {virtual} auto/config.h auto/config.aap :
+                           auto/configure.aap configure.aap
+                           config.arg config.h.in config.aap.in
+          :sys CONFIG_STATUS=auto/config.status
+                  ./configure.aap `file2string("config.arg")`
+!                     --with-mac-arch=ppc
+                      --cache-file=auto/config.cache
+  
+      # Configure arguments: create an empty "config.arg" file when its missing
+--- 56,71 ----
+      config {virtual} auto/config.h auto/config.aap :
+                           auto/configure.aap configure.aap
+                           config.arg config.h.in config.aap.in
++         # Use "uname -a" to detect the architecture of the system.
++         @ok, uname = redir_system('uname -a', 0)
++         @if string.find(uname, "i386") >= 0:
++         @   arch = "i386"
++         @else:
++         @   arch = "ppc"
++         :print Building for $arch system
+          :sys CONFIG_STATUS=auto/config.status
+                  ./configure.aap `file2string("config.arg")`
+!                     --with-mac-arch=$arch
+                      --cache-file=auto/config.cache
+  
+      # Configure arguments: create an empty "config.arg" file when its missing
+***************
+*** 1167,1173 ****
+          :symlink `os.getcwd()`/../runtime $RESDIR/vim/runtime
+  # TODO: Create the vimtutor application.
+  
+! gui_bundle {virtual}: $(RESDIR) bundle-dir bundle-executable bundle-info
+                          bundle-resource bundle-language
+  
+  bundle-dir {virtual}: $(APPDIR)/Contents $(VIMTARGET)
+--- 1174,1180 ----
+          :symlink `os.getcwd()`/../runtime $RESDIR/vim/runtime
+  # TODO: Create the vimtutor application.
+  
+! gui_bundle {virtual}: $(RESDIR) bundle-dir bundle-executable bundle-info \
+                          bundle-resource bundle-language
+  
+  bundle-dir {virtual}: $(APPDIR)/Contents $(VIMTARGET)
+***************
+*** 1187,1193 ****
+          :sys m4 $(M4FLAGSX) infplist.xml > $(APPDIR)/Contents/Info.plist
+  
+  bundle-resource {virtual}: bundle-dir bundle-rsrc
+!     :copy {force} $(RSRC_DIR)/*.icns $(RESDIR)
+  
+  ### Classic resources
+  # Resource fork (in the form of a .rsrc file) for Classic Vim (Mac OS 9)
+--- 1194,1200 ----
+          :sys m4 $(M4FLAGSX) infplist.xml > $(APPDIR)/Contents/Info.plist
+  
+  bundle-resource {virtual}: bundle-dir bundle-rsrc
+!         :copy {force} $(RSRC_DIR)/*.icns $(RESDIR)
+  
+  ### Classic resources
+  # Resource fork (in the form of a .rsrc file) for Classic Vim (Mac OS 9)
+*** ../vim-7.1.121/src/version.c	Tue Sep 25 20:39:14 2007
+--- src/version.c	Tue Sep 25 22:12:16 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     122,
+  /**/
+
+-- 
+Men may not be seen publicly in any kind of strapless gown.
+		[real standing law in Florida, United States of America]
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

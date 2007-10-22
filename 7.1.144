@@ -1,0 +1,46 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.144
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.144
+Problem:    After ":diffup" cursor can be in the wrong position.
+Solution:   Force recomputing the cursor position.
+Files:	    src/diff.c
+
+
+*** ../vim-7.1.143/src/diff.c	Fri Oct 19 17:32:58 2007
+--- src/diff.c	Fri Oct 19 18:54:13 2007
+***************
+*** 791,796 ****
+--- 791,799 ----
+      }
+      mch_remove(tmp_orig);
+  
++     /* force updating cursor position on screen */
++     curwin->w_valid_cursor.lnum = 0;
++ 
+      diff_redraw(TRUE);
+  
+  theend:
+*** ../vim-7.1.143/src/version.c	Fri Oct 19 17:32:58 2007
+--- src/version.c	Fri Oct 19 18:56:49 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     144,
+  /**/
+
+-- 
+He who laughs last, thinks slowest.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

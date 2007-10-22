@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.140
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.140
+Problem:    v:count is set only after typing a non-digit, that makes it
+	    difficult to make a nice mapping.
+Solution:   Set v:count while still typing the count.
+Files:	    src/normal.c
+
+
+*** ../vim-7.1.139/src/normal.c	Thu Sep 13 18:25:08 2007
+--- src/normal.c	Sun Oct 14 17:15:36 2007
+***************
+*** 690,695 ****
+--- 690,702 ----
+  		ca.count0 = ca.count0 * 10 + (c - '0');
+  	    if (ca.count0 < 0)	    /* got too large! */
+  		ca.count0 = 999999999L;
++ #ifdef FEAT_EVAL
++ 	    /* Set v:count here, when called from main() and not a stuffed
++ 	     * command, so that v:count can be used in an expression mapping
++ 	     * right after the count. */
++ 	    if (toplevel && stuff_empty())
++ 		set_vcount(ca.count0, ca.count0 == 0 ? 1 : ca.count0);
++ #endif
+  	    if (ctrl_w)
+  	    {
+  		++no_mapping;
+*** ../vim-7.1.139/src/version.c	Sun Oct 14 15:32:10 2007
+--- src/version.c	Sun Oct 14 17:13:15 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     140,
+  /**/
+
+-- 
+How To Keep A Healthy Level Of Insanity:
+11. Specify that your drive-through order is "to go".
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
