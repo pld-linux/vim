@@ -182,7 +182,7 @@ syn region specScriptArea matchgroup=specSection
 syn region specChangelogArea matchgroup=specSection start='^%changelog' end='^%'me=e-1
 	\ contains=specEmail,specURL,specWeekday,specMonth,specNumber,specComment,specLicense,specRevision,specLogMessage,specLogError
 
-syn match specRevision contained "^Revision [.0-9]\+  [/0-9]\+ [:0-9]\+  [a-zA-Z0-9]\+$"
+syn match specRevision contained "^Revision [.0-9]\+  [-/0-9]\+ [:0-9]\+  [a-zA-Z0-9]\+$"
 syn region specLogMessage contained start="^[- ] " end="$" contains=specLogError,specURL,specEmail
 syn match specLogError contained "%%"
 
