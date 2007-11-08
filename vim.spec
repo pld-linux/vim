@@ -18,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.1
-%define		_patchlevel	145
+%define		_patchlevel	154
 %define		_rel		1
 
 # cflags get changed while configuring
