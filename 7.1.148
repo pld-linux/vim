@@ -1,0 +1,73 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.148
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.148
+Problem:    Some types are not found by configure.
+Solution:   Test for the sys/types.h header file. (Sean Boudreau)
+Files:	    src/configure.in, src/auto/configure
+
+
+*** ../vim-7.1.147/src/configure.in	Thu Jun 28 13:02:22 2007
+--- src/configure.in	Sat Oct 27 15:52:16 2007
+***************
+*** 2026,2032 ****
+  fi
+  
+  AC_CHECK_HEADERS(stdarg.h stdlib.h string.h sys/select.h sys/utsname.h \
+! 	termcap.h fcntl.h sgtty.h sys/ioctl.h sys/time.h termio.h \
+  	iconv.h langinfo.h unistd.h stropts.h errno.h \
+  	sys/resource.h sys/systeminfo.h locale.h \
+  	sys/stream.h sys/ptem.h termios.h libc.h sys/statfs.h \
+--- 2026,2032 ----
+  fi
+  
+  AC_CHECK_HEADERS(stdarg.h stdlib.h string.h sys/select.h sys/utsname.h \
+! 	termcap.h fcntl.h sgtty.h sys/ioctl.h sys/time.h sys/types.h termio.h \
+  	iconv.h langinfo.h unistd.h stropts.h errno.h \
+  	sys/resource.h sys/systeminfo.h locale.h \
+  	sys/stream.h sys/ptem.h termios.h libc.h sys/statfs.h \
+*** ../vim-7.1.147/src/auto/configure	Thu Jun 28 13:02:22 2007
+--- src/auto/configure	Sun Nov  4 15:34:14 2007
+***************
+*** 10265,10272 ****
+  
+  
+  
+  for ac_header in stdarg.h stdlib.h string.h sys/select.h sys/utsname.h \
+! 	termcap.h fcntl.h sgtty.h sys/ioctl.h sys/time.h termio.h \
+  	iconv.h langinfo.h unistd.h stropts.h errno.h \
+  	sys/resource.h sys/systeminfo.h locale.h \
+  	sys/stream.h sys/ptem.h termios.h libc.h sys/statfs.h \
+--- 10265,10273 ----
+  
+  
+  
++ 
+  for ac_header in stdarg.h stdlib.h string.h sys/select.h sys/utsname.h \
+! 	termcap.h fcntl.h sgtty.h sys/ioctl.h sys/time.h sys/types.h termio.h \
+  	iconv.h langinfo.h unistd.h stropts.h errno.h \
+  	sys/resource.h sys/systeminfo.h locale.h \
+  	sys/stream.h sys/ptem.h termios.h libc.h sys/statfs.h \
+*** ../vim-7.1.147/src/version.c	Tue Oct 30 17:36:31 2007
+--- src/version.c	Sun Nov  4 15:34:26 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     148,
+  /**/
+
+-- 
+If your nose runs, and your feet smell, you might be upside down.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

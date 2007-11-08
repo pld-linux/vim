@@ -1,0 +1,92 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.146 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.146 (extra)
+Problem:    VMS: Files with a very rare record organization (VFC) cannot be
+	    properly written by Vim.
+	    On older VAX systems mms runs into a syntax error.
+Solution:   Check for this special situation.  Do not wrap a comment, make it
+	    one long line.  (Zoltan Arpadffy)
+Files:	    src/fileio.c, src/Make_vms.mms
+
+
+*** ../vim-7.1.145/src/fileio.c	Wed Oct  3 12:49:24 2007
+--- src/fileio.c	Mon Oct 22 21:10:00 2007
+***************
+*** 4251,4257 ****
+  	 * they don't it adds one.
+  	 * With other RMS structures it works perfect without this fix.
+  	 */
+! 	if ((buf->b_fab_rat & (FAB$M_FTN | FAB$M_CR)) != 0)
+  	{
+  	    int b2write;
+  
+--- 4252,4259 ----
+  	 * they don't it adds one.
+  	 * With other RMS structures it works perfect without this fix.
+  	 */
+! 	if (buf->b_fab_rfm == FAB$C_VFC
+! 		|| ((buf->b_fab_rat & (FAB$M_FTN | FAB$M_CR)) != 0))
+  	{
+  	    int b2write;
+  
+*** ../vim-7.1.145/src/Make_vms.mms	Thu May 10 20:47:35 2007
+--- src/Make_vms.mms	Mon Oct 22 21:13:08 2007
+***************
+*** 2,8 ****
+  # Makefile for Vim on OpenVMS
+  #
+  # Maintainer:   Zoltan Arpadffy <arpadffy@polarhome.com>
+! # Last change:  2007 May 07
+  #
+  # This has script been tested on VMS 6.2 to 8.2 on DEC Alpha, VAX and IA64
+  # with MMS and MMK
+--- 2,8 ----
+  # Makefile for Vim on OpenVMS
+  #
+  # Maintainer:   Zoltan Arpadffy <arpadffy@polarhome.com>
+! # Last change:  2007 Oct 22
+  #
+  # This has script been tested on VMS 6.2 to 8.2 on DEC Alpha, VAX and IA64
+  # with MMS and MMK
+***************
+*** 96,103 ****
+  
+  .IFDEF MMSVAX
+  .IFDEF DECC	     # VAX with DECC
+! CC_DEF  = cc # /decc # some system requires this switch
+! 		     # but when it is not required /ver might fail
+  PREFIX  = /prefix=all
+  .ELSE		     # VAX with VAXC
+  CC_DEF	= cc
+--- 96,102 ----
+  
+  .IFDEF MMSVAX
+  .IFDEF DECC	     # VAX with DECC
+! CC_DEF  = cc # /decc # some system requires this switch but when it is not required /ver might fail
+  PREFIX  = /prefix=all
+  .ELSE		     # VAX with VAXC
+  CC_DEF	= cc
+*** ../vim-7.1.145/src/version.c	Fri Oct 19 20:39:56 2007
+--- src/version.c	Mon Oct 29 22:36:20 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     146,
+  /**/
+
+-- 
+Be thankful to be in a traffic jam, because it means you own a car.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,118 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.152
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.152
+Problem:    Display problem when 'hls' and 'cursorcolumn' are set and
+	    searching for "$".  (John Mullin)  Also when scrolling
+	    horizontally when 'wrap' is off.
+Solution:   Keep track of the column where highlighting was set.  Check the
+	    column offset when skipping characters.
+Files:	    src/screen.c
+
+
+*** ../vim-7.1.151/src/screen.c	Mon Sep 17 22:37:05 2007
+--- src/screen.c	Fri Oct 19 15:18:49 2007
+***************
+*** 2599,2604 ****
+--- 2599,2605 ----
+      int		syntax_attr = 0;	/* attributes desired by syntax */
+      int		has_syntax = FALSE;	/* this buffer has syntax highl. */
+      int		save_did_emsg;
++     int		eol_hl_off = 0;		/* 1 if highlighted char after EOL */
+  #endif
+  #ifdef FEAT_SPELL
+      int		has_spell = FALSE;	/* this buffer has spell checking */
+***************
+*** 4312,4317 ****
+--- 4313,4322 ----
+  	{
+  #ifdef FEAT_SEARCH_EXTRA
+  	    long prevcol = (long)(ptr - line) - (c == NUL);
++ 
++ 	    /* we're not really at that column when skipping some text */
++ 	    if ((wp->w_p_wrap ? wp->w_skipcol : wp->w_leftcol) > prevcol)
++ 		++prevcol;
+  #endif
+  
+  	    /* invert at least one char, used for Visual and empty line or
+***************
+*** 4408,4418 ****
+--- 4413,4432 ----
+  		ScreenAttrs[off] = char_attr;
+  #ifdef FEAT_RIGHTLEFT
+  		if (wp->w_p_rl)
++ 		{
+  		    --col;
++ 		    --off;
++ 		}
+  		else
+  #endif
++ 		{
+  		    ++col;
++ 		    ++off;
++ 		}
+  		++vcol;
++ #ifdef FEAT_SYN_HL
++ 		eol_hl_off = 1;
++ #endif
+  	    }
+  	}
+  
+***************
+*** 4422,4427 ****
+--- 4436,4449 ----
+  	if (c == NUL)
+  	{
+  #ifdef FEAT_SYN_HL
++ 	    if (eol_hl_off > 0 && vcol - eol_hl_off == (long)wp->w_virtcol)
++ 	    {
++ 		/* highlight last char after line */
++ 		--col;
++ 		--off;
++ 		--vcol;
++ 	    }
++ 
+  	    /* Highlight 'cursorcolumn' past end of the line. */
+  	    if (wp->w_p_wrap)
+  		v = wp->w_skipcol;
+***************
+*** 4432,4438 ****
+  
+  		vcol = v + col - win_col_off(wp);
+  	    if (wp->w_p_cuc
+! 		    && (int)wp->w_virtcol >= vcol
+  		    && (int)wp->w_virtcol < W_WIDTH(wp) * (row - startrow + 1)
+  									   + v
+  		    && lnum != wp->w_cursor.lnum
+--- 4454,4460 ----
+  
+  		vcol = v + col - win_col_off(wp);
+  	    if (wp->w_p_cuc
+! 		    && (int)wp->w_virtcol >= vcol - eol_hl_off
+  		    && (int)wp->w_virtcol < W_WIDTH(wp) * (row - startrow + 1)
+  									   + v
+  		    && lnum != wp->w_cursor.lnum
+*** ../vim-7.1.151/src/version.c	Thu Nov  8 13:03:33 2007
+--- src/version.c	Thu Nov  8 14:48:59 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     152,
+  /**/
+
+-- 
+From "know your smileys":
+ 2B|^2B	  Message from Shakespeare
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

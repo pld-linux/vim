@@ -1,0 +1,143 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.153
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.153
+Problem:    Compiler warnings on SGI.  Undefined XpmAllocColor (Charles
+	    Campbell)
+Solution:   Add type casts.  Init st_dev and st_ino separately.  Don't use
+	    type casts for vim_snprintf() when HAVE_STDARG_H is defined.
+	    Define XpmAllocColor when needed.
+Files:	    src/eval.c, src/ex_cmds.c, src/fileio.c, src/misc2.c,
+	    src/gui_xmebw.c
+
+
+*** ../vim-7.1.152/src/eval.c	Tue Oct  2 22:07:58 2007
+--- src/eval.c	Mon Oct  1 20:56:09 2007
+***************
+*** 8729,8735 ****
+      static int		fnum = 0;
+      static int		change_start = 0;
+      static int		change_end = 0;
+!     static hlf_T	hlID = 0;
+      int			filler_lines;
+      int			col;
+  
+--- 8729,8735 ----
+      static int		fnum = 0;
+      static int		change_start = 0;
+      static int		change_end = 0;
+!     static hlf_T	hlID = (hlf_T)0;
+      int			filler_lines;
+      int			col;
+  
+*** ../vim-7.1.152/src/ex_cmds.c	Thu Sep 13 18:25:08 2007
+--- src/ex_cmds.c	Thu Sep 13 16:19:40 2007
+***************
+*** 1774,1780 ****
+  	 * overwrite a user's viminfo file after a "su root", with a
+  	 * viminfo file that the user can't read.
+  	 */
+! 	st_old.st_dev = st_old.st_ino = 0;
+  	st_old.st_mode = 0600;
+  	if (mch_stat((char *)fname, &st_old) == 0
+  		&& getuid() != ROOT_UID
+--- 1774,1781 ----
+  	 * overwrite a user's viminfo file after a "su root", with a
+  	 * viminfo file that the user can't read.
+  	 */
+! 	st_old.st_dev = 0;
+! 	st_old.st_ino = 0;
+  	st_old.st_mode = 0600;
+  	if (mch_stat((char *)fname, &st_old) == 0
+  		&& getuid() != ROOT_UID
+*** ../vim-7.1.152/src/fileio.c	Mon Oct 29 22:37:57 2007
+--- src/fileio.c	Mon Oct 22 21:10:00 2007
+***************
+*** 3209,3215 ****
+       * Get information about original file (if there is one).
+       */
+  #if defined(UNIX) && !defined(ARCHIE)
+!     st_old.st_dev = st_old.st_ino = 0;
+      perm = -1;
+      if (mch_stat((char *)fname, &st_old) < 0)
+  	newfile = TRUE;
+--- 3209,3216 ----
+       * Get information about original file (if there is one).
+       */
+  #if defined(UNIX) && !defined(ARCHIE)
+!     st_old.st_dev = 0;
+!     st_old.st_ino = 0;
+      perm = -1;
+      if (mch_stat((char *)fname, &st_old) < 0)
+  	newfile = TRUE;
+*** ../vim-7.1.152/src/misc2.c	Sun Oct  7 15:44:28 2007
+--- src/misc2.c	Sun Sep 30 18:00:09 2007
+***************
+*** 5924,5930 ****
+--- 5925,5935 ----
+  {
+      if (emsg_not_now())
+  	return TRUE;		/* no error messages at the moment */
++ #ifdef HAVE_STDARG_H
++     vim_snprintf((char *)IObuff, IOSIZE, (char *)s, a1, a2);
++ #else
+      vim_snprintf((char *)IObuff, IOSIZE, (char *)s, (long_u)a1, (long_u)a2);
++ #endif
+      return emsg(IObuff);
+  }
+  
+*** ../vim-7.1.152/src/gui_xmebw.c	Thu May 10 19:46:55 2007
+--- src/gui_xmebw.c	Thu Sep  6 12:57:51 2007
+***************
+*** 395,405 ****
+  
+      /* Create the "highlight" pixmap. */
+      color[4].pixel = eb->primitive.bottom_shadow_color;
+      attr.valuemask = XpmColorSymbols | XpmCloseness | XpmAllocColor;
+      attr.closeness = 65535;	/* accuracy isn't crucial */
+      attr.colorsymbols = color;
+      attr.numsymbols = XtNumber(color);
+-     attr.alloc_color = alloc_color;
+  
+      status = XpmCreatePixmapFromData(dpy, root, data, &pix, NULL, &attr);
+      XpmFreeAttributes(&attr);
+--- 395,409 ----
+  
+      /* Create the "highlight" pixmap. */
+      color[4].pixel = eb->primitive.bottom_shadow_color;
++ #ifdef XpmAllocColor /* SGI doesn't have it */
+      attr.valuemask = XpmColorSymbols | XpmCloseness | XpmAllocColor;
++     attr.alloc_color = alloc_color;
++ #else
++     attr.valuemask = XpmColorSymbols | XpmCloseness;
++ #endif
+      attr.closeness = 65535;	/* accuracy isn't crucial */
+      attr.colorsymbols = color;
+      attr.numsymbols = XtNumber(color);
+  
+      status = XpmCreatePixmapFromData(dpy, root, data, &pix, NULL, &attr);
+      XpmFreeAttributes(&attr);
+*** ../vim-7.1.152/src/version.c	Thu Nov  8 14:50:58 2007
+--- src/version.c	Thu Nov  8 20:45:56 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     153,
+  /**/
+
+-- 
+From "know your smileys":
+ @:-()	Elvis Presley
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

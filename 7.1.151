@@ -1,0 +1,70 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.151
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.151
+Problem:    Using whole line completion with 'ignorecase' and 'infercase' set
+	    and the line is empty get an lalloc(0) error.
+Solution:   Don't try changing case for an empty match. (Matthew Wozniski)
+Files:	    src/edit.c
+
+
+*** ../vim-7.1.150/src/edit.c	Tue Nov  6 22:26:39 2007
+--- src/edit.c	Sun Nov  4 16:17:42 2007
+***************
+*** 2111,2117 ****
+      int		has_lower = FALSE;
+      int		was_letter = FALSE;
+  
+!     if (p_ic && curbuf->b_p_inf)
+      {
+  	/* Infer case of completed part. */
+  
+--- 2111,2117 ----
+      int		has_lower = FALSE;
+      int		was_letter = FALSE;
+  
+!     if (p_ic && curbuf->b_p_inf && len > 0)
+      {
+  	/* Infer case of completed part. */
+  
+***************
+*** 2225,2231 ****
+  		    wca[i] = MB_TOUPPER(wca[i]);
+  	    }
+  
+! 	    /* 
+  	     * Generate encoding specific output from wide character array.
+  	     * Multi-byte characters can occupy up to five bytes more than
+  	     * ASCII characters, and we also need one byte for NUL, so stay
+--- 2225,2231 ----
+  		    wca[i] = MB_TOUPPER(wca[i]);
+  	    }
+  
+! 	    /*
+  	     * Generate encoding specific output from wide character array.
+  	     * Multi-byte characters can occupy up to five bytes more than
+  	     * ASCII characters, and we also need one byte for NUL, so stay
+*** ../vim-7.1.150/src/version.c	Thu Nov  8 10:35:02 2007
+--- src/version.c	Thu Nov  8 13:01:34 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     151,
+  /**/
+
+-- 
+From "know your smileys":
+ %-)	After staring at screen for 15 hours
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
