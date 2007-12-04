@@ -18,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.1
-%define		_patchlevel	154
+%define		_patchlevel	168
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -92,6 +92,7 @@ Patch106:	%{name}-autopaste.patch
 Patch107:	%{name}-ft-cron.patch
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 %{_patchlevel}
 URL:		http://www.vim.org/
+%{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -106,7 +107,6 @@ BuildRequires:	ncurses-devel
 BuildRequires:	rpmbuild(macros) >= 1.351
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	XFree86-devel}
 Obsoletes:	kvim
 %if %{with static}
 BuildRequires:	acl-static
@@ -802,6 +802,13 @@ unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE4}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
+
+# no autodeps
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/doc/vim2html.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/shtags.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/pltags.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/efm_perl.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/efm_filter.pl
 
 %clean
 rm -rf $RPM_BUILD_ROOT
