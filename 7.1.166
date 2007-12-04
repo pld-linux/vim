@@ -1,0 +1,80 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.166
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.166
+Problem:    Memory leak for using "gp" in Visual mode.
+Solution:   Free memory in put_register(). (Dominique Pelle)
+Files:	    src/ops.c
+
+
+*** ../vim-7.1.165/src/ops.c	Thu Nov  8 10:35:02 2007
+--- src/ops.c	Sun Nov 25 15:17:43 2007
+***************
+*** 927,934 ****
+      int		name;
+      int		copy;	/* make a copy, if FALSE make register empty. */
+  {
+!     static struct yankreg	*reg;
+!     int				i;
+  
+  #ifdef FEAT_CLIPBOARD
+      /* When Visual area changed, may have to update selection.  Obtain the
+--- 927,934 ----
+      int		name;
+      int		copy;	/* make a copy, if FALSE make register empty. */
+  {
+!     struct yankreg	*reg;
+!     int			i;
+  
+  #ifdef FEAT_CLIPBOARD
+      /* When Visual area changed, may have to update selection.  Obtain the
+***************
+*** 967,973 ****
+  }
+  
+  /*
+!  * Put "reg" into register "name".  Free any previous contents.
+   */
+      void
+  put_register(name, reg)
+--- 967,973 ----
+  }
+  
+  /*
+!  * Put "reg" into register "name".  Free any previous contents and "reg".
+   */
+      void
+  put_register(name, reg)
+***************
+*** 977,982 ****
+--- 977,983 ----
+      get_yank_register(name, 0);
+      free_yank_all();
+      *y_current = *(struct yankreg *)reg;
++     vim_free(reg);
+  
+  # ifdef FEAT_CLIPBOARD
+      /* Send text written to clipboard register to the clipboard. */
+*** ../vim-7.1.165/src/version.c	Sat Dec  1 17:18:45 2007
+--- src/version.c	Sat Dec  1 21:11:25 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     166,
+  /**/
+
+-- 
+An error has occurred.  Hit any user to continue.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

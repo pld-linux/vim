@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.164
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.164
+Problem:    Reading past end of regexp pattern. (Dominique Pelle)
+Solution:   Use utf_ptr2len().
+Files:	    src/regexp.c
+
+
+*** ../vim-7.1.163/src/regexp.c	Sat Aug 11 13:57:31 2007
+--- src/regexp.c	Sat Nov 24 13:23:53 2007
+***************
+*** 2770,2776 ****
+      {
+  #ifdef FEAT_MBYTE
+  	if (enc_utf8)
+! 	    prevchr_len += utf_char2len(mb_ptr2char(regparse + prevchr_len));
+  	else if (has_mbyte)
+  	    prevchr_len += (*mb_ptr2len)(regparse + prevchr_len);
+  	else
+--- 2770,2777 ----
+      {
+  #ifdef FEAT_MBYTE
+  	if (enc_utf8)
+! 	    /* exclude composing chars that mb_ptr2len does include */
+! 	    prevchr_len += utf_ptr2len(regparse + prevchr_len);
+  	else if (has_mbyte)
+  	    prevchr_len += (*mb_ptr2len)(regparse + prevchr_len);
+  	else
+*** ../vim-7.1.163/src/version.c	Thu Nov 29 17:46:01 2007
+--- src/version.c	Thu Nov 29 21:25:45 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     164,
+  /**/
+
+-- 
+Send $25.00 for handy leaflet on how to make money by selling leaflets
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

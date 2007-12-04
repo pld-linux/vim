@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.160
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.160
+Problem:    When a focus autocommand is defined, getting or losing focus
+	    causes the hit-enter prompt to be redrawn. (Bjorn Winckler)
+Solution:   Overwrite the last line.
+Files:	    src/message.c
+
+
+*** ../vim-7.1.159/src/message.c	Thu Sep 13 22:04:30 2007
+--- src/message.c	Sun Nov  4 17:33:15 2007
+***************
+*** 2850,2855 ****
+--- 2850,2864 ----
+      }
+      else if (State == HITRETURN || State == SETWSIZE)
+      {
++ 	if (msg_row == Rows - 1)
++ 	{
++ 	    /* Avoid drawing the "hit-enter" prompt below the previous one,
++ 	     * overwrite it.  Esp. useful when regaining focus and a
++ 	     * FocusGained autocmd exists but didn't draw anything. */
++ 	    msg_didout = FALSE;
++ 	    msg_col = 0;
++ 	    msg_clr_eos();
++ 	}
+  	hit_return_msg();
+  	msg_row = Rows - 1;
+      }
+*** ../vim-7.1.159/src/version.c	Tue Nov 20 18:03:34 2007
+--- src/version.c	Sat Nov 24 15:41:43 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     160,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+142. You dream about creating the world's greatest web site.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

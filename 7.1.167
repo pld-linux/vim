@@ -1,0 +1,80 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.167
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.167
+Problem:    Xxd crashes when using "xxd -b -c 110". (Debian bug 452789)
+Solution:   Allocate more memory.  Fix check for maximum number of columns.
+Files:	    src/xxd/xxd.c
+
+
+*** ../vim-7.1.166/src/xxd/xxd.c	Thu May 10 19:07:42 2007
+--- src/xxd/xxd.c	Thu Nov 29 21:05:16 2007
+***************
+*** 212,218 ****
+  
+  #define TRY_SEEK	/* attempt to use lseek, or skip forward by reading */
+  #define COLS 256	/* change here, if you ever need more columns */
+! #define LLEN (9 + (5*COLS-1)/2 + 2 + COLS)
+  
+  char hexxa[] = "0123456789abcdef0123456789ABCDEF", *hexx = hexxa;
+  
+--- 212,218 ----
+  
+  #define TRY_SEEK	/* attempt to use lseek, or skip forward by reading */
+  #define COLS 256	/* change here, if you ever need more columns */
+! #define LLEN (11 + (9*COLS-1)/1 + COLS + 2)
+  
+  char hexxa[] = "0123456789abcdef0123456789ABCDEF", *hexx = hexxa;
+  
+***************
+*** 590,596 ****
+        default:			octspergrp = 0; break;
+        }
+  
+!   if (cols < 1 || (!hextype && (cols > COLS)))
+      {
+        fprintf(stderr, "%s: invalid number of columns (max. %d).\n", pname, COLS);
+        exit(1);
+--- 590,597 ----
+        default:			octspergrp = 0; break;
+        }
+  
+!   if (cols < 1 || ((hextype == HEX_NORMAL || hextype == HEX_BITS)
+! 							    && (cols > COLS)))
+      {
+        fprintf(stderr, "%s: invalid number of columns (max. %d).\n", pname, COLS);
+        exit(1);
+***************
+*** 750,755 ****
+--- 751,757 ----
+  	}
+        if (ebcdic)
+  	e = (e < 64) ? '.' : etoa64[e-64];
++       /* When changing this update definition of LLEN above. */
+        l[11 + (grplen * cols - 1)/octspergrp + p] =
+  #ifdef __MVS__
+  	  (e >= 64)
+*** ../vim-7.1.166/src/version.c	Sat Dec  1 21:12:23 2007
+--- src/version.c	Mon Dec  3 21:30:31 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     167,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+178. You look for an icon to double-click to open your bedroom window.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

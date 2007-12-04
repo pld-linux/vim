@@ -1,0 +1,112 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.168 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.168 (extra)
+Problem:    Win32 GUI: Since patch 7.1.095, when the Vim window does not have
+	    focus, clicking in it doesn't position the cursor. (Juergen
+	    Kraemer)
+Solution:   Don't reset s_button_pending just after receiving focus.
+Files:	    src/gui_w48.c
+
+
+*** ../vim-7.1.167/src/gui_w48.c	Tue Nov 20 17:21:28 2007
+--- src/gui_w48.c	Mon Dec  3 22:13:16 2007
+***************
+*** 290,295 ****
+--- 290,300 ----
+  
+  /* Local variables */
+  static int		s_button_pending = -1;
++ 
++ /* s_getting_focus is set when we got focus but didn't see mouse-up event yet,
++  * so don't reset s_button_pending. */
++ static int		s_getting_focus = FALSE;
++ 
+  static int		s_x_pending;
+  static int		s_y_pending;
+  static UINT		s_kFlags_pending;
+***************
+*** 671,676 ****
+--- 676,683 ----
+  {
+      int vim_modifiers = 0x0;
+  
++     s_getting_focus = FALSE;
++ 
+      if (keyFlags & MK_SHIFT)
+  	vim_modifiers |= MOUSE_SHIFT;
+      if (keyFlags & MK_CONTROL)
+***************
+*** 792,797 ****
+--- 799,805 ----
+  {
+      int button;
+  
++     s_getting_focus = FALSE;
+      if (s_button_pending > -1)
+      {
+  	/* Delayed action for mouse down event */
+***************
+*** 1951,1958 ****
+  	    allow_scrollbar = FALSE;
+  
+  	    /* Clear pending mouse button, the release event may have been
+! 	     * taken by the dialog window. */
+! 	    s_button_pending = -1;
+  
+  	    return OK;
+  	}
+--- 1959,1968 ----
+  	    allow_scrollbar = FALSE;
+  
+  	    /* Clear pending mouse button, the release event may have been
+! 	     * taken by the dialog window.  But don't do this when getting
+! 	     * focus, we need the mouse-up event then. */
+! 	    if (!s_getting_focus)
+! 		s_button_pending = -1;
+  
+  	    return OK;
+  	}
+***************
+*** 2702,2707 ****
+--- 2712,2718 ----
+      HWND hwndOldFocus)
+  {
+      gui_focus_change(TRUE);
++     s_getting_focus = TRUE;
+      (void)MyWindowProc(hwnd, WM_SETFOCUS, (WPARAM)hwndOldFocus, 0);
+  }
+  
+***************
+*** 2711,2716 ****
+--- 2722,2728 ----
+      HWND hwndNewFocus)
+  {
+      gui_focus_change(FALSE);
++     s_getting_focus = FALSE;
+      (void)MyWindowProc(hwnd, WM_KILLFOCUS, (WPARAM)hwndNewFocus, 0);
+  }
+  
+*** ../vim-7.1.167/src/version.c	Mon Dec  3 21:31:56 2007
+--- src/version.c	Mon Dec  3 22:16:32 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     168,
+  /**/
+
+-- 
+Rule #1: Don't give somebody a tool that he's going to hurt himself with.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
