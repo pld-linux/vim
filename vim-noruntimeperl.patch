@@ -1,8 +1,0 @@
---- vim70/runtime/doc/vim2html.pl~	2007-01-23 18:31:20.596518416 +0200
-+++ vim70/runtime/doc/vim2html.pl	2007-01-23 18:44:16.584047238 +0200
-@@ -1,4 +1,4 @@
--#!/usr/bin/perl
-+#!/usr/bin/env perl
- 
- # converts vim documentation to simple html
- # Sirtaj Singh Kang (taj@kde.org)

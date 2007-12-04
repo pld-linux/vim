@@ -1,20 +1,8 @@
 # TODO:
+# - merge with AC-branch
 # - some nice icon
 # - create vim-full (better name, anybody?) or/and other packages
 #   for scripting languages support
-# - unpackaged files:
-%if 0
-   /usr/share/man/fr/man1/eview.1
-   /usr/share/man/it/man1/eview.1
-   /usr/share/man/man1/eview.1
-   /usr/share/man/pl/man1/eview.1
-   /usr/share/man/ru/man1/eview.1
-   /usr/share/vim/vim71/lang/menu_sl_si.cp1250.vim
-   /usr/share/vim/vim71/lang/menu_sl_si.latin2.vim
-   /usr/share/vim/vim71/lang/menu_sl_si.utf-8.vim
-   /usr/share/vim/vim71/lang/zh_CN.UTF-8/LC_MESSAGES/vim.mo
-   /usr/share/vim/vim71/lang/zh_TW.UTF-8/LC_MESSAGES/vim.mo
-%endif
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -22,16 +10,16 @@
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
-%bcond_with	perl		# with Perl interp
-%bcond_with	python		# with Python interp
+%bcond_without	perl		# without Perl interp
+%bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.1
-%define		_patchlevel	154
-%define		_rel		3
+%define		_patchlevel	168
+%define		_rel		1
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -104,6 +92,7 @@ Patch106:	%{name}-autopaste.patch
 Patch107:	%{name}-ft-cron.patch
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 %{_patchlevel}
 URL:		http://www.vim.org/
+%{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -118,7 +107,6 @@ BuildRequires:	ncurses-devel
 BuildRequires:	rpmbuild(macros) >= 1.351
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 Obsoletes:	kvim
 %if %{with static}
 BuildRequires:	acl-static
@@ -814,6 +802,13 @@ unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE4}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
+
+# no autodeps
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/doc/vim2html.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/shtags.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/pltags.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/efm_perl.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/efm_filter.pl
 
 %clean
 rm -rf $RPM_BUILD_ROOT
