@@ -30,8 +30,8 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.1
-%define		_patchlevel	154
-%define		_rel		3
+%define		_patchlevel	168
+%define		_rel		2
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -814,6 +814,13 @@ unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE4}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
+
+# no autodeps
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/doc/vim2html.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/shtags.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/pltags.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/efm_perl.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/efm_filter.pl
 
 %clean
 rm -rf $RPM_BUILD_ROOT
