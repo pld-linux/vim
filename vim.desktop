@@ -13,6 +13,5 @@ Exec=vim
 Icon=vim
 Terminal=true
 Type=Application
-Encoding=UTF-8
 Categories=ConsoleOnly;TextEditor;
 # vi: encoding=utf-8
