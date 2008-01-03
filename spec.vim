@@ -96,7 +96,7 @@ syn keyword specMacroNameOther contained pear_package_install pear_package_setup
 syn keyword specMacroNameOther contained perl_vendorarch perl_vendorlib php_pear_dir py_sitedir py_scriptdir py_sitescriptdir releq_kernel_smp
 syn keyword specMacroNameOther contained releq_kernel_up requires_php_extension requires_php_pdo_module requires_releq_kernel_smp requires_releq_kernel_up
 syn keyword specMacroNameOther contained requires_zend_extension ruby_mod_ver_requires_eq ruby_ver_requires_eq rpmcflags rpmcxxflags rpmldflags tmpdir x8664
-syn keyword specMacroNameOther contained ruby_archdir ruby_rubylibdir ruby_ridir ruby_sitearchdir ruby_sitelibdir ruby_version
+syn keyword specMacroNameOther contained ruby_archdir ruby_rubylibdir ruby_vendorarchdir ruby_vendorlibdir ruby_ridir ruby_sitearchdir ruby_sitelibdir ruby_version
 syn keyword specMacroNameOther contained apache_modules_api php_sysconfdir php_includedir php_extensiondir _browserpluginsdir _browserpluginsconfdir
 
 syn match   specMacroNameOther contained '\<\(PATCH\|SOURCE\)\d*\>'
