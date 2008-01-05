@@ -1,0 +1,76 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.189
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.189 (after 7.1.104)
+Problem:    Patch 7.1.104 was incomplete.
+Solution:   Also call plain_vgetc() in ask_yesno().
+Files:	    src/misc1.c
+
+
+*** ../vim-7.1.188/src/misc1.c	Wed Jan  2 17:48:24 2008
+--- src/misc1.c	Wed Jan  2 17:48:00 2008
+***************
+*** 222,231 ****
+  	    *s++ = *p++;
+  	    orig_char_len--;
+  	}
+  	/* Skip over any additional white space (useful when newindent is less
+  	 * than old) */
+  	while (vim_iswhite(*p))
+! 	    (void)*p++;
+  
+      }
+      else
+--- 222,232 ----
+  	    *s++ = *p++;
+  	    orig_char_len--;
+  	}
++ 
+  	/* Skip over any additional white space (useful when newindent is less
+  	 * than old) */
+  	while (vim_iswhite(*p))
+! 	    ++p;
+  
+      }
+      else
+***************
+*** 3024,3030 ****
+  	if (direct)
+  	    r = get_keystroke();
+  	else
+! 	    r = safe_vgetc();
+  	if (r == Ctrl_C || r == ESC)
+  	    r = 'n';
+  	msg_putchar(r);	    /* show what you typed */
+--- 3025,3031 ----
+  	if (direct)
+  	    r = get_keystroke();
+  	else
+! 	    r = plain_vgetc();
+  	if (r == Ctrl_C || r == ESC)
+  	    r = 'n';
+  	msg_putchar(r);	    /* show what you typed */
+*** ../vim-7.1.188/src/version.c	Wed Jan  2 22:08:43 2008
+--- src/version.c	Thu Jan  3 12:40:31 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     189,
+  /**/
+
+-- 
+Q: How does a UNIX Guru do Sex ?
+A: unzip;strip;touch;finger;mount;fsck;more;yes;umount;sleep
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,169 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.182
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.182
+Problem:    When using tab pages and an argument list the session file may
+	    contain wrong "next" commands. (Alexander Bluem)
+Solution:   Use "argu" commands and only when needed.
+Files:	    src/ex_docmd.c
+
+
+*** ../vim-7.1.181/src/ex_docmd.c	Sun Dec  9 19:37:37 2007
+--- src/ex_docmd.c	Mon Dec 31 18:24:16 2007
+***************
+*** 372,378 ****
+  static char_u	*arg_all __ARGS((void));
+  #ifdef FEAT_SESSION
+  static int	makeopens __ARGS((FILE *fd, char_u *dirnow));
+! static int	put_view __ARGS((FILE *fd, win_T *wp, int add_edit, unsigned *flagp));
+  static void	ex_loadview __ARGS((exarg_T *eap));
+  static char_u	*get_view_file __ARGS((int c));
+  static int	did_lcd;	/* whether ":lcd" was produced for a session */
+--- 372,378 ----
+  static char_u	*arg_all __ARGS((void));
+  #ifdef FEAT_SESSION
+  static int	makeopens __ARGS((FILE *fd, char_u *dirnow));
+! static int	put_view __ARGS((FILE *fd, win_T *wp, int add_edit, unsigned *flagp, int current_arg_idx));
+  static void	ex_loadview __ARGS((exarg_T *eap));
+  static char_u	*get_view_file __ARGS((int c));
+  static int	did_lcd;	/* whether ":lcd" was produced for a session */
+***************
+*** 8762,8768 ****
+  	    }
+  	    else
+  	    {
+! 		failed |= (put_view(fd, curwin, !using_vdir, flagp) == FAIL);
+  	    }
+  	    if (put_line(fd, "let &so = s:so_save | let &siso = s:siso_save")
+  								      == FAIL)
+--- 8762,8769 ----
+  	    }
+  	    else
+  	    {
+! 		failed |= (put_view(fd, curwin, !using_vdir, flagp,
+! 								 -1) == FAIL);
+  	    }
+  	    if (put_line(fd, "let &so = s:so_save | let &siso = s:siso_save")
+  								      == FAIL)
+***************
+*** 9761,9766 ****
+--- 9762,9769 ----
+      int		tabnr;
+      win_T	*tab_firstwin;
+      frame_T	*tab_topframe;
++     int		cur_arg_idx = 0;
++     int		next_arg_idx;
+  
+      if (ssop_flags & SSOP_BUFFERS)
+  	only_save_windows = FALSE;		/* Save ALL buffers */
+***************
+*** 9976,9987 ****
+  	{
+  	    if (!ses_do_win(wp))
+  		continue;
+! 	    if (put_view(fd, wp, wp != edited_win, &ssop_flags) == FAIL)
+  		return FAIL;
+  	    if (nr > 1 && put_line(fd, "wincmd w") == FAIL)
+  		return FAIL;
+  	}
+  
+  	/*
+  	 * Restore cursor to the current window if it's not the first one.
+  	 */
+--- 9979,9997 ----
+  	{
+  	    if (!ses_do_win(wp))
+  		continue;
+! 	    if (put_view(fd, wp, wp != edited_win, &ssop_flags,
+! 							 cur_arg_idx) == FAIL)
+  		return FAIL;
+  	    if (nr > 1 && put_line(fd, "wincmd w") == FAIL)
+  		return FAIL;
++ 	    next_arg_idx = wp->w_arg_idx;
+  	}
+  
++ 	/* The argument index in the first tab page is zero, need to set it in
++ 	 * each window.  For further tab pages it's the window where we do
++ 	 * "tabedit". */
++ 	cur_arg_idx = next_arg_idx;
++ 
+  	/*
+  	 * Restore cursor to the current window if it's not the first one.
+  	 */
+***************
+*** 10190,10200 ****
+   * Caller must make sure 'scrolloff' is zero.
+   */
+      static int
+! put_view(fd, wp, add_edit, flagp)
+      FILE	*fd;
+      win_T	*wp;
+      int		add_edit;	/* add ":edit" command to view */
+      unsigned	*flagp;		/* vop_flags or ssop_flags */
+  {
+      win_T	*save_curwin;
+      int		f;
+--- 10200,10212 ----
+   * Caller must make sure 'scrolloff' is zero.
+   */
+      static int
+! put_view(fd, wp, add_edit, flagp, current_arg_idx)
+      FILE	*fd;
+      win_T	*wp;
+      int		add_edit;	/* add ":edit" command to view */
+      unsigned	*flagp;		/* vop_flags or ssop_flags */
++     int		current_arg_idx; /* current argument index of the window, use
++ 				  * -1 if unknown */
+  {
+      win_T	*save_curwin;
+      int		f;
+***************
+*** 10224,10233 ****
+  
+      /* Only when part of a session: restore the argument index.  Some
+       * arguments may have been deleted, check if the index is valid. */
+!     if (wp->w_arg_idx != 0 && wp->w_arg_idx <= WARGCOUNT(wp)
+  						      && flagp == &ssop_flags)
+      {
+! 	if (fprintf(fd, "%ldnext", (long)wp->w_arg_idx) < 0
+  		|| put_eol(fd) == FAIL)
+  	    return FAIL;
+  	did_next = TRUE;
+--- 10236,10245 ----
+  
+      /* Only when part of a session: restore the argument index.  Some
+       * arguments may have been deleted, check if the index is valid. */
+!     if (wp->w_arg_idx != current_arg_idx && wp->w_arg_idx <= WARGCOUNT(wp)
+  						      && flagp == &ssop_flags)
+      {
+! 	if (fprintf(fd, "%ldargu", (long)wp->w_arg_idx + 1) < 0
+  		|| put_eol(fd) == FAIL)
+  	    return FAIL;
+  	did_next = TRUE;
+*** ../vim-7.1.181/src/version.c	Wed Jan  2 13:58:17 2008
+--- src/version.c	Wed Jan  2 15:10:01 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     182,
+  /**/
+
+-- 
+You were lucky. We lived for three months in a brown paper bag in a 
+septic tank. We used to have to get up at six o'clock in the morning, 
+clean the bag, eat a crust of stale bread, go to work down mill for 
+fourteen hours a day week in-week out. When we got home, our Dad
+would thrash us to sleep with his belt!
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

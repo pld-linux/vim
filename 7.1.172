@@ -1,0 +1,50 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.172
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.172
+Problem:    When 'buftype' is "acwrite" Vim still checks if the file or
+	    directory exists before overwriting.
+Solution:   Don't check for overwriting when the buffer name is not a file
+	    name.
+Files:	    src/ex_cmds.c
+
+
+*** ../vim-7.1.171/src/ex_cmds.c	Tue Nov 20 18:03:34 2007
+--- src/ex_cmds.c	Fri Dec  7 22:13:32 2007
+***************
+*** 2732,2737 ****
+--- 2732,2740 ----
+  		    && vim_strchr(p_cpo, CPO_OVERNEW) == NULL)
+  		|| (buf->b_flags & BF_READERR))
+  	    && !p_wa
++ #ifdef FEAT_QUICKFIX
++ 	    && !bt_nofile(buf)
++ #endif
+  	    && vim_fexists(ffname))
+      {
+  	if (!eap->forceit && !eap->append)
+*** ../vim-7.1.171/src/version.c	Fri Dec  7 20:28:13 2007
+--- src/version.c	Sat Dec  8 22:18:54 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     172,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+206. You religiously respond immediately to e-mail, while ignoring
+     your growing pile of snail mail.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,111 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.186
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.186
+Problem:    "expand('<afile>')" returns a bogus value after changing
+	    directory. (Dave Fishburn)
+Solution:   Copy "autocmd_fname" to allocated memory and expand to full
+	    filename.  Shorten the path when expanding <afile>.
+Files:	    src/ex_docmd.c, src/fileio.c
+
+
+*** ../vim-7.1.185/src/ex_docmd.c	Wed Jan  2 15:12:29 2008
+--- src/ex_docmd.c	Wed Jan  2 20:12:33 2008
+***************
+*** 7799,7804 ****
+--- 7799,7805 ----
+  free_cd_dir()
+  {
+      vim_free(prev_dir);
++     prev_dir = NULL;
+  }
+  #endif
+  
+***************
+*** 9521,9526 ****
+--- 9522,9528 ----
+  		    *errormsg = (char_u *)_("E495: no autocommand file name to substitute for \"<afile>\"");
+  		    return NULL;
+  		}
++ 		result = shorten_fname1(result);
+  		break;
+  
+  	case SPEC_ABUF:		/* buffer number for autocommand */
+*** ../vim-7.1.185/src/fileio.c	Thu Nov  8 20:47:34 2007
+--- src/fileio.c	Wed Jan  2 20:21:43 2008
+***************
+*** 5556,5562 ****
+  #endif
+  
+  #if defined(FEAT_VIMINFO) || defined(FEAT_BROWSE) || \
+!     defined(FEAT_QUICKFIX) || defined(PROTO)
+  /*
+   * Try to find a shortname by comparing the fullname with the current
+   * directory.
+--- 5556,5562 ----
+  #endif
+  
+  #if defined(FEAT_VIMINFO) || defined(FEAT_BROWSE) || \
+!     defined(FEAT_QUICKFIX) || defined(FEAT_AUTOCMD) || defined(PROTO)
+  /*
+   * Try to find a shortname by comparing the fullname with the current
+   * directory.
+***************
+*** 8546,8551 ****
+--- 8546,8553 ----
+  
+      /*
+       * Set the file name to be used for <afile>.
++      * Make a copy to avoid that changing a buffer name or directory makes it
++      * invalid.
+       */
+      if (fname_io == NULL)
+      {
+***************
+*** 8558,8563 ****
+--- 8560,8567 ----
+      }
+      else
+  	autocmd_fname = fname_io;
++     if (autocmd_fname != NULL)
++ 	autocmd_fname = FullName_save(autocmd_fname, FALSE);
+  
+      /*
+       * Set the buffer number to be used for <abuf>.
+***************
+*** 8740,8745 ****
+--- 8744,8750 ----
+      vim_free(sourcing_name);
+      sourcing_name = save_sourcing_name;
+      sourcing_lnum = save_sourcing_lnum;
++     vim_free(autocmd_fname);
+      autocmd_fname = save_autocmd_fname;
+      autocmd_bufnr = save_autocmd_bufnr;
+      autocmd_match = save_autocmd_match;
+*** ../vim-7.1.185/src/version.c	Wed Jan  2 17:48:24 2008
+--- src/version.c	Wed Jan  2 21:06:35 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     186,
+  /**/
+
+-- 
+   LAUNCELOT leaps into SHOT with a mighty cry and runs the GUARD through and
+   hacks him to the floor.  Blood.  Swashbuckling music (perhaps).
+   LAUNCELOT races through into the castle screaming.
+SECOND SENTRY: Hey!
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

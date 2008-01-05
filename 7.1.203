@@ -1,0 +1,68 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.203
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.203
+Problem:    When 'virtualedit' is "onemore" then "99|" works but ":normal 99|"
+	    doesn't.  (Andy Wokula)
+Solution:   Check for "onemore" flag in check_cursor_col().
+Files:	    src/misc2.c
+
+
+*** ../vim-7.1.202/src/misc2.c	Sat Nov 24 21:27:33 2007
+--- src/misc2.c	Fri Jan  4 21:24:46 2008
+***************
+*** 507,517 ****
+  	curwin->w_cursor.col = 0;
+      else if (curwin->w_cursor.col >= len)
+      {
+! 	/* Allow cursor past end-of-line in Insert mode, restarting Insert
+! 	 * mode or when in Visual mode and 'selection' isn't "old" */
+  	if ((State & INSERT) || restart_edit
+  #ifdef FEAT_VISUAL
+  		|| (VIsual_active && *p_sel != 'o')
+  #endif
+  		|| virtual_active())
+  	    curwin->w_cursor.col = len;
+--- 508,523 ----
+  	curwin->w_cursor.col = 0;
+      else if (curwin->w_cursor.col >= len)
+      {
+! 	/* Allow cursor past end-of-line when:
+! 	 * - in Insert mode or restarting Insert mode
+! 	 * - in Visual mode and 'selection' isn't "old"
+! 	 * - 'virtualedit' is set */
+  	if ((State & INSERT) || restart_edit
+  #ifdef FEAT_VISUAL
+  		|| (VIsual_active && *p_sel != 'o')
++ #endif
++ #ifdef FEAT_VIRTUALEDIT
++ 		|| (ve_flags & VE_ONEMORE)
+  #endif
+  		|| virtual_active())
+  	    curwin->w_cursor.col = len;
+*** ../vim-7.1.202/src/version.c	Fri Jan  4 17:46:46 2008
+--- src/version.c	Fri Jan  4 21:22:29 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     203,
+  /**/
+
+-- 
+`When any government, or any church for that matter, undertakes to say to
+ its subjects, "This you may not read, this you must not see, this you are
+ forbidden to know," the end result is tyranny and oppression no matter how
+ holy the motives' -- Robert A Heinlein, "If this goes on --"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

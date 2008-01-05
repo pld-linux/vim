@@ -1,0 +1,193 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.177
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.177
+Problem:    Freeing memory twice when in debug mode while reading a script.
+Solution:   Ignore script input while in debug mode.
+Files:	    src/ex_cmds2.c, src/getchar.c, src/globals.h
+
+
+*** ../vim-7.1.176/src/ex_cmds2.c	Thu May 10 20:55:46 2007
+--- src/ex_cmds2.c	Tue Jan  1 14:13:41 2008
+***************
+*** 93,98 ****
+--- 93,100 ----
+      int		save_emsg_silent = emsg_silent;
+      int		save_redir_off = redir_off;
+      tasave_T	typeaheadbuf;
++     int		typeahead_saved = FALSE;
++     int		save_ignore_script;
+  # ifdef FEAT_EX_EXTRA
+      int		save_ex_normal_busy;
+  # endif
+***************
+*** 159,176 ****
+  	 * This makes sure we get input from the user here and don't interfere
+  	 * with the commands being executed.  Reset "ex_normal_busy" to avoid
+  	 * the side effects of using ":normal". Save the stuff buffer and make
+! 	 * it empty. */
+  # ifdef FEAT_EX_EXTRA
+  	save_ex_normal_busy = ex_normal_busy;
+  	ex_normal_busy = 0;
+  # endif
+  	if (!debug_greedy)
+  	    save_typeahead(&typeaheadbuf);
+  
+  	cmdline = getcmdline_prompt('>', NULL, 0, EXPAND_NOTHING, NULL);
+  
+! 	if (!debug_greedy)
+  	    restore_typeahead(&typeaheadbuf);
+  # ifdef FEAT_EX_EXTRA
+  	ex_normal_busy = save_ex_normal_busy;
+  # endif
+--- 161,186 ----
+  	 * This makes sure we get input from the user here and don't interfere
+  	 * with the commands being executed.  Reset "ex_normal_busy" to avoid
+  	 * the side effects of using ":normal". Save the stuff buffer and make
+! 	 * it empty. Set ignore_script to avoid reading from script input. */
+  # ifdef FEAT_EX_EXTRA
+  	save_ex_normal_busy = ex_normal_busy;
+  	ex_normal_busy = 0;
+  # endif
+  	if (!debug_greedy)
++ 	{
+  	    save_typeahead(&typeaheadbuf);
++ 	    typeahead_saved = TRUE;
++ 	    save_ignore_script = ignore_script;
++ 	    ignore_script = TRUE;
++ 	}
+  
+  	cmdline = getcmdline_prompt('>', NULL, 0, EXPAND_NOTHING, NULL);
+  
+! 	if (typeahead_saved)
+! 	{
+  	    restore_typeahead(&typeaheadbuf);
++ 	    ignore_script = save_ignore_script;
++ 	}
+  # ifdef FEAT_EX_EXTRA
+  	ex_normal_busy = save_ex_normal_busy;
+  # endif
+*** ../vim-7.1.176/src/getchar.c	Fri Dec  7 17:30:04 2007
+--- src/getchar.c	Tue Jan  1 14:11:42 2008
+***************
+*** 1279,1286 ****
+      void
+  free_typebuf()
+  {
+!     vim_free(typebuf.tb_buf);
+!     vim_free(typebuf.tb_noremap);
+  }
+  
+  /*
+--- 1279,1292 ----
+      void
+  free_typebuf()
+  {
+!     if (typebuf.tb_buf == typebuf_init)
+! 	EMSG2(_(e_intern2), "Free typebuf 1");
+!     else
+! 	vim_free(typebuf.tb_buf);
+!     if (typebuf.tb_buf == noremapbuf_init)
+! 	EMSG2(_(e_intern2), "Free typebuf 2");
+!     else
+! 	vim_free(typebuf.tb_noremap);
+  }
+  
+  /*
+***************
+*** 1359,1364 ****
+--- 1365,1375 ----
+  	EMSG(_(e_nesting));
+  	return;
+      }
++ #ifdef FEAT_EVAL
++     if (ignore_script)
++ 	/* Not reading from script, also don't open one.  Warning message? */
++ 	return;
++ #endif
+  
+      if (scriptin[curscript] != NULL)	/* already reading script */
+  	++curscript;
+***************
+*** 2346,2352 ****
+  						   current_menu->silent[idx]);
+  				}
+  			    }
+! #endif /* FEAT_GUI */
+  			    continue;	/* try mapping again */
+  			}
+  
+--- 2357,2363 ----
+  						   current_menu->silent[idx]);
+  				}
+  			    }
+! #endif /* FEAT_GUI && FEAT_MENU */
+  			    continue;	/* try mapping again */
+  			}
+  
+***************
+*** 2862,2872 ****
+      undo_off = FALSE;		    /* restart undo now */
+  
+      /*
+!      * first try script file
+!      *	If interrupted: Stop reading script files.
+       */
+      script_char = -1;
+!     while (scriptin[curscript] != NULL && script_char < 0)
+      {
+  	if (got_int || (script_char = getc(scriptin[curscript])) < 0)
+  	{
+--- 2873,2887 ----
+      undo_off = FALSE;		    /* restart undo now */
+  
+      /*
+!      * Get a character from a script file if there is one.
+!      * If interrupted: Stop reading script files, close them all.
+       */
+      script_char = -1;
+!     while (scriptin[curscript] != NULL && script_char < 0
+! #ifdef FEAT_EVAL
+! 	    && !ignore_script
+! #endif
+! 	    )
+      {
+  	if (got_int || (script_char = getc(scriptin[curscript])) < 0)
+  	{
+*** ../vim-7.1.176/src/globals.h	Sat Sep 29 14:15:00 2007
+--- src/globals.h	Mon Dec 31 17:00:21 2007
+***************
+*** 954,959 ****
+--- 954,962 ----
+  EXTERN int	ex_normal_busy INIT(= 0); /* recursiveness of ex_normal() */
+  EXTERN int	ex_normal_lock INIT(= 0); /* forbid use of ex_normal() */
+  #endif
++ #ifdef FEAT_EVAL
++ EXTERN int	ignore_script INIT(= FALSE);  /* ignore script input */
++ #endif
+  EXTERN int	stop_insert_mode;	/* for ":stopinsert" and 'insertmode' */
+  
+  EXTERN int	KeyTyped;		/* TRUE if user typed current char */
+*** ../vim-7.1.176/src/version.c	Mon Dec 31 16:41:31 2007
+--- src/version.c	Tue Jan  1 14:00:09 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     177,
+  /**/
+
+-- 
+Back up my hard drive?  I can't find the reverse switch!
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

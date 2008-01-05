@@ -1,0 +1,90 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.196 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.196 (extra)
+Problem:    Win32 GUI: "\n" in a tooltip doesn't cause a line break. (Erik
+	    Falor)
+Solution:   Use the TTM_SETMAXTIPWIDTH message.
+Files:	    src/gui_w32.c
+
+
+*** ../vim-7.1.195/src/gui_w32.c	Thu Aug 30 12:24:21 2007
+--- src/gui_w32.c	Thu Jan  3 13:56:26 2008
+***************
+*** 987,992 ****
+--- 987,997 ----
+  			{
+  			    LPNMTTDISPINFOW	lpdi = (LPNMTTDISPINFOW)lParam;
+  
++ 			    /* Set the maximum width, this also enables using
++ 			     * \n for line break. */
++ 			    SendMessage(lpdi->hdr.hwndFrom, TTM_SETMAXTIPWIDTH,
++ 								      0, 500);
++ 
+  			    tt_text = enc_to_ucs2(str, NULL);
+  			    lpdi->lpszText = tt_text;
+  			    /* can't show tooltip if failed */
+***************
+*** 996,1001 ****
+--- 1001,1011 ----
+  			{
+  			    LPNMTTDISPINFO	lpdi = (LPNMTTDISPINFO)lParam;
+  
++ 			    /* Set the maximum width, this also enables using
++ 			     * \n for line break. */
++ 			    SendMessage(lpdi->hdr.hwndFrom, TTM_SETMAXTIPWIDTH,
++ 								      0, 500);
++ 
+  			    if (STRLEN(str) < sizeof(lpdi->szText)
+  				    || ((tt_text = vim_strsave(str)) == NULL))
+  				vim_strncpy(lpdi->szText, str,
+***************
+*** 4734,4745 ****
+  	    cur_beval->showState = ShS_NEUTRAL;
+  	    break;
+  	case TTN_GETDISPINFO:
+! 	{
+! 	    /* if you get there then we have new common controls */
+! 	    NMTTDISPINFO_NEW *info = (NMTTDISPINFO_NEW *)pnmh;
+! 	    info->lpszText = (LPSTR)info->lParam;
+! 	    info->uFlags |= TTF_DI_SETITEM;
+! 	}
+  	    break;
+  	}
+      }
+--- 4744,4755 ----
+  	    cur_beval->showState = ShS_NEUTRAL;
+  	    break;
+  	case TTN_GETDISPINFO:
+! 	    {
+! 		/* if you get there then we have new common controls */
+! 		NMTTDISPINFO_NEW *info = (NMTTDISPINFO_NEW *)pnmh;
+! 		info->lpszText = (LPSTR)info->lParam;
+! 		info->uFlags |= TTF_DI_SETITEM;
+! 	    }
+  	    break;
+  	}
+      }
+*** ../vim-7.1.195/src/version.c	Thu Jan  3 20:21:34 2008
+--- src/version.c	Thu Jan  3 20:43:22 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     196,
+  /**/
+
+-- 
+Shit makes the flowers grow and that's beautiful
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

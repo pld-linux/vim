@@ -1,0 +1,75 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.195
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.195
+Problem:    '0 mark doesn't work for "~/foo ~ foo".
+Solution:   Don't expand the whole file name, only "~/".
+Files:	    src/mark.c
+
+
+*** ../vim-7.1.194/src/mark.c	Thu May 10 18:48:03 2007
+--- src/mark.c	Thu Jan  3 20:17:29 2008
+***************
+*** 505,513 ****
+      {
+  	/*
+  	 * First expand "~/" in the file name to the home directory.
+! 	 * Try to shorten the file name.
+  	 */
+! 	expand_env(fm->fname, NameBuff, MAXPATHL);
+  	mch_dirname(IObuff, IOSIZE);
+  	p = shorten_fname(NameBuff, IObuff);
+  
+--- 505,528 ----
+      {
+  	/*
+  	 * First expand "~/" in the file name to the home directory.
+! 	 * Don't expand the whole name, it may contain other '~' chars.
+  	 */
+! 	if (fm->fname[0] == '~' && (fm->fname[1] == '/'
+! #ifdef BACKSLASH_IN_FILENAME
+! 		    || fm->fname[1] == '\\'
+! #endif
+! 		    ))
+! 	{
+! 	    int len;
+! 
+! 	    expand_env((char_u *)"~/", NameBuff, MAXPATHL);
+! 	    len = STRLEN(NameBuff);
+! 	    vim_strncpy(NameBuff + len, fm->fname + 2, MAXPATHL - len - 1);
+! 	}
+! 	else
+! 	    vim_strncpy(NameBuff, fm->fname, MAXPATHL - 1);
+! 
+! 	/* Try to shorten the file name. */
+  	mch_dirname(IObuff, IOSIZE);
+  	p = shorten_fname(NameBuff, IObuff);
+  
+*** ../vim-7.1.194/src/version.c	Thu Jan  3 18:55:21 2008
+--- src/version.c	Thu Jan  3 20:10:16 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     195,
+  /**/
+
+-- 
+GUARD #2:  Wait a minute -- supposing two swallows carried it together?
+GUARD #1:  No, they'd have to have it on a line.
+GUARD #2:  Well, simple!  They'd just use a standard creeper!
+GUARD #1:  What, held under the dorsal guiding feathers?
+GUARD #2:  Well, why not?
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

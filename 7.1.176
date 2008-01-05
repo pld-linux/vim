@@ -1,0 +1,88 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.176
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.176
+Problem:    Building with Aap fails when the "compiledby" argument contains
+	    '<' or '>' characters. (Alex Yeh)
+Solution:   Change how quoting is done in the Aap recipe.
+Files:	    src/main.aap
+
+
+*** ../vim-7.1.175/src/main.aap	Tue Sep 25 22:13:14 2007
+--- src/main.aap	Fri Dec  7 17:03:31 2007
+***************
+*** 63,70 ****
+          @else:
+          @   arch = "ppc"
+          :print Building for $arch system
+          :sys CONFIG_STATUS=auto/config.status
+!                 ./configure.aap `file2string("config.arg")`
+                      --with-mac-arch=$arch
+                      --cache-file=auto/config.cache
+  
+--- 63,71 ----
+          @else:
+          @   arch = "ppc"
+          :print Building for $arch system
++         config_args = `file2string("config.arg")`
+          :sys CONFIG_STATUS=auto/config.status
+!                 ./configure.aap $config_args
+                      --with-mac-arch=$arch
+                      --cache-file=auto/config.cache
+  
+***************
+*** 440,450 ****
+          :print >> $target char_u *all_lflags = (char_u *)"$linkcmd";
+          @if _no.get("COMPILEDBY"):
+              who = $COMPILEDBY
+!             where = ''
+          @else:
+              :syseval whoami | :eval re.sub("\n", "", stdin) | :assign who
+  
+              :syseval hostname | :eval re.sub("\n", "", stdin) | :assign where
+          :print >> $target char_u *compiled_user = (char_u *)"$who";
+          :print >> $target char_u *compiled_sys = (char_u *)"$where";
+  
+--- 441,453 ----
+          :print >> $target char_u *all_lflags = (char_u *)"$linkcmd";
+          @if _no.get("COMPILEDBY"):
+              who = $COMPILEDBY
+!             where =
+          @else:
+              :syseval whoami | :eval re.sub("\n", "", stdin) | :assign who
+  
+              :syseval hostname | :eval re.sub("\n", "", stdin) | :assign where
++         @who = string.replace(who, '"', '\\"')
++         @where = string.replace(where, '"', '\\"')
+          :print >> $target char_u *compiled_user = (char_u *)"$who";
+          :print >> $target char_u *compiled_sys = (char_u *)"$where";
+  
+*** ../vim-7.1.175/src/version.c	Sun Dec  9 20:25:59 2007
+--- src/version.c	Mon Dec 31 16:40:01 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     176,
+  /**/
+
+-- 
+E  M  A  C  S
+s  e  l  o  h
+c  t  t  n  i
+a  a     t  f
+p        r  t
+e        o
+         l
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

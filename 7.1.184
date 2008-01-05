@@ -1,0 +1,63 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.184
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.184
+Problem:    Crash when deleting backwards over a line break in Insert mode.
+Solution:   Don't advance the cursor when it's already on the NUL after a
+	    line. (Matthew Wozniski)
+Files:	    src/normal.c
+
+
+*** ../vim-7.1.183/src/normal.c	Sun Oct 14 17:15:45 2007
+--- src/normal.c	Tue Jan  1 16:40:24 2008
+***************
+*** 5849,5860 ****
+  		/* When the NL before the first char has to be deleted we
+  		 * put the cursor on the NUL after the previous line.
+  		 * This is a very special case, be careful!
+! 		 * don't adjust op_end now, otherwise it won't work */
+  		if (	   (cap->oap->op_type == OP_DELETE
+  			    || cap->oap->op_type == OP_CHANGE)
+  			&& !lineempty(curwin->w_cursor.lnum))
+  		{
+! 		    ++curwin->w_cursor.col;
+  		    cap->retval |= CA_NO_ADJ_OP_END;
+  		}
+  		continue;
+--- 5849,5861 ----
+  		/* When the NL before the first char has to be deleted we
+  		 * put the cursor on the NUL after the previous line.
+  		 * This is a very special case, be careful!
+! 		 * Don't adjust op_end now, otherwise it won't work. */
+  		if (	   (cap->oap->op_type == OP_DELETE
+  			    || cap->oap->op_type == OP_CHANGE)
+  			&& !lineempty(curwin->w_cursor.lnum))
+  		{
+! 		    if (*ml_get_cursor() != NUL)
+! 			++curwin->w_cursor.col;
+  		    cap->retval |= CA_NO_ADJ_OP_END;
+  		}
+  		continue;
+*** ../vim-7.1.183/src/version.c	Wed Jan  2 15:34:48 2008
+--- src/version.c	Wed Jan  2 16:24:19 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     184,
+  /**/
+
+-- 
+Not too long ago, cut and paste was done with scissors and glue...
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

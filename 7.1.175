@@ -1,0 +1,179 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.175
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.175
+Problem:    <BS> doesn't work with some combination of 'sts', 'linebreak' and
+	    'backspace'. (Francois Ingelrest)
+Solution:   When adding white space results in not moving back delete one
+	    character.
+Files:	    src/edit.c
+
+
+*** ../vim-7.1.174/src/edit.c	Sat Nov 24 21:27:33 2007
+--- src/edit.c	Fri Dec  7 21:32:48 2007
+***************
+*** 8189,8194 ****
+--- 8189,8217 ----
+      AppendCharToRedobuff(K_DEL);
+  }
+  
++ static void ins_bs_one __ARGS((colnr_T *vcolp));
++ 
++ /*
++  * Delete one character for ins_bs().
++  */
++     static void
++ ins_bs_one(vcolp)
++     colnr_T	*vcolp;
++ {
++     dec_cursor();
++     getvcol(curwin, &curwin->w_cursor, vcolp, NULL, NULL);
++     if (State & REPLACE_FLAG)
++     {
++ 	/* Don't delete characters before the insert point when in
++ 	 * Replace mode */
++ 	if (curwin->w_cursor.lnum != Insstart.lnum
++ 		|| curwin->w_cursor.col >= Insstart.col)
++ 	    replace_do_bs();
++     }
++     else
++ 	(void)del_char(FALSE);
++ }
++ 
+  /*
+   * Handle Backspace, delete-word and delete-line in Insert mode.
+   * Return TRUE when backspace was actually used.
+***************
+*** 8418,8426 ****
+  	    int		ts;
+  	    colnr_T	vcol;
+  	    colnr_T	want_vcol;
+! #if 0
+! 	    int		extra = 0;
+! #endif
+  
+  	    *inserted_space_p = FALSE;
+  	    if (p_sta && in_indent)
+--- 8441,8447 ----
+  	    int		ts;
+  	    colnr_T	vcol;
+  	    colnr_T	want_vcol;
+! 	    colnr_T	start_vcol;
+  
+  	    *inserted_space_p = FALSE;
+  	    if (p_sta && in_indent)
+***************
+*** 8431,8436 ****
+--- 8452,8458 ----
+  	     * 'showbreak' may get in the way, need to get the last column of
+  	     * the previous character. */
+  	    getvcol(curwin, &curwin->w_cursor, &vcol, NULL, NULL);
++ 	    start_vcol = vcol;
+  	    dec_cursor();
+  	    getvcol(curwin, &curwin->w_cursor, NULL, NULL, &want_vcol);
+  	    inc_cursor();
+***************
+*** 8439,8468 ****
+  	    /* delete characters until we are at or before want_vcol */
+  	    while (vcol > want_vcol
+  		    && (cc = *(ml_get_cursor() - 1), vim_iswhite(cc)))
+! 	    {
+! 		dec_cursor();
+! 		getvcol(curwin, &curwin->w_cursor, &vcol, NULL, NULL);
+! 		if (State & REPLACE_FLAG)
+! 		{
+! 		    /* Don't delete characters before the insert point when in
+! 		     * Replace mode */
+! 		    if (curwin->w_cursor.lnum != Insstart.lnum
+! 			    || curwin->w_cursor.col >= Insstart.col)
+! 		    {
+! #if 0	/* what was this for?  It causes problems when sw != ts. */
+! 			if (State == REPLACE && (int)vcol < want_vcol)
+! 			{
+! 			    (void)del_char(FALSE);
+! 			    extra = 2;	/* don't pop too much */
+! 			}
+! 			else
+! #endif
+! 			    replace_do_bs();
+! 		    }
+! 		}
+! 		else
+! 		    (void)del_char(FALSE);
+! 	    }
+  
+  	    /* insert extra spaces until we are at want_vcol */
+  	    while (vcol < want_vcol)
+--- 8461,8467 ----
+  	    /* delete characters until we are at or before want_vcol */
+  	    while (vcol > want_vcol
+  		    && (cc = *(ml_get_cursor() - 1), vim_iswhite(cc)))
+! 		ins_bs_one(&vcol);
+  
+  	    /* insert extra spaces until we are at want_vcol */
+  	    while (vcol < want_vcol)
+***************
+*** 8479,8500 ****
+  #endif
+  		{
+  		    ins_str((char_u *)" ");
+! 		    if ((State & REPLACE_FLAG) /* && extra <= 1 */)
+! 		    {
+! #if 0
+! 			if (extra)
+! 			    replace_push_off(NUL);
+! 			else
+! #endif
+! 			    replace_push(NUL);
+! 		    }
+! #if 0
+! 		    if (extra == 2)
+! 			extra = 1;
+! #endif
+  		}
+  		getvcol(curwin, &curwin->w_cursor, &vcol, NULL, NULL);
+  	    }
+  	}
+  
+  	/*
+--- 8478,8493 ----
+  #endif
+  		{
+  		    ins_str((char_u *)" ");
+! 		    if ((State & REPLACE_FLAG))
+! 			replace_push(NUL);
+  		}
+  		getvcol(curwin, &curwin->w_cursor, &vcol, NULL, NULL);
+  	    }
++ 
++ 	    /* If we are now back where we started delete one character.  Can
++ 	     * happen when using 'sts' and 'linebreak'. */
++ 	    if (vcol >= start_vcol)
++ 		ins_bs_one(&vcol);
+  	}
+  
+  	/*
+*** ../vim-7.1.174/src/version.c	Sun Dec  9 19:37:37 2007
+--- src/version.c	Sun Dec  9 20:24:11 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     175,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+215. Your mouse-clicking forearm rivals Popeye's.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

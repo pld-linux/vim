@@ -1,0 +1,75 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.169
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.169
+Problem:    Using uninitialized variable when system() fails. (Dominique
+            Pelle)
+Solution:   Let system() return an empty string when it fails.
+Files:      src/eval.c
+
+
+*** ../vim-7.1.168/src/eval.c	Thu Nov  8 20:47:34 2007
+--- src/eval.c	Fri Nov 30 21:01:26 2007
+***************
+*** 15826,15832 ****
+      FILE	*fd;
+  
+      if (check_restricted() || check_secure())
+! 	return;
+  
+      if (argvars[1].v_type != VAR_UNKNOWN)
+      {
+--- 15826,15832 ----
+      FILE	*fd;
+  
+      if (check_restricted() || check_secure())
+! 	goto done;
+  
+      if (argvars[1].v_type != VAR_UNKNOWN)
+      {
+***************
+*** 15837,15843 ****
+  	if ((infile = vim_tempname('i')) == NULL)
+  	{
+  	    EMSG(_(e_notmp));
+! 	    return;
+  	}
+  
+  	fd = mch_fopen((char *)infile, WRITEBIN);
+--- 15837,15843 ----
+  	if ((infile = vim_tempname('i')) == NULL)
+  	{
+  	    EMSG(_(e_notmp));
+! 	    goto done;
+  	}
+  
+  	fd = mch_fopen((char *)infile, WRITEBIN);
+*** ../vim-7.1.168/src/version.c	Mon Dec  3 22:20:17 2007
+--- src/version.c	Fri Dec  7 17:07:32 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     169,
+  /**/
+
+-- 
+% cat /usr/include/sys/errno.h
+#define	EPERM		1		/* Operation not permitted */
+#define	ENOENT		2		/* No such file or directory */
+#define	ESRCH		3		/* No such process */
+[...]
+#define EMACS		666		/* Too many macros */
+%
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

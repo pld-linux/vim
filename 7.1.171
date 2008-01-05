@@ -1,0 +1,79 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.171
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.171
+Problem:    Reading one byte before allocated memory.
+Solution:   Check index not to become negative. (Dominique Pelle)
+Files:	    src/ex_getln.c
+
+
+*** ../vim-7.1.170/src/ex_getln.c	Tue Oct 30 17:36:31 2007
+--- src/ex_getln.c	Tue Dec  4 21:49:24 2007
+***************
+*** 1186,1195 ****
+  	case K_LEFT:
+  	case K_S_LEFT:
+  	case K_C_LEFT:
+  		do
+  		{
+- 		    if (ccline.cmdpos == 0)
+- 			break;
+  		    --ccline.cmdpos;
+  #ifdef FEAT_MBYTE
+  		    if (has_mbyte)	/* move to first byte of char */
+--- 1186,1195 ----
+  	case K_LEFT:
+  	case K_S_LEFT:
+  	case K_C_LEFT:
++ 		if (ccline.cmdpos == 0)
++ 		    goto cmdline_not_changed;
+  		do
+  		{
+  		    --ccline.cmdpos;
+  #ifdef FEAT_MBYTE
+  		    if (has_mbyte)	/* move to first byte of char */
+***************
+*** 1198,1204 ****
+  #endif
+  		    ccline.cmdspos -= cmdline_charsize(ccline.cmdpos);
+  		}
+! 		while ((c == K_S_LEFT || c == K_C_LEFT
+  			       || (mod_mask & (MOD_MASK_SHIFT|MOD_MASK_CTRL)))
+  			&& ccline.cmdbuff[ccline.cmdpos - 1] != ' ');
+  #ifdef FEAT_MBYTE
+--- 1198,1205 ----
+  #endif
+  		    ccline.cmdspos -= cmdline_charsize(ccline.cmdpos);
+  		}
+! 		while (ccline.cmdpos > 0
+! 			&& (c == K_S_LEFT || c == K_C_LEFT
+  			       || (mod_mask & (MOD_MASK_SHIFT|MOD_MASK_CTRL)))
+  			&& ccline.cmdbuff[ccline.cmdpos - 1] != ' ');
+  #ifdef FEAT_MBYTE
+*** ../vim-7.1.170/src/version.c	Fri Dec  7 17:30:04 2007
+--- src/version.c	Fri Dec  7 20:00:06 2007
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     171,
+  /**/
+
+-- 
+Some of the well know MS-Windows errors:
+	EMULTI		Multitasking attempted, system confused
+	EKEYBOARD	Keyboard locked, try getting out of this one!
+	EXPLAIN		Unexplained error, please tell us what happened
+	EFUTURE		Reserved for our future mistakes
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

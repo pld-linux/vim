@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.178
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.178
+Problem:    "%" doesn't work on "/* comment *//* comment */".
+Solution:   Don't handle the "//" in "*//*" as a C++ comment. (Markus
+	    Heidelberg)
+Files:	    src/search.c
+
+
+*** ../vim-7.1.177/src/search.c	Wed Aug  8 22:48:16 2007
+--- src/search.c	Mon Dec 10 21:21:17 2007
+***************
+*** 2319,2325 ****
+  #endif
+      while ((p = vim_strchr(p, '/')) != NULL)
+      {
+! 	if (p[1] == '/')
+  	    break;
+  	++p;
+      }
+--- 2319,2327 ----
+  #endif
+      while ((p = vim_strchr(p, '/')) != NULL)
+      {
+! 	/* accept a double /, unless it's preceded with * and followed by *,
+! 	 * because * / / * is an end and start of a C comment */
+! 	if (p[1] == '/' && (p == line || p[-1] != '*' || p[2] != '*'))
+  	    break;
+  	++p;
+      }
+*** ../vim-7.1.177/src/version.c	Tue Jan  1 14:16:42 2008
+--- src/version.c	Tue Jan  1 15:41:33 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     178,
+  /**/
+
+-- 
+I'd like to meet the man who invented sex and see what he's working on now.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
