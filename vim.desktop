@@ -11,6 +11,7 @@ Comment[tr]=Geliţmiţ bir vi sürümü
 Comment[uk]=Visual editor IMproved - ´ÄÉÎĎ ÷ŚŇÎÉĘ ňĹÄÁËÔĎŇ :)
 Exec=vim
 Icon=vim
+MimeType=text/plain;
 Terminal=true
 Type=Application
 Categories=ConsoleOnly;TextEditor;
