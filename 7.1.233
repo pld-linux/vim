@@ -1,0 +1,109 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.233
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.233
+Problem:    Crash when doing Insert mode completion for a user defined
+	    command.  (Yegappan Lakshmanan)
+Solution:   Don't use the non-existing command line.
+Files:	    src/ex_getln.c
+
+
+*** ../vim-7.1.232/src/ex_getln.c	Fri Jan  4 15:16:57 2008
+--- src/ex_getln.c	Fri Jan 18 13:07:11 2008
+***************
+*** 4655,4661 ****
+  static void * call_user_expand_func __ARGS((void *(*user_expand_func) __ARGS((char_u *, int, char_u **, int)), expand_T	*xp, int *num_file, char_u ***file));
+  
+  /*
+!  * call "user_expand_func()" to invoke a user defined VimL function and return
+   * the result (either a string or a List).
+   */
+      static void *
+--- 4655,4661 ----
+  static void * call_user_expand_func __ARGS((void *(*user_expand_func) __ARGS((char_u *, int, char_u **, int)), expand_T	*xp, int *num_file, char_u ***file));
+  
+  /*
+!  * Call "user_expand_func()" to invoke a user defined VimL function and return
+   * the result (either a string or a List).
+   */
+      static void *
+***************
+*** 4677,4687 ****
+      *num_file = 0;
+      *file = NULL;
+  
+!     keep = ccline.cmdbuff[ccline.cmdlen];
+!     ccline.cmdbuff[ccline.cmdlen] = 0;
+!     sprintf((char *)num, "%d", ccline.cmdpos);
+      args[0] = xp->xp_pattern;
+-     args[1] = ccline.cmdbuff;
+      args[2] = num;
+  
+      /* Save the cmdline, we don't know what the function may do. */
+--- 4677,4698 ----
+      *num_file = 0;
+      *file = NULL;
+  
+!     if (ccline.cmdbuff == NULL)
+!     {
+! 	/* Completion from Insert mode, pass fake arguments. */
+! 	keep = 0;
+! 	sprintf((char *)num, "%d", STRLEN(xp->xp_pattern));
+! 	args[1] = xp->xp_pattern;
+!     }
+!     else
+!     {
+! 	/* Completion on the command line, pass real arguments. */
+! 	keep = ccline.cmdbuff[ccline.cmdlen];
+! 	ccline.cmdbuff[ccline.cmdlen] = 0;
+! 	sprintf((char *)num, "%d", ccline.cmdpos);
+! 	args[1] = ccline.cmdbuff;
+!     }
+      args[0] = xp->xp_pattern;
+      args[2] = num;
+  
+      /* Save the cmdline, we don't know what the function may do. */
+***************
+*** 4694,4701 ****
+  
+      ccline = save_ccline;
+      current_SID = save_current_SID;
+! 
+!     ccline.cmdbuff[ccline.cmdlen] = keep;
+  
+      return ret;
+  }
+--- 4705,4712 ----
+  
+      ccline = save_ccline;
+      current_SID = save_current_SID;
+!     if (ccline.cmdbuff != NULL)
+! 	ccline.cmdbuff[ccline.cmdlen] = keep;
+  
+      return ret;
+  }
+*** ../vim-7.1.232/src/version.c	Fri Jan 18 11:40:02 2008
+--- src/version.c	Fri Jan 18 13:01:05 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     233,
+  /**/
+
+-- 
+"I love deadlines.  I especially like the whooshing sound they
+make as they go flying by."
+                         -- Douglas Adams
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

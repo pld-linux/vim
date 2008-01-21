@@ -1,0 +1,748 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.211
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.211
+Problem:    The matchparen plugin may take an unexpected amount of time, so
+	    that it looks like Vim hangs.
+Solution:   Add a timeout to searchpair(), searchpairpos(), search() and
+	    searchpos().  Use half a second timeout in the plugin.
+Files:	    runtime/doc/eval.txt, runtime/plugin/matchparen.vim, src/edit.c,
+	    src/eval.c, src/ex_cmds2.c, src/ex_docmd.c, src/normal.c,
+	    src/proto/eval.pro, src/proto/ex_cmds2.pro, src/proto/search.pro,
+	    src/search.c
+
+
+*** ../vim-7.1.210/runtime/doc/eval.txt	Sat Jan  5 13:34:01 2008
+--- runtime/doc/eval.txt	Sun Jan  6 16:27:33 2008
+***************
+*** 1,4 ****
+! *eval.txt*      For Vim version 7.1.  Last change: 2008 Jan 04
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *eval.txt*      For Vim version 7.1.  Last change: 2008 Jan 06
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 1733,1746 ****
+  repeat( {expr}, {count})	String	repeat {expr} {count} times
+  resolve( {filename})		String	get filename a shortcut points to
+  reverse( {list})		List	reverse {list} in-place
+! search( {pattern} [, {flags}])	Number	search for {pattern}
+  searchdecl({name} [, {global} [, {thisblock}]])
+  				Number  search for variable declaration
+! searchpair( {start}, {middle}, {end} [, {flags} [, {skip} [, {stopline}]]])
+  				Number	search for other end of start/end pair
+! searchpairpos( {start}, {middle}, {end} [, {flags} [, {skip} [, {stopline}]]])
+  				List	search for other end of start/end pair
+! searchpos( {pattern} [, {flags} [, {stopline}]])
+  				List	search for {pattern}
+  server2client( {clientid}, {string})
+  				Number	send reply string
+--- 1733,1747 ----
+  repeat( {expr}, {count})	String	repeat {expr} {count} times
+  resolve( {filename})		String	get filename a shortcut points to
+  reverse( {list})		List	reverse {list} in-place
+! search( {pattern} [, {flags} [, {stopline} [, {timeout}]]])
+! 				Number	search for {pattern}
+  searchdecl({name} [, {global} [, {thisblock}]])
+  				Number  search for variable declaration
+! searchpair( {start}, {middle}, {end} [, {flags} [, {skip} [...]]])
+  				Number	search for other end of start/end pair
+! searchpairpos( {start}, {middle}, {end} [, {flags} [, {skip} [...]]])
+  				List	search for other end of start/end pair
+! searchpos( {pattern} [, {flags} [, {stopline} [, {timeout}]]])
+  				List	search for {pattern}
+  server2client( {clientid}, {string})
+  				Number	send reply string
+***************
+*** 4212,4218 ****
+  		If you want a list to remain unmodified make a copy first: >
+  			:let revlist = reverse(copy(mylist))
+  
+! search({pattern} [, {flags} [, {stopline}]])			*search()*
+  		Search for regexp pattern {pattern}.  The search starts at the
+  		cursor position (you can use |cursor()| to set it).
+  
+--- 4216,4222 ----
+  		If you want a list to remain unmodified make a copy first: >
+  			:let revlist = reverse(copy(mylist))
+  
+! search({pattern} [, {flags} [, {stopline} [, {timeout}]]])	*search()*
+  		Search for regexp pattern {pattern}.  The search starts at the
+  		cursor position (you can use |cursor()| to set it).
+  
+***************
+*** 4240,4245 ****
+--- 4244,4257 ----
+  			let end = search('END', '', line("w$"))
+  <		When {stopline} is used and it is not zero this also implies
+  		that the search does not wrap around the end of the file.
++ 		A zero value is equal to not giving the argument.
++ 
++ 		When the {timeout} argument is given the search stops when
++ 		more than this many milli seconds have passed.  Thus when
++ 		{timeout} is 500 the search stops after half a second.
++ 		The value must not be negative.  A zero value is like not
++ 		giving the argument.
++ 		{only available when compiled with the +reltime feature}
+  
+  		If there is no match a 0 is returned and the cursor doesn't
+  		move.  No error message is given.
+***************
+*** 4302,4308 ****
+  			endif
+  <
+  							*searchpair()*
+! searchpair({start}, {middle}, {end} [, {flags} [, {skip} [, {stopline}]]])
+  		Search for the match of a nested start-end pair.  This can be
+  		used to find the "endif" that matches an "if", while other
+  		if/endif pairs in between are ignored.
+--- 4314,4321 ----
+  			endif
+  <
+  							*searchpair()*
+! searchpair({start}, {middle}, {end} [, {flags} [, {skip}
+! 				[, {stopline} [, {timeout}]]]])
+  		Search for the match of a nested start-end pair.  This can be
+  		used to find the "endif" that matches an "if", while other
+  		if/endif pairs in between are ignored.
+***************
+*** 4337,4343 ****
+  		When evaluating {skip} causes an error the search is aborted
+  		and -1 returned.
+  
+! 		For {stopline} see |search()|.
+  
+  		The value of 'ignorecase' is used.  'magic' is ignored, the
+  		patterns are used like it's on.
+--- 4350,4356 ----
+  		When evaluating {skip} causes an error the search is aborted
+  		and -1 returned.
+  
+! 		For {stopline} and {timeout} see |search()|.
+  
+  		The value of 'ignorecase' is used.  'magic' is ignored, the
+  		patterns are used like it's on.
+***************
+*** 4383,4389 ****
+  	     \ 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string"')
+  <
+  							*searchpairpos()*
+! searchpairpos({start}, {middle}, {end} [, {flags} [, {skip} [, {stopline}]]])
+  		Same as searchpair(), but returns a |List| with the line and
+  		column position of the match. The first element of the |List|
+  		is the line number and the second element is the byte index of
+--- 4396,4403 ----
+  	     \ 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string"')
+  <
+  							*searchpairpos()*
+! searchpairpos({start}, {middle}, {end} [, {flags} [, {skip}
+! 				[, {stopline} [, {timeout}]]]])
+  		Same as searchpair(), but returns a |List| with the line and
+  		column position of the match. The first element of the |List|
+  		is the line number and the second element is the byte index of
+***************
+*** 4394,4400 ****
+  <
+  		See |match-parens| for a bigger and more useful example.
+  
+! searchpos({pattern} [, {flags} [, {stopline}]])		*searchpos()*
+  		Same as |search()|, but returns a |List| with the line and
+  		column position of the match. The first element of the |List|
+  		is the line number and the second element is the byte index of
+--- 4408,4414 ----
+  <
+  		See |match-parens| for a bigger and more useful example.
+  
+! searchpos({pattern} [, {flags} [, {stopline} [, {timeout}]]])	*searchpos()*
+  		Same as |search()|, but returns a |List| with the line and
+  		column position of the match. The first element of the |List|
+  		is the line number and the second element is the byte index of
+*** ../vim-7.1.210/runtime/plugin/matchparen.vim	Sat Aug 18 18:20:57 2007
+--- runtime/plugin/matchparen.vim	Sun Jan  6 16:22:39 2008
+***************
+*** 1,6 ****
+  " Vim plugin for showing matching parens
+  " Maintainer:  Bram Moolenaar <Bram@vim.org>
+! " Last Change: 2007 Aug 8
+  
+  " Exit quickly when:
+  " - this plugin was already loaded (or disabled)
+--- 1,6 ----
+  " Vim plugin for showing matching parens
+  " Maintainer:  Bram Moolenaar <Bram@vim.org>
+! " Last Change: 2008 Jan 06
+  
+  " Exit quickly when:
+  " - this plugin was already loaded (or disabled)
+***************
+*** 111,117 ****
+  	\ '=~?  "string\\|character\\|singlequote\\|comment"'
+    execute 'if' s_skip '| let s_skip = 0 | endif'
+  
+!   let [m_lnum, m_col] = searchpairpos(c, '', c2, s_flags, s_skip, stopline)
+  
+    if before > 0
+      call winrestview(save_cursor)
+--- 111,122 ----
+  	\ '=~?  "string\\|character\\|singlequote\\|comment"'
+    execute 'if' s_skip '| let s_skip = 0 | endif'
+  
+!   try
+!     " Limit the search time to 500 msec to avoid a hang on very long lines.
+!     let [m_lnum, m_col] = searchpairpos(c, '', c2, s_flags, s_skip, stopline, 500)
+!   catch /E118/
+!     let [m_lnum, m_col] = searchpairpos(c, '', c2, s_flags, s_skip, stopline)
+!   endtry
+  
+    if before > 0
+      call winrestview(save_cursor)
+*** ../vim-7.1.210/src/edit.c	Wed Jan  2 22:08:43 2008
+--- src/edit.c	Sun Jan  6 16:08:00 2008
+***************
+*** 4062,4068 ****
+  		    found_new_match = searchit(NULL, ins_buf, pos,
+  							      compl_direction,
+  				 compl_pattern, 1L, SEARCH_KEEP + SEARCH_NFMSG,
+! 							RE_LAST, (linenr_T)0);
+  		--msg_silent;
+  		if (!compl_started)
+  		{
+--- 4062,4068 ----
+  		    found_new_match = searchit(NULL, ins_buf, pos,
+  							      compl_direction,
+  				 compl_pattern, 1L, SEARCH_KEEP + SEARCH_NFMSG,
+! 						  RE_LAST, (linenr_T)0, NULL);
+  		--msg_silent;
+  		if (!compl_started)
+  		{
+*** ../vim-7.1.210/src/eval.c	Sat Jan  5 22:15:21 2008
+--- src/eval.c	Sun Jan  6 16:37:42 2008
+***************
+*** 7213,7223 ****
+      {"repeat",		2, 2, f_repeat},
+      {"resolve",		1, 1, f_resolve},
+      {"reverse",		1, 1, f_reverse},
+!     {"search",		1, 3, f_search},
+      {"searchdecl",	1, 3, f_searchdecl},
+!     {"searchpair",	3, 6, f_searchpair},
+!     {"searchpairpos",	3, 6, f_searchpairpos},
+!     {"searchpos",	1, 3, f_searchpos},
+      {"server2client",	2, 2, f_server2client},
+      {"serverlist",	0, 0, f_serverlist},
+      {"setbufvar",	3, 3, f_setbufvar},
+--- 7213,7223 ----
+      {"repeat",		2, 2, f_repeat},
+      {"resolve",		1, 1, f_resolve},
+      {"reverse",		1, 1, f_reverse},
+!     {"search",		1, 4, f_search},
+      {"searchdecl",	1, 3, f_searchdecl},
+!     {"searchpair",	3, 7, f_searchpair},
+!     {"searchpairpos",	3, 7, f_searchpairpos},
+!     {"searchpos",	1, 4, f_searchpos},
+      {"server2client",	2, 2, f_server2client},
+      {"serverlist",	0, 0, f_serverlist},
+      {"setbufvar",	3, 3, f_setbufvar},
+***************
+*** 14020,14025 ****
+--- 14020,14029 ----
+      int		dir;
+      int		retval = 0;	/* default: FAIL */
+      long	lnum_stop = 0;
++     proftime_T	tm;
++ #ifdef FEAT_RELTIME
++     long	time_limit = 0;
++ #endif
+      int		options = SEARCH_KEEP;
+      int		subpatnum;
+  
+***************
+*** 14033,14047 ****
+      if (flags & SP_END)
+  	options |= SEARCH_END;
+  
+!     /* Optional extra argument: line number to stop searching. */
+!     if (argvars[1].v_type != VAR_UNKNOWN
+! 	    && argvars[2].v_type != VAR_UNKNOWN)
+      {
+  	lnum_stop = get_tv_number_chk(&argvars[2], NULL);
+  	if (lnum_stop < 0)
+  	    goto theend;
+      }
+  
+      /*
+       * This function does not accept SP_REPEAT and SP_RETCOUNT flags.
+       * Check to make sure only those flags are set.
+--- 14037,14063 ----
+      if (flags & SP_END)
+  	options |= SEARCH_END;
+  
+!     /* Optional arguments: line number to stop searching and timeout. */
+!     if (argvars[1].v_type != VAR_UNKNOWN && argvars[2].v_type != VAR_UNKNOWN)
+      {
+  	lnum_stop = get_tv_number_chk(&argvars[2], NULL);
+  	if (lnum_stop < 0)
+  	    goto theend;
++ #ifdef FEAT_RELTIME
++ 	if (argvars[3].v_type != VAR_UNKNOWN)
++ 	{
++ 	    time_limit = get_tv_number_chk(&argvars[3], NULL);
++ 	    if (time_limit < 0)
++ 		goto theend;
++ 	}
++ #endif
+      }
+  
++ #ifdef FEAT_RELTIME
++     /* Set the time limit, if there is one. */
++     profile_setlimit(time_limit, &tm);
++ #endif
++ 
+      /*
+       * This function does not accept SP_REPEAT and SP_RETCOUNT flags.
+       * Check to make sure only those flags are set.
+***************
+*** 14057,14063 ****
+  
+      pos = save_cursor = curwin->w_cursor;
+      subpatnum = searchit(curwin, curbuf, &pos, dir, pat, 1L,
+! 				     options, RE_SEARCH, (linenr_T)lnum_stop);
+      if (subpatnum != FAIL)
+      {
+  	if (flags & SP_SUBPAT)
+--- 14073,14079 ----
+  
+      pos = save_cursor = curwin->w_cursor;
+      subpatnum = searchit(curwin, curbuf, &pos, dir, pat, 1L,
+! 				options, RE_SEARCH, (linenr_T)lnum_stop, &tm);
+      if (subpatnum != FAIL)
+      {
+  	if (flags & SP_SUBPAT)
+***************
+*** 14147,14152 ****
+--- 14163,14169 ----
+      char_u	nbuf3[NUMBUFLEN];
+      int		retval = 0;		/* default: FAIL */
+      long	lnum_stop = 0;
++     long	time_limit = 0;
+  
+      /* Get the three pattern arguments: start, middle, end. */
+      spat = get_tv_string_chk(&argvars[0]);
+***************
+*** 14182,14194 ****
+  	    lnum_stop = get_tv_number_chk(&argvars[5], NULL);
+  	    if (lnum_stop < 0)
+  		goto theend;
+  	}
+      }
+      if (skip == NULL)
+  	goto theend;	    /* type error */
+  
+      retval = do_searchpair(spat, mpat, epat, dir, skip, flags,
+! 							match_pos, lnum_stop);
+  
+  theend:
+      p_ws = save_p_ws;
+--- 14199,14219 ----
+  	    lnum_stop = get_tv_number_chk(&argvars[5], NULL);
+  	    if (lnum_stop < 0)
+  		goto theend;
++ #ifdef FEAT_RELTIME
++ 	    if (argvars[6].v_type != VAR_UNKNOWN)
++ 	    {
++ 		time_limit = get_tv_number_chk(&argvars[6], NULL);
++ 		if (time_limit < 0)
++ 		    goto theend;
++ 	    }
++ #endif
+  	}
+      }
+      if (skip == NULL)
+  	goto theend;	    /* type error */
+  
+      retval = do_searchpair(spat, mpat, epat, dir, skip, flags,
+! 					    match_pos, lnum_stop, time_limit);
+  
+  theend:
+      p_ws = save_p_ws;
+***************
+*** 14240,14246 ****
+   * Returns 0 or -1 for no match,
+   */
+      long
+! do_searchpair(spat, mpat, epat, dir, skip, flags, match_pos, lnum_stop)
+      char_u	*spat;	    /* start pattern */
+      char_u	*mpat;	    /* middle pattern */
+      char_u	*epat;	    /* end pattern */
+--- 14265,14272 ----
+   * Returns 0 or -1 for no match,
+   */
+      long
+! do_searchpair(spat, mpat, epat, dir, skip, flags, match_pos,
+! 							lnum_stop, time_limit)
+      char_u	*spat;	    /* start pattern */
+      char_u	*mpat;	    /* middle pattern */
+      char_u	*epat;	    /* end pattern */
+***************
+*** 14249,14254 ****
+--- 14275,14281 ----
+      int		flags;	    /* SP_SETPCMARK and other SP_ values */
+      pos_T	*match_pos;
+      linenr_T	lnum_stop;  /* stop at this line if not zero */
++     long	time_limit; /* stop after this many msec */
+  {
+      char_u	*save_cpo;
+      char_u	*pat, *pat2 = NULL, *pat3 = NULL;
+***************
+*** 14263,14273 ****
+--- 14290,14306 ----
+      int		nest = 1;
+      int		err;
+      int		options = SEARCH_KEEP;
++     proftime_T	tm;
+  
+      /* Make 'cpoptions' empty, the 'l' flag should not be used here. */
+      save_cpo = p_cpo;
+      p_cpo = (char_u *)"";
+  
++ #ifdef FEAT_RELTIME
++     /* Set the time limit, if there is one. */
++     profile_setlimit(time_limit, &tm);
++ #endif
++ 
+      /* Make two search patterns: start/end (pat2, for in nested pairs) and
+       * start/middle/end (pat3, for the top pair). */
+      pat2 = alloc((unsigned)(STRLEN(spat) + STRLEN(epat) + 15));
+***************
+*** 14291,14297 ****
+      for (;;)
+      {
+  	n = searchit(curwin, curbuf, &pos, dir, pat, 1L,
+! 					       options, RE_SEARCH, lnum_stop);
+  	if (n == FAIL || (firstpos.lnum != 0 && equalpos(pos, firstpos)))
+  	    /* didn't find it or found the first match again: FAIL */
+  	    break;
+--- 14324,14330 ----
+      for (;;)
+      {
+  	n = searchit(curwin, curbuf, &pos, dir, pat, 1L,
+! 					   options, RE_SEARCH, lnum_stop, &tm);
+  	if (n == FAIL || (firstpos.lnum != 0 && equalpos(pos, firstpos)))
+  	    /* didn't find it or found the first match again: FAIL */
+  	    break;
+*** ../vim-7.1.210/src/ex_cmds2.c	Fri Jan  4 16:00:10 2008
+--- src/ex_cmds2.c	Sun Jan  6 18:22:28 2008
+***************
+*** 895,913 ****
+      sprintf(buf, "%10.6lf", (double)tm->QuadPart / (double)fr.QuadPart);
+  # else
+      sprintf(buf, "%3ld.%06ld", (long)tm->tv_sec, (long)tm->tv_usec);
+! #endif
+      return buf;
+  }
+  
+! # endif  /* FEAT_PROFILE || FEAT_RELTIME */
+  
+- # if defined(FEAT_PROFILE) || defined(PROTO)
+  /*
+!  * Functions for profiling.
+   */
+! static void script_do_profile __ARGS((scriptitem_T *si));
+! static void script_dump_profile __ARGS((FILE *fd));
+! static proftime_T prof_wait_time;
+  
+  /*
+   * Set the time in "tm" to zero.
+--- 895,955 ----
+      sprintf(buf, "%10.6lf", (double)tm->QuadPart / (double)fr.QuadPart);
+  # else
+      sprintf(buf, "%3ld.%06ld", (long)tm->tv_sec, (long)tm->tv_usec);
+! # endif
+      return buf;
+  }
+  
+! /*
+!  * Put the time "msec" past now in "tm".
+!  */
+!     void
+! profile_setlimit(msec, tm)
+!     long	msec;
+!     proftime_T	*tm;
+! {
+!     if (msec <= 0)   /* no limit */
+! 	profile_zero(tm);
+!     else
+!     {
+! # ifdef WIN3264
+! 	LARGE_INTEGER   fr;
+! 
+! 	QueryPerformanceCounter(tm);
+! 	QueryPerformanceFrequency(&fr);
+! 	tm->QuadPart +=  (double)msec / 1000.0 * (double)fr.QuadPart;
+! # else
+! 	long	    usec;
+! 
+! 	gettimeofday(tm, NULL);
+! 	usec = (long)tm->tv_usec + (long)msec * 1000;
+! 	tm->tv_usec = usec % 1000000L;
+! 	tm->tv_sec += usec / 1000000L;
+! # endif
+!     }
+! }
+  
+  /*
+!  * Return TRUE if the current time is past "tm".
+   */
+!     int
+! profile_passed_limit(tm)
+!     proftime_T	*tm;
+! {
+!     proftime_T	now;
+! 
+! # ifdef WIN3264
+!     if (tm->QuadPart == 0)  /* timer was not set */
+! 	return FALSE;
+!     QueryPerformanceCounter(&now);
+!     return (now.QuadPart > tm->QuadPart);
+! # else
+!     if (tm->tv_sec == 0)    /* timer was not set */
+! 	return FALSE;
+!     gettimeofday(&now, NULL);
+!     return (now.tv_sec > tm->tv_sec
+! 	    || (now.tv_sec == tm->tv_sec && now.tv_usec > tm->tv_usec));
+! # endif
+! }
+  
+  /*
+   * Set the time in "tm" to zero.
+***************
+*** 923,928 ****
+--- 965,980 ----
+      tm->tv_sec = 0;
+  # endif
+  }
++ 
++ # endif  /* FEAT_PROFILE || FEAT_RELTIME */
++ 
++ # if defined(FEAT_PROFILE) || defined(PROTO)
++ /*
++  * Functions for profiling.
++  */
++ static void script_do_profile __ARGS((scriptitem_T *si));
++ static void script_dump_profile __ARGS((FILE *fd));
++ static proftime_T prof_wait_time;
+  
+  /*
+   * Add the time "tm2" to "tm".
+*** ../vim-7.1.210/src/ex_docmd.c	Fri Jan  4 16:00:10 2008
+--- src/ex_docmd.c	Sun Jan  6 16:08:29 2008
+***************
+*** 3979,3985 ****
+  					*cmd == '?' ? BACKWARD : FORWARD,
+  					(char_u *)"", 1L,
+  					SEARCH_MSG + SEARCH_START,
+! 						      i, (linenr_T)0) != FAIL)
+  				lnum = pos.lnum;
+  			    else
+  			    {
+--- 3980,3986 ----
+  					*cmd == '?' ? BACKWARD : FORWARD,
+  					(char_u *)"", 1L,
+  					SEARCH_MSG + SEARCH_START,
+! 						i, (linenr_T)0, NULL) != FAIL)
+  				lnum = pos.lnum;
+  			    else
+  			    {
+*** ../vim-7.1.210/src/normal.c	Sat Jan  5 13:34:01 2008
+--- src/normal.c	Sun Jan  6 16:08:54 2008
+***************
+*** 4194,4200 ****
+      for (;;)
+      {
+  	t = searchit(curwin, curbuf, &curwin->w_cursor, FORWARD,
+! 				  pat, 1L, searchflags, RE_LAST, (linenr_T)0);
+  	if (curwin->w_cursor.lnum >= old_pos.lnum)
+  	    t = FAIL;	/* match after start is failure too */
+  
+--- 4194,4200 ----
+      for (;;)
+      {
+  	t = searchit(curwin, curbuf, &curwin->w_cursor, FORWARD,
+! 			    pat, 1L, searchflags, RE_LAST, (linenr_T)0, NULL);
+  	if (curwin->w_cursor.lnum >= old_pos.lnum)
+  	    t = FAIL;	/* match after start is failure too */
+  
+*** ../vim-7.1.210/src/proto/eval.pro	Sun May  6 15:18:09 2007
+--- src/proto/eval.pro	Sun Jan  6 15:55:47 2008
+***************
+*** 54,60 ****
+  long get_dict_number __ARGS((dict_T *d, char_u *key));
+  char_u *get_function_name __ARGS((expand_T *xp, int idx));
+  char_u *get_expr_name __ARGS((expand_T *xp, int idx));
+! long do_searchpair __ARGS((char_u *spat, char_u *mpat, char_u *epat, int dir, char_u *skip, int flags, pos_T *match_pos, linenr_T lnum_stop));
+  void set_vim_var_nr __ARGS((int idx, long val));
+  long get_vim_var_nr __ARGS((int idx));
+  char_u *get_vim_var_str __ARGS((int idx));
+--- 54,60 ----
+  long get_dict_number __ARGS((dict_T *d, char_u *key));
+  char_u *get_function_name __ARGS((expand_T *xp, int idx));
+  char_u *get_expr_name __ARGS((expand_T *xp, int idx));
+! long do_searchpair __ARGS((char_u *spat, char_u *mpat, char_u *epat, int dir, char_u *skip, int flags, pos_T *match_pos, linenr_T lnum_stop, long time_limit));
+  void set_vim_var_nr __ARGS((int idx, long val));
+  long get_vim_var_nr __ARGS((int idx));
+  char_u *get_vim_var_str __ARGS((int idx));
+*** ../vim-7.1.210/src/proto/ex_cmds2.pro	Sat May  5 20:21:13 2007
+--- src/proto/ex_cmds2.pro	Sun Jan  6 16:42:24 2008
+***************
+*** 14,19 ****
+--- 14,21 ----
+  void profile_end __ARGS((proftime_T *tm));
+  void profile_sub __ARGS((proftime_T *tm, proftime_T *tm2));
+  char *profile_msg __ARGS((proftime_T *tm));
++ void profile_setlimit __ARGS((long msec, proftime_T *tm));
++ int profile_passed_limit __ARGS((proftime_T *tm));
+  void profile_zero __ARGS((proftime_T *tm));
+  void profile_add __ARGS((proftime_T *tm, proftime_T *tm2));
+  void profile_self __ARGS((proftime_T *self, proftime_T *total, proftime_T *children));
+*** ../vim-7.1.210/src/proto/search.pro	Wed Aug  8 22:48:16 2007
+--- src/proto/search.pro	Sun Jan  6 16:11:53 2008
+***************
+*** 10,16 ****
+  void reset_search_dir __ARGS((void));
+  void set_last_search_pat __ARGS((char_u *s, int idx, int magic, int setlast));
+  void last_pat_prog __ARGS((regmmatch_T *regmatch));
+! int searchit __ARGS((win_T *win, buf_T *buf, pos_T *pos, int dir, char_u *pat, long count, int options, int pat_use, linenr_T stop_lnum));
+  int do_search __ARGS((oparg_T *oap, int dirc, char_u *pat, long count, int options));
+  int search_for_exact_line __ARGS((buf_T *buf, pos_T *pos, int dir, char_u *pat));
+  int searchc __ARGS((cmdarg_T *cap, int t_cmd));
+--- 10,16 ----
+  void reset_search_dir __ARGS((void));
+  void set_last_search_pat __ARGS((char_u *s, int idx, int magic, int setlast));
+  void last_pat_prog __ARGS((regmmatch_T *regmatch));
+! int searchit __ARGS((win_T *win, buf_T *buf, pos_T *pos, int dir, char_u *pat, long count, int options, int pat_use, linenr_T stop_lnum, proftime_T *tm));
+  int do_search __ARGS((oparg_T *oap, int dirc, char_u *pat, long count, int options));
+  int search_for_exact_line __ARGS((buf_T *buf, pos_T *pos, int dir, char_u *pat));
+  int searchc __ARGS((cmdarg_T *cap, int t_cmd));
+*** ../vim-7.1.210/src/search.c	Tue Jan  1 15:42:45 2008
+--- src/search.c	Sun Jan  6 18:23:37 2008
+***************
+*** 494,501 ****
+   * When FEAT_EVAL is defined, returns the index of the first matching
+   * subpattern plus one; one if there was none.
+   */
+      int
+! searchit(win, buf, pos, dir, pat, count, options, pat_use, stop_lnum)
+      win_T	*win;		/* window to search in; can be NULL for a
+  				   buffer without a window! */
+      buf_T	*buf;
+--- 494,502 ----
+   * When FEAT_EVAL is defined, returns the index of the first matching
+   * subpattern plus one; one if there was none.
+   */
++ /*ARGSUSED*/
+      int
+! searchit(win, buf, pos, dir, pat, count, options, pat_use, stop_lnum, tm)
+      win_T	*win;		/* window to search in; can be NULL for a
+  				   buffer without a window! */
+      buf_T	*buf;
+***************
+*** 506,511 ****
+--- 507,513 ----
+      int		options;
+      int		pat_use;	/* which pattern to use when "pat" is empty */
+      linenr_T	stop_lnum;	/* stop after this line number when != 0 */
++     proftime_T	*tm;		/* timeout limit or NULL */
+  {
+      int		found;
+      linenr_T	lnum;		/* no init to shut up Apollo cc */
+***************
+*** 594,599 ****
+--- 596,606 ----
+  		if (stop_lnum != 0 && (dir == FORWARD
+  				       ? lnum > stop_lnum : lnum < stop_lnum))
+  		    break;
++ #ifdef FEAT_RELTIME
++ 		/* Stop after passing the "tm" time limit. */
++ 		if (tm != NULL && profile_passed_limit(tm))
++ 		    break;
++ #endif
+  
+  		/*
+  		 * Look for a match somewhere in line "lnum".
+***************
+*** 1249,1255 ****
+  		       (SEARCH_KEEP + SEARCH_PEEK + SEARCH_HIS
+  			+ SEARCH_MSG + SEARCH_START
+  			+ ((pat != NULL && *pat == ';') ? 0 : SEARCH_NOOF))),
+! 		RE_LAST, (linenr_T)0);
+  
+  	if (dircp != NULL)
+  	    *dircp = dirc;	/* restore second '/' or '?' for normal_cmd() */
+--- 1256,1262 ----
+  		       (SEARCH_KEEP + SEARCH_PEEK + SEARCH_HIS
+  			+ SEARCH_MSG + SEARCH_START
+  			+ ((pat != NULL && *pat == ';') ? 0 : SEARCH_NOOF))),
+! 		RE_LAST, (linenr_T)0, NULL);
+  
+  	if (dircp != NULL)
+  	    *dircp = dirc;	/* restore second '/' or '?' for normal_cmd() */
+***************
+*** 3780,3786 ****
+  	if (do_searchpair((char_u *)"<[^ \t>/!]\\+\\%(\\_s\\_[^>]\\{-}[^/]>\\|$\\|\\_s\\=>\\)",
+  		    (char_u *)"",
+  		    (char_u *)"</[^>]*>", BACKWARD, (char_u *)"", 0,
+! 						      NULL, (linenr_T)0) <= 0)
+  	{
+  	    curwin->w_cursor = old_pos;
+  	    goto theend;
+--- 3787,3793 ----
+  	if (do_searchpair((char_u *)"<[^ \t>/!]\\+\\%(\\_s\\_[^>]\\{-}[^/]>\\|$\\|\\_s\\=>\\)",
+  		    (char_u *)"",
+  		    (char_u *)"</[^>]*>", BACKWARD, (char_u *)"", 0,
+! 						  NULL, (linenr_T)0, 0L) <= 0)
+  	{
+  	    curwin->w_cursor = old_pos;
+  	    goto theend;
+***************
+*** 3814,3820 ****
+      sprintf((char *)epat, "</%.*s>\\c", len, p);
+  
+      r = do_searchpair(spat, (char_u *)"", epat, FORWARD, (char_u *)"",
+! 						       0, NULL, (linenr_T)0);
+  
+      vim_free(spat);
+      vim_free(epat);
+--- 3821,3827 ----
+      sprintf((char *)epat, "</%.*s>\\c", len, p);
+  
+      r = do_searchpair(spat, (char_u *)"", epat, FORWARD, (char_u *)"",
+! 						    0, NULL, (linenr_T)0, 0L);
+  
+      vim_free(spat);
+      vim_free(epat);
+*** ../vim-7.1.210/src/version.c	Sun Jan  6 17:18:16 2008
+--- src/version.c	Sun Jan  6 20:00:03 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     211,
+  /**/
+
+-- 
+No letters of the alphabet were harmed in the creation of this message.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

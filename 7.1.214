@@ -1,0 +1,266 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.214
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.214
+Problem:    ":1s/g\n\zs1//" deletes characters from the first line. (A Politz)
+Solution:   Start replacing in the line where the match starts.
+Files:	    src/ex_cmds.c
+
+
+*** ../vim-7.1.213/src/ex_cmds.c	Fri Jan  4 14:52:14 2008
+--- src/ex_cmds.c	Wed Jan  9 22:32:26 2008
+***************
+*** 4200,4206 ****
+      linenr_T	old_line_count = curbuf->b_ml.ml_line_count;
+      linenr_T	line2;
+      long	nmatch;			/* number of lines in match */
+-     linenr_T	sub_firstlnum;		/* nr of first sub line */
+      char_u	*sub_firstline;		/* allocated copy of first sub line */
+      int		endcolumn = FALSE;	/* cursor in last column when done */
+      pos_T	old_cursor = curwin->w_cursor;
+--- 4200,4205 ----
+***************
+*** 4447,4453 ****
+  #endif
+  		); ++lnum)
+      {
+- 	sub_firstlnum = lnum;
+  	nmatch = vim_regexec_multi(&regmatch, curwin, curbuf, lnum, (colnr_T)0);
+  	if (nmatch)
+  	{
+--- 4446,4451 ----
+***************
+*** 4463,4468 ****
+--- 4461,4467 ----
+  	    long	nmatch_tl = 0;	/* nr of lines matched below lnum */
+  	    int		do_again;	/* do it again after joining lines */
+  	    int		skip_match = FALSE;
++ 	    linenr_T	sub_firstlnum;	/* nr of first sub line */
+  
+  	    /*
+  	     * The new text is build up step by step, to avoid too much
+***************
+*** 4482,4489 ****
+  	     *			far.
+  	     * new_end		The new text, where to append new text.
+  	     *
+! 	     * lnum		The line number where we were looking for the
+! 	     *			first match in the old line.
+  	     * sub_firstlnum	The line number in the buffer where to look
+  	     *			for a match.  Can be different from "lnum"
+  	     *			when the pattern or substitute string contains
+--- 4481,4490 ----
+  	     *			far.
+  	     * new_end		The new text, where to append new text.
+  	     *
+! 	     * lnum		The line number where we found the start of
+! 	     *			the match.  Can be below the line we searched
+! 	     *			when there is a \n before a \zs in the
+! 	     *			pattern.
+  	     * sub_firstlnum	The line number in the buffer where to look
+  	     *			for a match.  Can be different from "lnum"
+  	     *			when the pattern or substitute string contains
+***************
+*** 4507,4518 ****
+  	     * updating the screen or handling a multi-line match.  The "old_"
+  	     * pointers point into this copy.
+  	     */
+! 	    sub_firstline = vim_strsave(ml_get(sub_firstlnum));
+! 	    if (sub_firstline == NULL)
+! 	    {
+! 		vim_free(new_start);
+! 		goto outofmem;
+! 	    }
+  	    copycol = 0;
+  	    matchcol = 0;
+  
+--- 4508,4514 ----
+  	     * updating the screen or handling a multi-line match.  The "old_"
+  	     * pointers point into this copy.
+  	     */
+! 	    sub_firstlnum = lnum;
+  	    copycol = 0;
+  	    matchcol = 0;
+  
+***************
+*** 4533,4538 ****
+--- 4529,4556 ----
+  	     */
+  	    for (;;)
+  	    {
++ 		/* Advance "lnum" to the line where the match starts.  The
++ 		 * match does not start in the first line when there is a line
++ 		 * break before \zs. */
++ 		if (regmatch.startpos[0].lnum > 0)
++ 		{
++ 		    lnum += regmatch.startpos[0].lnum;
++ 		    sub_firstlnum += regmatch.startpos[0].lnum;
++ 		    nmatch -= regmatch.startpos[0].lnum;
++ 		    vim_free(sub_firstline);
++ 		    sub_firstline = NULL;
++ 		}
++ 
++ 		if (sub_firstline == NULL)
++ 		{
++ 		    sub_firstline = vim_strsave(ml_get(sub_firstlnum));
++ 		    if (sub_firstline == NULL)
++ 		    {
++ 			vim_free(new_start);
++ 			goto outofmem;
++ 		    }
++ 		}
++ 
+  		/* Save the line number of the last change for the final
+  		 * cursor position (just like Vi). */
+  		curwin->w_cursor.lnum = lnum;
+***************
+*** 4638,4644 ****
+  			    temp = RedrawingDisabled;
+  			    RedrawingDisabled = 0;
+  
+! 			    search_match_lines = regmatch.endpos[0].lnum;
+  			    search_match_endcol = regmatch.endpos[0].col;
+  			    highlight_match = TRUE;
+  
+--- 4656,4663 ----
+  			    temp = RedrawingDisabled;
+  			    RedrawingDisabled = 0;
+  
+! 			    search_match_lines = regmatch.endpos[0].lnum
+! 						  - regmatch.startpos[0].lnum;
+  			    search_match_endcol = regmatch.endpos[0].col;
+  			    highlight_match = TRUE;
+  
+***************
+*** 4749,4755 ****
+  		 * 3. substitute the string.
+  		 */
+  		/* get length of substitution part */
+! 		sublen = vim_regsub_multi(&regmatch, sub_firstlnum,
+  				    sub, sub_firstline, FALSE, p_magic, TRUE);
+  
+  		/* When the match included the "$" of the last line it may
+--- 4768,4775 ----
+  		 * 3. substitute the string.
+  		 */
+  		/* get length of substitution part */
+! 		sublen = vim_regsub_multi(&regmatch,
+! 				    sub_firstlnum - regmatch.startpos[0].lnum,
+  				    sub, sub_firstline, FALSE, p_magic, TRUE);
+  
+  		/* When the match included the "$" of the last line it may
+***************
+*** 4819,4825 ****
+  		mch_memmove(new_end, sub_firstline + copycol, (size_t)i);
+  		new_end += i;
+  
+! 		(void)vim_regsub_multi(&regmatch, sub_firstlnum,
+  					   sub, new_end, TRUE, p_magic, TRUE);
+  		sub_nsubs++;
+  		did_sub = TRUE;
+--- 4839,4846 ----
+  		mch_memmove(new_end, sub_firstline + copycol, (size_t)i);
+  		new_end += i;
+  
+! 		(void)vim_regsub_multi(&regmatch,
+! 				    sub_firstlnum - regmatch.startpos[0].lnum,
+  					   sub, new_end, TRUE, p_magic, TRUE);
+  		sub_nsubs++;
+  		did_sub = TRUE;
+***************
+*** 4908,4917 ****
+  skip:
+  		/* We already know that we did the last subst when we are at
+  		 * the end of the line, except that a pattern like
+! 		 * "bar\|\nfoo" may match at the NUL. */
+  		lastone = (skip_match
+  			|| got_int
+  			|| got_quit
+  			|| !(do_all || do_again)
+  			|| (sub_firstline[matchcol] == NUL && nmatch <= 1
+  					 && !re_multiline(regmatch.regprog)));
+--- 4929,4941 ----
+  skip:
+  		/* We already know that we did the last subst when we are at
+  		 * the end of the line, except that a pattern like
+! 		 * "bar\|\nfoo" may match at the NUL.  "lnum" can be below
+! 		 * "line2" when there is a \zs in the pattern after a line
+! 		 * break. */
+  		lastone = (skip_match
+  			|| got_int
+  			|| got_quit
++ 			|| lnum > line2
+  			|| !(do_all || do_again)
+  			|| (sub_firstline[matchcol] == NUL && nmatch <= 1
+  					 && !re_multiline(regmatch.regprog)));
+***************
+*** 4926,4937 ****
+  		 * When asking the user we like to show the already replaced
+  		 * text, but don't do it when "\<@=" or "\<@!" is used, it
+  		 * changes what matches.
+  		 */
+  		if (lastone
+  			|| (do_ask && !re_lookbehind(regmatch.regprog))
+  			|| nmatch_tl > 0
+  			|| (nmatch = vim_regexec_multi(&regmatch, curwin,
+! 				       curbuf, sub_firstlnum, matchcol)) == 0)
+  		{
+  		    if (new_start != NULL)
+  		    {
+--- 4950,4964 ----
+  		 * When asking the user we like to show the already replaced
+  		 * text, but don't do it when "\<@=" or "\<@!" is used, it
+  		 * changes what matches.
++ 		 * When the match starts below where we start searching also
++ 		 * need to replace the line first (using \zs after \n).
+  		 */
+  		if (lastone
+  			|| (do_ask && !re_lookbehind(regmatch.regprog))
+  			|| nmatch_tl > 0
+  			|| (nmatch = vim_regexec_multi(&regmatch, curwin,
+! 				       curbuf, sub_firstlnum, matchcol)) == 0
+! 			|| regmatch.startpos[0].lnum > 0)
+  		{
+  		    if (new_start != NULL)
+  		    {
+***************
+*** 5001,5007 ****
+--- 5028,5041 ----
+  		     * 5. break if there isn't another match in this line
+  		     */
+  		    if (nmatch <= 0)
++ 		    {
++ 			/* If the match found didn't start where we were
++ 			 * searching, do the next search in the line where we
++ 			 * found the match. */
++ 			if (nmatch == -1)
++ 			    lnum -= regmatch.startpos[0].lnum;
+  			break;
++ 		    }
+  		}
+  
+  		line_breakcheck();
+*** ../vim-7.1.213/src/version.c	Wed Jan  9 20:29:51 2008
+--- src/version.c	Wed Jan  9 22:37:47 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     214,
+  /**/
+
+-- 
+Q: What's orange and sounds like a parrot?
+A: A carrot
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

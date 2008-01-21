@@ -1,0 +1,74 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.204 (extra)
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.204 (extra)
+Problem:    Win32: Using the example at 'balloonexpr' the balloon disappears
+	    after four seconds and then comes back again.  Also moves the
+	    mouse pointer a little bit.  (Yongwei Wu)
+Solution:   Set the autopop time to 30 seconds (the max value).  (Sergey
+	    Khorev)  Move the mouse two pixels forward and one back to end up
+	    in the same position (really!).
+Files:	    src/gui_w32.c
+
+
+
+*** ../vim-7.1.203/src/gui_w32.c	Thu Jan  3 20:44:35 2008
+--- src/gui_w32.c	Sat Jan  5 13:09:56 2008
+***************
+*** 4575,4585 ****
+      SendMessage(beval->balloon, TTM_ADDTOOL, 0, (LPARAM)pti);
+      /* Make tooltip appear sooner */
+      SendMessage(beval->balloon, TTM_SETDELAYTIME, TTDT_INITIAL, 10);
+      /*
+       * HACK: force tooltip to appear, because it'll not appear until
+       * first mouse move. D*mn M$
+       */
+!     mouse_event(MOUSEEVENTF_MOVE, 1, 1, 0, 0);
+      mouse_event(MOUSEEVENTF_MOVE, (DWORD)-1, (DWORD)-1, 0, 0);
+      vim_free(pti);
+  }
+--- 4575,4589 ----
+      SendMessage(beval->balloon, TTM_ADDTOOL, 0, (LPARAM)pti);
+      /* Make tooltip appear sooner */
+      SendMessage(beval->balloon, TTM_SETDELAYTIME, TTDT_INITIAL, 10);
++     /* I've performed some tests and it seems the longest possible life time
++      * of tooltip is 30 seconds */
++     SendMessage(beval->balloon, TTM_SETDELAYTIME, TTDT_AUTOPOP, 30000);
+      /*
+       * HACK: force tooltip to appear, because it'll not appear until
+       * first mouse move. D*mn M$
++      * Amazingly moving (2, 2) and then (-1, -1) the mouse doesn't move.
+       */
+!     mouse_event(MOUSEEVENTF_MOVE, 2, 2, 0, 0);
+      mouse_event(MOUSEEVENTF_MOVE, (DWORD)-1, (DWORD)-1, 0, 0);
+      vim_free(pti);
+  }
+*** ../vim-7.1.203/src/version.c	Fri Jan  4 21:25:01 2008
+--- src/version.c	Sat Jan  5 13:12:22 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     204,
+  /**/
+
+-- 
+WOMAN:   I didn't know we had a king. I thought we were an autonomous
+         collective.
+DENNIS:  You're fooling yourself.  We're living in a dictatorship.  A
+         self-perpetuating autocracy in which the working classes--
+WOMAN:   Oh there you go, bringing class into it again.
+DENNIS:  That's what it's all about if only people would--
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

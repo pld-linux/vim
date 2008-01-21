@@ -1,0 +1,47 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.212
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.212
+Problem:    Accessing a byte before a line.
+Solution:   Check that the column is 1 or more. (Dominuque Pelle)
+Files:	    src/edit.c
+
+
+*** ../vim-7.1.211/src/edit.c	Sun Jan  6 20:05:36 2008
+--- src/edit.c	Mon Jan  7 22:31:36 2008
+***************
+*** 8452,8457 ****
+--- 8452,8458 ----
+  	if (	   mode == BACKSPACE_CHAR
+  		&& ((p_sta && in_indent)
+  		    || (curbuf->b_p_sts != 0
++ 			&& curwin->w_cursor.col > 0
+  			&& (*(ml_get_cursor() - 1) == TAB
+  			    || (*(ml_get_cursor() - 1) == ' '
+  				&& (!*inserted_space_p
+*** ../vim-7.1.211/src/version.c	Sun Jan  6 20:05:36 2008
+--- src/version.c	Wed Jan  9 10:11:49 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     212,
+  /**/
+
+-- 
+CRONE:  Who sent you?
+ARTHUR: The Knights Who Say Ni!
+CRONE:  Aaaagh!  (she looks around in rear) No!  We have no shrubberies here.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

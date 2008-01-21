@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.225
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.225
+Problem:    Using unitialized value when XGetWMNormalHints() fails.
+Solution:   Check the return value. (Dominique Pelle)
+Files:	    src/os_unix.c
+
+
+*** ../vim-7.1.224/src/os_unix.c	Sun Jan 13 13:53:30 2008
+--- src/os_unix.c	Sun Jan 13 13:52:53 2008
+***************
+*** 6145,6153 ****
+      if (xterm_trace == 1)
+      {
+  	/* Get the hints just before tracking starts.  The font size might
+! 	 * have changed recently */
+! 	XGetWMNormalHints(xterm_dpy, x11_window, &xterm_hints, &got_hints);
+! 	if (!(got_hints & PResizeInc)
+  		|| xterm_hints.width_inc <= 1
+  		|| xterm_hints.height_inc <= 1)
+  	{
+--- 6145,6153 ----
+      if (xterm_trace == 1)
+      {
+  	/* Get the hints just before tracking starts.  The font size might
+! 	 * have changed recently. */
+! 	if (!XGetWMNormalHints(xterm_dpy, x11_window, &xterm_hints, &got_hints)
+! 		|| !(got_hints & PResizeInc)
+  		|| xterm_hints.width_inc <= 1
+  		|| xterm_hints.height_inc <= 1)
+  	{
+*** ../vim-7.1.224/src/version.c	Sun Jan 13 16:17:02 2008
+--- src/version.c	Sun Jan 13 16:29:51 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     225,
+  /**/
+
+-- 
+"When I die, I want a tombstone that says "GAME OVER" - Ton Richters
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

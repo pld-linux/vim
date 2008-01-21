@@ -1,0 +1,228 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.217
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.217
+Problem:    The "help-tags" tag may be missing from runtime/doc/tags when it
+	    was generated during "make install".
+Solution:   Add the "++t" argument to ":helptags" to force adding the tag.
+Files:	    runtime/doc/Makefile, runtime/doc/various.txt, src/ex_cmds.c,
+	    src/ex_cmds.h
+
+
+*** ../vim-7.1.216/runtime/doc/Makefile	Sat May  5 19:14:15 2007
+--- runtime/doc/Makefile	Fri Jan 11 20:55:34 2008
+***************
+*** 301,307 ****
+  # Use Vim to generate the tags file.  Can only be used when Vim has been
+  # compiled and installed.  Supports multiple languages.
+  vimtags: $(DOCS)
+! 	$(VIMEXE) -u NONE -esX -c "helptags ." -c quit
+  
+  # Use "doctags" to generate the tags file.  Only works for English!
+  tags: doctags $(DOCS)
+--- 301,307 ----
+  # Use Vim to generate the tags file.  Can only be used when Vim has been
+  # compiled and installed.  Supports multiple languages.
+  vimtags: $(DOCS)
+! 	$(VIMEXE) -u NONE -esX -c "helptags ++t ." -c quit
+  
+  # Use "doctags" to generate the tags file.  Only works for English!
+  tags: doctags $(DOCS)
+*** ../vim-7.1.216/runtime/doc/various.txt	Sat May 12 17:05:26 2007
+--- runtime/doc/various.txt	Fri Jan 11 20:45:45 2008
+***************
+*** 1,4 ****
+! *various.txt*   For Vim version 7.1.  Last change: 2007 Jan 14
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *various.txt*   For Vim version 7.1.  Last change: 2008 Jan 11
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 748,754 ****
+  
+  					*:helpt* *:helptags*
+  				*E154* *E150* *E151* *E152* *E153* *E670*
+! :helpt[ags] {dir}	Generate the help tags file(s) for directory {dir}.
+  			All "*.txt" and "*.??x" files in the directory are
+  			scanned for a help tag definition in between stars.
+  			The "*.??x" files are for translated docs, they
+--- 754,761 ----
+  
+  					*:helpt* *:helptags*
+  				*E154* *E150* *E151* *E152* *E153* *E670*
+! :helpt[ags] [++t] {dir}
+! 			Generate the help tags file(s) for directory {dir}.
+  			All "*.txt" and "*.??x" files in the directory are
+  			scanned for a help tag definition in between stars.
+  			The "*.??x" files are for translated docs, they
+***************
+*** 756,761 ****
+--- 763,771 ----
+  			The generated tags files are sorted.
+  			When there are duplicates an error message is given.
+  			An existing tags file is silently overwritten.
++ 			The optional "++t" argument forces adding the
++ 			"help-tags" tag.  This is also done when the {dir} is
++ 			equal to $VIMRUNTIME/doc.
+  			To rebuild the help tags in the runtime directory
+  			(requires write permission there): >
+  				:helptags $VIMRUNTIME/doc
+*** ../vim-7.1.216/src/ex_cmds.c	Wed Jan  9 22:39:55 2008
+--- src/ex_cmds.c	Fri Jan 11 20:47:13 2008
+***************
+*** 6091,6097 ****
+  }
+  
+  #if defined(FEAT_EX_EXTRA) || defined(PROTO)
+! static void helptags_one __ARGS((char_u *dir, char_u *ext, char_u *lang));
+  
+  /*
+   * ":helptags"
+--- 6091,6097 ----
+  }
+  
+  #if defined(FEAT_EX_EXTRA) || defined(PROTO)
+! static void helptags_one __ARGS((char_u *dir, char_u *ext, char_u *lang, int add_help_tags));
+  
+  /*
+   * ":helptags"
+***************
+*** 6110,6115 ****
+--- 6110,6123 ----
+      char_u	fname[8];
+      int		filecount;
+      char_u	**files;
++     int		add_help_tags = FALSE;
++ 
++     /* Check for ":helptags ++t {dir}". */
++     if (STRNCMP(eap->arg, "++t", 3) == 0 && vim_iswhite(eap->arg[3]))
++     {
++ 	add_help_tags = TRUE;
++ 	eap->arg = skipwhite(eap->arg + 3);
++     }
+  
+      if (!mch_isdir(eap->arg))
+      {
+***************
+*** 6192,6198 ****
+  	    ext[1] = fname[5];
+  	    ext[2] = fname[6];
+  	}
+! 	helptags_one(eap->arg, ext, fname);
+      }
+  
+      ga_clear(&ga);
+--- 6200,6206 ----
+  	    ext[1] = fname[5];
+  	    ext[2] = fname[6];
+  	}
+! 	helptags_one(eap->arg, ext, fname, add_help_tags);
+      }
+  
+      ga_clear(&ga);
+***************
+*** 6200,6214 ****
+  
+  #else
+      /* No language support, just use "*.txt" and "tags". */
+!     helptags_one(eap->arg, (char_u *)".txt", (char_u *)"tags");
+  #endif
+  }
+  
+      static void
+! helptags_one(dir, ext, tagfname)
+!     char_u	*dir;	    /* doc directory */
+!     char_u	*ext;	    /* suffix, ".txt", ".itx", ".frx", etc. */
+!     char_u	*tagfname;    /* "tags" for English, "tags-it" for Italian. */
+  {
+      FILE	*fd_tags;
+      FILE	*fd;
+--- 6208,6223 ----
+  
+  #else
+      /* No language support, just use "*.txt" and "tags". */
+!     helptags_one(eap->arg, (char_u *)".txt", (char_u *)"tags", add_help_tags);
+  #endif
+  }
+  
+      static void
+! helptags_one(dir, ext, tagfname, add_help_tags)
+!     char_u	*dir;		/* doc directory */
+!     char_u	*ext;		/* suffix, ".txt", ".itx", ".frx", etc. */
+!     char_u	*tagfname;      /* "tags" for English, "tags-fr" for French. */
+!     int		add_help_tags;  /* add "help-tags" tag */
+  {
+      FILE	*fd_tags;
+      FILE	*fd;
+***************
+*** 6259,6268 ****
+      }
+  
+      /*
+!      * If generating tags for "$VIMRUNTIME/doc" add the "help-tags" tag.
+       */
+      ga_init2(&ga, (int)sizeof(char_u *), 100);
+!     if (fullpathcmp((char_u *)"$VIMRUNTIME/doc", dir, FALSE) == FPC_SAME)
+      {
+  	if (ga_grow(&ga, 1) == FAIL)
+  	    got_int = TRUE;
+--- 6268,6279 ----
+      }
+  
+      /*
+!      * If using the "++t" argument or generating tags for "$VIMRUNTIME/doc"
+!      * add the "help-tags" tag.
+       */
+      ga_init2(&ga, (int)sizeof(char_u *), 100);
+!     if (add_help_tags || fullpathcmp((char_u *)"$VIMRUNTIME/doc",
+! 						      dir, FALSE) == FPC_SAME)
+      {
+  	if (ga_grow(&ga, 1) == FAIL)
+  	    got_int = TRUE;
+*** ../vim-7.1.216/src/ex_cmds.h	Thu Mar  8 11:00:55 2007
+--- src/ex_cmds.h	Fri Jan 11 20:49:18 2008
+***************
+*** 422,428 ****
+  EX(CMD_helpgrep,	"helpgrep",	ex_helpgrep,
+  			EXTRA|NOTRLCOM|NEEDARG),
+  EX(CMD_helptags,	"helptags",	ex_helptags,
+! 			NEEDARG|FILE1|TRLBAR|CMDWIN),
+  EX(CMD_hardcopy,	"hardcopy",	ex_hardcopy,
+  			RANGE|COUNT|EXTRA|TRLBAR|DFLALL|BANG),
+  EX(CMD_highlight,	"highlight",	ex_highlight,
+--- 422,428 ----
+  EX(CMD_helpgrep,	"helpgrep",	ex_helpgrep,
+  			EXTRA|NOTRLCOM|NEEDARG),
+  EX(CMD_helptags,	"helptags",	ex_helptags,
+! 			NEEDARG|FILES|TRLBAR|CMDWIN),
+  EX(CMD_hardcopy,	"hardcopy",	ex_hardcopy,
+  			RANGE|COUNT|EXTRA|TRLBAR|DFLALL|BANG),
+  EX(CMD_highlight,	"highlight",	ex_highlight,
+*** ../vim-7.1.216/src/version.c	Fri Jan 11 20:25:42 2008
+--- src/version.c	Fri Jan 11 20:58:44 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     217,
+  /**/
+
+-- 
+My girlfriend told me I should be more affectionate.
+So I got TWO girlfriends.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

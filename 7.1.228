@@ -1,0 +1,51 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.228
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.228
+Problem:    When 'foldmethod' is "indent" and a fold is created with ">>" it
+	    can't be closed with "zc".  (Daniel Shahaf)
+Solution:   Reset the "small" flag of a fold when adding a line to it.
+Files:	    src/fold.c
+
+
+*** ../vim-7.1.227/src/fold.c	Sun Oct 14 15:32:10 2007
+--- src/fold.c	Sun Jan 13 21:26:48 2008
+***************
+*** 2676,2681 ****
+--- 2676,2682 ----
+      if (fp->fd_len < flp->lnum - fp->fd_top)
+      {
+  	fp->fd_len = flp->lnum - fp->fd_top;
++ 	fp->fd_small = MAYBE;
+  	fold_changed = TRUE;
+      }
+  
+*** ../vim-7.1.227/src/version.c	Sun Jan 13 17:39:29 2008
+--- src/version.c	Sun Jan 13 21:56:53 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     228,
+  /**/
+
+-- 
+VOICE OVER: As the horrendous Black Beast lunged forward, escape for Arthur
+            and his knights seemed hopeless,  when, suddenly ... the animator
+            suffered a fatal heart attack.
+ANIMATOR:   Aaaaagh!
+VOICE OVER: The cartoon peril was no more ... The Quest for Holy Grail could
+            continue.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

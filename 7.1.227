@@ -1,0 +1,188 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.227
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.227
+Problem:    Hang in syntax HL when moving over a ")". (Dominique Pelle)
+Solution:   Avoid storing a syntax state in the wrong position in the list of
+	    remembered states.
+Files:	    src/syntax.c
+
+
+*** ../vim-7.1.226/src/syntax.c	Sat Jan 12 16:45:25 2008
+--- src/syntax.c	Sat Jan 12 16:45:44 2008
+***************
+*** 372,378 ****
+  static int syn_stack_cleanup __ARGS((void));
+  static void syn_stack_free_entry __ARGS((buf_T *buf, synstate_T *p));
+  static synstate_T *syn_stack_find_entry __ARGS((linenr_T lnum));
+! static synstate_T *store_current_state __ARGS((synstate_T *sp));
+  static void load_current_state __ARGS((synstate_T *from));
+  static void invalidate_current_state __ARGS((void));
+  static int syn_stack_equal __ARGS((synstate_T *sp));
+--- 372,378 ----
+  static int syn_stack_cleanup __ARGS((void));
+  static void syn_stack_free_entry __ARGS((buf_T *buf, synstate_T *p));
+  static synstate_T *syn_stack_find_entry __ARGS((linenr_T lnum));
+! static synstate_T *store_current_state __ARGS((void));
+  static void load_current_state __ARGS((synstate_T *from));
+  static void invalidate_current_state __ARGS((void));
+  static int syn_stack_equal __ARGS((synstate_T *sp));
+***************
+*** 464,470 ****
+      synstate_T	*p;
+      synstate_T	*last_valid = NULL;
+      synstate_T	*last_min_valid = NULL;
+!     synstate_T	*sp, *prev;
+      linenr_T	parsed_lnum;
+      linenr_T	first_stored;
+      int		dist;
+--- 464,470 ----
+      synstate_T	*p;
+      synstate_T	*last_valid = NULL;
+      synstate_T	*last_min_valid = NULL;
+!     synstate_T	*sp, *prev = NULL;
+      linenr_T	parsed_lnum;
+      linenr_T	first_stored;
+      int		dist;
+***************
+*** 502,508 ****
+  	if (!current_state_stored)
+  	{
+  	    ++current_lnum;
+! 	    (void)store_current_state(NULL);
+  	}
+  
+  	/*
+--- 502,508 ----
+  	if (!current_state_stored)
+  	{
+  	    ++current_lnum;
+! 	    (void)store_current_state();
+  	}
+  
+  	/*
+***************
+*** 558,564 ****
+  	dist = 999999;
+      else
+  	dist = syn_buf->b_ml.ml_line_count / (syn_buf->b_sst_len - Rows) + 1;
+-     prev = syn_stack_find_entry(current_lnum);
+      while (current_lnum < lnum)
+      {
+  	syn_start_line();
+--- 558,563 ----
+***************
+*** 573,581 ****
+  	     * equal to the current state.  If so, then validate all saved
+  	     * states that depended on a change before the parsed line. */
+  	    if (prev == NULL)
+  		sp = syn_buf->b_sst_first;
+  	    else
+! 		sp = prev->sst_next;
+  	    if (sp != NULL
+  		    && sp->sst_lnum == current_lnum
+  		    && syn_stack_equal(sp))
+--- 572,584 ----
+  	     * equal to the current state.  If so, then validate all saved
+  	     * states that depended on a change before the parsed line. */
+  	    if (prev == NULL)
++ 		prev = syn_stack_find_entry(current_lnum - 1);
++ 	    if (prev == NULL)
+  		sp = syn_buf->b_sst_first;
+  	    else
+! 		sp = prev;
+! 	    while (sp != NULL && sp->sst_lnum < current_lnum)
+! 		sp = sp->sst_next;
+  	    if (sp != NULL
+  		    && sp->sst_lnum == current_lnum
+  		    && syn_stack_equal(sp))
+***************
+*** 601,607 ****
+  	    else if (prev == NULL
+  			|| current_lnum == lnum
+  			|| current_lnum >= prev->sst_lnum + dist)
+! 		prev = store_current_state(prev);
+  	}
+  
+  	/* This can take a long time: break when CTRL-C pressed.  The current
+--- 604,610 ----
+  	    else if (prev == NULL
+  			|| current_lnum == lnum
+  			|| current_lnum >= prev->sst_lnum + dist)
+! 		prev = store_current_state();
+  	}
+  
+  	/* This can take a long time: break when CTRL-C pressed.  The current
+***************
+*** 1353,1369 ****
+   * The current state must be valid for the start of the current_lnum line!
+   */
+      static synstate_T *
+! store_current_state(sp)
+!     synstate_T	*sp;	/* at or before where state is to be saved or
+! 				   NULL */
+  {
+      int		i;
+      synstate_T	*p;
+      bufstate_T	*bp;
+      stateitem_T	*cur_si;
+! 
+!     if (sp == NULL)
+! 	sp = syn_stack_find_entry(current_lnum);
+  
+      /*
+       * If the current state contains a start or end pattern that continues
+--- 1356,1368 ----
+   * The current state must be valid for the start of the current_lnum line!
+   */
+      static synstate_T *
+! store_current_state()
+  {
+      int		i;
+      synstate_T	*p;
+      bufstate_T	*bp;
+      stateitem_T	*cur_si;
+!     synstate_T	*sp = syn_stack_find_entry(current_lnum);
+  
+      /*
+       * If the current state contains a start or end pattern that continues
+***************
+*** 1667,1673 ****
+  	     * Store the current state in b_sst_array[] for later use.
+  	     */
+  	    ++current_lnum;
+! 	    (void)store_current_state(NULL);
+  	}
+      }
+  
+--- 1666,1672 ----
+  	     * Store the current state in b_sst_array[] for later use.
+  	     */
+  	    ++current_lnum;
+! 	    (void)store_current_state();
+  	}
+      }
+  
+*** ../vim-7.1.226/src/version.c	Sun Jan 13 17:11:25 2008
+--- src/version.c	Sun Jan 13 17:37:10 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     227,
+  /**/
+
+-- 
+Dreams are free, but there's a small charge for alterations.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,73 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.224
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.224
+Problem:    When using "vim -F -o file1 file2" only one window is
+	    right-to-left.  Same for "-H".  (Ben Schmidt)
+Solution:   use set_option_value() to set 'rightleft'.
+Files:	    src/main.c
+
+
+*** ../vim-7.1.223/src/main.c	Fri Jan 11 20:25:42 2008
+--- src/main.c	Sun Jan 13 16:12:09 2008
+***************
+*** 1775,1781 ****
+  
+  	    case 'F':		/* "-F" start in Farsi mode: rl + fkmap set */
+  #ifdef FEAT_FKMAP
+! 		curwin->w_p_rl = p_fkmap = TRUE;
+  #else
+  		mch_errmsg(_(e_nofarsi));
+  		mch_exit(2);
+--- 1775,1782 ----
+  
+  	    case 'F':		/* "-F" start in Farsi mode: rl + fkmap set */
+  #ifdef FEAT_FKMAP
+! 		p_fkmap = TRUE;
+! 		set_option_value((char_u *)"rl", 1L, NULL, 0);
+  #else
+  		mch_errmsg(_(e_nofarsi));
+  		mch_exit(2);
+***************
+*** 1792,1798 ****
+  
+  	    case 'H':		/* "-H" start in Hebrew mode: rl + hkmap set */
+  #ifdef FEAT_RIGHTLEFT
+! 		curwin->w_p_rl = p_hkmap = TRUE;
+  #else
+  		mch_errmsg(_(e_nohebrew));
+  		mch_exit(2);
+--- 1793,1800 ----
+  
+  	    case 'H':		/* "-H" start in Hebrew mode: rl + hkmap set */
+  #ifdef FEAT_RIGHTLEFT
+! 		p_hkmap = TRUE;
+! 		set_option_value((char_u *)"rl", 1L, NULL, 0);
+  #else
+  		mch_errmsg(_(e_nohebrew));
+  		mch_exit(2);
+*** ../vim-7.1.223/src/version.c	Sun Jan 13 13:53:30 2008
+--- src/version.c	Sun Jan 13 16:15:49 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     224,
+  /**/
+
+-- 
+LAUNCELOT: Isn't there a St. Aaaaarrrrrrggghhh's in Cornwall?
+ARTHUR:    No, that's Saint Ives.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

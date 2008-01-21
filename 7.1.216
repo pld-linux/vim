@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.216
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.216
+Problem:    Variants of --remote-tab are not mentioned for "vim --help".
+Solution:   Display optional -wait and -silent.
+Files:	    src/main.c
+
+
+*** ../vim-7.1.215/src/main.c	Tue Sep 25 17:54:41 2007
+--- src/main.c	Sun Dec 30 15:09:11 2007
+***************
+*** 3081,3087 ****
+      main_msg(_("--remote-wait <files>  As --remote but wait for files to have been edited"));
+      main_msg(_("--remote-wait-silent <files>  Same, don't complain if there is no server"));
+  # ifdef FEAT_WINDOWS
+!     main_msg(_("--remote-tab <files>  As --remote but open tab page for each file"));
+  # endif
+      main_msg(_("--remote-send <keys>\tSend <keys> to a Vim server and exit"));
+      main_msg(_("--remote-expr <expr>\tEvaluate <expr> in a Vim server and print result"));
+--- 3081,3087 ----
+      main_msg(_("--remote-wait <files>  As --remote but wait for files to have been edited"));
+      main_msg(_("--remote-wait-silent <files>  Same, don't complain if there is no server"));
+  # ifdef FEAT_WINDOWS
+!     main_msg(_("--remote-tab[-wait][-silent] <files>  As --remote but use tab page per file"));
+  # endif
+      main_msg(_("--remote-send <keys>\tSend <keys> to a Vim server and exit"));
+      main_msg(_("--remote-expr <expr>\tEvaluate <expr> in a Vim server and print result"));
+*** ../vim-7.1.215/src/version.c	Thu Jan 10 22:23:22 2008
+--- src/version.c	Fri Jan 11 20:25:14 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     216,
+  /**/
+
+-- 
+TIM: But follow only if you are men of valour.  For the entrance to this cave
+     is guarded by a monster, a creature so foul and cruel that no man yet has
+     fought with it and lived.  Bones of full fifty men lie strewn about its
+     lair ...
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

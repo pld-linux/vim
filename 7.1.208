@@ -1,0 +1,69 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.208
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.208
+Problem:    On Alpha get an unaligned access error.
+Solution:   Store the dictitem pointer before using it. (Matthew Luckie)
+Files:	    src/eval.c
+
+
+*** ../vim-7.1.207/src/eval.c	Sat Jan  5 13:34:01 2008
+--- src/eval.c	Sat Jan  5 13:22:52 2008
+***************
+*** 3407,3412 ****
+--- 3407,3413 ----
+      hashtab_T	*ht;
+      hashitem_T	*hi;
+      char_u	*varname;
++     dictitem_T	*di;
+  
+      ht = find_var_ht(name, &varname);
+      if (ht != NULL && *varname != NUL)
+***************
+*** 3414,3422 ****
+  	hi = hash_find(ht, varname);
+  	if (!HASHITEM_EMPTY(hi))
+  	{
+! 	    if (var_check_fixed(HI2DI(hi)->di_flags, name))
+! 		return FAIL;
+! 	    if (var_check_ro(HI2DI(hi)->di_flags, name))
+  		return FAIL;
+  	    delete_var(ht, hi);
+  	    return OK;
+--- 3415,3423 ----
+  	hi = hash_find(ht, varname);
+  	if (!HASHITEM_EMPTY(hi))
+  	{
+! 	    di = HI2DI(hi);
+! 	    if (var_check_fixed(di->di_flags, name)
+! 		    || var_check_ro(di->di_flags, name))
+  		return FAIL;
+  	    delete_var(ht, hi);
+  	    return OK;
+*** ../vim-7.1.207/src/version.c	Sat Jan  5 18:06:33 2008
+--- src/version.c	Sat Jan  5 22:14:17 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     208,
+  /**/
+
+-- 
+ARTHUR:  Bloody peasant!
+DENNIS:  Oh, what a give away.  Did you here that, did you here that, eh?
+         That's what I'm on about -- did you see him repressing me, you saw it
+         didn't you?
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

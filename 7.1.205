@@ -1,0 +1,181 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.205
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.205
+Problem:    Can't get the operator in an ":omap".
+Solution:   Add the "v:operator" variable. (Ben Schmidt)
+Files:	    runtime/doc/eval.txt, src/eval.c, src/normal.c, src/vim.h
+
+
+*** ../vim-7.1.204/runtime/doc/eval.txt	Tue Sep 25 17:54:41 2007
+--- runtime/doc/eval.txt	Fri Jan  4 20:38:55 2008
+***************
+*** 1,4 ****
+! *eval.txt*      For Vim version 7.1.  Last change: 2007 Sep 25
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *eval.txt*      For Vim version 7.1.  Last change: 2008 Jan 04
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 1401,1410 ****
+  		This is the screen column number, like with |virtcol()|.  The
+  		value is zero when there was no mouse button click.
+  
+  					*v:prevcount* *prevcount-variable*
+  v:prevcount	The count given for the last but one Normal mode command.
+  		This is the v:count value of the previous command.  Useful if
+! 		you want to cancel Visual mode and then use the count. >
+  			:vmap % <Esc>:call MyFilter(v:prevcount)<CR>
+  <		Read-only.
+  
+--- 1401,1424 ----
+  		This is the screen column number, like with |virtcol()|.  The
+  		value is zero when there was no mouse button click.
+  
++ 					*v:operator* *operator-variable*
++ v:operator	The last operator given in Normal mode.  This is a single
++ 		character except for commands starting with <g> or <z>,
++ 		in which case it is two characters.  Best used alongside
++ 		|v:prevcount| and |v:register|.  Useful if you want to cancel
++ 		Operator-pending mode and then use the operator, e.g.: >
++ 			:omap O <Esc>:call MyMotion(v:operator)<CR>
++ <		The value remains set until another operator is entered, thus
++ 		don't expect it to be empty.
++ 		v:operator is not set for |:delete|, |:yank| or other Ex
++ 		commands.
++ 		Read-only.
++ 
+  					*v:prevcount* *prevcount-variable*
+  v:prevcount	The count given for the last but one Normal mode command.
+  		This is the v:count value of the previous command.  Useful if
+! 		you want to cancel Visual or Operator-pending mode and then
+! 		use the count, e.g.: >
+  			:vmap % <Esc>:call MyFilter(v:prevcount)<CR>
+  <		Read-only.
+  
+*** ../vim-7.1.204/src/eval.c	Fri Dec  7 17:08:35 2007
+--- src/eval.c	Sat Jan  5 13:22:52 2008
+***************
+*** 345,350 ****
+--- 345,351 ----
+      {VV_NAME("mouse_win",	 VAR_NUMBER), 0},
+      {VV_NAME("mouse_lnum",	 VAR_NUMBER), 0},
+      {VV_NAME("mouse_col",	 VAR_NUMBER), 0},
++     {VV_NAME("operator",	 VAR_STRING), VV_RO},
+  };
+  
+  /* shorthand */
+*** ../vim-7.1.204/src/normal.c	Thu Jan  3 13:19:50 2008
+--- src/normal.c	Fri Jan  4 20:53:43 2008
+***************
+*** 141,146 ****
+--- 141,149 ----
+  static void	nv_Undo __ARGS((cmdarg_T *cap));
+  static void	nv_tilde __ARGS((cmdarg_T *cap));
+  static void	nv_operator __ARGS((cmdarg_T *cap));
++ #ifdef FEAT_EVAL
++ static void	set_op_var __ARGS((int optype));
++ #endif
+  static void	nv_lineop __ARGS((cmdarg_T *cap));
+  static void	nv_home __ARGS((cmdarg_T *cap));
+  static void	nv_pipe __ARGS((cmdarg_T *cap));
+***************
+*** 7180,7185 ****
+--- 7183,7191 ----
+  	{
+  	    cap->oap->start = curwin->w_cursor;
+  	    cap->oap->op_type = OP_DELETE;
++ #ifdef FEAT_EVAL
++ 	    set_op_var(OP_DELETE);
++ #endif
+  	    cap->count1 = 1;
+  	    nv_dollar(cap);
+  	    finish_op = TRUE;
+***************
+*** 8219,8226 ****
+--- 8225,8257 ----
+      {
+  	cap->oap->start = curwin->w_cursor;
+  	cap->oap->op_type = op_type;
++ #ifdef FEAT_EVAL
++ 	set_op_var(op_type);
++ #endif
++     }
++ }
++ 
++ #ifdef FEAT_EVAL
++ /*
++  * Set v:operator to the characters for "optype".
++  */
++     static void
++ set_op_var(optype)
++     int optype;
++ {
++     char_u	opchars[3];
++ 
++     if (optype == OP_NOP)
++ 	set_vim_var_string(VV_OP, NULL, 0);
++     else
++     {
++ 	opchars[0] = get_op_char(optype);
++ 	opchars[1] = get_extra_op_char(optype);
++ 	opchars[2] = NUL;
++ 	set_vim_var_string(VV_OP, opchars, -1);
+      }
+  }
++ #endif
+  
+  /*
+   * Handle linewise operator "dd", "yy", etc.
+*** ../vim-7.1.204/src/vim.h	Sat Aug 11 13:57:31 2007
+--- src/vim.h	Fri Jan  4 19:11:31 2008
+***************
+*** 1688,1694 ****
+  #define VV_MOUSE_WIN	49
+  #define VV_MOUSE_LNUM   50
+  #define VV_MOUSE_COL	51
+! #define VV_LEN		52	/* number of v: vars */
+  
+  #ifdef FEAT_CLIPBOARD
+  
+--- 1688,1695 ----
+  #define VV_MOUSE_WIN	49
+  #define VV_MOUSE_LNUM   50
+  #define VV_MOUSE_COL	51
+! #define VV_OP		52
+! #define VV_LEN		53	/* number of v: vars */
+  
+  #ifdef FEAT_CLIPBOARD
+  
+*** ../vim-7.1.204/src/version.c	Sat Jan  5 13:15:08 2008
+--- src/version.c	Sat Jan  5 13:31:49 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     205,
+  /**/
+
+-- 
+ARTHUR:  Then who is your lord?
+WOMAN:   We don't have a lord.
+ARTHUR:  What?
+DENNIS:  I told you.  We're an anarcho-syndicalist commune.  We take it in
+         turns to act as a sort of executive officer for the week.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

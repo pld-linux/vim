@@ -1,0 +1,70 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.232
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.232 (after 7.1.207 and 7.1.211)
+Problem:    Compiler warnings with MSVC.
+Solution:   Add type casts. (Mike Williams)
+Files:	    src/ex_cmds2.c, src/netbeans.c
+
+
+*** ../vim-7.1.231/src/ex_cmds2.c	Tue Jan 15 22:16:36 2008
+--- src/ex_cmds2.c	Tue Jan 15 20:41:28 2008
+***************
+*** 916,922 ****
+  
+  	QueryPerformanceCounter(tm);
+  	QueryPerformanceFrequency(&fr);
+! 	tm->QuadPart +=  (double)msec / 1000.0 * (double)fr.QuadPart;
+  # else
+  	long	    usec;
+  
+--- 916,922 ----
+  
+  	QueryPerformanceCounter(tm);
+  	QueryPerformanceFrequency(&fr);
+! 	tm->QuadPart += (LONGLONG)((double)msec / 1000.0 * (double)fr.QuadPart);
+  # else
+  	long	    usec;
+  
+*** ../vim-7.1.231/src/netbeans.c	Sat Jan  5 18:06:33 2008
+--- src/netbeans.c	Mon Jan 14 21:11:02 2008
+***************
+*** 1217,1223 ****
+  
+      oldtext = ml_get(lnum);
+      oldlen = STRLEN(oldtext);
+!     if (first >= oldlen || oldlen == 0)  /* just in case */
+  	return;
+      if (lastbyte >= oldlen)
+  	lastbyte = oldlen - 1;
+--- 1217,1223 ----
+  
+      oldtext = ml_get(lnum);
+      oldlen = STRLEN(oldtext);
+!     if (first >= (colnr_T)oldlen || oldlen == 0)  /* just in case */
+  	return;
+      if (lastbyte >= oldlen)
+  	lastbyte = oldlen - 1;
+*** ../vim-7.1.231/src/version.c	Wed Jan 16 20:01:14 2008
+--- src/version.c	Fri Jan 18 11:38:39 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     232,
+  /**/
+
+-- 
+Why is "abbreviation" such a long word?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,71 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.209
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.209
+Problem:    GTK: When using the netrw plugin and doing ":gui" Vim hangs.
+Solution:   Stop getting a selection after three seconds.  This is a hack.
+Files:	    src/gui_gtk_x11.c
+
+
+*** ../vim-7.1.208/src/gui_gtk_x11.c	Fri Oct 19 14:32:50 2007
+--- src/gui_gtk_x11.c	Sun Jan  6 15:15:52 2008
+***************
+*** 6660,6665 ****
+--- 6660,6666 ----
+      unsigned	i;
+      int		nbytes;
+      char_u	*buffer;
++     time_t	start;
+  
+      for (i = 0; i < N_SELECTION_TARGETS; ++i)
+      {
+***************
+*** 6670,6676 ****
+  			      cbd->gtk_sel_atom, target,
+  			      (guint32)GDK_CURRENT_TIME);
+  
+! 	while (received_selection == RS_NONE)
+  	    gtk_main();	/* wait for selection_received_cb */
+  
+  	if (received_selection != RS_FAIL)
+--- 6671,6681 ----
+  			      cbd->gtk_sel_atom, target,
+  			      (guint32)GDK_CURRENT_TIME);
+  
+! 	/* Hack: Wait up to three seconds for the selection.  A hang was
+! 	 * noticed here when using the netrw plugin combined with ":gui"
+! 	 * during the FocusGained event. */
+! 	start = time(NULL);
+! 	while (received_selection == RS_NONE && time(NULL) < start + 3)
+  	    gtk_main();	/* wait for selection_received_cb */
+  
+  	if (received_selection != RS_FAIL)
+*** ../vim-7.1.208/src/version.c	Sat Jan  5 22:15:21 2008
+--- src/version.c	Sun Jan  6 15:14:48 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     209,
+  /**/
+
+-- 
+BLACK KNIGHT:  I move for no man.
+ARTHUR:        So be it!
+    [hah] [parry thrust]
+    [ARTHUR chops the BLACK KNIGHT's left arm off]
+ARTHUR:        Now stand aside, worthy adversary.
+BLACK KNIGHT:  'Tis but a scratch.
+                                  The Quest for the Holy Grail (Monty Python)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
