@@ -16,7 +16,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.1
-%define		_patchlevel	203
+%define		_patchlevel	236
 %define		_rel		2
 
 # cflags get changed while configuring
@@ -122,6 +122,7 @@ Obsoletes:	vim-static
 %endif
 BuildRequires:	unzip
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Requires:	vim-plugin-securemodelines
 Provides:	vi-editor
 Provides:	vi
 Obsoletes:	vim-enhanced
