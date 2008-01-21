@@ -18,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		_ver		7.1
-%define		_patchlevel	168
+%define		_patchlevel	236
 %define		_rel		1
 
 # cflags get changed while configuring
@@ -124,6 +124,7 @@ Obsoletes:	vim-static
 %endif
 BuildRequires:	unzip
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Requires:	vim-plugin-securemodelines
 Provides:	vi-editor
 Provides:	vi
 Obsoletes:	vim-enhanced
@@ -854,25 +855,25 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/rvim
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/vimdiff
-#%{_mandir}/man1/eview.1*
+%{_mandir}/man1/eview.1*
 %{_mandir}/man1/evim.1*
 %{_mandir}/man1/rvim.1*
 %{_mandir}/man1/vimdiff.1*
 %lang(fi) %{_mandir}/fi/man1/rvim.1*
-#%lang(fr) %{_mandir}/fr/man1/eview.1*
+%lang(fr) %{_mandir}/fr/man1/eview.1*
 %lang(fr) %{_mandir}/fr/man1/evim.1*
 %lang(fr) %{_mandir}/fr/man1/rvim.1*
 %lang(fr) %{_mandir}/fr/man1/vimdiff.1*
 %lang(id) %{_mandir}/id/man1/rvim.1*
-#%lang(it) %{_mandir}/it/man1/eview.1*
+%lang(it) %{_mandir}/it/man1/eview.1*
 %lang(it) %{_mandir}/it/man1/evim.1*
 %lang(it) %{_mandir}/it/man1/rvim.1*
 %lang(it) %{_mandir}/it/man1/vimdiff.1*
-#%lang(pl) %{_mandir}/pl/man1/eview.1*
+%lang(pl) %{_mandir}/pl/man1/eview.1*
 %lang(pl) %{_mandir}/pl/man1/evim.1*
 %lang(pl) %{_mandir}/pl/man1/rvim.1*
 %lang(pl) %{_mandir}/pl/man1/vimdiff.1*
-#%lang(ru) %{_mandir}/ru/man1/eview.1*
+%lang(ru) %{_mandir}/ru/man1/eview.1*
 %lang(ru) %{_mandir}/ru/man1/evim.1*
 %lang(ru) %{_mandir}/ru/man1/rvim.1*
 %lang(ru) %{_mandir}/ru/man1/vimdiff.1*
@@ -984,6 +985,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sk) %{_datadir}/vim/v*/lang/menu_sk*
 %lang(sk) %{_datadir}/vim/v*/lang/menu_*slovak*
 %lang(sk) %{_datadir}/vim/v*/lang/sk/
+%lang(sl) %{_datadir}/vim/v*/lang/menu_sl_si*
 %lang(sr) %{_datadir}/vim/v*/lang/menu_sr*
 %lang(sv) %{_datadir}/vim/v*/lang/menu_sv*
 %lang(sv) %{_datadir}/vim/v*/lang/sv/
@@ -996,11 +998,13 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_*chinese*gb*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN/
+%lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN.UTF-8/
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh.cp950*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh.big5*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW/
+%lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW.UTF-8/
 
 %dir %{_datadir}/vim/v*/spell
 %{_datadir}/vim/v*/spell/cleanadd.vim
