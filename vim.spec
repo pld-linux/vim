@@ -1,6 +1,8 @@
 # TODO:
 # - create vim-full (better name, anybody?) or/and other packages
 #   for scripting languages support
+# - warning: Installed (but unpackaged) file(s) found:
+#   /usr/bin/gview
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -122,7 +124,6 @@ Obsoletes:	vim-static
 %endif
 BuildRequires:	unzip
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
-Requires:	vim-plugin-securemodelines
 Provides:	vi-editor
 Provides:	vi
 Obsoletes:	vim-enhanced
@@ -304,6 +305,7 @@ Summary(sv.UTF-8):	De gemensamma filerna som behövs av alla versioner av redige
 Summary(uk.UTF-8):	Файли, потрібні для будь-якої версії редактору vim
 Summary(zh_CN.UTF-8):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
+Requires:	vim-plugin-securemodelines
 # mktemp is for vimtutor
 Requires:	mktemp
 Requires:	vi-editor
