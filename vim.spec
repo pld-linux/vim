@@ -101,7 +101,7 @@ BuildRequires:	ncurses-devel
 %{?with_motif:BuildRequires:	openmotif-devel}
 %{?with_perl:BuildRequires:	perl-devel}
 %{?with_python:BuildRequires:	python-devel >= 2.5}
-BuildRequires:	rpmbuild(macros) >= 1.351
+BuildRequires:	rpmbuild(macros) >= 1.426
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
 Obsoletes:	kvim
@@ -801,7 +801,7 @@ install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdet
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
 
 # separate package
-rm %{_datadir}/vim/vim71/{ftplugin,syntax}/spec.vim
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/vim71/{ftplugin,syntax}/spec.vim
 
 # no autodeps
 chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/doc/vim2html.pl
