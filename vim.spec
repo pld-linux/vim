@@ -17,9 +17,8 @@
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 #
-%define		_ver		7.1
-%define		_patchlevel	236
-%define		_rel		1
+%define		ver		7.1
+%define		patchlevel	244
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -34,16 +33,16 @@ Summary(ru.UTF-8):	Visual editor IMproved - Единственно Правил�
 Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
-Version:	%{_ver}.%{_patchlevel}
-Release:	%{_rel}
+Version:	%{ver}.%{patchlevel}
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
-Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{_ver}.tar.bz2
+Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 # Source0-md5:	44c6b4914f38d6f9aa959640b89da329
-Source1:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{_ver}-lang.tar.gz
+Source1:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{ver}-lang.tar.gz
 # Source1-md5:	144aa049ba70621acf4247f0459f3ee7
-Source2:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{_ver}-extra.tar.gz
+Source2:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{ver}-extra.tar.gz
 # Source2-md5:	605cc7ae31bcc9d7864bb0bb6025f55d
 Source3:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source3-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
@@ -56,11 +55,9 @@ Source13:	g%{name}-gnome.desktop
 Source14:	%{name}.desktop
 # http://www.vim.org/scripts/script.php?script_id=415 (1.15)
 Source15:	zenburn.%{name}
-Source16:	spec.%{name}
 # http://www.vim.org/scripts/script.php?script_id=1491 (0.7.3)
 Source17:	javascript.%{name}
 Source18:	nagios.%{name}
-Source19:	%{name}-ftplugin-spec.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -90,7 +87,7 @@ Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-selinux.patch
 Patch106:	%{name}-autopaste.patch
 Patch107:	%{name}-ft-cron.patch
-%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 %{_patchlevel}
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 %{patchlevel}
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
@@ -306,6 +303,7 @@ Summary(uk.UTF-8):	Файли, потрібні для будь-якої вер�
 Summary(zh_CN.UTF-8):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
 Requires:	vim-plugin-securemodelines
+Requires:	vim-syntax-spec
 # mktemp is for vimtutor
 Requires:	mktemp
 Requires:	vi-editor
@@ -503,7 +501,7 @@ GNOME, что позволяет запускать VIM как приложен�
 %setup -q -n %{name}71 -b1 -b2
 
 # official patches
-%patchset_patch 1 %{_patchlevel}
+%patchset_patch 1 %{patchlevel}
 
 %patch0 -p1
 %patch1 -p1
@@ -544,10 +542,8 @@ GNOME, что позволяет запускать VIM как приложен�
 
 install %{SOURCE14} runtime/indent
 install %{SOURCE15} runtime/colors
-install %{SOURCE16} runtime/syntax
 install %{SOURCE17} runtime/syntax
 install %{SOURCE18} runtime/syntax
-install %{SOURCE19} runtime/ftplugin/spec.vim
 
 %build
 cd src
@@ -803,6 +799,9 @@ unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE4}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
+
+# separate package
+rm %{_datadir}/vim/vim71/{ftplugin,syntax}/spec.vim
 
 # no autodeps
 chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/doc/vim2html.pl
