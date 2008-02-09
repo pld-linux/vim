@@ -1,0 +1,165 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.243
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.243 (after 7.1.240)
+Problem:    "U" doesn't work on all text in Visual mode. (Adri Verhoef)
+Solution:   Loop over all the lines to be changed.  Add tests for this.
+Files:	    src/ops.c, src/testdir/test39.in, src/testdir/test39.ok
+
+
+*** ../vim-7.1.242/src/ops.c	Tue Jan 22 16:01:25 2008
+--- src/ops.c	Mon Feb  4 22:23:22 2008
+***************
+*** 2197,2203 ****
+  #ifdef FEAT_VISUAL
+      struct block_def	bd;
+  #endif
+!     int			did_change;
+  
+      if (u_save((linenr_T)(oap->start.lnum - 1),
+  				       (linenr_T)(oap->end.lnum + 1)) == FAIL)
+--- 2197,2203 ----
+  #ifdef FEAT_VISUAL
+      struct block_def	bd;
+  #endif
+!     int			did_change = FALSE;
+  
+      if (u_save((linenr_T)(oap->start.lnum - 1),
+  				       (linenr_T)(oap->end.lnum + 1)) == FAIL)
+***************
+*** 2242,2248 ****
+  	else if (!oap->inclusive)
+  	    dec(&(oap->end));
+  
+! 	did_change = swapchars(oap->op_type, &pos, oap->end.col - pos.col + 1);
+  	if (did_change)
+  	{
+  	    changed_lines(oap->start.lnum, oap->start.col, oap->end.lnum + 1,
+--- 2242,2259 ----
+  	else if (!oap->inclusive)
+  	    dec(&(oap->end));
+  
+! 	if (pos.lnum == oap->end.lnum)
+! 	    did_change = swapchars(oap->op_type, &pos,
+! 						  oap->end.col - pos.col + 1);
+! 	else
+! 	    for (;;)
+! 	    {
+! 		did_change |= swapchars(oap->op_type, &pos,
+! 				pos.lnum == oap->end.lnum ? oap->end.col + 1:
+! 					   (int)STRLEN(ml_get_pos(&pos)));
+! 		if (ltoreq(oap->end, pos) || inc(&pos) == -1)
+! 		    break;
+! 	    }
+  	if (did_change)
+  	{
+  	    changed_lines(oap->start.lnum, oap->start.col, oap->end.lnum + 1,
+***************
+*** 2314,2330 ****
+      for (todo = length; todo > 0; --todo)
+      {
+  # ifdef FEAT_MBYTE
+- 	int pos_col = pos->col;
+- 
+  	if (has_mbyte)
+  	    /* we're counting bytes, not characters */
+  	    todo -= (*mb_ptr2len)(ml_get_pos(pos)) - 1;
+  # endif
+  	did_change |= swapchar(op_type, pos);
+- # ifdef FEAT_MBYTE
+- 	/* Changing German sharp s to SS increases the column. */
+- 	todo += pos->col - pos_col;
+- # endif
+  	if (inc(pos) == -1)    /* at end of file */
+  	    break;
+      }
+--- 2325,2335 ----
+*** ../vim-7.1.242/src/testdir/test39.in	Sun Jun 13 18:21:09 2004
+--- src/testdir/test39.in	Wed Feb  6 13:57:37 2008
+***************
+*** 1,8 ****
+--- 1,10 ----
+  
+  Test Visual block mode commands
++ And test "U" in Visual mode, also on German sharp S.
+  
+  STARTTEST
+  :so small.vim
++ :so mbyte.vim
+  /^abcde
+  :" Test shift-right of a block
+  jlllljj>wlljlll>
+***************
+*** 14,20 ****
+  Gllllkkklllrq
+  :" Test block-change
+  G$khhhhhkkcmno
+! :$-4,$wq! test.out
+  ENDTEST
+  
+  abcdefghijklm
+--- 16,37 ----
+  Gllllkkklllrq
+  :" Test block-change
+  G$khhhhhkkcmno
+! :$-4,$w! test.out
+! :" gUe must uppercase a whole word, also when ß changes to SS
+! Gothe youtußeuu endYpk0wgUe
+! :" gUfx must uppercase until x, inclusive.
+! O- youßtußexu -0fogUfx
+! :" VU must uppercase a whole line
+! YpkVU
+! :" same, when it's the last line in the buffer
+! YPGi111VUddP
+! :" Uppercase two lines
+! Oblah di
+! doh dutVkUj
+! :" Uppercase part of two lines
+! ddppi333k0i222fyllvjfuUk
+! :/^the/,$w >> test.out
+! :qa!
+  ENDTEST
+  
+  abcdefghijklm
+*** ../vim-7.1.242/src/testdir/test39.ok	Sun Jun 13 18:59:28 2004
+--- src/testdir/test39.ok	Tue Feb  5 22:25:38 2008
+***************
+*** 3,5 ****
+--- 3,13 ----
+  axyzqqqqef mno        ghijklm
+  axyzqqqqefgmnoklm
+  abcdqqqqijklm
++ the YOUTUSSEUU end
++ - yOUSSTUSSEXu -
++ THE YOUTUSSEUU END
++ 111THE YOUTUSSEUU END
++ BLAH DI
++ DOH DUT
++ 222the yoUTUSSEUU END
++ 333THE YOUTUßeuu end
+*** ../vim-7.1.242/src/version.c	Sat Jan 26 21:15:00 2008
+--- src/version.c	Wed Feb  6 14:41:00 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     243,
+  /**/
+
+-- 
+It's totally unfair to suggest - as many have - that engineers are socially
+inept.  Engineers simply have different objectives when it comes to social
+interaction.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

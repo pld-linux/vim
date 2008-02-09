@@ -1,0 +1,58 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.244
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.244
+Problem:    GUI may have part of the command line cut off.
+Solution:   Don't round the number of lines up, always round down.
+	    (Tony Houghton, Scott Dillard)
+Files:	    src/gui.c
+
+
+*** ../vim-7.1.243/src/gui.c	Sat Jan 19 15:55:51 2008
+--- src/gui.c	Wed Feb  6 16:43:44 2008
+***************
+*** 1294,1304 ****
+      out_flush();
+  
+      gui.num_cols = (pixel_width - gui_get_base_width()) / gui.char_width;
+!     gui.num_rows = (pixel_height - gui_get_base_height()
+! #if !defined(FEAT_GUI_PHOTON) && !defined(FEAT_GUI_MSWIN)
+! 				    + (gui.char_height / 2)
+! #endif
+! 					) / gui.char_height;
+  
+      gui_position_components(pixel_width);
+  
+--- 1294,1300 ----
+      out_flush();
+  
+      gui.num_cols = (pixel_width - gui_get_base_width()) / gui.char_width;
+!     gui.num_rows = (pixel_height - gui_get_base_height()) / gui.char_height;
+  
+      gui_position_components(pixel_width);
+  
+*** ../vim-7.1.243/src/version.c	Wed Feb  6 14:43:50 2008
+--- src/version.c	Wed Feb  6 17:32:35 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     244,
+  /**/
+
+-- 
+A consultant is a person who takes your money and annoys your employees while
+tirelessly searching for the best way to extend the consulting contract.
+				(Scott Adams - The Dilbert principle)
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
