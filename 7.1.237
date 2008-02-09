@@ -1,0 +1,54 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.237
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.237
+Problem:    Compiler warning on an Alpha processor in Motif code.
+Solution:   Change a typecast. (Adri Verhoef)
+Files:	    src/gui_motif.c
+
+
+*** ../vim-7.1.236/src/gui_motif.c	Thu May 10 19:51:05 2007
+--- src/gui_motif.c	Mon Jan 21 21:03:55 2008
+***************
+*** 3813,3819 ****
+  
+      XtAddCallback(frdp->find, XmNactivateCallback,
+  	    find_replace_callback,
+! 	    (XtPointer) (do_replace ? FRD_R_FINDNEXT : FRD_FINDNEXT));
+  
+      if (do_replace)
+      {
+--- 3813,3819 ----
+  
+      XtAddCallback(frdp->find, XmNactivateCallback,
+  	    find_replace_callback,
+! 	    (do_replace ? (XtPointer)FRD_R_FINDNEXT : (XtPointer)FRD_FINDNEXT));
+  
+      if (do_replace)
+      {
+*** ../vim-7.1.236/src/version.c	Sat Jan 19 15:55:51 2008
+--- src/version.c	Tue Jan 22 11:05:12 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     237,
+  /**/
+
+-- 
+I am always surprised in the Linux world how quickly solutions can be
+obtained.  (Imagine sending an email to Bill Gates, asking why Windows
+crashed, and how to fix it...  and then getting an answer that fixed the
+problem... <0>_<0> !)		              -- Mark Langdon
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

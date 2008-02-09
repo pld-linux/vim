@@ -1,0 +1,61 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.238
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.238
+Problem:    Using the 'c' flag with searchpair() may cause it to fail.  Using
+	    the 'r' flag doesn't work when 'wrapscan' is set.  (A.Politz)
+Solution:   Only use the 'c' flag for the first search, not for repeating.
+	    When using 'r' imply 'W'. (Antony Scriven)
+Files:	    src/eval.c
+
+
+*** ../vim-7.1.237/src/eval.c	Sat Jan 12 16:45:25 2008
+--- src/eval.c	Tue Jan 22 11:42:28 2008
+***************
+*** 14189,14194 ****
+--- 14189,14198 ----
+  	goto theend;
+      }
+  
++     /* Using 'r' implies 'W', otherwise it doesn't work. */
++     if (flags & SP_REPEAT)
++ 	p_ws = FALSE;
++ 
+      /* Optional fifth argument: skip expression */
+      if (argvars[3].v_type == VAR_UNKNOWN
+  	    || argvars[4].v_type == VAR_UNKNOWN)
+***************
+*** 14344,14349 ****
+--- 14348,14356 ----
+  		incl(&pos);
+  	}
+  	foundpos = pos;
++ 
++ 	/* clear the start flag to avoid getting stuck here */
++ 	options &= ~SEARCH_START;
+  
+  	/* If the skip pattern matches, ignore this match. */
+  	if (*skip != NUL)
+*** ../vim-7.1.237/src/version.c	Tue Jan 22 11:06:06 2008
+--- src/version.c	Tue Jan 22 11:57:28 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     238,
+  /**/
+
+-- 
+To keep milk from turning sour: Keep it in the cow.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
