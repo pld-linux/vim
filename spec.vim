@@ -89,20 +89,21 @@ syn cluster specCommands contains=specCommand,specTarCommand,specConfigure,specC
 " frequently used rpm env vars
 syn keyword specSpecialVariablesNames contained RPM_BUILD_ROOT RPM_BUILD_DIR RPM_SOURCE_DIR RPM_OPT_FLAGS LDFLAGS CC CC_FLAGS CPPNAME CFLAGS CXX CXXFLAGS CPPFLAGS
 
-" valid macro names from /usr/lib/rpm/macros
-syn keyword specMacroNameOther contained buildroot buildsubdir distribution disturl ix86 name nil optflags perl_sitearch release requires_eq vendor version
+" valid macro names from /usr/lib/rpm/macros*
+syn keyword specMacroNameOther contained ix86 x8664 ppc
+syn keyword specMacroNameOther contained buildroot buildsubdir distribution disturl name nil optflags perl_sitearch release requires_eq vendor version
 syn keyword specMacroNameOther contained __kernel_ver date debugcflags debuginfocflags epoch kgcc kgcc_package packager
 syn keyword specMacroNameOther contained pear_package_install pear_package_setup perl_archlib perl_privlib perl_sitelib
 syn keyword specMacroNameOther contained perl_vendorarch perl_vendorlib php_pear_dir py_sitedir py_scriptdir py_sitescriptdir
 syn keyword specMacroNameOther contained requires_php_extension requires_php_pdo_module
-syn keyword specMacroNameOther contained requires_zend_extension ruby_mod_ver_requires_eq ruby_ver_requires_eq rpmcflags rpmcxxflags rpmldflags tmpdir x8664
+syn keyword specMacroNameOther contained requires_zend_extension ruby_mod_ver_requires_eq ruby_ver_requires_eq rpmcflags rpmcxxflags rpmldflags tmpdir
 syn keyword specMacroNameOther contained ruby_archdir ruby_rubylibdir ruby_vendorarchdir ruby_vendorlibdir ruby_ridir ruby_sitearchdir ruby_sitelibdir ruby_version
 syn keyword specMacroNameOther contained apache_modules_api php_sysconfdir php_includedir php_extensiondir _browserpluginsdir _browserpluginsconfdir
 syn keyword specMacroNameOther contained releq_kernel releq_kernel_up releq_kernel_smp requires_releq_kernel requires_releq_kernel_up requires_releq_kernel_smp
 
 syn match   specMacroNameOther contained '\<\(PATCH\|SOURCE\)\d*\>'
 
-" valid _macro names from /usr/lib/rpm/macros
+" valid _macro names from /usr/lib/rpm/macros*
 syn keyword specMacroNameLocal contained _aclocaldir _applnkdir _arch _binary_payload _bindir _build _build_arch _build_alias
 syn keyword specMacroNameLocal contained _build_cpu _builddir _build_os _buildshell _buildsubdir _build_vendor _bzip2bin _datadir
 syn keyword specMacroNameLocal contained _dbpath _dbpath_rebuild _defaultdocdir _desktopdir _docdir _examplesdir _excludedocs _kdedocdir
