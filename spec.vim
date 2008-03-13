@@ -1,9 +1,9 @@
 " Filename:    spec.vim
 " Purpose:     Vim syntax file
-" Language:    SPEC: Build/install scripts for Linux RPM packages
-" Maintainer:  Donovan Rebbechi elflord@pegasus.rutgers.edu
-" URL:	       http://pegasus.rutgers.edu/~elflord/vim/syntax/spec.vim
-" Last Change: Tue Oct  3 17:35:15 BRST 2000 <aurelio@conectiva.com.br>
+" Language:    SPEC: Build/install scripts for PLD Linux RPM packages
+" Maintainer:  PLD Linux <feedback@pld-linux.org>
+" URL:	       http://www.pld-linux.org/
+" Last Change: $Date$
 
 " For version 5.x: Clear all syntax items
 " For version 6.x: Quit when a syntax file was already loaded
@@ -33,9 +33,7 @@ syn match specSpecialVariables contained '\$[0-9]\|\${[0-9]}'
 syn match specCommandOpts      contained '\s\(-\w\+\|--\w[a-zA-Z0-9_-]\+\)'ms=s+1
 syn match specComment '^\s*#.*$'
 
-
 syn case match
-
 
 " matches with no highlight
 syn match specNoNumberHilite 'X11\|X11R6\|[a-zA-Z]*\.\d\|[a-zA-Z][-/]\d'
@@ -225,6 +223,11 @@ syn sync match shForSync      groupthere shFor      "\<in\>"
 syn sync match shCaseEsacSync grouphere  shCaseEsac "\<case\>"
 syn sync match shCaseEsacSync groupthere shCaseEsac "\<esac\>"
 
+" %if 0 handing
+syn region specOut start="^\s*%if\s\+0\+\>" end=".\@=\|$" contains=specOut2
+syn region specOut2 contained start="0" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
+syn region specOutSkip contained start="^\s*%if\>" end="^\s*%endif\>" contains=specOutSkip
+
 " Define the default highlighting.
 " For version 5.7 and earlier: only when not done already
 " For version 5.8 and later: only when an item doesn't have highlighting yet
@@ -302,6 +305,10 @@ if version >= 508 || !exists("did_spec_syntax_inits")
   HiLink specRevision			Number
   HiLink specLogMessage			Identifier
   HiLink specLogError			Error
+
+  HiLink specOutSkip            specOut
+  HiLink specOut2            specOut
+  HiLink specOut             Comment
 
   delcommand HiLink
 endif
