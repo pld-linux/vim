@@ -218,15 +218,13 @@ syn sync match shForSync      groupthere shFor      "\<in\>"
 syn sync match shCaseEsacSync grouphere  shCaseEsac "\<case\>"
 syn sync match shCaseEsacSync groupthere shCaseEsac "\<esac\>"
 
-syn region specIf  matchgroup=specBlock start="%ifosf\|%ifos\|%ifnos\|%ifarch\|%ifnarch\|ifdef\|ifndef\|%if\|%else"  end='%endif' contains=ALLBUT, specOutSkip
+syn region specIf  matchgroup=specBlock start="%ifosf\|%ifos\|%ifnos\|%ifarch\|%ifnarch\|ifdef\|ifndef\|%if\|%else"  end='%endif' contains=ALLBUT, specOutSkip, specOut2
 
 " %if 0 handing
 syn region specOut start="^\s*%if\s\+0\+\>" end="$" contains=specOut2
-syn region specOut2 contained start="0" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
+syn region specOut2 contained start="\<0" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
 
-"syn region specOut start="^\s*%if\s\+0\+\>" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
-
-syn region specOutSkip contained start="^\s*%if\>" skip="\\$" end="^\s*%endif\>" contains=specOutSkip
+syn region specOutSkip contained start="^\s*%if\>" end="^\s*%endif\>" contains=specOutSkip
 
 syn sync match specIfSync     grouphere  specIf     "%if\|%ifarch\|%ifos\|%ifnos"
 syn sync match specIfSync     groupthere specIf     "%endIf"
