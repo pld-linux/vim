@@ -4,6 +4,7 @@
 " Maintainer:  PLD Linux <feedback@pld-linux.org>
 " URL:	       http://www.pld-linux.org/
 " Last Change: $Date$ (UTC)
+" Version:     $Id$
 
 " For version 5.x: Clear all syntax items
 " For version 6.x: Quit when a syntax file was already loaded
