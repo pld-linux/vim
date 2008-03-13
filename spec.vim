@@ -3,7 +3,7 @@
 " Language:    SPEC: Build/install scripts for PLD Linux RPM packages
 " Maintainer:  PLD Linux <feedback@pld-linux.org>
 " URL:	       http://www.pld-linux.org/
-" Last Change: $Date$
+" Last Change: $Date$ (UTC)
 
 " For version 5.x: Clear all syntax items
 " For version 6.x: Quit when a syntax file was already loaded
@@ -201,9 +201,6 @@ syn region shQuote2 contained matchgroup=shQuoteDelim start=+"+ skip=+\\"+ end=+
 
 syn match shOperator contained '[><|!&;]\|[!=]='
 syn region shDo transparent matchgroup=specBlock start="\(^\|\s\)do\(\s\|$\)" end="\(^\|\s\)done\(\s\|$\)" contains=ALLBUT,shDoError,shCase,specPreAmble,@specListedFiles
-
-syn region specIf  matchgroup=specBlock start="%ifosf\|%ifos\|%ifnos\|%ifarch\|%ifnarch\|ifdef\|ifndef\|%if\|%else"  end='%endif'  contains=ALLBUT, specIfError, shCase, shComment
-
 syn region shIf transparent matchgroup=specBlock start="\(^\|\s\)if\(\s\|$\)" end="\(^\|\s\)fi\(\s\|$\)" contains=ALLBUT,shIfError,shCase,@specListedFiles
 
 syn region shFor  matchgroup=specBlock start="\(^\|\s\)for\(\s\|$\)" end="\(^\|\s\)in\(\s\|$\)" contains=ALLBUT,shInError,shCase,@specListedFiles
@@ -216,17 +213,23 @@ syn sync match shDoSync       grouphere  shDo       "\<do\>"
 syn sync match shDoSync       groupthere shDo       "\<done\>"
 syn sync match shIfSync       grouphere  shIf       "\<if\>"
 syn sync match shIfSync       groupthere shIf       "\<fi\>"
-syn sync match specIfSync     grouphere  specIf     "%ifarch\|%ifos\|%ifnos"
-syn sync match specIfSync     groupthere specIf     "%endIf"
 syn sync match shForSync      grouphere  shFor      "\<for\>"
 syn sync match shForSync      groupthere shFor      "\<in\>"
 syn sync match shCaseEsacSync grouphere  shCaseEsac "\<case\>"
 syn sync match shCaseEsacSync groupthere shCaseEsac "\<esac\>"
 
+syn region specIf  matchgroup=specBlock start="%ifosf\|%ifos\|%ifnos\|%ifarch\|%ifnarch\|ifdef\|ifndef\|%if\|%else"  end='%endif' contains=ALLBUT, specOutSkip
+
 " %if 0 handing
 syn region specOut start="^\s*%if\s\+0\+\>" end=".\@=\|$" contains=specOut2
 syn region specOut2 contained start="0" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
-syn region specOutSkip contained start="^\s*%if\>" end="^\s*%endif\>" contains=specOutSkip
+
+"syn region specOut start="^\s*%if\s\+0\+\>" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
+    "
+syn region specOutSkip contained start="^\s*%if\>" skip="\\$" end="^\s*%endif\>" contains=specOutSkip
+
+syn sync match specIfSync     grouphere  specIf     "%if\|%ifarch\|%ifos\|%ifnos"
+syn sync match specIfSync     groupthere specIf     "%endIf"
 
 " Define the default highlighting.
 " For version 5.7 and earlier: only when not done already
