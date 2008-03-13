@@ -136,13 +136,15 @@ syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??\
 " %% Files Section %%
 " TODO %config valid parameters: missingok\|noreplace
 " TODO %verify valid parameters: \(not\)\= \(md5\|atime\|...\)
-syn region specFilesArea matchgroup=specSection start='^%[Ff][Ii][Ll][Ee][Ss]\>'
-	\ skip='%\(attrib\|defattr\|attr\|dir\|config\|docdir\|doc\|lang\|verify\|ghost\|exclude\|dev\|if\|else\|endif\)\>'
+syn region specFilesArea matchgroup=specSection start="^%files\>"
+	\ skip="%\(attrib\|defattr\|attr\|dir\|config\|docdir\|doc\|lang\|verify\|ghost\|exclude\|dev\|if\|ifarch\|ifnarch\|else\|endif\)\>"
 	\ end='^%[a-zA-Z]'me=e-2
 	\ contains=specFilesOpts,specFilesDirective,@specListedFiles,specComment,specCommandSpecial,specMacroIdentifier,specSectionMacroBcondArea,specIf
 
 " tip: remember to include new items in specFilesArea above
-syn match  specFilesDirective contained '%\(attrib\|defattr\|attr\|dir\|config\|docdir\|doc\|lang\|verify\|ghost\|exclude\|dev\)\>'
+syn match  specFilesDirective contained '%\(dir\|docdir\|doc\|ghost\|exclude\)\>'
+syn region specFilesDirective contained start="%\(attrib\|attr\|defattr\|config\|lang\|verify\|dev\)(" end=")" contains=specAttr transparent
+syn match  specAttr contained "%\(attrib\|attr\|defattr\|config\|lang\|verify\|dev\)"
 
 " valid options for certain section headers
 syn match specDescriptionOpts contained '\s-[ln]\s*\a'ms=s+1,me=e-1
@@ -221,12 +223,12 @@ syn sync match shCaseEsacSync groupthere shCaseEsac "\<esac\>"
 syn region specIf  matchgroup=specBlock start="%ifosf\|%ifos\|%ifnos\|%ifarch\|%ifnarch\|ifdef\|ifndef\|%if\|%else"  end='%endif' contains=ALLBUT, specOutSkip, specOut2
 
 " %if 0 handing
-syn region specOut start="^\s*%if\s\+0\+\>" end="$" contains=specOut2
+syn region specOut start="^\s*%if\s\+0$" end="$" contains=specOut2
 syn region specOut2 contained start="\<0" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
 
 syn region specOutSkip contained start="^\s*%if\>" end="^\s*%endif\>" contains=specOutSkip
 
-syn sync match specIfSync     grouphere  specIf     "%if\|%ifarch\|%ifos\|%ifnos"
+syn sync match specIfSync     grouphere  specIf     "%ifarch\|%ifos\|%ifnos"
 syn sync match specIfSync     groupthere specIf     "%endIf"
 
 " Define the default highlighting.
@@ -275,6 +277,7 @@ if version >= 508 || !exists("did_spec_syntax_inits")
   HiLink specEmail			specWWWlink
   HiLink specError			Error
   HiLink specFilesDirective		specSectionMacro
+  HiLink specAttr			specSectionMacro
   HiLink specFilesOpts			specOpts
   HiLink specLicense			String
   HiLink specLicenseWarning		specError
