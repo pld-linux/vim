@@ -18,7 +18,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.1
-%define		patchlevel	244
+%define		patchlevel	278
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -34,7 +34,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
