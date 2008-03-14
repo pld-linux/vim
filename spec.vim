@@ -26,7 +26,6 @@ syn match specVariables   contained '\${\w*}' contains=specSpecialVariablesNames
 syn match specVariables   contained '\${\w*[#%][^}]*}' contains=specSubstChar
 
 syn match specMacroIdentifier contained '%\h\w*' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
-"syn match specMacroIdentifier contained '%{\w*}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
 syn region specMacroIdentifier oneline matchgroup=Special start='%{' skip='\\}' end='}' contains=specMacroNameLocal,specMacroNameOther,specPercent,specSpecialChar
 syn match specBcond contained '%{with\(out\)\?\s\+[a-zA-Z0-9_-]\+}'
 
@@ -132,7 +131,7 @@ syn keyword specMacroNameLocal contained __patch __perl __pgp __python __rm __rs
 " tip: remember do include new items on specScriptArea's skip section
 syn region specSectionMacroArea oneline matchgroup=specSectionMacro start='^%\(\(un\)\?define\|dump\|trace\|patch\d*\|setup\|configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\|cmake\|scons\|waf\|bcond_with\(out\)\?\|include\)\>' end='$' contains=specCommandOpts,specMacroIdentifier,specSectionMacroBcondArea
 syn region specSectionMacroBracketArea oneline matchgroup=specSectionMacro start='^%{\(configure2_13\|configure\|GNUconfigure\|find_lang\|makeinstall\|cmake\|scons\|waf\)}' end='$' contains=specCommandOpts,specMacroIdentifier
-syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??\(with\(out\)\?_[a-zA-Z0-9_]\+\|debug\):' skip='\\}' end='}' contains=ALLBUT,shCase
+syn region specSectionMacroBcondArea oneline matchgroup=specBlock start='%{!\??\(with\(out\)\?_[a-zA-Z0-9_]\+\|debug\):' skip='\\}' end='}' contains=ALL
 
 " %% Files Section %%
 " TODO %config valid parameters: missingok\|noreplace
@@ -225,7 +224,7 @@ syn region specIf  matchgroup=specBlock start="%ifosf\|%ifos\|%ifnos\|%ifarch\|%
 
 " %if 0 handing
 syn region specOut start="^\s*%if\s\+0$" end="$" contains=specOut2
-syn region specOut2 contained start="\<0" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
+syn region specOut2 contained start="%if\s\+0" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
 
 syn region specOutSkip contained start="^\s*%if\>" end="^\s*%endif\>" contains=specOutSkip
 
