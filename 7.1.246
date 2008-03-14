@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.246
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.246
+Problem:    Configure hangs when the man pager is something strange. (lorien)
+Solution:   Set MANPAGER and PAGER to "cat". (Micah Cowan)
+Files:	    src/auto/configure, src/configure.in
+
+
+*** ../vim-7.1.245/src/auto/configure	Tue Jan  1 16:25:33 2008
+--- src/auto/configure	Wed Feb 13 10:22:56 2008
+***************
+*** 14259,14265 ****
+  echo "$as_me:$LINENO: checking how to run man with a section nr" >&5
+  echo $ECHO_N "checking how to run man with a section nr... $ECHO_C" >&6
+  MANDEF="man"
+! (eval man -s 2 read) < /dev/null > /dev/null 2>&5 && MANDEF="man -s"
+  echo "$as_me:$LINENO: result: $MANDEF" >&5
+  echo "${ECHO_T}$MANDEF" >&6
+  if test "$MANDEF" = "man -s"; then
+--- 14259,14265 ----
+  echo "$as_me:$LINENO: checking how to run man with a section nr" >&5
+  echo $ECHO_N "checking how to run man with a section nr... $ECHO_C" >&6
+  MANDEF="man"
+! (eval MANPAGER=cat PAGER=cat man -s 2 read) < /dev/null > /dev/null 2>&5 && MANDEF="man -s"
+  echo "$as_me:$LINENO: result: $MANDEF" >&5
+  echo "${ECHO_T}$MANDEF" >&6
+  if test "$MANDEF" = "man -s"; then
+*** ../vim-7.1.245/src/configure.in	Tue Jan  1 16:25:33 2008
+--- src/configure.in	Fri Jan 25 20:51:51 2008
+***************
+*** 2726,2732 ****
+  dnl Check how we can run man with a section number
+  AC_MSG_CHECKING(how to run man with a section nr)
+  MANDEF="man"
+! (eval man -s 2 read) < /dev/null > /dev/null 2>&AC_FD_CC && MANDEF="man -s"
+  AC_MSG_RESULT($MANDEF)
+  if test "$MANDEF" = "man -s"; then
+    AC_DEFINE(USEMAN_S)
+--- 2726,2732 ----
+  dnl Check how we can run man with a section number
+  AC_MSG_CHECKING(how to run man with a section nr)
+  MANDEF="man"
+! (eval MANPAGER=cat PAGER=cat man -s 2 read) < /dev/null > /dev/null 2>&AC_FD_CC && MANDEF="man -s"
+  AC_MSG_RESULT($MANDEF)
+  if test "$MANDEF" = "man -s"; then
+    AC_DEFINE(USEMAN_S)
+*** ../vim-7.1.245/src/version.c	Sun Feb 10 22:25:12 2008
+--- src/version.c	Wed Feb 13 10:26:47 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     246,
+  /**/
+
+-- 
+Anyone who is capable of getting themselves made President should on no
+account be allowed to do the job.
+		-- Douglas Adams, "The Hitchhiker's Guide to the Galaxy"
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

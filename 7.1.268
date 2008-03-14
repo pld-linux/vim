@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.268
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.268
+Problem:    Always shows "+" at end of screen line with: ":set
+	    listchars=eol:$,extends:+ nowrap list cursorline" (Gary Johnson)
+Solution:   Check for lcs_eol_one instead of lcs_eol.
+Files:	    src/screen.c
+
+
+*** ../vim-7.1.267/src/screen.c	Wed Feb 20 14:15:45 2008
+--- src/screen.c	Sun Mar  9 14:26:14 2008
+***************
+*** 4527,4533 ****
+  #endif
+  		    col == W_WIDTH(wp) - 1)
+  		&& (*ptr != NUL
+! 		    || (wp->w_p_list && lcs_eol != NUL && p_extra != at_end_str)
+  		    || (n_extra && (c_extra != NUL || *p_extra != NUL))))
+  	{
+  	    c = lcs_ext;
+--- 4527,4533 ----
+  #endif
+  		    col == W_WIDTH(wp) - 1)
+  		&& (*ptr != NUL
+! 		    || (wp->w_p_list && lcs_eol_one > 0)
+  		    || (n_extra && (c_extra != NUL || *p_extra != NUL))))
+  	{
+  	    c = lcs_ext;
+*** ../vim-7.1.267/src/version.c	Thu Mar  6 22:44:45 2008
+--- src/version.c	Sun Mar  9 14:24:59 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     268,
+  /**/
+
+-- 
+From "know your smileys":
+ :-*	A big kiss!
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

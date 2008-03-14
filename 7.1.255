@@ -1,0 +1,50 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.255
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.255
+Problem:    Vim doesn't support utf-32. (Yongwei Wu)
+Solution:   Add aliases for utf-32, it's the same as ucs-4.
+Files:	    src/mbyte.c
+
+
+*** ../vim-7.1.254/src/mbyte.c	Sun Jan  6 17:18:16 2008
+--- src/mbyte.c	Tue Feb 19 20:31:48 2008
+***************
+*** 360,365 ****
+--- 360,371 ----
+      {"ucs4be",		IDX_UCS4},
+      {"ucs-4be",		IDX_UCS4},
+      {"ucs4le",		IDX_UCS4LE},
++     {"utf32",		IDX_UCS4},
++     {"utf-32",		IDX_UCS4},
++     {"utf32be",		IDX_UCS4},
++     {"utf-32be",	IDX_UCS4},
++     {"utf32le",		IDX_UCS4LE},
++     {"utf-32le",	IDX_UCS4LE},
+      {"932",		IDX_CP932},
+      {"949",		IDX_CP949},
+      {"936",		IDX_CP936},
+*** ../vim-7.1.254/src/version.c	Wed Feb 20 10:57:11 2008
+--- src/version.c	Wed Feb 20 11:27:00 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     255,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+37. You start looking for hot HTML addresses in public restrooms.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

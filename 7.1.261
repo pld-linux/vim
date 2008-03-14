@@ -1,0 +1,78 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.261
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.261
+Problem:    When a 2 byte BOM is detected Vim uses UCS-2, which doesn't work
+	    for UTF-16 text. (Tony Mechelynck)
+Solution:   Default to UTF-16.
+Files:	    src/fileio.c, src/testdir/test42.ok
+
+
+*** ../vim-7.1.260/src/fileio.c	Fri Jan  4 16:30:40 2008
+--- src/fileio.c	Wed Feb 20 11:22:10 2008
+***************
+*** 5514,5523 ****
+      else if (p[0] == 0xfe && p[1] == 0xff
+  	    && (flags == FIO_ALL || flags == FIO_UCS2 || flags == FIO_UTF16))
+      {
+! 	if (flags == FIO_UTF16)
+! 	    name = "utf-16";	/* FE FF */
+! 	else
+  	    name = "ucs-2";	/* FE FF */
+      }
+      else if (size >= 4 && p[0] == 0 && p[1] == 0 && p[2] == 0xfe
+  	    && p[3] == 0xff && (flags == FIO_ALL || flags == FIO_UCS4))
+--- 5523,5533 ----
+      else if (p[0] == 0xfe && p[1] == 0xff
+  	    && (flags == FIO_ALL || flags == FIO_UCS2 || flags == FIO_UTF16))
+      {
+! 	/* Default to utf-16, it works also for ucs-2 text. */
+! 	if (flags == FIO_UCS2)
+  	    name = "ucs-2";	/* FE FF */
++ 	else
++ 	    name = "utf-16";	/* FE FF */
+      }
+      else if (size >= 4 && p[0] == 0 && p[1] == 0 && p[2] == 0xfe
+  	    && p[3] == 0xff && (flags == FIO_ALL || flags == FIO_UCS4))
+*** ../vim-7.1.260/src/testdir/test42.ok	Sun Jun 13 21:02:32 2004
+--- src/testdir/test42.ok	Wed Feb 20 13:27:37 2008
+***************
+*** 15,21 ****
+  ï»¿utf-8€err
+  
+  
+!   fileencoding=ucs-2
+    bomb
+  ucs-2
+  
+--- 15,21 ----
+  ï»¿utf-8€err
+  
+  
+!   fileencoding=utf-16
+    bomb
+  ucs-2
+  
+*** ../vim-7.1.260/src/version.c	Wed Feb 20 14:58:46 2008
+--- src/version.c	Wed Feb 20 18:13:00 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     261,
+  /**/
+
+-- 
+Seen it all, done it all, can't remember most of it.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

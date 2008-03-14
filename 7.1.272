@@ -1,0 +1,84 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.272
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.272
+Problem:    The special buffer name [Location List] is not used for a buffer
+	    displayed in another tab page.
+Solution:   Use FOR_ALL_TAB_WINDOWS instead of FOR_ALL_WINDOWS. (Hiroaki
+	    Nishihara)
+Files:	    src/buffer.c
+
+
+*** ../vim-7.1.271/src/buffer.c	Wed Oct  3 14:30:54 2007
+--- src/buffer.c	Wed Mar  5 21:55:44 2008
+***************
+*** 4912,4918 ****
+      return retval;
+  }
+  
+! #ifdef FEAT_VIMINFO
+      int
+  read_viminfo_bufferlist(virp, writing)
+      vir_T	*virp;
+--- 4912,4918 ----
+      return retval;
+  }
+  
+! #if defined(FEAT_VIMINFO) || defined(PROTO)
+      int
+  read_viminfo_bufferlist(virp, writing)
+      vir_T	*virp;
+***************
+*** 5033,5045 ****
+  #if defined(FEAT_QUICKFIX) && defined(FEAT_WINDOWS)
+      if (bt_quickfix(buf))
+      {
+! 	win_T	*win;
+  
+  	/*
+  	 * For location list window, w_llist_ref points to the location list.
+  	 * For quickfix window, w_llist_ref is NULL.
+  	 */
+! 	FOR_ALL_WINDOWS(win)
+  	    if (win->w_buffer == buf)
+  		break;
+  	if (win != NULL && win->w_llist_ref != NULL)
+--- 5033,5046 ----
+  #if defined(FEAT_QUICKFIX) && defined(FEAT_WINDOWS)
+      if (bt_quickfix(buf))
+      {
+! 	win_T	    *win;
+! 	tabpage_T   *tp;
+  
+  	/*
+  	 * For location list window, w_llist_ref points to the location list.
+  	 * For quickfix window, w_llist_ref is NULL.
+  	 */
+! 	FOR_ALL_TAB_WINDOWS(tp, win)
+  	    if (win->w_buffer == buf)
+  		break;
+  	if (win != NULL && win->w_llist_ref != NULL)
+*** ../vim-7.1.271/src/version.c	Tue Mar 11 22:01:16 2008
+--- src/version.c	Wed Mar 12 12:21:13 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     272,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+113. You are asked about a bus schedule, you wonder if it is 16 or 32 bits.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

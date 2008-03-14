@@ -1,0 +1,55 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.260
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.260
+Problem:    Cursor positioning problem after ^@ wrapping halfway when
+	    'encoding' is utf-8.
+Solution:   Only count a position for printable characters.  (partly by
+	    Yukihiro Nakadaira)
+Files:	    src/charset.c
+
+
+*** ../vim-7.1.259/src/charset.c	Sun Aug 19 22:42:27 2007
+--- src/charset.c	Wed Feb 20 14:39:04 2008
+***************
+*** 1290,1296 ****
+  		    /* If a double-cell char doesn't fit at the end of a line
+  		     * it wraps to the next line, it's like this char is three
+  		     * cells wide. */
+! 		    if (incr == 2 && wp->w_p_wrap && in_win_border(wp, vcol))
+  		    {
+  			++incr;
+  			head = 1;
+--- 1290,1297 ----
+  		    /* If a double-cell char doesn't fit at the end of a line
+  		     * it wraps to the next line, it's like this char is three
+  		     * cells wide. */
+! 		    if (incr == 2 && wp->w_p_wrap && MB_BYTE2LEN(*ptr) > 1
+! 			    && in_win_border(wp, vcol))
+  		    {
+  			++incr;
+  			head = 1;
+*** ../vim-7.1.259/src/version.c	Wed Feb 20 14:15:45 2008
+--- src/version.c	Wed Feb 20 14:57:45 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     260,
+  /**/
+
+-- 
+The users that I support would double-click on a landmine to find out
+what happens.				-- A system administrator
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

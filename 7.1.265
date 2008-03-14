@@ -1,0 +1,46 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.265
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.265
+Problem:    When 'isfname' contains a space, cmdline completion can hang.
+	    (James Vega)
+Solution:   Reset the "len" variable.
+Files:	    src/ex_docmd.c
+
+
+*** ../vim-7.1.264/src/ex_docmd.c	Sat Jan 19 15:55:51 2008
+--- src/ex_docmd.c	Sun Feb 24 22:09:52 2008
+***************
+*** 3346,3351 ****
+--- 3346,3352 ----
+  #endif
+  		    ))
+  	    {
++ 		len = 0;  /* avoid getting stuck when space is in 'isfname' */
+  		while (*p != NUL)
+  		{
+  #ifdef FEAT_MBYTE
+*** ../vim-7.1.264/src/version.c	Mon Feb 25 21:54:23 2008
+--- src/version.c	Tue Feb 26 21:28:25 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     265,
+  /**/
+
+-- 
+Q: What is a patch 22?
+A: A patch you need to include to make it possible to include patches.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,53 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.271
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.271
+Problem:    In a Vim build without autocommands, checking a file that was
+	    changed externally causes the current buffer to be changed
+	    unexpectedly.  (Karsten Hopp)
+Solution:   Store "curbuf" instead of "buf".
+Files:	    src/fileio.c
+
+
+*** ../vim-7.1.270/src/fileio.c	Wed Feb 20 18:14:25 2008
+--- src/fileio.c	Tue Mar 11 21:35:05 2008
+***************
+*** 9239,9245 ****
+      aco_save_T	*aco;		/* structure to save values in */
+      buf_T	*buf;		/* new curbuf */
+  {
+!     aco->save_buf = buf;
+      curbuf = buf;
+      curwin->w_buffer = buf;
+  }
+--- 9248,9254 ----
+      aco_save_T	*aco;		/* structure to save values in */
+      buf_T	*buf;		/* new curbuf */
+  {
+!     aco->save_buf = curbuf;
+      curbuf = buf;
+      curwin->w_buffer = buf;
+  }
+*** ../vim-7.1.270/src/version.c	Mon Mar 10 21:33:52 2008
+--- src/version.c	Tue Mar 11 21:57:30 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     271,
+  /**/
+
+-- 
+In a world without walls and borders, who needs windows and gates?
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

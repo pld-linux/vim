@@ -1,0 +1,76 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.249
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.249
+Problem:    After "U" the cursor can be past end of line.  (Adri Verhoef)
+Solution:   Adjust the cursor position in u_undoline().
+Files:	    src/undo.c
+
+
+*** ../vim-7.1.248/src/undo.c	Sat Nov 10 22:50:20 2007
+--- src/undo.c	Wed Feb 13 15:17:54 2008
+***************
+*** 1814,1826 ****
+      if (undo_off)
+  	return;
+  
+!     if (curbuf->b_u_line_ptr == NULL ||
+! 			curbuf->b_u_line_lnum > curbuf->b_ml.ml_line_count)
+      {
+  	beep_flush();
+  	return;
+      }
+! 	/* first save the line for the 'u' command */
+      if (u_savecommon(curbuf->b_u_line_lnum - 1,
+  				curbuf->b_u_line_lnum + 1, (linenr_T)0) == FAIL)
+  	return;
+--- 1814,1827 ----
+      if (undo_off)
+  	return;
+  
+!     if (curbuf->b_u_line_ptr == NULL
+! 			|| curbuf->b_u_line_lnum > curbuf->b_ml.ml_line_count)
+      {
+  	beep_flush();
+  	return;
+      }
+! 
+!     /* first save the line for the 'u' command */
+      if (u_savecommon(curbuf->b_u_line_lnum - 1,
+  				curbuf->b_u_line_lnum + 1, (linenr_T)0) == FAIL)
+  	return;
+***************
+*** 1840,1845 ****
+--- 1841,1847 ----
+  	curbuf->b_u_line_colnr = curwin->w_cursor.col;
+      curwin->w_cursor.col = t;
+      curwin->w_cursor.lnum = curbuf->b_u_line_lnum;
++     check_cursor_col();
+  }
+  
+  /*
+*** ../vim-7.1.248/src/version.c	Wed Feb 13 12:41:30 2008
+--- src/version.c	Wed Feb 13 15:20:12 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     249,
+  /**/
+
+-- 
+How To Keep A Healthy Level Of Insanity:
+1. At lunch time, sit in your parked car with sunglasses on and point
+   a hair dryer at passing cars. See if they slow down.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

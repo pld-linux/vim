@@ -1,0 +1,74 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.273
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.273
+Problem:    When profiling on Linux Vim exits early. (Liu Yubao)
+Solution:   When profiling don't exit on SIGPROF.
+Files:	    src/Makefile, src/os_unix.c
+
+
+*** ../vim-7.1.272/src/Makefile	Wed Mar 12 12:23:18 2008
+--- src/Makefile	Wed Mar 12 13:11:07 2008
+***************
+*** 545,551 ****
+  # For unknown reasons adding "-lc" fixes a linking problem with GCC.  That's
+  # probably a bug in the "-pg" implementation.
+  # Need to recompile everything after changing this: "make clean" "make".
+! #PROFILE_CFLAGS = -pg -g
+  #PROFILE_LIBS = -pg
+  #PROFILE_LIBS = -pg -lc
+  
+--- 545,551 ----
+  # For unknown reasons adding "-lc" fixes a linking problem with GCC.  That's
+  # probably a bug in the "-pg" implementation.
+  # Need to recompile everything after changing this: "make clean" "make".
+! #PROFILE_CFLAGS = -pg -g -DWE_ARE_PROFILING
+  #PROFILE_LIBS = -pg
+  #PROFILE_LIBS = -pg -lc
+  
+*** ../vim-7.1.272/src/os_unix.c	Sun Feb 10 22:25:12 2008
+--- src/os_unix.c	Wed Mar  5 22:15:41 2008
+***************
+*** 269,276 ****
+  #ifdef SIGVTALRM
+      {SIGVTALRM,	    "VTALRM",	TRUE},
+  #endif
+! #if defined(SIGPROF) && !defined(FEAT_MZSCHEME)
+!     /* MzScheme uses SIGPROF for its own needs */
+      {SIGPROF,	    "PROF",	TRUE},
+  #endif
+  #ifdef SIGXCPU
+--- 269,277 ----
+  #ifdef SIGVTALRM
+      {SIGVTALRM,	    "VTALRM",	TRUE},
+  #endif
+! #if defined(SIGPROF) && !defined(FEAT_MZSCHEME) && !defined(WE_ARE_PROFILING)
+!     /* MzScheme uses SIGPROF for its own needs; On Linux with profiling
+!      * this makes Vim exit.  WE_ARE_PROFILING is defined in Makefile.  */
+      {SIGPROF,	    "PROF",	TRUE},
+  #endif
+  #ifdef SIGXCPU
+*** ../vim-7.1.272/src/version.c	Wed Mar 12 12:22:56 2008
+--- src/version.c	Wed Mar 12 13:08:59 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     273,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+114. You are counting items, you go "0,1,2,3,4,5,6,7,8,9,A,B,C,D...".
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

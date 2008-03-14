@@ -1,0 +1,94 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.270
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.270
+Problem:    ":?foo?" matches in current line since patch 7.1.025. (A.Politz)
+Solution:   Remove the SEARCH_START flag.
+Files:	    src/ex_docmd.c, src/search.c
+
+
+*** ../vim-7.1.269/src/ex_docmd.c	Tue Feb 26 21:29:06 2008
+--- src/ex_docmd.c	Sun Mar  2 20:50:43 2008
+***************
+*** 3932,3939 ****
+  				curwin->w_cursor.col = 0;
+  			    searchcmdlen = 0;
+  			    if (!do_search(NULL, c, cmd, 1L,
+! 					SEARCH_HIS + SEARCH_MSG + SEARCH_START,
+! 					NULL))
+  			    {
+  				curwin->w_cursor = pos;
+  				cmd = NULL;
+--- 3932,3938 ----
+  				curwin->w_cursor.col = 0;
+  			    searchcmdlen = 0;
+  			    if (!do_search(NULL, c, cmd, 1L,
+! 					       SEARCH_HIS | SEARCH_MSG, NULL))
+  			    {
+  				curwin->w_cursor = pos;
+  				cmd = NULL;
+***************
+*** 3980,3987 ****
+  				pos.col = 0;
+  			    if (searchit(curwin, curbuf, &pos,
+  					*cmd == '?' ? BACKWARD : FORWARD,
+! 					(char_u *)"", 1L,
+! 					SEARCH_MSG + SEARCH_START,
+  						i, (linenr_T)0, NULL) != FAIL)
+  				lnum = pos.lnum;
+  			    else
+--- 3979,3985 ----
+  				pos.col = 0;
+  			    if (searchit(curwin, curbuf, &pos,
+  					*cmd == '?' ? BACKWARD : FORWARD,
+! 					(char_u *)"", 1L, SEARCH_MSG,
+  						i, (linenr_T)0, NULL) != FAIL)
+  				lnum = pos.lnum;
+  			    else
+*** ../vim-7.1.269/src/search.c	Wed Feb 20 13:41:14 2008
+--- src/search.c	Sun Mar  2 22:00:50 2008
+***************
+*** 538,544 ****
+  	return FAIL;
+      }
+  
+!     if (options & SEARCH_START)
+  	extra_col = 0;
+  #ifdef FEAT_MBYTE
+      /* Watch out for the "col" being MAXCOL - 2, used in a closed fold. */
+--- 538,547 ----
+  	return FAIL;
+      }
+  
+!     /* When not accepting a match at the start position set "extra_col" to a
+!      * non-zero value.  Don't do that when starting at MAXCOL, since MAXCOL +
+!      * 1 is zero. */
+!     if ((options & SEARCH_START) || pos->col == MAXCOL)
+  	extra_col = 0;
+  #ifdef FEAT_MBYTE
+      /* Watch out for the "col" being MAXCOL - 2, used in a closed fold. */
+*** ../vim-7.1.269/src/version.c	Sun Mar  9 16:45:16 2008
+--- src/version.c	Mon Mar 10 21:32:07 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     270,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+102. When filling out your driver's license application, you give
+     your IP address.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

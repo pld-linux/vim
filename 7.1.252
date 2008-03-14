@@ -1,0 +1,47 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.252
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.252 (after 7.1.243)
+Problem:    Test 39 fails when the environment has a utf-8 locale. (Dominique
+	    Pelle)
+Solution:   Force 'encoding' to be latin1.
+Files:	    src/testdir/test39.in
+
+
+*** ../vim-7.1.251/src/testdir/test39.in	Wed Feb  6 14:43:50 2008
+--- src/testdir/test39.in	Thu Feb 14 22:16:57 2008
+***************
+*** 5,10 ****
+--- 5,12 ----
+  STARTTEST
+  :so small.vim
+  :so mbyte.vim
++ :" This only works when 'encoding' is "latin1", don't depend on the environment
++ :set enc=latin1
+  /^abcde
+  :" Test shift-right of a block
+  jlllljj>wlljlll>
+*** ../vim-7.1.251/src/version.c	Wed Feb 13 21:48:24 2008
+--- src/version.c	Thu Feb 14 22:18:11 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     252,
+  /**/
+
+-- 
+How To Keep A Healthy Level Of Insanity:
+9. As often as possible, skip rather than walk.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

@@ -1,0 +1,92 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.245
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.245
+Problem:    Pressing CTRL-\ three times causes Vim to quit.  (Ranganath Rao).
+	    Also for f CTRL-\ CTRL-\.
+Solution:   When going to cooked mode in mch_delay() set a flag to ignore
+	    SIGQUIT.
+Files:	    src/os_unix.c
+
+
+*** ../vim-7.1.244/src/os_unix.c	Sun Jan 13 16:30:23 2008
+--- src/os_unix.c	Sun Feb 10 22:07:27 2008
+***************
+*** 195,200 ****
+--- 195,201 ----
+  static int	show_shell_mess = TRUE;
+  #endif
+  static int	deadly_signal = 0;	    /* The signal we caught */
++ static int	in_mch_delay = FALSE;	    /* sleeping in mch_delay() */
+  
+  static int curr_tmode = TMODE_COOK;	/* contains current terminal mode */
+  
+***************
+*** 538,544 ****
+      if (ignoreinput)
+      {
+  	/* Go to cooked mode without echo, to allow SIGINT interrupting us
+! 	 * here */
+  	old_tmode = curr_tmode;
+  	if (curr_tmode == TMODE_RAW)
+  	    settmode(TMODE_SLEEP);
+--- 539,547 ----
+      if (ignoreinput)
+      {
+  	/* Go to cooked mode without echo, to allow SIGINT interrupting us
+! 	 * here.  But we don't want QUIT to kill us (CTRL-\ used in a
+! 	 * shell may produce SIGQUIT). */
+! 	in_mch_delay = TRUE;
+  	old_tmode = curr_tmode;
+  	if (curr_tmode == TMODE_RAW)
+  	    settmode(TMODE_SLEEP);
+***************
+*** 602,607 ****
+--- 605,611 ----
+  #endif
+  
+  	settmode(old_tmode);
++ 	in_mch_delay = FALSE;
+      }
+      else
+  	WaitForChar(msec);
+***************
+*** 922,927 ****
+--- 926,939 ----
+  #endif
+  
+  #ifdef SIGHASARG
++ # ifdef SIGQUIT
++     /* While in mch_delay() we go to cooked mode to allow a CTRL-C to
++      * interrupt us.  But in cooked mode we may also get SIGQUIT, e.g., when
++      * pressing CTRL-\, but we don't want Vim to exit then. */
++     if (in_mch_delay && sigarg == SIGQUIT)
++ 	SIGRETURN;
++ # endif
++ 
+      /* When SIGHUP, SIGQUIT, etc. are blocked: postpone the effect and return
+       * here.  This avoids that a non-reentrant function is interrupted, e.g.,
+       * free().  Calling free() again may then cause a crash. */
+*** ../vim-7.1.244/src/version.c	Wed Feb  6 17:33:19 2008
+--- src/version.c	Sun Feb 10 22:04:09 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     245,
+  /**/
+
+-- 
+Me?  A skeptic?  I trust you have proof.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
