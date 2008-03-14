@@ -10,15 +10,15 @@
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
-%bcond_with	perl		# with Perl interp
-%bcond_with	python		# with Python interp
+%bcond_without	perl		# without Perl interp
+%bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
 %bcond_with	tcl		# with Tcl interp
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.1
-%define		patchlevel	244
+%define		patchlevel	278
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -34,7 +34,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -89,6 +89,7 @@ Patch106:	%{name}-autopaste.patch
 Patch107:	%{name}-ft-cron.patch
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 %{patchlevel}
 URL:		http://www.vim.org/
+%{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
@@ -103,7 +104,6 @@ BuildRequires:	ncurses-devel
 BuildRequires:	rpmbuild(macros) >= 1.426
 %{?with_ruby:BuildRequires:	ruby-devel}
 %{?with_tcl:BuildRequires:	tcl-devel}
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 Obsoletes:	kvim
 %if %{with static}
 BuildRequires:	acl-static
@@ -302,11 +302,11 @@ Summary(sv.UTF-8):	De gemensamma filerna som behövs av alla versioner av redige
 Summary(uk.UTF-8):	Файли, потрібні для будь-якої версії редактору vim
 Summary(zh_CN.UTF-8):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
+Requires:	vim-plugin-securemodelines
 Requires:	vim-syntax-spec
 # mktemp is for vimtutor
 Requires:	mktemp
 Requires:	vi-editor
-Suggests:	vim-plugin-securemodelines
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
 
