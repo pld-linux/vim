@@ -34,7 +34,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	2
+Release:	3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -814,29 +814,29 @@ chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/efm_filter.pl
 rm -rf $RPM_BUILD_ROOT
 
 %post
-[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
 
 %postun
-[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
 
 %post -n gvim-athena
-[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
 
 %postun -n gvim-athena
-[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
 
 %post -n gvim-motif
-[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
 
 %postun -n gvim-motif
-[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
 
 %post -n gvim-gtk
-[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_post
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
 %update_icon_cache hicolor
 
 %postun -n gvim-gtk
-[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database_postun
+[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
 %update_icon_cache hicolor
 
 %post -n gvim-gnome
