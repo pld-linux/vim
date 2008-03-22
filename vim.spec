@@ -1,8 +1,6 @@
 # TODO:
 # - create vim-full (better name, anybody?) or/and other packages
 #   for scripting languages support
-# - warning: Installed (but unpackaged) file(s) found:
-#   /usr/bin/gview
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -18,7 +16,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.1
-%define		patchlevel	278
+%define		patchlevel	285
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -34,7 +32,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -55,9 +53,13 @@ Source13:	g%{name}-gnome.desktop
 Source14:	%{name}.desktop
 # http://www.vim.org/scripts/script.php?script_id=415 (1.15)
 Source15:	zenburn.%{name}
-# http://www.vim.org/scripts/script.php?script_id=1491 (0.7.3)
+# http://www.vim.org/scripts/script.php?script_id=1491 (0.7.5)
 Source17:	javascript.%{name}
 Source18:	nagios.%{name}
+# http://www.vim.org/scripts/script.php?script_id=447 (20040206)
+Source19:	exim.vim
+# http://www.vim.org/scripts/script.php?script_id=1571 (0.9.6)
+Source20:	php.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -544,6 +546,8 @@ install %{SOURCE14} runtime/indent
 install %{SOURCE15} runtime/colors
 install %{SOURCE17} runtime/syntax
 install %{SOURCE18} runtime/syntax
+install %{SOURCE19} runtime/syntax
+install %{SOURCE20} runtime/syntax
 
 %build
 cd src
@@ -1063,6 +1067,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.gtk
 %attr(755,root,root) %{_bindir}/gvimdiff
+%attr(755,root,root) %{_bindir}/gview
 %attr(755,root,root) %{_bindir}/rgvim
 %attr(755,root,root) %{_bindir}/rgview
 %attr(755,root,root) %verify(not link) %{_bindir}/gvim
