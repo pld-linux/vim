@@ -1,0 +1,52 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.280
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.280  (after 7.1.275)
+Problem:    Mac: build problems when not using multibyte feature. (Nicholas
+	    Stallard)
+Solution:   Don't define USE_IM_CONTROL when not using multibyte.
+Files:	    src/vim.h
+
+
+*** ../vim-7.1.279/src/vim.h	Wed Mar 12 17:25:50 2008
+--- src/vim.h	Thu Mar 13 23:39:21 2008
+***************
+*** 463,469 ****
+   */
+  #if defined(FEAT_XIM) \
+      || (defined(FEAT_GUI) && (defined(FEAT_MBYTE_IME) || defined(GLOBAL_IME))) \
+!     || defined(FEAT_GUI_MAC)
+  # define USE_IM_CONTROL
+  #endif
+  
+--- 466,472 ----
+   */
+  #if defined(FEAT_XIM) \
+      || (defined(FEAT_GUI) && (defined(FEAT_MBYTE_IME) || defined(GLOBAL_IME))) \
+!     || (defined(FEAT_GUI_MAC) && defined(FEAT_MBYTE))
+  # define USE_IM_CONTROL
+  #endif
+  
+*** ../vim-7.1.279/src/version.c	Sat Mar 15 12:40:23 2008
+--- src/version.c	Sat Mar 15 13:08:40 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     280,
+  /**/
+
+-- 
+Why is it called "Windows"?  "Gates" would be more appropriate...
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

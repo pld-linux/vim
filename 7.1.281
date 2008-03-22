@@ -1,0 +1,72 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.281
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.281 (after 7.1.279)
+Problem:    sa.sa_mask is not initialized.  Cscope may not exit.
+Solution:   Use sigemptyset().  Use SIGKILL instead of SIGTERM. (Dominique
+	    Pelle)
+Files:	    src/if_cscope.c
+
+
+*** ../vim-7.1.280/src/if_cscope.c	Sat Mar 15 12:40:23 2008
+--- src/if_cscope.c	Sun Mar 16 13:05:51 2008
+***************
+*** 2136,2142 ****
+  # if defined(HAVE_SIGACTION)
+  	struct sigaction sa, old;
+  
+!         /* Use sigaction() to limit the waiting time to two seconds. */
+  	sa.sa_handler = sig_handler;
+  	sa.sa_flags = SA_NODEFER;
+  	sigaction(SIGALRM, &sa, &old);
+--- 2136,2143 ----
+  # if defined(HAVE_SIGACTION)
+  	struct sigaction sa, old;
+  
+! 	/* Use sigaction() to limit the waiting time to two seconds. */
+! 	sigemptyset(&sa.sa_mask);
+  	sa.sa_handler = sig_handler;
+  	sa.sa_flags = SA_NODEFER;
+  	sigaction(SIGALRM, &sa, &old);
+***************
+*** 2169,2175 ****
+  	 */
+  	if (pid < 0 && csinfo[i].pid > 1)
+  	{
+! 	    kill(csinfo[i].pid, SIGTERM);
+  	    (void)waitpid(csinfo[i].pid, &pstat, 0);
+  	}
+      }
+--- 2170,2176 ----
+  	 */
+  	if (pid < 0 && csinfo[i].pid > 1)
+  	{
+! 	    kill(csinfo[i].pid, SIGKILL);
+  	    (void)waitpid(csinfo[i].pid, &pstat, 0);
+  	}
+      }
+*** ../vim-7.1.280/src/version.c	Sat Mar 15 13:10:57 2008
+--- src/version.c	Sun Mar 16 13:08:08 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     281,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+136. You decide to stay in a low-paying job teaching just for the
+     free Internet access.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
