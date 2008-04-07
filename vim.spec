@@ -16,7 +16,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.1
-%define		patchlevel	285
+%define		patchlevel	291
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -304,11 +304,13 @@ Summary(sv.UTF-8):	De gemensamma filerna som behövs av alla versioner av redige
 Summary(uk.UTF-8):	Файли, потрібні для будь-якої версії редактору vim
 Summary(zh_CN.UTF-8):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
+# for hicolor icons
+Requires:	hicolor-icon-theme
+Requires:	vim-plugin-securemodelines
 Requires:	vim-syntax-spec
 # mktemp is for vimtutor
 Requires:	mktemp
 Requires:	vi-editor
-Suggests:	vim-plugin-securemodelines
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
 
