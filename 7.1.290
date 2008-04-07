@@ -1,0 +1,77 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.290
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.290
+Problem:    Reading bytes that were not written when spell checking and a line
+	    has a very large indent.
+Solution:   Don't copy the start of the next line when it only contains
+	    spaces. (Dominique Pelle)
+Files:	    src/spell.c
+
+
+*** ../vim-7.1.289/src/spell.c	Sat Jan 19 15:55:51 2008
+--- src/spell.c	Sat Mar 29 13:00:28 2008
+***************
+*** 2268,2273 ****
+--- 2269,2276 ----
+  /*
+   * For spell checking: concatenate the start of the following line "line" into
+   * "buf", blanking-out special characters.  Copy less then "maxlen" bytes.
++  * Keep the blanks at the start of the next line, this is used in win_line()
++  * to skip those bytes if the word was OK.
+   */
+      void
+  spell_cat_line(buf, line, maxlen)
+***************
+*** 2284,2295 ****
+  
+      if (*p != NUL)
+      {
+! 	*buf = ' ';
+! 	vim_strncpy(buf + 1, line, maxlen - 2);
+! 	n = (int)(p - line);
+! 	if (n >= maxlen)
+! 	    n = maxlen - 1;
+! 	vim_memset(buf + 1, ' ', n);
+      }
+  }
+  
+--- 2287,2300 ----
+  
+      if (*p != NUL)
+      {
+! 	/* Only worth concatenating if there is something else than spaces to
+! 	 * concatenate. */
+! 	n = (int)(p - line) + 1;
+! 	if (n < maxlen - 1)
+! 	{
+! 	    vim_memset(buf, ' ', n);
+! 	    vim_strncpy(buf +  n, p, maxlen - 1 - n);
+! 	}
+      }
+  }
+  
+*** ../vim-7.1.289/src/version.c	Tue Apr  1 14:53:02 2008
+--- src/version.c	Tue Apr  1 17:05:55 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     290,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+209. Your house stinks because you haven't cleaned it in a week.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

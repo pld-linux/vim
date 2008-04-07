@@ -1,0 +1,62 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.287
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.287
+Problem:    Crash when reversing a list after using it. (Andy Wokula)
+Solution:   Update the pointer to the last used element. (Dominique Pelle)
+Files:	    src/eval.c
+
+
+*** ../vim-7.1.286/src/eval.c	Thu Mar 20 13:22:47 2008
+--- src/eval.c	Tue Apr  1 12:36:41 2008
+***************
+*** 13954,13959 ****
+--- 13954,13960 ----
+  	rettv->vval.v_list = l;
+  	rettv->v_type = VAR_LIST;
+  	++l->lv_refcount;
++ 	l->lv_idx = l->lv_len - l->lv_idx - 1;
+      }
+  }
+  
+***************
+*** 15202,15208 ****
+  	    if (!item_compare_func_err)
+  	    {
+  		/* Clear the List and append the items in the sorted order. */
+! 		l->lv_first = l->lv_last = NULL;
+  		l->lv_len = 0;
+  		for (i = 0; i < len; ++i)
+  		    list_append(l, ptrs[i]);
+--- 15203,15209 ----
+  	    if (!item_compare_func_err)
+  	    {
+  		/* Clear the List and append the items in the sorted order. */
+! 		l->lv_first = l->lv_last = l->lv_idx_item = NULL;
+  		l->lv_len = 0;
+  		for (i = 0; i < len; ++i)
+  		    list_append(l, ptrs[i]);
+*** ../vim-7.1.286/src/version.c	Tue Apr  1 12:05:49 2008
+--- src/version.c	Tue Apr  1 13:09:10 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     287,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+203. You're an active member of more than 20 newsgroups.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

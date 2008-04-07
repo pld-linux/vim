@@ -1,0 +1,74 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.289
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.289
+Problem:    When EXITFREE is defined and 'acd' is set freed memory is used.
+	    (Dominique Pelle)
+Solution:   Reset p_acd before freeing all buffers.
+Files:	    src/misc2.c
+
+
+*** ../vim-7.1.288/src/misc2.c	Wed Feb 20 12:22:59 2008
+--- src/misc2.c	Wed Mar 26 21:02:57 2008
+***************
+*** 751,757 ****
+  #endif
+  
+  /*
+!  * Note: if unsinged is 16 bits we can only allocate up to 64K with alloc().
+   * Use lalloc for larger blocks.
+   */
+      char_u *
+--- 752,758 ----
+  #endif
+  
+  /*
+!  * Note: if unsigned is 16 bits we can only allocate up to 64K with alloc().
+   * Use lalloc for larger blocks.
+   */
+      char_u *
+***************
+*** 1082,1088 ****
+      win_free_all();
+  #endif
+  
+!     /* Free all buffers. */
+      for (buf = firstbuf; buf != NULL; )
+      {
+  	nextbuf = buf->b_next;
+--- 1083,1093 ----
+      win_free_all();
+  #endif
+  
+!     /* Free all buffers.  Reset 'autochdir' to avoid accessing things that
+!      * were freed already. */
+! #ifdef FEAT_AUTOCHDIR
+!     p_acd = FALSE;
+! #endif
+      for (buf = firstbuf; buf != NULL; )
+      {
+  	nextbuf = buf->b_next;
+*** ../vim-7.1.288/src/version.c	Tue Apr  1 14:30:18 2008
+--- src/version.c	Tue Apr  1 14:51:06 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     289,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+207. You're given one phone call in prison and you ask them for a laptop.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

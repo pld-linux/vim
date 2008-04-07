@@ -1,0 +1,70 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.291
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.291 (after 7.1.288)
+Problem:    Compiler warning.
+Solution:   Change 50 to 50L.
+Files:	    src/if_cscope.c
+
+
+*** ../vim-7.1.290/src/if_cscope.c	Tue Apr  1 14:30:18 2008
+--- src/if_cscope.c	Tue Apr  1 20:56:02 2008
+***************
+*** 2163,2169 ****
+  	    waitpid_errno = errno;
+  	    if (pid != 0)
+  		break;  /* break unless the process is still running */
+! 	    mch_delay(50, FALSE); /* sleep 50 ms */
+  	}
+  # endif
+  	/*
+--- 2163,2169 ----
+  	    waitpid_errno = errno;
+  	    if (pid != 0)
+  		break;  /* break unless the process is still running */
+! 	    mch_delay(50L, FALSE); /* sleep 50 ms */
+  	}
+  # endif
+  	/*
+***************
+*** 2198,2204 ****
+  			alive = FALSE; /* cscope process no longer exists */
+  			break;
+  		    }
+! 		    mch_delay(50, FALSE); /* sleep 50ms */
+  		}
+  	    }
+  	    if (alive)
+--- 2198,2204 ----
+  			alive = FALSE; /* cscope process no longer exists */
+  			break;
+  		    }
+! 		    mch_delay(50L, FALSE); /* sleep 50ms */
+  		}
+  	    }
+  	    if (alive)
+*** ../vim-7.1.290/src/version.c	Tue Apr  1 17:13:54 2008
+--- src/version.c	Tue Apr  1 20:58:11 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     291,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+210. When you get a divorce, you don't care about who gets the children,
+     but discuss endlessly who can use the email address.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

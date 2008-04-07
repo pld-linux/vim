@@ -1,0 +1,66 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.286
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.286 (after 7.1.103)
+Problem:    "w" at the end of the buffer moves the cursor past the end of the
+	    line. (Markus Heidelberg)
+Solution:   Move the cursor back from the NUL when it was moved forward.
+Files:	    src/normal.c
+
+
+*** ../vim-7.1.285/src/normal.c	Sat Jan 19 15:55:51 2008
+--- src/normal.c	Wed Mar 19 20:33:44 2008
+***************
+*** 8345,8350 ****
+--- 8345,8351 ----
+      int		n;
+      int		word_end;
+      int		flag = FALSE;
++     pos_T	startpos = curwin->w_cursor;
+  
+      /*
+       * Set inclusive for the "E" and "e" command.
+***************
+*** 8405,8412 ****
+      else
+  	n = fwd_word(cap->count1, cap->arg, cap->oap->op_type != OP_NOP);
+  
+!     /* Don't leave the cursor on the NUL past the end of line. */
+!     if (n != FAIL)
+  	adjust_cursor(cap->oap);
+  
+      if (n == FAIL && cap->oap->op_type == OP_NOP)
+--- 8406,8414 ----
+      else
+  	n = fwd_word(cap->count1, cap->arg, cap->oap->op_type != OP_NOP);
+  
+!     /* Don't leave the cursor on the NUL past the end of line. Unless we
+!      * didn't move it forward. */
+!     if (lt(startpos, curwin->w_cursor))
+  	adjust_cursor(cap->oap);
+  
+      if (n == FAIL && cap->oap->op_type == OP_NOP)
+*** ../vim-7.1.285/src/version.c	Thu Mar 20 14:38:58 2008
+--- src/version.c	Tue Apr  1 12:04:54 2008
+***************
+*** 668,669 ****
+--- 668,671 ----
+  {   /* Add new patch number below this line */
++ /**/
++     286,
+  /**/
+
+-- 
+hundred-and-one symptoms of being an internet addict:
+200. You really believe in the concept of a "paperless" office.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
