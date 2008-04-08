@@ -223,13 +223,15 @@ syn sync match shCaseEsacSync groupthere shCaseEsac "\<esac\>"
 syn region specIf  matchgroup=specBlock start="%ifosf\|%ifos\|%ifnos\|%ifarch\|%ifnarch\|ifdef\|ifndef\|%if\|%else"  end='%endif' contains=ALLBUT, specOutSkip, specOut2
 
 " %if 0 handing
-syn region specOut start="^\s*%if\s\+0$" end="$" contains=specOut2
-syn region specOut2 contained start="%if\s\+0" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
+if exists("spec_if0")
+    syn region specOut start="^\s*%if\s\+0$" end="$" contains=specOut2
+    syn region specOut2 contained start="%if\s\+0" end="^\s*%\(endif\>\|else\>\)" contains=specOutSkip
 
-syn region specOutSkip contained start="^\s*%if\>" end="^\s*%endif\>" contains=specOutSkip
+    syn region specOutSkip contained start="^\s*%if\>" end="^\s*%endif\>" contains=specOutSkip
 
-syn sync match specIfSync     grouphere  specIf     "%ifarch\|%ifos\|%ifnos"
-syn sync match specIfSync     groupthere specIf     "%endIf"
+    syn sync match specIfSync     grouphere  specIf     "%ifarch\|%ifos\|%ifnos"
+    syn sync match specIfSync     groupthere specIf     "%endIf"
+endif
 
 " Define the default highlighting.
 " For version 5.7 and earlier: only when not done already
