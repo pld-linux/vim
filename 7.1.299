@@ -1,0 +1,280 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.299
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.299
+Problem:    Filetype detection doesn't work properly for file names ending in
+	    a part that is ignored and contain a space or other special
+	    characters.
+Solution:   Escape the special characters using the new fnameescape function.
+Files:	    runtime/doc/eval.txt, runtime/filetype.vim, src/eval.c,
+	    src/ex_getln.c, src/proto/ex_getln.pro, src/vim.h
+
+
+*** ../vim-7.1.298/runtime/doc/eval.txt	Wed Feb 20 20:09:44 2008
+--- runtime/doc/eval.txt	Wed May 28 16:42:42 2008
+***************
+*** 1,4 ****
+! *eval.txt*      For Vim version 7.1.  Last change: 2008 Feb 20
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+--- 1,4 ----
+! *eval.txt*      For Vim version 7.1.  Last change: 2008 May 28
+  
+  
+  		  VIM REFERENCE MANUAL    by Bram Moolenaar
+***************
+*** 1609,1614 ****
+--- 1652,1658 ----
+  				String	find directory {name} in {path}
+  findfile( {name}[, {path}[, {count}]])
+  				String	find file {name} in {path}
++ fnameescape( {fname})		String	escape special characters in {fname}
+  fnamemodify( {fname}, {mods})	String	modify file name
+  foldclosed( {lnum})		Number	first line of fold at {lnum} if closed
+  foldclosedend( {lnum})		Number	last line of fold at {lnum} if closed
+***************
+*** 2620,2625 ****
+--- 2669,2687 ----
+  <		Searches from the directory of the current file upwards until
+  		it finds the file "tags.vim".
+  
++ fnameescape({string})					*fnameescape()*
++ 		Escape {string} for use as file name command argument.  All
++ 		characters that have a special meaning, such as '%' and '|'
++ 		are escaped with a backslash.
++ 		For most systems the characters escaped are "".  For systems
++ 		where a backslash appears in a filename, it depends on the
++ 		value of 'isfname'.
++ 		Example: >
++ 			:let fname = 'some str%nge|name'
++ 			:exe "edit " . fnameescape(fname)
++ <		results in executing: >
++ 			edit some\ str\%nge\|name
++ 
+  fnamemodify({fname}, {mods})				*fnamemodify()*
+  		Modify file name {fname} according to {mods}.  {mods} is a
+  		string of characters like it is used for file names on the
+*** ../vim-7.1.298/runtime/filetype.vim	Tue May 15 09:14:33 2007
+--- runtime/filetype.vim	Wed May 28 16:39:09 2008
+***************
+*** 16,35 ****
+  augroup filetypedetect
+  
+  " Ignored extensions
+  au BufNewFile,BufRead ?\+.orig,?\+.bak,?\+.old,?\+.new,?\+.rpmsave,?\+.rpmnew
+! 	\ exe "doau filetypedetect BufRead " . expand("<afile>:r")
+  au BufNewFile,BufRead *~
+  	\ let s:name = expand("<afile>") |
+  	\ let s:short = substitute(s:name, '\~$', '', '') |
+  	\ if s:name != s:short && s:short != "" |
+! 	\   exe "doau filetypedetect BufRead " . s:short |
+  	\ endif |
+! 	\ unlet s:name |
+! 	\ unlet s:short
+  au BufNewFile,BufRead ?\+.in
+  	\ if expand("<afile>:t") != "configure.in" |
+! 	\   exe "doau filetypedetect BufRead " . expand("<afile>:r") |
+  	\ endif
+  
+  " Pattern used to match file names which should not be inspected.
+  " Currently finds compressed files.
+--- 16,38 ----
+  augroup filetypedetect
+  
+  " Ignored extensions
++ if exists("*fnameescape")
+  au BufNewFile,BufRead ?\+.orig,?\+.bak,?\+.old,?\+.new,?\+.rpmsave,?\+.rpmnew
+! 	\ exe "doau filetypedetect BufRead " . fnameescape(expand("<afile>:r"))
+  au BufNewFile,BufRead *~
+  	\ let s:name = expand("<afile>") |
+  	\ let s:short = substitute(s:name, '\~$', '', '') |
+  	\ if s:name != s:short && s:short != "" |
+! 	\   exe "doau filetypedetect BufRead " . fnameescape(s:short) |
+  	\ endif |
+! 	\ unlet s:name s:short
+  au BufNewFile,BufRead ?\+.in
+  	\ if expand("<afile>:t") != "configure.in" |
+! 	\   exe "doau filetypedetect BufRead " . fnameescape(expand("<afile>:r")) |
+  	\ endif
++ elseif &verbose > 0
++   echomsg "Warning: some filetypes will not be recognized because this version of Vim does not have fnameescape()"
++ endif
+  
+  " Pattern used to match file names which should not be inspected.
+  " Currently finds compressed files.
+*** ../vim-7.1.298/src/eval.c	Tue Apr  1 13:10:45 2008
+--- src/eval.c	Wed May 28 16:35:51 2008
+***************
+*** 507,512 ****
+--- 516,522 ----
+  static void f_filter __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_finddir __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_findfile __ARGS((typval_T *argvars, typval_T *rettv));
++ static void f_fnameescape __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_fnamemodify __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_foldclosed __ARGS((typval_T *argvars, typval_T *rettv));
+  static void f_foldclosedend __ARGS((typval_T *argvars, typval_T *rettv));
+***************
+*** 7107,7112 ****
+--- 7437,7443 ----
+      {"filter",		2, 2, f_filter},
+      {"finddir",		1, 3, f_finddir},
+      {"findfile",	1, 3, f_findfile},
++     {"fnameescape",	1, 1, f_fnameescape},
+      {"fnamemodify",	2, 2, f_fnamemodify},
+      {"foldclosed",	1, 1, f_foldclosed},
+      {"foldclosedend",	1, 1, f_foldclosedend},
+***************
+*** 9465,9470 ****
+--- 9804,9822 ----
+  }
+  
+  /*
++  * "fnameescape({string})" function
++  */
++     static void
++ f_fnameescape(argvars, rettv)
++     typval_T	*argvars;
++     typval_T	*rettv;
++ {
++     rettv->vval.v_string = vim_strsave_fnameescape(
++ 					   get_tv_string(&argvars[0]), FALSE);
++     rettv->v_type = VAR_STRING;
++ }
++ 
++ /*
+   * "fnamemodify({fname}, {mods})" function
+   */
+      static void
+*** ../vim-7.1.298/src/ex_getln.c	Tue Jan 22 12:44:03 2008
+--- src/ex_getln.c	Mon May 26 22:14:51 2008
+***************
+*** 3656,3677 ****
+  #endif
+  		    }
+  		}
+! #ifdef BACKSLASH_IN_FILENAME
+! 		{
+! 		    char_u	buf[20];
+! 		    int		j = 0;
+! 
+! 		    /* Don't escape '[' and '{' if they are in 'isfname'. */
+! 		    for (p = PATH_ESC_CHARS; *p != NUL; ++p)
+! 			if ((*p != '[' && *p != '{') || !vim_isfilec(*p))
+! 			    buf[j++] = *p;
+! 		    buf[j] = NUL;
+! 		    p = vim_strsave_escaped(files[i], buf);
+! 		}
+! #else
+! 		p = vim_strsave_escaped(files[i],
+! 			     xp->xp_shell ? SHELL_ESC_CHARS : PATH_ESC_CHARS);
+! #endif
+  		if (p != NULL)
+  		{
+  		    vim_free(files[i]);
+--- 3656,3662 ----
+  #endif
+  		    }
+  		}
+! 		p = vim_strsave_fnameescape(files[i], xp->xp_shell);
+  		if (p != NULL)
+  		{
+  		    vim_free(files[i]);
+***************
+*** 3710,3715 ****
+--- 3695,3725 ----
+  }
+  
+  /*
++  * Escape special characters in "fname" for when used as a file name argument
++  * after a Vim command, or, when "shell" is non-zero, a shell command.
++  * Returns the result in allocated memory.
++  */
++     char_u *
++ vim_strsave_fnameescape(fname, shell)
++     char_u *fname;
++     int    shell;
++ {
++ #ifdef BACKSLASH_IN_FILENAME
++     char_u	buf[20];
++     int		j = 0;
++ 
++     /* Don't escape '[' and '{' if they are in 'isfname'. */
++     for (p = PATH_ESC_CHARS; *p != NUL; ++p)
++ 	if ((*p != '[' && *p != '{') || !vim_isfilec(*p))
++ 	    buf[j++] = *p;
++     buf[j] = NUL;
++     return vim_strsave_escaped(fname, buf);
++ #else
++     return vim_strsave_escaped(fname, shell ? SHELL_ESC_CHARS : PATH_ESC_CHARS);
++ #endif
++ }
++ 
++ /*
+   * Put a backslash before the file name in "pp", which is in allocated memory.
+   */
+      static void
+*** ../vim-7.1.298/src/proto/ex_getln.pro	Sat May  5 19:24:48 2007
+--- src/proto/ex_getln.pro	Mon May 26 22:14:41 2008
+***************
+*** 24,29 ****
+--- 24,30 ----
+  void ExpandInit __ARGS((expand_T *xp));
+  void ExpandCleanup __ARGS((expand_T *xp));
+  void ExpandEscape __ARGS((expand_T *xp, char_u *str, int numfiles, char_u **files, int options));
++ char_u *vim_strsave_fnameescape __ARGS((char_u *fname, int shell));
+  void tilde_replace __ARGS((char_u *orig_pat, int num_files, char_u **files));
+  char_u *sm_gettail __ARGS((char_u *s));
+  char_u *addstar __ARGS((char_u *fname, int len, int context));
+*** ../vim-7.1.298/src/vim.h	Sun Mar 16 16:02:47 2008
+--- src/vim.h	Wed May 28 16:37:50 2008
+***************
+*** 336,345 ****
+  # endif
+  #endif
+  #ifdef BACKSLASH_IN_FILENAME
+! # define PATH_ESC_CHARS ((char_u *)" \t*?[{`%#")
+  #else
+! # define PATH_ESC_CHARS ((char_u *)" \t*?[{`$\\%#'\"|")
+! # define SHELL_ESC_CHARS ((char_u *)" \t*?[{`$\\%#'\"|<>();&!")
+  #endif
+  
+  #define NUMBUFLEN 30	    /* length of a buffer to store a number in ASCII */
+--- 336,345 ----
+  # endif
+  #endif
+  #ifdef BACKSLASH_IN_FILENAME
+! # define PATH_ESC_CHARS ((char_u *)" \t\n*?[{`%#'\"|!<")
+  #else
+! # define PATH_ESC_CHARS ((char_u *)" \t\n*?[{`$\\%#'\"|!<")
+! # define SHELL_ESC_CHARS ((char_u *)" \t\n*?[{`$\\%#'\"|!<>();&")
+  #endif
+  
+  #define NUMBUFLEN 30	    /* length of a buffer to store a number in ASCII */
+*** ../vim-7.1.298/src/version.c	Sat May 10 21:37:56 2008
+--- src/version.c	Wed May 28 16:40:11 2008
+***************
+*** 668,669 ****
+--- 673,676 ----
+  {   /* Add new patch number below this line */
++ /**/
++     299,
+  /**/
+
+-- 
+FIRST SOLDIER:  So they wouldn't be able to bring a coconut back anyway.
+SECOND SOLDIER: Wait a minute! Suppose two swallows carried it together?
+FIRST SOLDIER:  No, they'd have to have it on a line.
+                 "Monty Python and the Holy Grail" PYTHON (MONTY) PICTURES LTD
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

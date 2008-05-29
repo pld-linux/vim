@@ -1,0 +1,187 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.295
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.295
+Problem:    Vimtutor only works with vim, not gvim.
+Solution:   Add the -g flag to vimtutor. (Dominique Pelle)  Add gvimtutor.
+Files:	    src/Makefile, src/gvimtutor, src/vimtutor, runtime/doc/vimtutor.1
+
+
+*** ../vim-7.1.294/src/Makefile	Wed May  7 13:09:17 2008
+--- src/Makefile	Wed May  7 17:34:31 2008
+***************
+*** 1867,1872 ****
+--- 1872,1879 ----
+  installtutorbin: $(DEST_VIM)
+  	$(INSTALL_DATA) vimtutor $(DEST_BIN)/$(VIMNAME)tutor
+  	chmod $(SCRIPTMOD) $(DEST_BIN)/$(VIMNAME)tutor
++ 	$(INSTALL_DATA) gvimtutor $(DEST_BIN)/$(GVIMNAME)tutor
++ 	chmod $(SCRIPTMOD) $(DEST_BIN)/$(GVIMNAME)tutor
+  
+  installtutor: $(DEST_RT) $(DEST_TUTOR)
+  	-$(INSTALL_DATA) $(TUTORSOURCE)/README* $(TUTORSOURCE)/tutor* $(DEST_TUTOR)
+***************
+*** 2075,2080 ****
+--- 2082,2088 ----
+  uninstall: uninstall_runtime
+  	-rm -f $(DEST_BIN)/$(VIMTARGET)
+  	-rm -f $(DEST_BIN)/vimtutor
++ 	-rm -f $(DEST_BIN)/gvimtutor
+  	-rm -f $(DEST_BIN)/$(EXTARGET) $(DEST_BIN)/$(VIEWTARGET)
+  	-rm -f $(DEST_BIN)/$(GVIMTARGET) $(DEST_BIN)/$(GVIEWTARGET)
+  	-rm -f $(DEST_BIN)/$(RVIMTARGET) $(DEST_BIN)/$(RVIEWTARGET)
+***************
+*** 2171,2177 ****
+  
+  shadow:	runtime pixmaps
+  	mkdir $(SHADOWDIR)
+! 	cd $(SHADOWDIR); ln -s ../*.[ch] ../*.in ../*.sh ../*.xs ../*.xbm ../toolcheck ../proto ../vimtutor ../mkinstalldirs .
+  	mkdir $(SHADOWDIR)/auto
+  	cd $(SHADOWDIR)/auto; ln -s ../../auto/configure .
+  	cd $(SHADOWDIR); rm -f auto/link.sed
+--- 2179,2185 ----
+  
+  shadow:	runtime pixmaps
+  	mkdir $(SHADOWDIR)
+! 	cd $(SHADOWDIR); ln -s ../*.[ch] ../*.in ../*.sh ../*.xs ../*.xbm ../toolcheck ../proto ../vimtutor ../gvimtutor ../mkinstalldirs .
+  	mkdir $(SHADOWDIR)/auto
+  	cd $(SHADOWDIR)/auto; ln -s ../../auto/configure .
+  	cd $(SHADOWDIR); rm -f auto/link.sed
+*** ../vim-7.1.294/src/gvimtutor	Wed May  7 17:38:10 2008
+--- src/gvimtutor	Wed May  7 17:29:35 2008
+***************
+*** 0 ****
+--- 1,8 ----
++ #!/bin/sh
++ 
++ # Start GUI Vim on a copy of the tutor file.
++ 
++ # Usage: gvimtutor [xx]
++ # See vimtutor for usage.
++ 
++ exec `dirname $0`/vimtutor -g "$@"
+*** ../vim-7.1.294/src/vimtutor	Tue Jul 17 14:32:07 2007
+--- src/vimtutor	Sat Apr  5 12:21:11 2008
+***************
+*** 2,12 ****
+  
+  # Start Vim on a copy of the tutor file.
+  
+! # Usage: vimtutor [xx], where xx is a language code like "es" or "nl".
+  # When an argument is given, it tries loading that tutor.
+  # When this fails or no argument was given, it tries using 'v:lang'
+  # When that also fails, it uses the English version.
+  
+  xx=$1
+  export xx
+  
+--- 2,25 ----
+  
+  # Start Vim on a copy of the tutor file.
+  
+! # Usage: vimtutor [-g] [xx]
+! # Where optional argument -g starts vimtutor in gvim (GUI) instead of vim.
+! # and xx is a language code like "es" or "nl".
+  # When an argument is given, it tries loading that tutor.
+  # When this fails or no argument was given, it tries using 'v:lang'
+  # When that also fails, it uses the English version.
+  
++ # Vim could be called "vim" or "vi".  Also check for "vimN", for people who
++ # have Vim installed with its version number.
++ # We anticipate up to a future Vim 8 version :-).
++ seq="vim vim8 vim75 vim74 vim73 vim72 vim71 vim70 vim7 vim6 vi"
++ if test "$1" = "-g"; then 
++   # Try to use the GUI version of Vim if possible, it will fall back
++   # on Vim if Gvim is not installed.
++   seq="gvim gvim8 gvim75 gvim74 gvim73 gvim72 gvim71 gvim70 gvim7 gvim6 $seq"
++   shift
++ fi
++ 
+  xx=$1
+  export xx
+  
+***************
+*** 39,48 ****
+  # remove the copy of the tutor on exit
+  trap "rm -rf $TODELETE" 0 1 2 3 9 11 13 15
+  
+- # Vim could be called "vim" or "vi".  Also check for "vimN", for people who
+- # have Vim installed with its version number.
+- # We anticipate up to a future Vim 8 version :-).
+- seq="vim vim8 vim75 vim74 vim73 vim72 vim71 vim70 vim7 vim6 vi"
+  for i in $seq; do
+  	testvim=`which $i 2>/dev/null`
+  	if test -f "$testvim"; then
+--- 52,57 ----
+***************
+*** 59,65 ****
+  
+  # Use Vim to copy the tutor, it knows the value of $VIMRUNTIME
+  # The script tutor.vim tells Vim which file to copy
+! $VIM -u NONE -c 'so $VIMRUNTIME/tutor/tutor.vim'
+  
+  # Start vim without any .vimrc, set 'nocompatible'
+! $VIM -u NONE -c "set nocp" $TUTORCOPY
+--- 68,74 ----
+  
+  # Use Vim to copy the tutor, it knows the value of $VIMRUNTIME
+  # The script tutor.vim tells Vim which file to copy
+! $VIM -f -u NONE -c 'so $VIMRUNTIME/tutor/tutor.vim'
+  
+  # Start vim without any .vimrc, set 'nocompatible'
+! $VIM -f -u NONE -c "set nocp" $TUTORCOPY
+*** ../vim-7.1.294/runtime/doc/vimtutor.1	Sun Jun 13 18:50:18 2004
+--- runtime/doc/vimtutor.1	Sat Apr  5 12:21:11 2008
+***************
+*** 3,9 ****
+  vimtutor \- the Vim tutor
+  .SH SYNOPSIS
+  .br
+! .B vimtutor [language]
+  .SH DESCRIPTION
+  .B Vimtutor
+  starts the
+--- 3,9 ----
+  vimtutor \- the Vim tutor
+  .SH SYNOPSIS
+  .br
+! .B vimtutor [-g] [language]
+  .SH DESCRIPTION
+  .B Vimtutor
+  starts the
+***************
+*** 18,23 ****
+--- 18,26 ----
+  .B Vim
+  commands.
+  .PP
++ The optional argument -g starts vimtutor with gvim rather than vim, if the
++ GUI version of vim is available, or falls back to Vim if gvim is not found.
++ .PP
+  The optional [language] argument is the two-letter name of a language, like
+  "it" or "es".
+  If the [language] argument is missing, the language of the current locale will
+*** ../vim-7.1.294/src/version.c	Wed May  7 13:09:12 2008
+--- src/version.c	Wed May  7 17:12:43 2008
+***************
+*** 668,669 ****
+--- 673,676 ----
+  {   /* Add new patch number below this line */
++ /**/
++     295,
+  /**/
+
+-- 
+Time flies like an arrow.
+Fruit flies like a banana.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///

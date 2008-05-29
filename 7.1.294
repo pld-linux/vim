@@ -1,0 +1,73 @@
+To: vim-dev@vim.org
+Subject: Patch 7.1.294
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.1.294
+Problem:    Leaking memory when executing a shell command.
+Solution:   Free memory when not able to save for undo. (Dominique Pelle)
+Files:	    src/ex_cmds.c
+
+*** ../vim-7.1.293/src/ex_cmds.c	Mon Feb 18 19:41:40 2008
+--- src/ex_cmds.c	Sun Apr 13 13:20:15 2008
+***************
+*** 1160,1165 ****
+--- 1166,1172 ----
+      if (!do_out)
+  	msg_putchar('\n');
+  
++     /* Create the shell command in allocated memory. */
+      cmd_buf = make_filter_cmd(cmd, itmp, otmp);
+      if (cmd_buf == NULL)
+  	goto filterend;
+***************
+*** 1180,1186 ****
+--- 1187,1196 ----
+      if (do_out)
+      {
+  	if (u_save((linenr_T)(line2), (linenr_T)(line2 + 1)) == FAIL)
++ 	{
++ 	    vim_free(cmd_buf);
+  	    goto error;
++ 	}
+  	redraw_curbuf_later(VALID);
+      }
+      read_linecount = curbuf->b_ml.ml_line_count;
+***************
+*** 4471,4477 ****
+  	    /*
+  	     * The new text is build up step by step, to avoid too much
+  	     * copying.  There are these pieces:
+! 	     * sub_firstline	The old text, unmodifed.
+  	     * copycol		Column in the old text where we started
+  	     *			looking for a match; from here old text still
+  	     *			needs to be copied to the new text.
+--- 4481,4487 ----
+  	    /*
+  	     * The new text is build up step by step, to avoid too much
+  	     * copying.  There are these pieces:
+! 	     * sub_firstline	The old text, unmodified.
+  	     * copycol		Column in the old text where we started
+  	     *			looking for a match; from here old text still
+  	     *			needs to be copied to the new text.
+*** ../vim-7.1.293/src/version.c	Wed Apr  9 15:48:08 2008
+--- src/version.c	Wed May  7 13:07:48 2008
+***************
+*** 668,669 ****
+--- 673,676 ----
+  {   /* Add new patch number below this line */
++ /**/
++     294,
+  /**/
+
+-- 
+It's not hard to meet expenses, they're everywhere.
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\        download, build and distribute -- http://www.A-A-P.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
