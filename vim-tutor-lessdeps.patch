@@ -1,28 +1,30 @@
---- vim71/src/vimtutor.orig	2007-07-23 10:39:15.051255564 +0200
-+++ vim71/src/vimtutor	2007-07-23 10:41:17.038772376 +0200
-@@ -39,23 +39,8 @@
- # remove the copy of the tutor on exit
- trap "rm -rf $TODELETE" 0 1 2 3 9 11 13 15
+--- vim71/src/vimtutor~	2008-05-29 22:14:57.000000000 +0300
++++ vim71/src/vimtutor	2008-05-29 22:24:29.118736307 +0300
+@@ -9,14 +9,12 @@
+ # When this fails or no argument was given, it tries using 'v:lang'
+ # When that also fails, it uses the English version.
  
 -# Vim could be called "vim" or "vi".  Also check for "vimN", for people who
 -# have Vim installed with its version number.
 -# We anticipate up to a future Vim 8 version :-).
 -seq="vim vim8 vim75 vim74 vim73 vim72 vim71 vim70 vim7 vim6 vi"
--for i in $seq; do
++# Vim could be called "vim" or "vi".
++seq="/usr/bin/vim /bin/vi"
+ if test "$1" = "-g"; then 
+   # Try to use the GUI version of Vim if possible, it will fall back
+   # on Vim if Gvim is not installed.
+-  seq="gvim gvim8 gvim75 gvim74 gvim73 gvim72 gvim71 gvim70 gvim7 gvim6 $seq"
++  seq="/usr/bin/gvim /usr/bin/gvim.athena /usr/bin/gvim.gnome /usr/bin/gvim.gtk /usr/bin/gvim.motif $seq"
+   shift
+ fi
+ 
+@@ -53,8 +51,7 @@
+ trap "rm -rf $TODELETE" 0 1 2 3 9 11 13 15
+ 
+ for i in $seq; do
 -	testvim=`which $i 2>/dev/null`
 -	if test -f "$testvim"; then
--		VIM=$i
--		break
--	fi
--done
--
--# When no Vim version was found fall back to "vim", you'll get an error message
--# below.
--if test -z "$VIM"; then
--	VIM=vim
--fi
-+# Vim could be called "vim" or "vi".
-+[ -x /usr/bin/vim ] && VIM=vim || VIM=vi
- 
- # Use Vim to copy the tutor, it knows the value of $VIMRUNTIME
- # The script tutor.vim tells Vim which file to copy
++	if test -x "$i"; then
+ 		VIM=$i
+ 		break
+ 	fi
