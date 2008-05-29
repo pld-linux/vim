@@ -1,6 +1,3 @@
-# TODO:
-# - create vim-full (better name, anybody?) or/and other packages
-#   for scripting languages support
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -8,6 +5,7 @@
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
+%bcond_without	heavy		# don't build heavy (full-featured GTK+-based gvim/vim)
 %bcond_without	perl		# without Perl interp
 %bcond_without	python		# without Python interp
 %bcond_with	ruby		# with Ruby interp
@@ -16,7 +14,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.1
-%define		patchlevel	291
+%define		patchlevel	305
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -51,15 +49,21 @@ Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
 Source14:	%{name}.desktop
-# http://www.vim.org/scripts/script.php?script_id=415 (1.15)
-Source15:	zenburn.%{name}
+# syntax files
 # http://www.vim.org/scripts/script.php?script_id=1491 (0.7.5)
-Source17:	javascript.%{name}
-Source18:	nagios.%{name}
+Source20:	javascript.vim
+Source21:	nagios.vim
 # http://www.vim.org/scripts/script.php?script_id=447 (20040206)
-Source19:	exim.vim
-# http://www.vim.org/scripts/script.php?script_id=1571 (0.9.6)
-Source20:	php.vim
+Source22:	exim.vim
+# http://www.vim.org/scripts/script.php?script_id=1571 (0.9.7)
+Source23:	php.vim
+# color schemes
+# http://www.vim.org/scripts/script.php?script_id=415 (1.15)
+Source30:	zenburn.vim
+# http://www.vim.org/scripts/script.php?script_id=92 (1.0)
+Source31:	borland.vim
+# http://www.vim.org/scripts/download_script.php?src_id=7799 (1.2.5)
+Source32:	oceandeep.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -86,9 +90,8 @@ Patch22:	%{name}-filetypes.patch
 Patch23:	%{name}-man_installation.patch
 Patch102:	%{name}-gtkfilechooser.patch
 Patch104:	%{name}-home_etc.patch
-Patch105:	%{name}-selinux.patch
-Patch106:	%{name}-autopaste.patch
-Patch107:	%{name}-ft-cron.patch
+Patch105:	%{name}-autopaste.patch
+Patch106:	%{name}-ft-cron.patch
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 %{patchlevel}
 URL:		http://www.vim.org/
 %{?with_athena:BuildRequires:	XFree86-devel}
@@ -96,16 +99,28 @@ BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
-%{?with_gtk:BuildRequires:	gtk+2-devel >= 2:2.6.0}
+%if %{with gtk} || %{with heavy} 
+BuildRequires:	gtk+2-devel >= 2:2.6.0
+%endif
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
-%{?with_selinux:BuildRequires:	libselinux-devel}
+%if %{with selinux} || %{with heavy}
+BuildRequires:	libselinux-devel
+%endif
 BuildRequires:	ncurses-devel
 %{?with_motif:BuildRequires:	openmotif-devel}
-%{?with_perl:BuildRequires:	perl-devel}
-%{?with_python:BuildRequires:	python-devel >= 2.5}
+%if %{with perl} || %{with heavy}
+BuildRequires:	perl-devel
+%endif
+%if %{with python} || %{with heavy}
+BuildRequires:	python-devel >= 2.5
+%endif
 BuildRequires:	rpmbuild(macros) >= 1.426
-%{?with_ruby:BuildRequires:	ruby-devel}
-%{?with_tcl:BuildRequires:	tcl-devel}
+%if %{with ruby} || %{with heavy}
+BuildRequires:	ruby-devel
+%endif
+%if %{with tcl} || %{with heavy}
+BuildRequires:	tcl-devel
+%endif
 Obsoletes:	kvim
 %if %{with static}
 BuildRequires:	acl-static
@@ -252,6 +267,20 @@ Może także przekonwertować taki zapis na oryginalną, binarną postać.
 Podobnie jak uuencode i uudecode pozwala na przesyłanie danych
 binarnych w postaci ASCII, ale ma możliwość dekodowania na standardowe
 wyjście. Co więcej, może być użyty do modyfikowania plików binarnych.
+
+%package heavy
+Summary:	Full featured build of Vim
+Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vim-a
+Group:		Appplications/Editors/Vim
+
+%description heavy
+This package provides full featured version of Vim, which includes
+support for Perl, Python, Ruby and Tcl scripting.
+
+%description heavy -l pl.UTF-8
+Pakiet ten dostarcza w pełni funkcjonalną wersję Vim-a, czyli
+zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby oraz
+Tcl.
 
 %package static
 Summary:	Statically linked Vim
@@ -501,6 +530,27 @@ GNOME, что позволяет запускать VIM как приложен�
 дозволяє запускати VIM як прикладну програму X Window System - з
 повністю графічним інтерфейсом та підтримкою миші.
 
+%package -n gvim-heavy
+Summary:	Full featured build of Vim with X-window support
+Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vim-a ze wsparciem dla X-window
+Group:		Appplications/Editors/Vim
+Requires(post,postun):	gtk+2
+Requires(post,postun):	hicolor-icon-theme
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Requires:	iconv
+Provides:	gvim
+Provides:	vi-editor
+Obsoletes:	vim-X11
+
+%description -n gvim-heavy
+This package provides full featured version of Vim, which includes
+support for Perl, Python, Ruby and Tcl scripting, as well as GTK+2 GUI.
+
+%description heavy -l pl.UTF-8
+Pakiet ten dostarcza w pełni funkcjonalną wersję Vim-a, czyli
+zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby oraz
+Tcl jak również GUI GTK+2.
+
 %prep
 %setup -q -n %{name}71 -b1 -b2
 
@@ -535,21 +585,18 @@ GNOME, что позволяет запускать VIM как приложен�
 # home etc
 %{?with_home_etc:%patch104 -p1}
 
-# selinux
-%{?with_selinux:%patch105 -p1}
+# autopaste patch - automatically switch to paste mode 
+# when`really fast typing' situation happens
+%patch105 -p1
 
-# autopaste patch - automatically switch to paste mode if `really fast typing'
-# situation happens
 %patch106 -p1
 
-%patch107 -p1
-
-install %{SOURCE14} runtime/indent
-install %{SOURCE15} runtime/colors
-install %{SOURCE17} runtime/syntax
-install %{SOURCE18} runtime/syntax
-install %{SOURCE19} runtime/syntax
-install %{SOURCE20} runtime/syntax
+install %{SOURCE20} runtime/syntx
+install %{SOURCE21} runtime/syntax
+install %{SOURCE22} runtime/syntax
+install %{SOURCE23} runtime/syntax
+install %{SOURCE30} runtime/colors
+install %{SOURCE31} runtime/colors
 
 %build
 cd src
@@ -718,6 +765,50 @@ mv -f vim bin/gvim.gtk
 mv -f vim bin/gvim.gnome
 %endif
 
+# vim.heavy / gvim.heavy
+%if %{with heavy}
+%{__make} distclean
+%configure \
+	--with-features=huge \
+	--disable-gui \
+	--without-x \
+	--enable-perlinterp \
+	--enable-pythoninterp \
+	--enable-rubyinterp \
+	--enable-tclinterp \
+	--disable-gpm \
+	--enable-cscope \
+	--with-tlib="ncurses -ltinfo" \
+	--enable-nls \
+	--with-modifiedby="PLD Linux Distribution" \
+	--with-compiledby="PLD Linux Distribution"
+
+%{__make} vim
+mv -f vim bin/vim.heavy
+
+%{__make} distclean
+%configure \
+	--with-features=huge \
+	--enable-gui=gnome2 \
+	--enable-gtk2-check \
+	--enable-gnome-check \
+	--with-x \
+	--enable-perlinterp \
+	--enable-pythoninterp \
+	--enable-rubyinterp \
+	--enable-tclinterp \
+	--disable-gpm \
+	--enable-cscope \
+	--with-tlib="ncurses -ltinfo" \
+	--enable-nls \
+	--with-modifiedby="PLD Linux Distribution" \
+	--with-compiledby="PLD Linux Distribution"
+
+%{__make} vim
+mv -f vim bin/gvim.heavy
+%endif
+
+
 %{__make} xxd/xxd languages
 
 %install
@@ -792,6 +883,10 @@ ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gvimdiff
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
 install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
+%endif
+%if %{with heavy}
+install src/bin/vim.heavy	$RPM_BUILD_ROOT%{_bindir}
+install src/bin/gvim.heavy	$RPM_BUILD_ROOT%{_bindir}
 %endif
 
 install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,32x32,48x48}/apps
@@ -1046,6 +1141,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_iconsdir}/hicolor/32x32/apps/vim.png
 %{_iconsdir}/hicolor/48x48/apps/vim.png
 
+%if %{with heavy}
+%files heavy
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/vim.heavy
+%endif
+
 %files spell-en
 %defattr(644,root,root,755)
 %{_datadir}/vim/v*/spell/en.*.*
@@ -1095,4 +1196,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.gnome
 %{_desktopdir}/gvim-gnome.desktop
+%endif
+
+%if %{with heavy}
+%files -n gvim-heavy
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/gvim.heavy
 %endif
