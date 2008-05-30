@@ -272,6 +272,12 @@ wyjście. Co więcej, może być użyty do modyfikowania plików binarnych.
 Summary:	Full featured build of Vim
 Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vim-a
 Group:		Appplications/Editors/Vim
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Provides:	vi-editor
+Provides:	vi
+Obsoletes:	vim-enhanced
+Obsoletes:	vim-ispell
+Obsoletes:	vim-plugin-multvals
 
 %description heavy
 This package provides full featured version of Vim, which includes
@@ -473,7 +479,6 @@ Summary:	Vim for X Window built with gtk
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GTK
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
-Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
@@ -504,7 +509,6 @@ Summary:	Vim for X Window built with GNOME
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GNOME
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
-Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
@@ -534,7 +538,6 @@ Summary:	Full featured build of Vim with X-window support
 Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vim-a ze wsparciem dla X-window
 Group:		Appplications/Editors/Vim
 Requires(post,postun):	gtk+2
-Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
