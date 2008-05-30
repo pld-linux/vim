@@ -605,13 +605,26 @@ cd src
 %{__autoconf}
 # needed to prevent deconfiguring
 cp -f configure auto
-
 install -d bin
 
+build() {
+	set -x
+	local target=$1
+	shift
+
+	%{__make} distclean
+	%configure \
+		--with-modifiedby="PLD Linux Distribution" \
+		--with-compiledby="PLD Linux Distribution" \
+		"$@"
+
+	%{__make} vim
+	mv -f vim bin/$target
+}
+
 %if %{with static}
-%{__make} distclean
 LDFLAGS="%{rpmldflags} -static"
-%configure \
+build vim.static \
 	--disable-gui \
 	--without-x \
 	--disable-perlinterp \
@@ -624,18 +637,11 @@ LDFLAGS="%{rpmldflags} -static"
 	--disable-multibyte \
 	--with-features=small \
 	--with-tlib="ncurses -ltinfo" \
-	--disable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--with-compiledby="PLD Linux Distribution"
-
-%{__make} vim
-
-mv -f vim bin/vim.static
+	--disable-nls
 LDFLAGS="%{rpmldflags}"
 %endif
 
-%{__make} distclean
-%configure \
+build vim.ncurses \
 	--disable-gui \
 	--without-x \
 	%{!?with_perl:--disable-perlinterp} \
@@ -651,17 +657,10 @@ LDFLAGS="%{rpmldflags}"
 	--with-features=huge \
 	--enable-multibyte \
 	--with-tlib="ncurses -ltinfo" \
-	--enable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--with-compiledby="PLD Linux Distribution"
-
-%{__make} vim
-
-mv -f vim bin/vim.ncurses
+	--enable-nls
 
 %if %{with athena}
-%{__make} distclean
-%configure \
+build gvim.athena \
 	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
@@ -678,18 +677,11 @@ mv -f vim bin/vim.ncurses
 	--disable-gpm \
 	--without-gnome \
 	--with-tlib="ncurses -ltinfo" \
-	--enable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--with-compiledby="PLD Linux Distribution"
-
-%{__make} vim
-mv -f vim bin/gvim.athena
+	--enable-nls
 %endif
 
-
 %if %{with motif}
-%{__make} distclean
-%configure \
+build gvim.motif
 	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
@@ -707,17 +699,11 @@ mv -f vim bin/gvim.athena
 	--disable-gpm \
 	--without-gnome \
 	--with-tlib="ncurses -ltinfo" \
-	--enable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--with-compiledby="PLD Linux Distribution"
-
-%{__make} vim
-mv -f vim bin/gvim.motif
+	--enable-nls
 %endif
 
 %if %{with gtk}
-%{__make} distclean
-%configure \
+build gvim.gtk \
 	--with-features=huge \
 	--enable-gui=gtk2 \
 	--enable-gtk2-check \
@@ -733,17 +719,11 @@ mv -f vim bin/gvim.motif
 	--disable-gpm \
 	--enable-cscope \
 	--with-tlib="ncurses -ltinfo" \
-	--enable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--with-compiledby="PLD Linux Distribution"
-
-%{__make} vim
-mv -f vim bin/gvim.gtk
+	--enable-nls
 %endif
 
 %if %{with gnome}
-%{__make} distclean
-%configure \
+build gvim.gnome \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	--enable-gtk2-check \
@@ -760,18 +740,12 @@ mv -f vim bin/gvim.gtk
 	--disable-gpm \
 	--enable-cscope \
 	--with-tlib="ncurses -ltinfo" \
-	--enable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--with-compiledby="PLD Linux Distribution"
-
-%{__make} vim
-mv -f vim bin/gvim.gnome
+	--enable-nls
 %endif
 
 # vim.heavy / gvim.heavy
 %if %{with heavy}
-%{__make} distclean
-%configure \
+build vim.heavy \
 	--with-features=huge \
 	--disable-gui \
 	--without-x \
@@ -782,15 +756,9 @@ mv -f vim bin/gvim.gnome
 	--disable-gpm \
 	--enable-cscope \
 	--with-tlib="ncurses -ltinfo" \
-	--enable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--with-compiledby="PLD Linux Distribution"
+	--enable-nls
 
-%{__make} vim
-mv -f vim bin/vim.heavy
-
-%{__make} distclean
-%configure \
+build gvim.heavy \
 	--with-features=huge \
 	--enable-gui=gnome2 \
 	--enable-gtk2-check \
@@ -803,14 +771,8 @@ mv -f vim bin/vim.heavy
 	--disable-gpm \
 	--enable-cscope \
 	--with-tlib="ncurses -ltinfo" \
-	--enable-nls \
-	--with-modifiedby="PLD Linux Distribution" \
-	--with-compiledby="PLD Linux Distribution"
-
-%{__make} vim
-mv -f vim bin/gvim.heavy
+	--enable-nls
 %endif
-
 
 %{__make} xxd/xxd languages
 
