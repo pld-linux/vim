@@ -9,12 +9,12 @@
 -# We anticipate up to a future Vim 8 version :-).
 -seq="vim vim8 vim75 vim74 vim73 vim72 vim71 vim70 vim7 vim6 vi"
 +# Vim could be called "vim" or "vi".
-+seq="/usr/bin/vim /bin/vi"
++seq="/usr/bin/vim.heavy /usr/bin/vim /bin/vi"
  if test "$1" = "-g"; then 
    # Try to use the GUI version of Vim if possible, it will fall back
    # on Vim if Gvim is not installed.
 -  seq="gvim gvim8 gvim75 gvim74 gvim73 gvim72 gvim71 gvim70 gvim7 gvim6 $seq"
-+  seq="/usr/bin/gvim /usr/bin/gvim.athena /usr/bin/gvim.gnome /usr/bin/gvim.gtk /usr/bin/gvim.motif $seq"
++  seq="/usr/bin/gvim /usr/bin/gvim.heavy /usr/bin/gvim.athena /usr/bin/gvim.gnome /usr/bin/gvim.gtk /usr/bin/gvim.motif $seq"
    shift
  fi
  
