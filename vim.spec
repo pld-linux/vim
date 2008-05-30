@@ -613,7 +613,18 @@ build() {
 	shift
 
 	%{__make} distclean
+	# add common options, can override (disable) if needed with args
 	%configure \
+		--%{!?with_perl:dis}%{?with_perl:en}able-perlinterp \
+		--%{!?with_python:dis}%{?with_python:en}able-pythoninterp \
+		--%{!?with_ruby:dis}%{?with_ruby:en}able-rubyinterp \
+		--%{!?with_tcl:dis}%{?with_tcl:en}able-tclinterp \
+		%{!?with_selinux:--disable-selinux} \
+		--enable-cscope \
+		--enable-gpm \
+		--enable-multibyte \
+		--enable-nls \
+		--with-tlib="ncurses -ltinfo" \
 		--with-modifiedby="PLD Linux Distribution" \
 		--with-compiledby="PLD Linux Distribution" \
 		"$@"
@@ -627,79 +638,45 @@ LDFLAGS="%{rpmldflags} -static"
 build vim.static \
 	--disable-gui \
 	--without-x \
+	--with-features=small \
 	--disable-perlinterp \
 	--disable-pythoninterp \
 	--disable-rubyinterp \
-	%{!?with_selinux:--disable-selinux} \
 	--disable-tclinterp \
 	--disable-cscope \
 	--disable-gpm \
 	--disable-multibyte \
-	--with-features=small \
-	--with-tlib="ncurses -ltinfo" \
 	--disable-nls
+
 LDFLAGS="%{rpmldflags}"
 %endif
 
 build vim.ncurses \
 	--disable-gui \
 	--without-x \
-	%{!?with_perl:--disable-perlinterp} \
-	%{?with_perl:--enable-perlinterp} \
-	%{!?with_python:--disable-pythoninterp} \
-	%{?with_python:--enable-pythoninterp} \
-	%{!?with_ruby:--disable-rubyinterp} \
-	%{?with_ruby:--enable-rubyinterp} \
-	%{!?with_tcl:--disable-tclinterp} \
-	%{?with_tcl:--enable-tclinterp} \
-	--enable-cscope \
-	--enable-gpm \
-	--with-features=huge \
-	--enable-multibyte \
-	--with-tlib="ncurses -ltinfo" \
-	--enable-nls
+	--with-features=huge
 
 %if %{with athena}
 build gvim.athena \
 	--with-features=huge \
 	--enable-gui=athena \
 	--with-x \
-	%{!?with_perl:--disable-perlinterp} \
-	%{?with_perl:--enable-perlinterp} \
-	%{!?with_python:--disable-pythoninterp} \
-	%{?with_python:--enable-pythoninterp} \
-	%{!?with_ruby:--disable-rubyinterp} \
-	%{?with_ruby:--enable-rubyinterp} \
-	%{!?with_tcl:--disable-tclinterp} \
-	%{?with_tcl:--enable-tclinterp} \
-	--enable-cscope \
 	--enable-fontset \
 	--disable-gpm \
-	--without-gnome \
-	--with-tlib="ncurses -ltinfo" \
-	--enable-nls
+	--without-gnome
+
 %endif
 
 %if %{with motif}
-build gvim.motif
+build gvim.motif \
 	--with-features=huge \
 	--enable-gui=motif \
 	--with-x \
-	%{!?with_perl:--disable-perlinterp} \
-	%{?with_perl:--enable-perlinterp} \
-	%{!?with_python:--disable-pythoninterp} \
-	%{?with_python:--enable-pythoninterp} \
-	%{!?with_ruby:--disable-rubyinterp} \
-	%{?with_ruby:--enable-rubyinterp} \
-	%{!?with_tcl:--disable-tclinterp} \
-	%{?with_tcl:--enable-tclinterp} \
 	--enable-multibyte \
-	--enable-cscope \
 	--enable-fontset \
 	--disable-gpm \
-	--without-gnome \
-	--with-tlib="ncurses -ltinfo" \
-	--enable-nls
+	--without-gnome
+
 %endif
 
 %if %{with gtk}
@@ -708,18 +685,8 @@ build gvim.gtk \
 	--enable-gui=gtk2 \
 	--enable-gtk2-check \
 	--with-x \
-	%{!?with_perl:--disable-perlinterp} \
-	%{?with_perl:--enable-perlinterp} \
-	%{!?with_python:--disable-pythoninterp} \
-	%{?with_python:--enable-pythoninterp} \
-	%{!?with_ruby:--disable-rubyinterp} \
-	%{?with_ruby:--enable-rubyinterp} \
-	%{!?with_tcl:--disable-tclinterp} \
-	%{?with_tcl:--enable-tclinterp} \
-	--disable-gpm \
-	--enable-cscope \
-	--with-tlib="ncurses -ltinfo" \
-	--enable-nls
+	--disable-gpm
+
 %endif
 
 %if %{with gnome}
@@ -729,18 +696,8 @@ build gvim.gnome \
 	--enable-gtk2-check \
 	--enable-gnome-check \
 	--with-x \
-	%{!?with_perl:--disable-perlinterp} \
-	%{?with_perl:--enable-perlinterp} \
-	%{!?with_python:--disable-pythoninterp} \
-	%{?with_python:--enable-pythoninterp} \
-	%{!?with_ruby:--disable-rubyinterp} \
-	%{?with_ruby:--enable-rubyinterp} \
-	%{!?with_tcl:--disable-tclinterp} \
-	%{?with_tcl:--enable-tclinterp} \
-	--disable-gpm \
-	--enable-cscope \
-	--with-tlib="ncurses -ltinfo" \
-	--enable-nls
+	--disable-gpm
+
 %endif
 
 # vim.heavy / gvim.heavy
@@ -753,10 +710,7 @@ build vim.heavy \
 	--enable-pythoninterp \
 	--enable-rubyinterp \
 	--enable-tclinterp \
-	--disable-gpm \
-	--enable-cscope \
-	--with-tlib="ncurses -ltinfo" \
-	--enable-nls
+	--disable-gpm
 
 build gvim.heavy \
 	--with-features=huge \
@@ -768,10 +722,8 @@ build gvim.heavy \
 	--enable-pythoninterp \
 	--enable-rubyinterp \
 	--enable-tclinterp \
-	--disable-gpm \
-	--enable-cscope \
-	--with-tlib="ncurses -ltinfo" \
-	--enable-nls
+	--disable-gpm
+
 %endif
 
 %{__make} xxd/xxd languages
