@@ -30,7 +30,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -339,7 +339,6 @@ Requires:	vim-plugin-securemodelines
 Requires:	vim-syntax-spec
 # mktemp is for vimtutor
 Requires:	mktemp
-Requires:	vi-editor
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
 
@@ -405,7 +404,7 @@ köra.
 Summary:	English dictionaries for VIMspell
 Summary(pl.UTF-8):	Angielskie słowniki dla VIMspella
 Group:		Applications/Editors/Vim
-Requires:	%{name} = %{epoch}:%{version}-%{release}
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 
 %description spell-en
 English dictionaries for VIMspell.
@@ -615,6 +614,7 @@ LDFLAGS="%{rpmldflags} -static"
 	--disable-perlinterp \
 	--disable-pythoninterp \
 	--disable-rubyinterp \
+	%{!?with_selinux:--disable-selinux} \
 	--disable-tclinterp \
 	--disable-cscope \
 	--disable-gpm \
