@@ -1,14 +1,13 @@
-#
 # Conditional build:
 %bcond_without	static		# don't build static version
 %bcond_without	athena		# don't build Athena Widgets-based gvim
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
-%bcond_without	heavy		# don't build heavy (full-featured GTK+-based gvim/vim)
-%bcond_without	perl		# without Perl interp
-%bcond_without	python		# without Python interp
-%bcond_with	ruby		# with Ruby interp
+%bcond_without	heavy		# don't build heavy (full-featured GNOME-based gvim/vim)
+%bcond_with	perl		# with Perl interp in vim package
+%bcond_with	python		# with Python interp in vim package
+%bcond_with	ruby		# with Ruby interp in vim package
 %bcond_with	tcl		# with Tcl interp
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
@@ -112,7 +111,7 @@ BuildRequires:	ncurses-devel
 BuildRequires:	perl-devel
 %endif
 %if %{with python} || %{with heavy}
-BuildRequires:	python-devel >= 2.5
+BuildRequires:	python-devel
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.426
 %if %{with ruby} || %{with heavy}
@@ -271,7 +270,7 @@ wyjście. Co więcej, może być użyty do modyfikowania plików binarnych.
 %package heavy
 Summary:	Full featured build of Vim
 Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vim-a
-Group:		Appplications/Editors/Vim
+Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
@@ -285,8 +284,8 @@ support for Perl, Python, Ruby and Tcl scripting.
 
 %description heavy -l pl.UTF-8
 Pakiet ten dostarcza w pełni funkcjonalną wersję Vim-a, czyli
-zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby oraz
-Tcl.
+zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby
+oraz Tcl.
 
 %package static
 Summary:	Statically linked Vim
@@ -536,7 +535,7 @@ GNOME, что позволяет запускать VIM как приложен�
 %package -n gvim-heavy
 Summary:	Full featured build of Vim with X-window support
 Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vim-a ze wsparciem dla X-window
-Group:		Appplications/Editors/Vim
+Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -546,12 +545,13 @@ Obsoletes:	vim-X11
 
 %description -n gvim-heavy
 This package provides full featured version of Vim, which includes
-support for Perl, Python, Ruby and Tcl scripting, as well as GTK+2 GUI.
+support for Perl, Python, Ruby and Tcl scripting, as well as GTK+2
+GUI.
 
 %description heavy -l pl.UTF-8
 Pakiet ten dostarcza w pełni funkcjonalną wersję Vim-a, czyli
-zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby oraz
-Tcl jak również GUI GTK+2.
+zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby
+oraz Tcl jak również GUI GTK+2.
 
 %prep
 %setup -q -n %{name}71 -b1 -b2
@@ -587,7 +587,7 @@ Tcl jak również GUI GTK+2.
 # home etc
 %{?with_home_etc:%patch104 -p1}
 
-# autopaste patch - automatically switch to paste mode 
+# autopaste patch - automatically switch to paste mode
 # when`really fast typing' situation happens
 %patch105 -p1
 
