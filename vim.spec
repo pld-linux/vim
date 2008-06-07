@@ -63,7 +63,7 @@ Source30:	zenburn.vim
 Source31:	borland.vim
 # http://www.vim.org/scripts/script.php?script_id=368 (1.2.5)
 Source32:	oceandeep.vim
-# http://www.vim.org/scripts/script.php?script_id=1464
+# http://www.vim.org/scripts/script.php?script_id=1464 (2.6.3)
 Source33:	moria.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
