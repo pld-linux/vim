@@ -13,7 +13,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.1
-%define		patchlevel	305
+%define		patchlevel	311
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -29,7 +29,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	3
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -61,8 +61,10 @@ Source23:	php.vim
 Source30:	zenburn.vim
 # http://www.vim.org/scripts/script.php?script_id=92 (1.0)
 Source31:	borland.vim
-# http://www.vim.org/scripts/download_script.php?src_id=7799 (1.2.5)
+# http://www.vim.org/scripts/script.php?script_id=368 (1.2.5)
 Source32:	oceandeep.vim
+# http://www.vim.org/scripts/script.php?script_id=1464 (2.6.3)
+Source33:	moria.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -593,12 +595,13 @@ oraz Tcl jak również GUI GTK+2.
 
 %patch106 -p1
 
-install %{SOURCE20} runtime/syntx
+install %{SOURCE20} runtime/syntax
 install %{SOURCE21} runtime/syntax
 install %{SOURCE22} runtime/syntax
 install %{SOURCE23} runtime/syntax
 install %{SOURCE30} runtime/colors
 install %{SOURCE31} runtime/colors
+install %{SOURCE32} runtime/colors
 
 %build
 cd src
