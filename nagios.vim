@@ -2,10 +2,9 @@
 " Filename:		nagios.vim
 " Language:		Nagios template object configuration file
 " Maintainer:	Elan Ruusamäe <glen@pld-linux.org>
-" Authors:		Lance Albertson <ramereth@gentoo.org>
-" Orginal Author: Ava Arachne Jarvis <ajar@katanalynx.dyndns.org>
-" URL:			http://dev.gentoo.org/~ramereth/vim/syntax/nagios.vim
-"  * previous URL appears to be dead
+" Author:		Lance Albertson <ramereth@gentoo.org>
+" Author:		Ava Arachne Jarvis <ajar@katanalynx.dyndns.org>
+" URL:			http://cvs.pld-linux.org/cgi-bin/cvsweb.cgi/SOURCES/nagios.vim
 " Version Info:	$Revision$
 " Last Change:	$Date$ UTC
 
