@@ -1,13 +1,12 @@
 " Vim syntax file
-" Filename:	nagios.vim
-" Language:     Nagios template object configuration file
+" Filename:		nagios.vim
+" Language:		Nagios template object configuration file
 " Maintainer:	Lance Albertson <ramereth@gentoo.org>
 " Orginal Author: Ava Arachne Jarvis <ajar@katanalynx.dyndns.org>
-" URL:          http://dev.gentoo.org/~ramereth/vim/syntax/nagios.vim
+" URL:			http://dev.gentoo.org/~ramereth/vim/syntax/nagios.vim
 "  * previous URL appears to be dead
-" Version:	0.1
-" Last Change:  2005 Jan 4
-
+" Version Info:	$Revision$
+" Last Change:	$Date$ UTC
 
 if !exists("main_syntax")
   if version < 600
@@ -24,15 +23,14 @@ if version >= 600
 else
 endif
 
-syn match nagiosComment '#.*'
+syn match nagiosLineComment '#.*'
+syn match nagiosComment ';.*$' contained
 
 syn match nagiosConstant '\<[0-9]\+%\?\>'
 syn match nagiosConstant '\<[a-z]\>'
 
 syn region nagiosString  start=+"+ end=+"+ contains=nagiosMacro
 syn region nagiosString  start=+'+ end=+'+ contains=nagiosMacro
-
-syn keyword nagiosSpecial  name register use
 
 syn match nagiosDef 'define[ \t]\+\(\(host\|service\)extinfo\|host\|service\|timeperiod\|contact\|command\)'
 syn match nagiosDef 'define[ \t]\+\(host\|contact\|service\)group'
@@ -51,39 +49,42 @@ syn match nagiosMacro  '\$ADMIN\(EMAIL\|PAGER\)\$'
 syn match nagiosMacro  '\$\(SERVICE\|HOST\)ATTEMPT\$'
 syn match nagiosMacro  '\$LAST\(HOST\|SERVICE\)CHECK\$'
 
-syn region nagiosDefBody start='{' end='}' contains=nagiosDirective,nagiosMacro,nagiosConstant,nagiosString,nagiosSpecial transparent
+syn region nagiosDefBody start='{' end='}'
+	\ contains=nagiosComment,nagiosDirective,nagiosMacro,nagiosConstant,nagiosString,nagiosSpecial transparent
 
-syn keyword nagiosDirective  active_checks_enabled address alias check_command
-syn keyword nagiosDirective  check_freshness check_period checks_enabled check_interval
-syn keyword nagiosDirective  command_line command_name
-syn keyword nagiosDirective  contact_groups contact_name contactgroup_name
-syn keyword nagiosDirective  dependent_host_name dependent_service_description
-syn keyword nagiosDirective  email event_handler event_handler_enabled
-syn keyword nagiosDirective  execution_failure_criteria first_notification execution_failure_options
-syn keyword nagiosDirective  flap_detection_enabled freshness_threshold failure_prediction_enabled
-syn keyword nagiosDirective  friday high_flap_threshold host_name
-syn keyword nagiosDirective  host_notification_commands
-syn keyword nagiosDirective  host_notification_options
-syn keyword nagiosDirective  host_notification_period hostgroup_name servicegroup_name hostgroups servicegroups
-syn keyword nagiosDirective  is_volatile last_notification
-syn keyword nagiosDirective  low_flap_threshold max_check_attempts
-syn keyword nagiosDirective  members monday normal_check_interval
-syn keyword nagiosDirective  notification_failure_criteria notification_failure_options
-syn keyword nagiosDirective  notification_interval notification_options
-syn keyword nagiosDirective  notification_period notifications_enabled
-syn keyword nagiosDirective  obsess_over_service pager parallelize_check
-syn keyword nagiosDirective  parents passive_checks_enabled
-syn keyword nagiosDirective  process_perf_data retain_nonstatus_information
-syn keyword nagiosDirective  retain_status_information retry_check_interval
-syn keyword nagiosDirective  saturday service_description
-syn keyword nagiosDirective  service_notification_commands
-syn keyword nagiosDirective  service_notification_options
-syn keyword nagiosDirective  service_notification_period stalking_options
-syn keyword nagiosDirective  sunday thursday timeperiod_name tuesday wednesday
-syn keyword nagiosDirective  icon_image icon_image_alt vrml_image statusmap_image
-syn keyword nagiosDirective  notes notes_url 2d_coords 3d_coords obsess_over_host inherits_parent
+syn keyword nagiosDirective contained name register use
+syn keyword nagiosDirective contained active_checks_enabled address alias check_command
+syn keyword nagiosDirective contained check_freshness check_period checks_enabled check_interval retry_interval
+syn keyword nagiosDirective contained command_line command_name
+syn keyword nagiosDirective contained contact_groups contact_name contactgroup_name
+syn keyword nagiosDirective contained dependent_host_name dependent_service_description
+syn keyword nagiosDirective contained email event_handler event_handler_enabled
+syn keyword nagiosDirective contained execution_failure_criteria first_notification execution_failure_options
+syn keyword nagiosDirective contained flap_detection_enabled freshness_threshold failure_prediction_enabled
+syn keyword nagiosDirective contained friday high_flap_threshold host_name
+syn keyword nagiosDirective contained host_notification_commands
+syn keyword nagiosDirective contained host_notification_options
+syn keyword nagiosDirective contained host_notification_period hostgroup_name servicegroup_name hostgroups servicegroups
+syn keyword nagiosDirective contained is_volatile last_notification
+syn keyword nagiosDirective contained low_flap_threshold max_check_attempts
+syn keyword nagiosDirective contained members monday normal_check_interval
+syn keyword nagiosDirective contained notification_failure_criteria notification_failure_options
+syn keyword nagiosDirective contained notification_interval notification_options
+syn keyword nagiosDirective contained notification_period notifications_enabled
+syn keyword nagiosDirective contained obsess_over_service pager parallelize_check
+syn keyword nagiosDirective contained parents passive_checks_enabled
+syn keyword nagiosDirective contained process_perf_data retain_nonstatus_information
+syn keyword nagiosDirective contained retain_status_information retry_check_interval
+syn keyword nagiosDirective contained saturday service_description
+syn keyword nagiosDirective contained service_notification_commands
+syn keyword nagiosDirective contained service_notification_options
+syn keyword nagiosDirective contained service_notification_period stalking_options
+syn keyword nagiosDirective contained sunday thursday timeperiod_name tuesday wednesday
+syn keyword nagiosDirective contained icon_image icon_image_alt vrml_image statusmap_image
+syn keyword nagiosDirective contained notes notes_url 2d_coords 3d_coords obsess_over_host inherits_parent
 
 hi link nagiosComment Comment
+hi link nagiosLineComment Comment
 hi link nagiosConstant Number
 hi link nagiosDef Statement
 hi link nagiosDirective Define
