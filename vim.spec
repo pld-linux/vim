@@ -13,7 +13,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.1
-%define		patchlevel	311
+%define		patchlevel	326
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -95,12 +95,12 @@ Patch105:	%{name}-autopaste.patch
 Patch106:	%{name}-ft-cron.patch
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 %{patchlevel}
 URL:		http://www.vim.org/
+%{?with_athena:BuildRequires:	XFree86-devel}
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
-%if %{with gtk} || %{with heavy}
+%if %{with gtk} || %{with heavy} 
 BuildRequires:	gtk+2-devel >= 2:2.6.0
 %endif
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
