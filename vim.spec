@@ -99,7 +99,11 @@ BuildRequires:	acl-devel
 BuildRequires:	autoconf
 BuildRequires:	gettext-devel
 BuildRequires:	gpm-devel
+%if "%{pld_release}" == "ac"
+%{?with_athena:BuildRequires:	XFree86-devel}
+%else
 %{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
+%endif
 %if %{with gtk} || %{with heavy}
 BuildRequires:	gtk+2-devel >= 2:2.6.0
 %endif
@@ -115,6 +119,7 @@ BuildRequires:	perl-devel
 %if %{with python} || %{with heavy}
 BuildRequires:	python-devel
 %endif
+BuildRequires:	rpm >= 4.4.9-56
 BuildRequires:	rpmbuild(macros) >= 1.426
 %if %{with ruby} || %{with heavy}
 BuildRequires:	ruby-devel
