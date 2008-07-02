@@ -112,7 +112,7 @@ syn keyword specMacroNameLocal contained _exec_prefix _fixgroup _fixowner _fixpe
 syn keyword specMacroNameLocal contained _gpg_path _gtkdocdir _gzipbin _host _host_alias _host_cpu _host_os _host_vendor
 syn keyword specMacroNameLocal contained _httpport _httpproxy _iconsdir _includedir _infodir _initrddir _install_langs
 syn keyword specMacroNameLocal contained _install_script_path _instchangelog _javaclasspath _javadir _javadocdir _kernelsrcdir
-syn keyword specMacroNameLocal contained _kernel_ver _kernel_ver_str _langpatt _lib _libdir _libexecdir _localstatedir _mandir
+syn keyword specMacroNameLocal contained _kernel_ver _kernel_ver_str _kernel_vermagic _langpatt _lib _libdir _libexecdir _localstatedir _mandir
 syn keyword specMacroNameLocal contained _netsharedpath _oldincludedir _omf_dest_dir _os _package_version _pgpbin _pgp_name
 syn keyword specMacroNameLocal contained _pgp_path _pixmapsdir _pkgconfigdir _prefix _preScriptEnvironment _provides _rpmdir
 syn keyword specMacroNameLocal contained _rpmfilename _sbindir _sharedstatedir _signature _smp_mflags _sourcedir _source_payload
