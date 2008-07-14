@@ -13,7 +13,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.1
-%define		patchlevel	326
+%define		patchlevel	330
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -29,7 +29,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	1
+Release:	0.3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -146,6 +146,7 @@ BuildRequires:	unzip
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-enhanced
 Obsoletes:	vim-ispell
 Obsoletes:	vim-plugin-multvals
@@ -281,6 +282,7 @@ Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-enhanced
 Obsoletes:	vim-ispell
 Obsoletes:	vim-plugin-multvals
@@ -300,6 +302,7 @@ Summary(pl.UTF-8):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
 Provides:	vi-editor
 Provides:	vi
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	elvis-static
 Obsoletes:	nvi
 Obsoletes:	vim-minimal
@@ -349,8 +352,6 @@ Group:		Applications/Editors/Vim
 Requires:	hicolor-icon-theme
 Requires:	vim-plugin-securemodelines
 Requires:	vim-syntax-spec
-# mktemp is for vimtutor
-Requires:	mktemp
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
 
@@ -424,6 +425,16 @@ English dictionaries for VIMspell.
 %description spell-en -l pl.UTF-8
 Angielskie słowniki dla VIMspella.
 
+%package tutor
+Summary:	Vim tutorial
+Group:		Applications/Editors/Vim
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Requires:	mktemp
+Requires:	vim-editor = %{epoch}:%{version}-%{release}
+
+%description tutor
+This package contains Vim tutorial
+
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Athena
@@ -432,6 +443,7 @@ Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-X11
 
 %description -n gvim-athena
@@ -460,6 +472,7 @@ Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-X11
 
 %description -n gvim-motif
@@ -489,6 +502,7 @@ Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-X11
 
 %description -n gvim-gtk
@@ -519,6 +533,7 @@ Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-X11
 
 %description -n gvim-gnome
@@ -548,6 +563,7 @@ Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-X11
 
 %description -n gvim-heavy
@@ -949,7 +965,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files rt
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/vimtutor
 %dir %{_sysconfdir}/vim
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vim/vimrc
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vim/gvimrc
@@ -1041,7 +1056,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/print
 %{_datadir}/vim/v*/syntax
 %{_datadir}/vim/v*/tools
-%{_datadir}/vim/v*/tutor
 %{_datadir}/vim/v*/colors
 %{_datadir}/vim/v*/compiler
 %{_datadir}/vim/v*/autoload
@@ -1049,22 +1063,23 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_mandir}/man1/rvim.1*
 %{_mandir}/man1/vim.1*
-%{_mandir}/man1/vimtutor.1*
 %lang(fi) %{_mandir}/fi/man1/rvim.1*
 %lang(fi) %{_mandir}/fi/man1/vim.1*
 %lang(fr) %{_mandir}/fr/man1/rvim.1*
 %lang(fr) %{_mandir}/fr/man1/vim.1*
-%lang(fr) %{_mandir}/fr/man1/vimtutor.1*
-%lang(id) %{_mandir}/id/man1/vim.1*
-%lang(it) %{_mandir}/it/man1/vim.1*
-%lang(it) %{_mandir}/it/man1/vimtutor.1*
-%lang(pl) %{_mandir}/pl/man1/vim.1*
-%lang(pl) %{_mandir}/pl/man1/vimtutor.1*
-%lang(ru) %{_mandir}/ru/man1/vim.1*
-%lang(ru) %{_mandir}/ru/man1/vimtutor.1*
 %{_iconsdir}/hicolor/16x16/apps/vim.png
 %{_iconsdir}/hicolor/32x32/apps/vim.png
 %{_iconsdir}/hicolor/48x48/apps/vim.png
+
+%files tutor
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/vimtutor
+%{_datadir}/vim/v*/tutor
+%{_mandir}/man1/vimtutor.1*
+%lang(fr) %{_mandir}/fr/man1/vimtutor.1*
+%lang(it) %{_mandir}/it/man1/vimtutor.1*
+%lang(pl) %{_mandir}/pl/man1/vimtutor.1*
+%lang(ru) %{_mandir}/ru/man1/vimtutor.1*
 
 %if %{with heavy}
 %files heavy
