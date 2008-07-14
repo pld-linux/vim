@@ -1,3 +1,4 @@
+#
 # Conditional build:
 %bcond_without	static		# don't build static version
 %bcond_without	athena		# don't build Athena Widgets-based gvim
@@ -427,13 +428,17 @@ Angielskie słowniki dla VIMspella.
 
 %package tutor
 Summary:	Vim tutorial
+Summary(pl.UTF-8):	Samouczek do Vima
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	mktemp
 Requires:	vim-editor = %{epoch}:%{version}-%{release}
 
 %description tutor
-This package contains Vim tutorial
+This package contains Vim tutorial.
+
+%description tutor -l pl.UTF-8
+Ten pakiet zawiera samouczek do Vima.
 
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
@@ -1085,18 +1090,18 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/tutor/tutor.info
 %{_datadir}/vim/v*/tutor/tutor.vim
 %{_datadir}/vim/v*/tutor/tutor
-%lang(gr) %{_datadir}/vim/v*/tutor/README.gr.cp737.txt
-%lang(gr) %{_datadir}/vim/v*/tutor/README.gr.txt
-%lang(cs) %{_datadir}/vim/v*/tutor/tutor.ca
+%lang(el) %{_datadir}/vim/v*/tutor/README.gr.cp737.txt
+%lang(el) %{_datadir}/vim/v*/tutor/README.gr.txt
+%lang(ca) %{_datadir}/vim/v*/tutor/tutor.ca
 %lang(cs) %{_datadir}/vim/v*/tutor/tutor.cs
 %lang(cs) %{_datadir}/vim/v*/tutor/tutor.cs.cp1250
 %lang(cs) %{_datadir}/vim/v*/tutor/tutor.cs.utf-8
 %lang(de) %{_datadir}/vim/v*/tutor/tutor.de
 %lang(es) %{_datadir}/vim/v*/tutor/tutor.es
 %lang(fr) %{_datadir}/vim/v*/tutor/tutor.fr
-%lang(gr) %{_datadir}/vim/v*/tutor/tutor.gr
-%lang(gr) %{_datadir}/vim/v*/tutor/tutor.gr.cp737
-%lang(gr) %{_datadir}/vim/v*/tutor/tutor.gr.utf-8
+%lang(el) %{_datadir}/vim/v*/tutor/tutor.gr
+%lang(el) %{_datadir}/vim/v*/tutor/tutor.gr.cp737
+%lang(el) %{_datadir}/vim/v*/tutor/tutor.gr.utf-8
 %lang(hu) %{_datadir}/vim/v*/tutor/tutor.hu
 %lang(hu) %{_datadir}/vim/v*/tutor/tutor.hu.utf-8
 %lang(it) %{_datadir}/vim/v*/tutor/tutor.it
@@ -1118,8 +1123,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sv) %{_datadir}/vim/v*/tutor/tutor.sv
 %lang(tr) %{_datadir}/vim/v*/tutor/tutor.tr.iso9
 %lang(tr) %{_datadir}/vim/v*/tutor/tutor.tr.utf-8
-%lang(zh) %{_datadir}/vim/v*/tutor/tutor.zh.big5
-%lang(zh) %{_datadir}/vim/v*/tutor/tutor.zh.euc
+%lang(zh_TW) %{_datadir}/vim/v*/tutor/tutor.zh.big5
+%lang(zh_TW) %{_datadir}/vim/v*/tutor/tutor.zh.euc
 
 %{_mandir}/man1/vimtutor.1*
 %lang(fr) %{_mandir}/fr/man1/vimtutor.1*
