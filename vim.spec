@@ -30,7 +30,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -1083,6 +1083,7 @@ rm -rf $RPM_BUILD_ROOT
 %files tutor
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vimtutor
+%dir %{_datadir}/vim/v*/tutor
 %dir %{_datadir}/vim/v*/tutor/tutor
 
 %{_datadir}/vim/v*/tutor/README.txt
