@@ -81,7 +81,7 @@ syn match   specMacro contained '%\(php\|php4\)_webserver_restart'
 syn match   specMacro contained '%update_browser_plugins\|%browser_plugins_add_browser'
 syn match   specMacro contained '%gconf_schema_\(un\)?install'
 syn match   specMacro contained '%scrollkeeper_update_post\(un\)?'
-syn match   specMacro contained '%update_icon_cache|%update_mime_database'
+syn match   specMacro contained '%update_icon_cache\|%update_mime_database'
 
 syn keyword specCommandSpecial contained root
 syn keyword specCommand		contained make xmkmf mkdir chmod find sed rm strip moc echo grep ls rm mv mkdir chown install cp pwd cat tail then else elif cd gzip rmdir ln eval export touch unzip bzip2
