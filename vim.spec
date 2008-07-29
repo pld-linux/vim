@@ -1,3 +1,6 @@
+# TODO
+# - move gettext translations to glibc dir
+#   /usr/share/vim/vim71/lang/*/LC_MESSAGES
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
