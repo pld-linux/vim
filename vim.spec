@@ -353,6 +353,7 @@ Group:		Applications/Editors/Vim
 Requires:	hicolor-icon-theme
 Requires:	vim-plugin-securemodelines
 Requires:	vim-syntax-spec
+Suggests:	vim-syntax-poldek
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
 
