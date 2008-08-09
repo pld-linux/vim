@@ -4,8 +4,8 @@
  	\|endif
  
  " Crontab
--au BufNewFile,BufRead crontab,crontab.*		call s:StarSetf('crontab')
-+au BufNewFile,BufRead crontab,crontab.*,*.cron		call s:StarSetf('crontab')
+-au BufNewFile,BufRead crontab,crontab.*,/etc/cron.d/*		call s:StarSetf('crontab')
++au BufNewFile,BufRead crontab,crontab.*,/etc/cron.d/*,*.cron		call s:StarSetf('crontab')
  
  " Debian Sources.list
  au BufNewFile,BufRead /etc/apt/sources.list.d/*	call s:StarSetf('debsources')

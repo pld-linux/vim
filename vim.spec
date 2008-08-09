@@ -16,8 +16,8 @@
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 #
-%define		ver		7.1
-%define		patchlevel	330
+%define		ver		7.2
+%define		patchlevel	0
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -33,16 +33,16 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
-# Source0-md5:	44c6b4914f38d6f9aa959640b89da329
+# Source0-md5:	556572edfda7a319541a3bc860c7fd36
 Source1:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{ver}-lang.tar.gz
-# Source1-md5:	144aa049ba70621acf4247f0459f3ee7
+# Source1-md5:	d8884786979e0e520c112faf2e176f05
 Source2:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{ver}-extra.tar.gz
-# Source2-md5:	605cc7ae31bcc9d7864bb0bb6025f55d
+# Source2-md5:	35e04482f07c57221c9a751aaa3b8dac
 Source3:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source3-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source4:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -72,27 +72,26 @@ Source33:	moria.vim
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
-Patch3:		%{name}-%{name}rc.patch
-Patch4:		%{name}-no_libelf.patch
-Patch5:		%{name}-egrep.patch
-Patch6:		%{name}-awk.patch
-Patch7:		%{name}-filetype_vim-perl_tests.patch
-Patch8:		%{name}-apache.patch
-Patch9:		%{name}-po-syntax.patch
-Patch10:	%{name}-modprobe.patch
-Patch11:	%{name}-doubleparenthesis.patch
-Patch12:	%{name}-syntax-fstab.patch
-Patch13:	010_all_%{name}-6.3-vixie.patch
-Patch14:	013_all_%{name}-7.0-cron-vars-79981.patch
-Patch15:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
-Patch16:	021_all_%{name}-7.0-fstab-bogus-errors.patch
-Patch17:	024_all_%{name}-6.3-bash-83565.patch
-Patch18:	027_all_%{name}-7.0-automake-substitutions-93378.patch
-Patch19:	%{name}-smarty.patch
-Patch20:	%{name}-tutor-lessdeps.patch
-Patch21:	%{name}-nagios.patch
-Patch22:	%{name}-filetypes.patch
-Patch23:	%{name}-man_installation.patch
+Patch3:		%{name}-no_libelf.patch
+Patch4:		%{name}-egrep.patch
+Patch5:		%{name}-awk.patch
+Patch6:		%{name}-filetype_vim-perl_tests.patch
+Patch7:		%{name}-apache.patch
+Patch8:		%{name}-po-syntax.patch
+Patch9:		%{name}-modprobe.patch
+Patch10:	%{name}-doubleparenthesis.patch
+Patch11:	%{name}-syntax-fstab.patch
+Patch12:	010_all_%{name}-6.3-vixie.patch
+Patch13:	013_all_%{name}-7.0-cron-vars-79981.patch
+Patch14:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
+Patch15:	021_all_%{name}-7.0-fstab-bogus-errors.patch
+Patch16:	024_all_%{name}-6.3-bash-83565.patch
+Patch17:	027_all_%{name}-7.0-automake-substitutions-93378.patch
+Patch18:	%{name}-smarty.patch
+Patch19:	%{name}-tutor-lessdeps.patch
+Patch20:	%{name}-nagios.patch
+Patch21:	%{name}-filetypes.patch
+Patch22:	%{name}-man_installation.patch
 Patch102:	%{name}-gtkfilechooser.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-autopaste.patch
@@ -586,7 +585,7 @@ zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby
 oraz Tcl jak również GUI GTK+2.
 
 %prep
-%setup -q -n %{name}71 -b1 -b2
+%setup -q -n %{name}72 -b1 -b2
 
 # official patches
 %patchset_patch 1 %{patchlevel}
@@ -600,21 +599,20 @@ oraz Tcl jak również GUI GTK+2.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
-%patch9 -p1
-%patch10 -p0
+%patch9 -p0
+%patch10 -p1
 %patch11 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
-%patch16 -p1
+%patch16 -p0
 %patch17 -p0
-%patch18 -p0
+%patch18 -p1
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
 
 # home etc
 %{?with_home_etc:%patch104 -p1}
@@ -852,14 +850,14 @@ install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdet
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
 
 # separate package
-%{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/vim71/{ftplugin,syntax}/spec.vim
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/vim72/{ftplugin,syntax}/spec.vim
 
 # no autodeps
-chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/doc/vim2html.pl
-chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/shtags.pl
-chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/pltags.pl
-chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/efm_perl.pl
-chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim71/tools/efm_filter.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim72/doc/vim2html.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim72/tools/shtags.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim72/tools/pltags.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim72/tools/efm_perl.pl
+chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim72/tools/efm_filter.pl
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -1013,9 +1011,19 @@ rm -rf $RPM_BUILD_ROOT
 %lang(en_GB) %{_datadir}/vim/v*/lang/menu_en_gb*
 %lang(en_GB) %{_datadir}/vim/v*/lang/menu_*english*
 %lang(en_GB) %{_datadir}/vim/v*/lang/en_GB/
+%lang(eo) %{_datadir}/vim/v*/lang/menu_eo.utf-8.vim
+%lang(eo) %{_datadir}/vim/v*/lang/menu_eo_eo.utf-8.vim
+%lang(eo) %{_datadir}/vim/v*/lang/menu_eo_xx.utf-8.vim
+%lang(eo) %{_datadir}/vim/v*/lang/eo/
 %lang(es) %{_datadir}/vim/v*/lang/menu_es*
 %lang(es) %{_datadir}/vim/v*/lang/menu_*spanish*
 %lang(es) %{_datadir}/vim/v*/lang/es/
+%lang(fi) %{_datadir}/vim/v*/lang/menu_fi.latin1.vim
+%lang(fi) %{_datadir}/vim/v*/lang/menu_fi.utf-8.vim
+%lang(fi) %{_datadir}/vim/v*/lang/menu_fi_fi.latin1.vim
+%lang(fi) %{_datadir}/vim/v*/lang/menu_fi_fi.utf-8.vim
+%lang(fi) %{_datadir}/vim/v*/lang/menu_finnish_finland.1252.vim
+%lang(fi) %{_datadir}/vim/v*/lang/fi/
 %lang(fr) %{_datadir}/vim/v*/lang/menu_fr*
 %lang(fr) %{_datadir}/vim/v*/lang/fr/
 %lang(ga) %{_datadir}/vim/v*/lang/ga/
@@ -1033,6 +1041,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_datadir}/vim/v*/lang/menu_*polish*
 %lang(pl) %{_datadir}/vim/v*/lang/pl/
 %lang(pt) %{_datadir}/vim/v*/lang/menu_pt*
+%lang(pt_BR) %{_datadir}/vim/v*/lang/pt_BR
 %lang(ru) %{_datadir}/vim/v*/lang/menu_ru*
 %lang(ru) %{_datadir}/vim/v*/lang/ru/
 %lang(sk) %{_datadir}/vim/v*/lang/menu_sk*
@@ -1095,27 +1104,40 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/tutor/tutor.info
 %{_datadir}/vim/v*/tutor/tutor.vim
 %{_datadir}/vim/v*/tutor/tutor
-%lang(el) %{_datadir}/vim/v*/tutor/README.gr.cp737.txt
-%lang(el) %{_datadir}/vim/v*/tutor/README.gr.txt
+%{_datadir}/vim/v*/tutor/tutor.utf-8
+%lang(el) %{_datadir}/vim/v*/tutor/README.el.cp737.txt
+%lang(el) %{_datadir}/vim/v*/tutor/README.el.txt
+
 %lang(ca) %{_datadir}/vim/v*/tutor/tutor.ca
+%lang(ca) %{_datadir}/vim/v*/tutor/tutor.ca.utf-8
 %lang(cs) %{_datadir}/vim/v*/tutor/tutor.cs
 %lang(cs) %{_datadir}/vim/v*/tutor/tutor.cs.cp1250
 %lang(cs) %{_datadir}/vim/v*/tutor/tutor.cs.utf-8
 %lang(de) %{_datadir}/vim/v*/tutor/tutor.de
+%lang(de) %{_datadir}/vim/v*/tutor/tutor.de.utf-8
+%lang(el) %{_datadir}/vim/v*/tutor/tutor.el
+%lang(el) %{_datadir}/vim/v*/tutor/tutor.el.cp737
+%lang(el) %{_datadir}/vim/v*/tutor/tutor.el.utf-8
+%lang(eo) %{_datadir}/vim/v*/tutor/tutor.eo.utf-8
 %lang(es) %{_datadir}/vim/v*/tutor/tutor.es
+%lang(es) %{_datadir}/vim/v*/tutor/tutor.es.utf-8
 %lang(fr) %{_datadir}/vim/v*/tutor/tutor.fr
-%lang(el) %{_datadir}/vim/v*/tutor/tutor.gr
-%lang(el) %{_datadir}/vim/v*/tutor/tutor.gr.cp737
-%lang(el) %{_datadir}/vim/v*/tutor/tutor.gr.utf-8
+%lang(fr) %{_datadir}/vim/v*/tutor/tutor.fr.utf-8
+%lang(hr) %{_datadir}/vim/v*/tutor/tutor.hr
+%lang(hr) %{_datadir}/vim/v*/tutor/tutor.hr.cp1250
+%lang(hr) %{_datadir}/vim/v*/tutor/tutor.hr.utf-8
 %lang(hu) %{_datadir}/vim/v*/tutor/tutor.hu
 %lang(hu) %{_datadir}/vim/v*/tutor/tutor.hu.utf-8
+%lang(hu) %{_datadir}/vim/v*/tutor/tutor.hu.cp1250
 %lang(it) %{_datadir}/vim/v*/tutor/tutor.it
+%lang(it) %{_datadir}/vim/v*/tutor/tutor.it.utf-8
 %lang(ja) %{_datadir}/vim/v*/tutor/tutor.ja.euc
 %lang(ja) %{_datadir}/vim/v*/tutor/tutor.ja.sjis
 %lang(ja) %{_datadir}/vim/v*/tutor/tutor.ja.utf-8
 %lang(ko) %{_datadir}/vim/v*/tutor/tutor.ko.euc
 %lang(ko) %{_datadir}/vim/v*/tutor/tutor.ko.utf-8
 %lang(no) %{_datadir}/vim/v*/tutor/tutor.no
+%lang(no) %{_datadir}/vim/v*/tutor/tutor.no.utf-8
 %lang(pl) %{_datadir}/vim/v*/tutor/tutor.pl
 %lang(pl) %{_datadir}/vim/v*/tutor/tutor.pl.cp1250
 %lang(pl) %{_datadir}/vim/v*/tutor/tutor.pl.utf-8
@@ -1126,10 +1148,13 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sk) %{_datadir}/vim/v*/tutor/tutor.sk.cp1250
 %lang(sk) %{_datadir}/vim/v*/tutor/tutor.sk.utf-8
 %lang(sv) %{_datadir}/vim/v*/tutor/tutor.sv
+%lang(sv) %{_datadir}/vim/v*/tutor/tutor.sv.utf-8
 %lang(tr) %{_datadir}/vim/v*/tutor/tutor.tr.iso9
 %lang(tr) %{_datadir}/vim/v*/tutor/tutor.tr.utf-8
+%lang(vi) %{_datadir}/vim/v*/tutor/tutor.vi.utf-8
 %lang(zh_TW) %{_datadir}/vim/v*/tutor/tutor.zh.big5
 %lang(zh_TW) %{_datadir}/vim/v*/tutor/tutor.zh.euc
+%lang(zh_TW) %{_datadir}/vim/v*/tutor/tutor.zh.utf-8
 
 %{_mandir}/man1/vimtutor.1*
 %lang(fr) %{_mandir}/fr/man1/vimtutor.1*
