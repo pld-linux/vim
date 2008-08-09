@@ -656,7 +656,7 @@ build() {
 		--enable-multibyte \
 		--enable-nls \
 		--with-tlib="ncurses -ltinfo" \
-		--with-modifiedby="PLD Linux Distribution" \
+		--with-modified-by="PLD Linux Distribution" \
 		--with-compiledby="PLD Linux Distribution" \
 		"$@"
 
