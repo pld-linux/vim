@@ -96,6 +96,7 @@ Patch102:	%{name}-gtkfilechooser.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-autopaste.patch
 Patch106:	%{name}-ft-cron.patch
+Patch107:	%{name}-relativenumber.patch
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 %{patchlevel}
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
@@ -622,6 +623,7 @@ oraz Tcl jak również GUI GTK+2.
 %patch105 -p1
 
 %patch106 -p1
+%patch107 -p0
 
 install %{SOURCE20} runtime/syntax
 install %{SOURCE21} runtime/syntax
