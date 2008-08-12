@@ -355,8 +355,7 @@ Group:		Applications/Editors/Vim
 # for hicolor icons
 Requires:	hicolor-icon-theme
 Requires:	vim-plugin-securemodelines
-Requires:	vim-syntax-spec
-Suggests:	vim-syntax-poldek
+Suggests:	vim-syntax-spec
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
 
