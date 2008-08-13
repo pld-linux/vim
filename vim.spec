@@ -33,7 +33,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -354,10 +354,12 @@ Summary(zh_CN.UTF-8):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
 # for hicolor icons
 Requires:	hicolor-icon-theme
+Requires:	rpm-whiteout
 Requires:	vim-plugin-securemodelines
 Suggests:	vim-syntax-spec
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
+Conflicts:	rpm-whiteout < 1.3
 
 %description rt
 This package contains macros, documentation, syntax configuration and
