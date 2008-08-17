@@ -356,6 +356,7 @@ Group:		Applications/Editors/Vim
 Requires:	hicolor-icon-theme
 Requires:	rpm-whiteout
 Requires:	vim-plugin-securemodelines
+Suggests:	vi-editor
 Suggests:	vim-syntax-spec
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
