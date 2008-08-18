@@ -23,5 +23,5 @@
  		  \ | wincmd p | diffthis
  endif
 +
-+" USE :help colorscheme FOR INFO
++" Use :help colorscheme for info
 +"set background=dark
