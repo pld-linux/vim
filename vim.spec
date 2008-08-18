@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.2
-%define		patchlevel	0
+%define		patchlevel	2
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -33,7 +33,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -92,12 +92,13 @@ Patch19:	%{name}-tutor-lessdeps.patch
 Patch20:	%{name}-nagios.patch
 Patch21:	%{name}-filetypes.patch
 Patch22:	%{name}-man_installation.patch
+Patch23:	%{name}-vimrc.patch
 Patch102:	%{name}-gtkfilechooser.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-autopaste.patch
 Patch106:	%{name}-ft-cron.patch
 Patch107:	%{name}-relativenumber.patch
-%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.1/7.1.%03g 1 %{patchlevel}
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.2/7.2.%03g 1 %{patchlevel}
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -354,13 +355,11 @@ Summary(zh_CN.UTF-8):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
 # for hicolor icons
 Requires:	hicolor-icon-theme
-Requires:	rpm-whiteout
+Requires:	rpm-whiteout >= 1.3
 Requires:	vim-plugin-securemodelines
-Suggests:	vi-editor
 Suggests:	vim-syntax-spec
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
-Conflicts:	rpm-whiteout < 1.3
 
 %description rt
 This package contains macros, documentation, syntax configuration and
@@ -616,6 +615,7 @@ oraz Tcl jak również GUI GTK+2.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 
 # home etc
 %{?with_home_etc:%patch104 -p1}
