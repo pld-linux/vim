@@ -1,0 +1,13 @@
+--- vim72/runtime/scripts.vim~	2008-10-09 03:12:50.000000000 +0300
++++ vim72/runtime/scripts.vim	2008-10-09 03:12:54.703954160 +0300
+@@ -246,6 +246,10 @@
+   elseif s:line1 =~ '^\x\{7}: \x\{2} \=\x\{2} \=\x\{2} \=\x\{2} '
+     set ft=xxd
+ 
++    " PHP script tag
++  elseif s:line1 =~ '^<?php'
++    set ft=php
++
+     " RCS/CVS log output
+   elseif s:line1 =~ '^RCS file:' || s:line2 =~ '^RCS file:'
+     set ft=rcslog
