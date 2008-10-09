@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.2
-%define		patchlevel	18
+%define		patchlevel	25
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -33,7 +33,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -98,6 +98,7 @@ Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-autopaste.patch
 Patch106:	%{name}-ft-cron.patch
 Patch107:	%{name}-relativenumber.patch
+Patch108:	%{name}-phpscript.patch
 %patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.2/7.2.%03g 1 %{patchlevel}
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
@@ -626,6 +627,7 @@ oraz Tcl jak również GUI GTK+2.
 
 %patch106 -p1
 %patch107 -p0
+%patch108 -p1
 
 install %{SOURCE20} runtime/syntax
 install %{SOURCE21} runtime/syntax
