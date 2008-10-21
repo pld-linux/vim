@@ -278,7 +278,7 @@ if version >= 508 || !exists("did_spec_syntax_inits")
   HiLink specBcond			Function
   HiLink specColon			Special
   HiLink specCommand			Statement
-  HiLink specPreambleField		Comment
+  HiLink specPreambleField		Statement
   HiLink specCommandOpts		specOpts
   HiLink specCommandSpecial		Special
   HiLink specComment			Comment
