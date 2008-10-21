@@ -150,9 +150,14 @@ syn region specFilesDirective contained start="%\(attrib\|attr\|defattr\|config\
 syn match  specAttr contained "%\(attrib\|attr\|defattr\|config\|lang\|verify\|dev\)"
 
 " valid options for certain section headers
-syn match specDescriptionOpts contained '\s-[ln]\s*\a'ms=s+1,me=e-1
+syn match specDescriptionOpts contained '\s-[ln]\s\a'ms=s+1,me=e-1 contains=specDescriptionCharset
+"syn match specDescriptionOptLang contained '\s-l\s*[a-zA-Z0-9.-]\+'ms=s+1
 syn match specPackageOpts     contained    '\s-n\s*\w'ms=s+1,me=e-1
 syn match specFilesOpts       contained    '\s-f\s*\w'ms=s+1,me=e-1
+
+" charset: et,et.UTF-8,pl.UTF-8, ... etc
+syn match specDescriptionCharset         contained '-l\s[a-z]\+\(\.UTF-8\)\?'ms=s+2
+syn match specPreAmbleCharset         contained '([a-z]\+\(\.UTF-8\)\?):'
 
 
 syn case ignore
@@ -162,10 +167,10 @@ syn case ignore
 " Copyright and Serial were deprecated by License and Epoch
 " PreReq and BuildPreReq deprecated by Requires ans BuildRequires
 syn region specPreAmbleDeprecated oneline matchgroup=specError start='^\(Copyright\|Serial\|PreReq\|BuildPreReq\(uires\)\?\)' end='$' contains=specEmail,specURL,specURLMacro,specLicense,specColon,specVariables,specSpecialChar,specMacroIdentifier
-syn region specPreAmble oneline matchgroup=specCommand
+syn region specPreAmble oneline matchgroup=specPreambleField
 	\ start='\(^\|\(^%{!\??\(with\(out\)\?_[a-zA-Z0-9_]\+\|debug\):\)\@<=\)\(Summary\|Name\|Version\|Packager\|Requires\|Suggests\|Icon\|URL\|Source\d*\|Patch\d*\|Prefix\|Packager\|Group\|License\|Release\|BuildRoot\|Distribution\|Vendor\|Provides\|ExclusiveArch\|ExcludeArch\|ExclusiveOS\|Obsoletes\|BuildArch\|BuildArchitectures\|BuildRequires\|BuildConflicts\|Conflicts\|AutoRequires\|AutoReqProv\|AutoReq\|AutoProv\|Epoch\|NoSource\)'
 	\ end='$\|}\@='
-	\ contains=specEmail,specURL,specURLMacro,specLicense,specLicenseWarning,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
+	\ contains=specPreambleCharset,specEmail,specURL,specURLMacro,specLicense,specLicenseWarning,specColon,specVariables,specSpecialChar,specMacroIdentifier,specSectionMacroBcondArea
 
 " %% Description Section %%
 syn region specDescriptionArea matchgroup=specSection start='^%description' end='^%'me=e-1
@@ -273,11 +278,14 @@ if version >= 508 || !exists("did_spec_syntax_inits")
   HiLink specBcond			Function
   HiLink specColon			Special
   HiLink specCommand			Statement
+  HiLink specPreambleField		Comment
   HiLink specCommandOpts		specOpts
   HiLink specCommandSpecial		Special
   HiLink specComment			Comment
   HiLink specConfigure			specCommand
   HiLink specDate			String
+  HiLink specPreAmbleCharset		String
+  HiLink specDescriptionCharset		String
   HiLink specDescriptionOpts		specOpts
   HiLink specEmail			specWWWlink
   HiLink specError			Error
