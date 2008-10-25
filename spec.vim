@@ -155,9 +155,9 @@ syn match specDescriptionOpts contained '\s-[ln]\s\a'ms=s+1,me=e-1 contains=spec
 syn match specPackageOpts     contained    '\s-n\s*\w'ms=s+1,me=e-1
 syn match specFilesOpts       contained    '\s-f\s*\w'ms=s+1,me=e-1
 
-" charset: et,et.UTF-8,pl.UTF-8, ... etc
-syn match specDescriptionCharset         contained '-l\s[a-z]\+\(\.UTF-8\)\?'ms=s+2
-syn match specPreAmbleCharset         contained '([a-z]\+\(\.UTF-8\)\?):'
+" charset: et,et.UTF-8,pl.UTF-8,pt_BR, ... etc
+syn match specDescriptionCharset         contained '-l\s[a-z_A-Z]\+\(\.UTF-8\)\?'ms=s+2
+syn match specPreAmbleCharset         contained '([a-z_A-Z]\+\(\.UTF-8\)\?):'
 
 
 syn case ignore
