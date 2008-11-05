@@ -56,7 +56,7 @@ syn keyword nagiosDirective contained name register use
 syn keyword nagiosDirective contained active_checks_enabled address alias check_command
 syn keyword nagiosDirective contained check_freshness check_period checks_enabled check_interval retry_interval
 syn keyword nagiosDirective contained command_line command_name
-syn keyword nagiosDirective contained contact_groups contact_name contactgroup_name
+syn keyword nagiosDirective contained contacts contact_groups contact_name contactgroup_name
 syn keyword nagiosDirective contained dependent_host_name dependent_hostgroup dependent_service_description
 syn keyword nagiosDirective contained email event_handler event_handler_enabled
 syn keyword nagiosDirective contained execution_failure_criteria first_notification execution_failure_options
