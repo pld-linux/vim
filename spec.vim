@@ -14,6 +14,9 @@ elseif exists("b:current_syntax")
   finish
 endif
 
+" we're quite strict on spec syntax, so match case for everything
+syn case match
+
 syn sync minlines=1000
 
 syn match specSpecialChar contained '[][!$()\\|>^;:]'
@@ -32,8 +35,6 @@ syn match specBcond contained '%{with\(out\)\?\s\+[a-zA-Z0-9_-]\+}'
 syn match specSpecialVariables contained '\$[0-9]\|\${[0-9]}'
 syn match specCommandOpts      contained '\s\(-\w\+\|--\w[a-zA-Z0-9_-]\+\)'ms=s+1
 syn match specComment '^\s*#.*$'
-
-syn case match
 
 " matches with no highlight
 syn match specNoNumberHilite 'X11\|X11R6\|[a-zA-Z]*\.\d\|[a-zA-Z][-/]\d'
@@ -160,9 +161,6 @@ syn match specDescriptionCharset         contained '-l\s[a-z_A-Z]\+\(\.UTF-8\)\?
 syn match specPreAmbleCharset         contained '([a-z_A-Z]\+\(\.UTF-8\)\?):'
 
 
-syn case ignore
-
-
 " %% PreAmble Section %%
 " Copyright and Serial were deprecated by License and Epoch
 " PreReq and BuildPreReq deprecated by Requires ans BuildRequires
@@ -203,10 +201,6 @@ syn match specLogError contained "%%"
 
 " ------------------------------------------------------------------------------
 " here's the shell syntax for all the Script Sections
-
-
-syn case match
-
 
 " sh-like comment style, only valid in script part
 syn match shComment contained '#.*$'
