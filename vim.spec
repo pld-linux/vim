@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.2
-%define		patchlevel	25
+%define		patchlevel	40
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -33,7 +33,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	2
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -69,6 +69,7 @@ Source31:	borland.vim
 Source32:	oceandeep.vim
 # http://www.vim.org/scripts/script.php?script_id=1464 (2.6.3)
 Source33:	moria.vim
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.2/7.2.%03g 1 %{patchlevel}
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -99,7 +100,6 @@ Patch105:	%{name}-autopaste.patch
 Patch106:	%{name}-ft-cron.patch
 Patch107:	%{name}-relativenumber.patch
 Patch108:	%{name}-phpscript.patch
-%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.2/7.2.%03g 1 %{patchlevel}
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -1109,7 +1109,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/v*/tutor/README.txt.info
 %{_datadir}/vim/v*/tutor/tutor.info
 %{_datadir}/vim/v*/tutor/tutor.vim
-%{_datadir}/vim/v*/tutor/tutor
 %{_datadir}/vim/v*/tutor/tutor.utf-8
 %lang(el) %{_datadir}/vim/v*/tutor/README.el.cp737.txt
 %lang(el) %{_datadir}/vim/v*/tutor/README.el.txt
