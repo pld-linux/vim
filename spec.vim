@@ -173,7 +173,7 @@ syn region specPreAmble oneline matchgroup=specPreambleField
 syn region specPreAmble oneline matchgroup=specPreambleField
 	\ start='\(Summary\)'
 	\ end='$\|}\@='
-	\ contains=specPreambleCharset
+	\ contains=specPreambleCharset,specURLMacro,specMacroIdentifier,specSectionMacroBcondArea
 
 " %% Description Section %%
 syn region specDescriptionArea matchgroup=specSection start='^%description' end='^%'me=e-1
