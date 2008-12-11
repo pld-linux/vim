@@ -1,7 +1,6 @@
 # TODO
 # - move gettext translations to glibc dir
 #   /usr/share/vim/vim71/lang/*/LC_MESSAGES
-# - %description heavy -l pl.UTF-8 maybe gvim-heavy? About line 635
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -628,10 +627,10 @@ This package provides full featured version of Vim, which includes
 support for Perl, Python, Ruby and Tcl scripting, as well as GTK+2
 GUI.
 
-%description -n gvim-heavy
+%description -n gvim-heavy -l hu.UTF-8
 A gvim legteljesebb verziója, Perl, Python, Ruby és Tcl támogatással.
 
-%description heavy -l pl.UTF-8
+%description -n gvim-heavy -l pl.UTF-8
 Pakiet ten dostarcza w pełni funkcjonalną wersję Vim-a, czyli
 zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby
 oraz Tcl jak również GUI GTK+2.
