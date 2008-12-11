@@ -1,6 +1,7 @@
 # TODO
 # - move gettext translations to glibc dir
 #   /usr/share/vim/vim71/lang/*/LC_MESSAGES
+# - %description heavy -l pl.UTF-8 maybe gvim-heavy? About line 635
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -26,6 +27,7 @@ Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
 Summary(fr.UTF-8):	Editeur VIM : VIsual editor iMproved
+Summary(hu.UTF-8):	Vi IMproved - a Vi szerkesztő bővítése
 Summary(pl.UTF-8):	Vi IMproved - klon edytora Vi
 Summary(pt_BR.UTF-8):	Editor visual incrementado
 Summary(ru.UTF-8):	Visual editor IMproved - Единственно Правильный Редактор :)
@@ -193,6 +195,11 @@ pratiquement tous les systèmes UN*X. Il ajoute les fenêtres
 mutltiples, l'annulation a plusieurs niveaux, la mise en évidence des
 blocs et autres caractéristiques au vi de base.
 
+%description -l hu.UTF-8
+A Vi-hez hasonló texteditor. Néhány fontos bővítés: ablakkezelés,
+többszintű undo, blokk kiemelés, kódrészletek összecsukása, és még sok
+más...
+
 %description -l id.UTF-8
 VIM (VIsual editor iMproved) adalah versi vi editor yang sudah
 diupdate dan ditambah kemampuannya. Vi adalah editor untuk UNIX yang
@@ -283,6 +290,7 @@ wyjście. Co więcej, może być użyty do modyfikowania plików binarnych.
 
 %package heavy
 Summary:	Full featured build of Vim
+Summary(hu.UTF-8):      A Vim teljeskörű szolgáltatásait nyújtó verzió
 Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vim-a
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -297,6 +305,10 @@ Obsoletes:	vim-plugin-multvals
 This package provides full featured version of Vim, which includes
 support for Perl, Python, Ruby and Tcl scripting.
 
+%description heavy -l hu.UTF-8
+Ez a csomag a Vim teljeskörű szolgáltatásait nyújtó verzióját
+tartalmazza, amelyben benne van a Perl, Python, Ruby és Tcl támogatás.
+
 %description heavy -l pl.UTF-8
 Pakiet ten dostarcza w pełni funkcjonalną wersję Vim-a, czyli
 zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby
@@ -304,6 +316,7 @@ oraz Tcl.
 
 %package static
 Summary:	Statically linked Vim
+Summary(hu.UTF-8):      A Vim statikus verziója
 Summary(pl.UTF-8):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
 Provides:	vi-editor
@@ -317,6 +330,11 @@ Obsoletes:	vim-minimal
 Text editor similar to Vi. This version is built with minimal feature
 and is installed in /bin as a rescue tool. The installation of this
 package is STRONGLY recommended.
+
+%description static -l hu.UTF-8
+Vi-hez hasonló text editor. Ez a verzió a legminimálisabb
+szolgáltatásokat nyújtja, és a /bin könyvtárba települ, mint egy mentő 
+eszköz. Ennek a csomagnak a telepítése ERŐSEN javallott.
 
 %description static -l pl.UTF-8
 Edytor tekstu podobny do Vi. Ta wersja została skonsolidowana
@@ -340,6 +358,7 @@ Summary(da.UTF-8):	Fælles filer som er nødvendige for enhver version af VIM ed
 Summary(de.UTF-8):	Die von allen Versionen des VIM-Editors benötigten gemeinsamen Dateien
 Summary(es.UTF-8):	Ficheros comunes a todas las versiones de VIM
 Summary(fr.UTF-8):	Fichiers communs indispensables pour toute version de l'éditeur VIM
+Summary(hu.UTF-8):      A Vim futásidejű fájljai
 Summary(id.UTF-8):	File umum yang dibutuhkan oleh semua versi editor VIM
 Summary(is.UTF-8):	Grunnskrár sem allar útgáfur VIM ritilsins þurfa á að halda
 Summary(it.UTF-8):	File comuni necessari per tutte le versioni dell'editor VIM
@@ -382,6 +401,11 @@ Ausführung benötigt.
 %description rt -l fr.UTF-8
 Le paquetage vim-rt contient des fichiers dont chaque fichier binaire
 VIM a besoin pour fonctionner.
+
+%description rt -l hu.UTF-8
+Ez a csomag makrókat, dokumentációt, nyelvi konfigurációt és kézikönyv
+oldalakat tartalmaz Vim-hez. Ha ki akarod használni a Vim lehetőségeit,
+érdemes telepítened ezt a csomagot.
 
 %description rt -l id.UTF-8
 Package vim-rt berisi file yang dibutuhkan semua versi VIM agar bisa
@@ -434,6 +458,7 @@ Angielskie słowniki dla VIMspella.
 
 %package tutor
 Summary:	Vim tutorial
+Summary(hu.UTF-8):      Vim tutorial
 Summary(pl.UTF-8):	Samouczek do Vima
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -443,11 +468,16 @@ Requires:	vim-editor = %{epoch}:%{version}-%{release}
 %description tutor
 This package contains Vim tutorial.
 
+%description tutor -l hu.UTF-8
+Ez a csomag a vimtutor-t tartalmazza, amely egy gyakorlat-orientált
+bevezető a Vim-hez.
+
 %description tutor -l pl.UTF-8
 Ten pakiet zawiera samouczek do Vima.
 
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
+Summary(hu.UTF-8):      A Vim X Window verziója, az Athena felhasználásával
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Athena
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -460,6 +490,9 @@ Obsoletes:	vim-X11
 %description -n gvim-athena
 The classic Unix text editor now also under X Window System! This
 version is built with Athena Widget Set.
+
+%description -n gvim-athena -l hu.UTF-8
+A Vim X Window verziója, az Athena Widgetkészlet felhasználásával.
 
 %description -n gvim-athena -l pl.UTF-8
 Wersja edytora Vim pracująca w środowisku X Window z wykorzystaniem
@@ -477,6 +510,7 @@ Set, що дозволяє запускати VIM як прикладну про
 
 %package -n gvim-motif
 Summary:	Vim for X Window built with Motif
+Summary(hu.UTF-8):      A Vim X Window verziója, a Motif felhasználásával
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Motif
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -489,6 +523,9 @@ Obsoletes:	vim-X11
 %description -n gvim-motif
 The classic Unix text editor now also under X Window System! This
 version is built with Motif.
+
+%description -n gvim-motif -l hu.UTF-8
+A Vim X Window verziója, a Motif Widgetkészlet felhasználásával.
 
 %description -n gvim-motif -l pl.UTF-8
 Wersja edytora Vim pracująca w środowisku X Window z wykorzystaniem
@@ -506,6 +543,7 @@ Motif, что позволяет запускать VIM как приложен�
 
 %package -n gvim-gtk
 Summary:	Vim for X Window built with gtk
+Summary(hu.UTF-8):      A Vim X Window verziója, a GTK felhasználásával
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GTK
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
@@ -519,6 +557,9 @@ Obsoletes:	vim-X11
 %description -n gvim-gtk
 The classic Unix text editor now also under X Window System! This
 version is built with GTK.
+
+%description -n gvim-gtk -l hu.UTF-8
+A Vim X Window verziója, a GTK Widgetkészlet felhasználásával.
 
 %description -n gvim-gtk -l pl.UTF-8
 Wersja edytora Vim pracująca w środowisku X Window z wykorzystaniem
@@ -537,6 +578,7 @@ GTK, что позволяет запускать VIM как приложени�
 
 %package -n gvim-gnome
 Summary:	Vim for X Window built with GNOME
+Summary(hu.UTF-8):      A Vim X Window verziója, a GTK felhasználásával
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GNOME
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
@@ -550,6 +592,9 @@ Obsoletes:	vim-X11
 %description -n gvim-gnome
 The classic Unix text editor now also under X Window System! This
 version is build with GNOME.
+
+%description -n gvim-gtk -l hu.UTF-8
+A Vim X Window verziója, a Gnome felhasználásával.
 
 %description -n gvim-gnome -l pl.UTF-8
 Wersja edytora Vim pracująca w środowisku X Window z wykorzystaniem
@@ -567,6 +612,7 @@ GNOME, что позволяет запускать VIM как приложен�
 
 %package -n gvim-heavy
 Summary:	Full featured build of Vim with X-window support
+Summary(hu.UTF-8):      A gvim legteljesebb verziója
 Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vim-a ze wsparciem dla X-window
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
@@ -581,6 +627,9 @@ Obsoletes:	vim-X11
 This package provides full featured version of Vim, which includes
 support for Perl, Python, Ruby and Tcl scripting, as well as GTK+2
 GUI.
+
+%description -n gvim-heavy
+A gvim legteljesebb verziója, Perl, Python, Ruby és Tcl támogatással.
 
 %description heavy -l pl.UTF-8
 Pakiet ten dostarcza w pełni funkcjonalną wersję Vim-a, czyli
