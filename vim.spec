@@ -289,8 +289,8 @@ wyjście. Co więcej, może być użyty do modyfikowania plików binarnych.
 
 %package heavy
 Summary:	Full featured build of Vim
-Summary(hu.UTF-8):      A Vim teljeskörű szolgáltatásait nyújtó verzió
-Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vim-a
+Summary(hu.UTF-8):	A Vim teljeskörű szolgáltatásait nyújtó verzió
+Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vima
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
@@ -309,13 +309,12 @@ Ez a csomag a Vim teljeskörű szolgáltatásait nyújtó verzióját
 tartalmazza, amelyben benne van a Perl, Python, Ruby és Tcl támogatás.
 
 %description heavy -l pl.UTF-8
-Pakiet ten dostarcza w pełni funkcjonalną wersję Vim-a, czyli
-zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby
-oraz Tcl.
+Pakiet ten dostarcza w pełni funkcjonalną wersję Vima, czyli
+zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl.
 
 %package static
 Summary:	Statically linked Vim
-Summary(hu.UTF-8):      A Vim statikus verziója
+Summary(hu.UTF-8):	A Vim statikus verziója
 Summary(pl.UTF-8):	Statycznie skonsolidowany Vim
 Group:		Applications/Editors/Vim
 Provides:	vi-editor
@@ -357,7 +356,7 @@ Summary(da.UTF-8):	Fælles filer som er nødvendige for enhver version af VIM ed
 Summary(de.UTF-8):	Die von allen Versionen des VIM-Editors benötigten gemeinsamen Dateien
 Summary(es.UTF-8):	Ficheros comunes a todas las versiones de VIM
 Summary(fr.UTF-8):	Fichiers communs indispensables pour toute version de l'éditeur VIM
-Summary(hu.UTF-8):      A Vim futásidejű fájljai
+Summary(hu.UTF-8):	A Vim futásidejű fájljai
 Summary(id.UTF-8):	File umum yang dibutuhkan oleh semua versi editor VIM
 Summary(is.UTF-8):	Grunnskrár sem allar útgáfur VIM ritilsins þurfa á að halda
 Summary(it.UTF-8):	File comuni necessari per tutte le versioni dell'editor VIM
@@ -457,7 +456,7 @@ Angielskie słowniki dla VIMspella.
 
 %package tutor
 Summary:	Vim tutorial
-Summary(hu.UTF-8):      Vim tutorial
+Summary(hu.UTF-8):	Vim tutorial
 Summary(pl.UTF-8):	Samouczek do Vima
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -476,7 +475,7 @@ Ten pakiet zawiera samouczek do Vima.
 
 %package -n gvim-athena
 Summary:	Vim for X Window built with Athena
-Summary(hu.UTF-8):      A Vim X Window verziója, az Athena felhasználásával
+Summary(hu.UTF-8):	A Vim X Window verziója, az Athena felhasználásával
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Athena
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -509,7 +508,7 @@ Set, що дозволяє запускати VIM як прикладну про
 
 %package -n gvim-motif
 Summary:	Vim for X Window built with Motif
-Summary(hu.UTF-8):      A Vim X Window verziója, a Motif felhasználásával
+Summary(hu.UTF-8):	A Vim X Window verziója, a Motif felhasználásával
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Motif
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -542,7 +541,7 @@ Motif, что позволяет запускать VIM как приложен�
 
 %package -n gvim-gtk
 Summary:	Vim for X Window built with gtk
-Summary(hu.UTF-8):      A Vim X Window verziója, a GTK felhasználásával
+Summary(hu.UTF-8):	A Vim X Window verziója, a GTK felhasználásával
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GTK
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
@@ -577,7 +576,7 @@ GTK, что позволяет запускать VIM как приложени�
 
 %package -n gvim-gnome
 Summary:	Vim for X Window built with GNOME
-Summary(hu.UTF-8):      A Vim X Window verziója, a GTK felhasználásával
+Summary(hu.UTF-8):	A Vim X Window verziója, a GTK felhasználásával
 Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GNOME
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
@@ -611,8 +610,8 @@ GNOME, что позволяет запускать VIM как приложен�
 
 %package -n gvim-heavy
 Summary:	Full featured build of Vim with X-window support
-Summary(hu.UTF-8):      A gvim legteljesebb verziója
-Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vim-a ze wsparciem dla X-window
+Summary(hu.UTF-8):	A gvim legteljesebb verziója
+Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vima z interfejsem dla X-window
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -631,9 +630,9 @@ GUI.
 A gvim legteljesebb verziója, Perl, Python, Ruby és Tcl támogatással.
 
 %description -n gvim-heavy -l pl.UTF-8
-Pakiet ten dostarcza w pełni funkcjonalną wersję Vim-a, czyli
-zawierającą wsparcie dla skryptowania w językach Perl, Python, Ruby
-oraz Tcl jak również GUI GTK+2.
+Pakiet ten dostarcza w pełni funkcjonalną wersję Vima, czyli
+zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl
+jak również GUI GTK+2.
 
 %prep
 %setup -q -n %{name}72 -b1 -b2
