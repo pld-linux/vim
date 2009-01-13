@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.2
-%define		patchlevel	75
+%define		patchlevel	83
 
 # cflags get changed while configuring
 %undefine	configure_cache
