@@ -16,17 +16,6 @@ Files:	    src/if_sniff.c
 *** ../vim-7.2.071/src/if_sniff.c	Sat Nov 15 14:11:10 2008
 --- src/if_sniff.c	Sat Dec  6 14:01:57 2008
 ***************
-*** 2,9 ****
-   *
-   * if_sniff.c Interface between Vim and SNiFF+
-   *
--  * $Id$
--  *
-   * See README.txt for an overview of the Vim source code.
-   */
-  
---- 2,7 ----
-***************
 *** 716,723 ****
   #else		/* UNIX Version of the Code */
       int ToSniffEmacs[2], FromSniffEmacs[2];
