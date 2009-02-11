@@ -9,3 +9,14 @@
  
  " PApp
  au BufNewFile,BufRead *.papp,*.pxml,*.pxsl	setf papp
+--- vim72/runtime/syntax/pamconf.vim~	2008-12-27 04:32:58.000000000 +0200
++++ vim72/runtime/syntax/pamconf.vim	2009-02-11 07:43:32.936198958 +0200
+@@ -33,7 +33,7 @@
+                                     \ pamconfTypeLineCont skipwhite skipnl
+ 
+ syn keyword pamconfControl          contained requisite required sufficient
+-                                    \ optional
++                                    \ optional include
+                                     \ nextgroup=pamconfMPath,
+                                     \ pamconfControlLineContH skipwhite
+ 
