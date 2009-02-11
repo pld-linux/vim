@@ -101,6 +101,7 @@ Patch105:	%{name}-autopaste.patch
 Patch106:	%{name}-ft-cron.patch
 Patch107:	%{name}-relativenumber.patch
 Patch108:	%{name}-phpscript.patch
+Patch109:	%{name}-pam.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -675,6 +676,7 @@ jak również GUI GTK+2.
 %patch106 -p1
 %patch107 -p0
 %patch108 -p1
+%patch109 -p1
 
 install %{SOURCE20} runtime/syntax
 install %{SOURCE21} runtime/syntax

@@ -1,0 +1,11 @@
+--- vim72/runtime/filetype.vim~	2009-02-11 07:35:48.210984868 +0200
++++ vim72/runtime/filetype.vim	2009-02-11 07:34:49.298491103 +0200
+@@ -1242,7 +1242,7 @@
+ au BufNewFile,BufRead pf.conf			setf pf
+ 
+ " Pam conf
+-au BufNewFile,BufRead /etc/pam.conf		setf pamconf
++au BufNewFile,BufRead /etc/pam.conf,*.pam,*.pamd		setf pamconf
+ 
+ " PApp
+ au BufNewFile,BufRead *.papp,*.pxml,*.pxsl	setf papp
