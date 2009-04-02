@@ -17,7 +17,7 @@
 %bcond_without	home_etc	# without home_etc support
 #
 %define		ver		7.2
-%define		patchlevel	128
+%define		patchlevel	148
 
 # cflags get changed while configuring
 %undefine	configure_cache
@@ -102,6 +102,7 @@ Patch106:	%{name}-ft-cron.patch
 Patch107:	%{name}-relativenumber.patch
 Patch108:	%{name}-phpscript.patch
 Patch109:	%{name}-pam.patch
+Patch110:	%{name}-ft-bash.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -677,6 +678,7 @@ jak również GUI GTK+2.
 %patch107 -p0
 %patch108 -p1
 %patch109 -p1
+%patch110 -p1
 
 install %{SOURCE20} runtime/syntax
 install %{SOURCE21} runtime/syntax

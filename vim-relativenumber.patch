@@ -903,21 +903,21 @@ Index: src/screen.c
   			    for (p_extra = extra; *p_extra == ' '; ++p_extra)
   				*p_extra = '-';
 ***************
-*** 4651,4657 ****
+*** 4696,4702 ****
   	else
   	    --n_skip;
   
 ! 	/* Only advance the "vcol" when after the 'number' column. */
-  	if (draw_state >= WL_SBR
+  	if (draw_state > WL_NR
   #ifdef FEAT_DIFF
   		&& filler_todo <= 0
---- 4674,4681 ----
+--- 4696,4703 ----
   	else
   	    --n_skip;
   
 ! 	/* Only advance the "vcol" when after the 'number' or 'relativenumber'
 ! 	 * column. */
-  	if (draw_state >= WL_SBR
+  	if (draw_state > WL_NR
   #ifdef FEAT_DIFF
   		&& filler_todo <= 0
 ***************
