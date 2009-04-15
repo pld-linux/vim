@@ -1,0 +1,73 @@
+--- vim72/src/main.c~	2009-04-15 01:00:47.000000000 +0300
++++ vim72/src/main.c	2009-04-15 01:11:33.555899981 +0300
+@@ -1382,23 +1382,10 @@
+ 
+ # ifdef FEAT_GETTEXT
+     {
+-	int	mustfree = FALSE;
+-	char_u	*p;
+-
+ #  ifdef DYNAMIC_GETTEXT
+ 	/* Initialize the gettext library */
+ 	dyn_libintl_init(NULL);
+ #  endif
+-	/* expand_env() doesn't work yet, because chartab[] is not initialized
+-	 * yet, call vim_getenv() directly */
+-	p = vim_getenv((char_u *)"VIMRUNTIME", &mustfree);
+-	if (p != NULL && *p != NUL)
+-	{
+-	    vim_snprintf((char *)NameBuff, MAXPATHL, "%s/lang", p);
+-	    bindtextdomain(VIMPACKAGE, (char *)NameBuff);
+-	}
+-	if (mustfree)
+-	    vim_free(p);
+ 	textdomain(VIMPACKAGE);
+     }
+ # endif
+--- vim72/src/misc1.c~	2009-04-15 01:00:48.000000000 +0300
++++ vim72/src/misc1.c	2009-04-15 01:13:00.319209732 +0300
+@@ -4056,17 +4056,6 @@
+ 	{
+ 	    vim_setenv((char_u *)"VIMRUNTIME", p);
+ 	    didset_vimruntime = TRUE;
+-#ifdef FEAT_GETTEXT
+-	    {
+-		char_u	*buf = concat_str(p, (char_u *)"/lang");
+-
+-		if (buf != NULL)
+-		{
+-		    bindtextdomain(VIMPACKAGE, (char *)buf);
+-		    vim_free(buf);
+-		}
+-	    }
+-#endif
+ 	}
+ 	else
+ 	{
+--- vim72/src/Makefile~	2009-04-15 01:00:48.000000000 +0300
++++ vim72/src/Makefile	2009-04-15 01:19:18.519171979 +0300
+@@ -957,6 +957,7 @@
+ PLUGSUBLOC	= $(VIMRTLOC)$(PLUGSUBDIR)
+ FTPLUGSUBLOC	= $(VIMRTLOC)$(FTPLUGSUBDIR)
+ LANGSUBLOC	= $(VIMRTLOC)$(LANGSUBDIR)
++LOCALESUBLOC	= $(DATADIR)/locale
+ COMPSUBLOC	= $(VIMRTLOC)$(COMPSUBDIR)
+ KMAPSUBLOC	= $(VIMRTLOC)$(KMAPSUBDIR)
+ MACROSUBLOC	= $(VIMRTLOC)$(MACROSUBDIR)
+@@ -1325,6 +1326,7 @@
+ DEST_PLUG = $(DESTDIR)$(PLUGSUBLOC)
+ DEST_FTP = $(DESTDIR)$(FTPLUGSUBLOC)
+ DEST_LANG = $(DESTDIR)$(LANGSUBLOC)
++DEST_LOCALE = $(DESTDIR)$(LOCALESUBLOC)
+ DEST_COMP = $(DESTDIR)$(COMPSUBLOC)
+ DEST_KMAP = $(DESTDIR)$(KMAPSUBLOC)
+ DEST_MACRO = $(DESTDIR)$(MACROSUBLOC)
+@@ -1988,7 +1988,7 @@
+ 	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_RU_U) $(INSTALLMLARGS)
+ 	if test -n "$(MAKEMO)" -a -f $(PODIR)/Makefile; then \
+-	   cd $(PODIR); $(MAKE) prefix=$(DESTDIR)$(prefix) LOCALEDIR=$(DEST_LANG) \
++	   cd $(PODIR); $(MAKE) prefix=$(DESTDIR)$(prefix) LOCALEDIR=$(DEST_LOCALE) \
+ 	   INSTALL_DATA=$(INSTALL_DATA) FILEMOD=$(FILEMOD) install; \
+ 	fi
+ 	if test -d $(LANGSOURCE); then \
