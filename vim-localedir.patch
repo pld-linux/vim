@@ -71,3 +71,13 @@
  	   INSTALL_DATA=$(INSTALL_DATA) FILEMOD=$(FILEMOD) install; \
  	fi
  	if test -d $(LANGSOURCE); then \
+--- vim72/src/po/Makefile~	2008-07-24 21:52:54.000000000 +0300
++++ vim72/src/po/Makefile	2009-04-15 11:25:53.058913958 +0300
+@@ -132,6 +132,7 @@
+ 
+ install: $(MOFILES)
+ 	@$(MAKE) prefixcheck
++	install -d $(LOCALEDIR); \
+ 	for lang in $(LANGUAGES); do \
+ 	  dir=$(LOCALEDIR)/$$lang/; \
+ 	  if test ! -x "$$dir"; then \
