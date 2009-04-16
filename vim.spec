@@ -1,7 +1,3 @@
-# TODO
-# - move gettext translations to glibc dir
-#   /usr/share/vim/vim71/lang/*/LC_MESSAGES
-#
 # Conditional build:
 %bcond_without	static		# don't build static version
 %bcond_without	athena		# don't build Athena Widgets-based gvim
@@ -34,7 +30,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	2
+Release:	3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -103,6 +99,8 @@ Patch107:	%{name}-relativenumber.patch
 Patch108:	%{name}-phpscript.patch
 Patch109:	%{name}-pam.patch
 Patch110:	%{name}-ft-bash.patch
+Patch111:	%{name}-gzhelp.patch
+Patch112:	%{name}-localedir.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -333,7 +331,7 @@ package is STRONGLY recommended.
 
 %description static -l hu.UTF-8
 Vi-hez hasonló text editor. Ez a verzió a legminimálisabb
-szolgáltatásokat nyújtja, és a /bin könyvtárba települ, mint egy mentő 
+szolgáltatásokat nyújtja, és a /bin könyvtárba települ, mint egy mentő
 eszköz. Ennek a csomagnak a telepítése ERŐSEN javallott.
 
 %description static -l pl.UTF-8
@@ -404,8 +402,8 @@ VIM a besoin pour fonctionner.
 
 %description rt -l hu.UTF-8
 Ez a csomag makrókat, dokumentációt, nyelvi konfigurációt és kézikönyv
-oldalakat tartalmaz Vim-hez. Ha ki akarod használni a Vim lehetőségeit,
-érdemes telepítened ezt a csomagot.
+oldalakat tartalmaz Vim-hez. Ha ki akarod használni a Vim
+lehetőségeit, érdemes telepítened ezt a csomagot.
 
 %description rt -l id.UTF-8
 Package vim-rt berisi file yang dibutuhkan semua versi VIM agar bisa
@@ -443,6 +441,26 @@ köra.
 %description rt -l uk.UTF-8
 Пакет vim-rt містить файли (наприклад, файли довідки), котрі потрібні
 для роботи будь-якої програми vim.
+
+%package rt-extras
+Summary:	Vim runtime extra files
+Group:		Applications/Editors/Vim
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+
+%description rt-extras
+This package contains more runtime extra files, not really useful If
+you want to take full advantage of Vim more powerful features, you
+should install this package.
+
+%package doc
+Summary:	Online Vim documentation.
+Group:		Applications/Editors/Vim
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Requires:	gzip
+
+%description doc
+This package contains Vim documentation accessible from vim itself using :help
+command.
 
 %package spell-en
 Summary:	English dictionaries for VIMspell
@@ -671,7 +689,7 @@ jak również GUI GTK+2.
 %{?with_home_etc:%patch104 -p1}
 
 # autopaste patch - automatically switch to paste mode
-# when`really fast typing' situation happens
+# when `really fast typing' situation happens
 %patch105 -p1
 
 %patch106 -p1
@@ -679,6 +697,8 @@ jak również GUI GTK+2.
 %patch108 -p1
 %patch109 -p1
 %patch110 -p1
+%patch111 -p1
+%patch112 -p1
 
 install %{SOURCE20} runtime/syntax
 install %{SOURCE21} runtime/syntax
@@ -687,6 +707,8 @@ install %{SOURCE23} runtime/syntax
 install %{SOURCE30} runtime/colors
 install %{SOURCE31} runtime/colors
 install %{SOURCE32} runtime/colors
+
+%{__unzip} -qd runtime/doc %{SOURCE4}
 
 %build
 cd src
@@ -826,6 +848,15 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 %{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+%find_lang %{name}
+
+# use compressed docs, see :help gzip-helpfile
+%{__gzip} -9 $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc/*.txt
+%{__sed} -i -e 's=\(\t.*\.txt\)\t=\1.gz\t=' $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc/tags
+
+%{__gzip} -9 $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc/*.??x
+%{__sed} -i -e 's=\(\t.*\.plx\)\t=\1.gz\t=' $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc/tags-pl
+
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
 
 %if %{with static}
@@ -837,17 +868,6 @@ ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
 %endif
 install src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
 install src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
-
-# Moved into patch
-#
-# rm -f $RPM_BUILD_ROOT%{_mandir}/man1/*.1
-# install runtime/doc/vim.1 $RPM_BUILD_ROOT%{_mandir}/man1
-# install runtime/doc/xxd.1 $RPM_BUILD_ROOT%{_mandir}/man1
-# install runtime/doc/vimtutor.1 $RPM_BUILD_ROOT%{_mandir}/man1
-# echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/ex.1
-# echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rview.1
-# echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/rvim.1
-# echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
@@ -901,20 +921,17 @@ install runtime/vim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/vim.
 
 bzip2 -dc %{SOURCE3} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
-unzip -qd $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc %{SOURCE4}
-
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
 
 # separate package
 %{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/vim72/{ftplugin,syntax}/spec.vim
 
-# no autodeps
-chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim72/doc/vim2html.pl
-chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim72/tools/shtags.pl
-chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim72/tools/pltags.pl
-chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim72/tools/efm_perl.pl
-chmod a-x $RPM_BUILD_ROOT%{_datadir}/vim/vim72/tools/efm_filter.pl
+# unuseful
+rm -rf $RPM_BUILD_ROOT%{_datadir}/vim/v*/tools
+rm -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/bugreport.vim
+rm -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/spell/cleanadd.vim
+rm -f $RPM_BUILD_ROOT%{_datadir}/vim/v*/doc/vim2html.pl
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -1031,114 +1048,94 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_mandir}/pl/man1/xxd.1*
 %lang(ru) %{_mandir}/ru/man1/xxd.1*
 
-%files rt
+%files rt -f %{name}.lang
 %defattr(644,root,root,755)
 %dir %{_sysconfdir}/vim
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vim/vimrc
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vim/gvimrc
 
 %dir %{_datadir}/vim
-%dir %{_datadir}/vim/v*
-%dir %{_datadir}/vim/v*/doc
-%doc %{_datadir}/vim/v*/doc/*.txt
-%lang(pl) %doc %{_datadir}/vim/v*/doc/*.plx
-%attr(755,root,root) %{_datadir}/vim/v*/doc/*.pl
-%verify(not md5 mtime size) %{_datadir}/vim/v*/doc/tags
-%lang(pl) %verify(not md5 mtime size) %{_datadir}/vim/v*/doc/tags-pl
-%{_datadir}/vim/v*/ftplugin
-%{_datadir}/vim/v*/indent
-%{_datadir}/vim/v*/keymap
-%dir %{_datadir}/vim/v*/lang
-%doc %{_datadir}/vim/v*/lang/README*
-
-# just add after/ and ftdetect/ separately, other dirs caught by globs above or below
 %{_datadir}/vim/vimfiles/after
 %{_datadir}/vim/vimfiles/ftdetect
 
+%dir %{_datadir}/vim/v*
+%{_datadir}/vim/v*/*.vim
+
+%dir %{_datadir}/vim/v*/ftplugin
+%doc %{_datadir}/vim/v*/ftplugin/README.txt
+%{_datadir}/vim/v*/ftplugin/*.vim
+
+%dir %{_datadir}/vim/v*/indent
+%doc %{_datadir}/vim/v*/indent/README.txt
+%{_datadir}/vim/v*/indent/*.vim
+
+%dir %{_datadir}/vim/v*/keymap
+%doc %{_datadir}/vim/v*/keymap/README.txt
+%{_datadir}/vim/v*/keymap/*.vim
+
+%dir %{_datadir}/vim/v*/plugin
+%doc %{_datadir}/vim/v*/plugin/README.txt
+%{_datadir}/vim/v*/plugin/*.vim
+
+%dir %{_datadir}/vim/v*/syntax
+%doc %{_datadir}/vim/v*/syntax/README.txt
+%{_datadir}/vim/v*/syntax/*.vim
+
+%dir %{_datadir}/vim/v*/colors
+%doc %{_datadir}/vim/v*/colors/README.txt
+%{_datadir}/vim/v*/colors/*.vim
+
+%dir %{_datadir}/vim/v*/lang
+%doc %{_datadir}/vim/v*/lang/README*
+
 %lang(af) %{_datadir}/vim/v*/lang/menu_af*
-%lang(af) %{_datadir}/vim/v*/lang/af/
 %lang(ca) %{_datadir}/vim/v*/lang/menu_ca*
-%lang(ca) %{_datadir}/vim/v*/lang/ca/
 %lang(cs) %{_datadir}/vim/v*/lang/menu_cs*
 %lang(cs) %{_datadir}/vim/v*/lang/menu_*czech*
-%lang(cs) %{_datadir}/vim/v*/lang/cs/
 %lang(de) %{_datadir}/vim/v*/lang/menu_de*
 %lang(de) %{_datadir}/vim/v*/lang/menu_*german*
-%lang(de) %{_datadir}/vim/v*/lang/de/
 %lang(en_GB) %{_datadir}/vim/v*/lang/menu_en_gb*
 %lang(en_GB) %{_datadir}/vim/v*/lang/menu_*english*
-%lang(en_GB) %{_datadir}/vim/v*/lang/en_GB/
 %lang(eo) %{_datadir}/vim/v*/lang/menu_eo.utf-8.vim
 %lang(eo) %{_datadir}/vim/v*/lang/menu_eo_eo.utf-8.vim
 %lang(eo) %{_datadir}/vim/v*/lang/menu_eo_xx.utf-8.vim
-%lang(eo) %{_datadir}/vim/v*/lang/eo/
 %lang(es) %{_datadir}/vim/v*/lang/menu_es*
 %lang(es) %{_datadir}/vim/v*/lang/menu_*spanish*
-%lang(es) %{_datadir}/vim/v*/lang/es/
 %lang(fi) %{_datadir}/vim/v*/lang/menu_fi.latin1.vim
 %lang(fi) %{_datadir}/vim/v*/lang/menu_fi.utf-8.vim
 %lang(fi) %{_datadir}/vim/v*/lang/menu_fi_fi.latin1.vim
 %lang(fi) %{_datadir}/vim/v*/lang/menu_fi_fi.utf-8.vim
 %lang(fi) %{_datadir}/vim/v*/lang/menu_finnish_finland.1252.vim
-%lang(fi) %{_datadir}/vim/v*/lang/fi/
 %lang(fr) %{_datadir}/vim/v*/lang/menu_fr*
-%lang(fr) %{_datadir}/vim/v*/lang/fr/
-%lang(ga) %{_datadir}/vim/v*/lang/ga/
 %lang(hu) %{_datadir}/vim/v*/lang/menu_hu*
 %lang(it) %{_datadir}/vim/v*/lang/menu_it*
-%lang(it) %{_datadir}/vim/v*/lang/it/
 %lang(ja) %{_datadir}/vim/v*/lang/menu_ja*
-%lang(ja) %{_datadir}/vim/v*/lang/ja/
 %lang(ko) %{_datadir}/vim/v*/lang/menu_ko*
-%lang(ko) %{_datadir}/vim/v*/lang/ko/
 %lang(nl) %{_datadir}/vim/v*/lang/menu_nl*
 %lang(nb) %{_datadir}/vim/v*/lang/menu_no*
-%lang(nb) %{_datadir}/vim/v*/lang/no/
 %lang(pl) %{_datadir}/vim/v*/lang/menu_pl*
 %lang(pl) %{_datadir}/vim/v*/lang/menu_*polish*
-%lang(pl) %{_datadir}/vim/v*/lang/pl/
 %lang(pt) %{_datadir}/vim/v*/lang/menu_pt*
-%lang(pt_BR) %{_datadir}/vim/v*/lang/pt_BR
 %lang(ru) %{_datadir}/vim/v*/lang/menu_ru*
-%lang(ru) %{_datadir}/vim/v*/lang/ru/
 %lang(sk) %{_datadir}/vim/v*/lang/menu_sk*
 %lang(sk) %{_datadir}/vim/v*/lang/menu_*slovak*
-%lang(sk) %{_datadir}/vim/v*/lang/sk/
 %lang(sl) %{_datadir}/vim/v*/lang/menu_sl_si*
 %lang(sr) %{_datadir}/vim/v*/lang/menu_sr*
 %lang(sv) %{_datadir}/vim/v*/lang/menu_sv*
-%lang(sv) %{_datadir}/vim/v*/lang/sv/
 %lang(uk) %{_datadir}/vim/v*/lang/menu_uk*
-%lang(uk) %{_datadir}/vim/v*/lang/uk/
 %lang(vi) %{_datadir}/vim/v*/lang/menu_vi*
-%lang(vi) %{_datadir}/vim/v*/lang/vi/
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.cp936*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh.gb2312*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_zh_cn*
 %lang(zh_CN) %{_datadir}/vim/v*/lang/menu_*chinese*gb*
-%lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN/
-%lang(zh_CN) %{_datadir}/vim/v*/lang/zh_CN.UTF-8/
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh.cp950*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh.big5*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_zh_tw*
 %lang(zh_TW) %{_datadir}/vim/v*/lang/menu_*taiwan*
-%lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW/
-%lang(zh_TW) %{_datadir}/vim/v*/lang/zh_TW.UTF-8/
 
 %dir %{_datadir}/vim/v*/spell
-%{_datadir}/vim/v*/spell/cleanadd.vim
 %lang(he) %{_datadir}/vim/v*/spell/he.*
 %lang(yi) %{_datadir}/vim/v*/spell/yi.*
-
-%{_datadir}/vim/v*/macros
-%{_datadir}/vim/v*/plugin
-%{_datadir}/vim/v*/print
-%{_datadir}/vim/v*/syntax
-%{_datadir}/vim/v*/tools
-%{_datadir}/vim/v*/colors
-%{_datadir}/vim/v*/compiler
-%{_datadir}/vim/v*/autoload
-%{_datadir}/vim/v*/*.vim
 
 %{_mandir}/man1/rvim.1*
 %{_mandir}/man1/vim.1*
@@ -1149,6 +1146,25 @@ rm -rf $RPM_BUILD_ROOT
 %{_iconsdir}/hicolor/16x16/apps/vim.png
 %{_iconsdir}/hicolor/32x32/apps/vim.png
 %{_iconsdir}/hicolor/48x48/apps/vim.png
+
+%files rt-extras
+%defattr(644,root,root,755)
+%{_datadir}/vim/v*/autoload
+%{_datadir}/vim/v*/compiler
+%{_datadir}/vim/v*/macros
+%{_datadir}/vim/v*/print
+
+%files doc
+%defattr(644,root,root,755)
+%dir %{_datadir}/vim/v*/doc
+
+# English
+%doc %{_datadir}/vim/v*/doc/*.txt.gz
+%verify(not md5 mtime size) %{_datadir}/vim/v*/doc/tags
+
+# Polish
+%lang(pl) %doc %{_datadir}/vim/v*/doc/*.plx.gz
+%lang(pl) %verify(not md5 mtime size) %{_datadir}/vim/v*/doc/tags-pl
 
 %files tutor
 %defattr(644,root,root,755)
