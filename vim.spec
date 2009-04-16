@@ -1159,11 +1159,11 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/v*/doc
 
 # English
-%doc %{_datadir}/vim/v*/doc/*.txt.gz
+%{_datadir}/vim/v*/doc/*.txt.gz
 %verify(not md5 mtime size) %{_datadir}/vim/v*/doc/tags
 
 # Polish
-%lang(pl) %doc %{_datadir}/vim/v*/doc/*.plx.gz
+%lang(pl) %{_datadir}/vim/v*/doc/*.plx.gz
 %lang(pl) %verify(not md5 mtime size) %{_datadir}/vim/v*/doc/tags-pl
 
 %files tutor
