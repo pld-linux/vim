@@ -1,0 +1,50 @@
+--- vim72/src/po/Makefile.orig	2009-04-26 13:48:02.165042621 +0200
++++ vim72/src/po/Makefile	2009-04-26 13:48:27.241706378 +0200
+@@ -18,7 +18,7 @@
+ 		it \
+ 		ja \
+ 		ko \
+-		no \
++		nb \
+ 		pl \
+ 		pt_BR \
+ 		ru \
+@@ -27,9 +27,7 @@
+ 		uk \
+ 		vi \
+ 		zh_CN \
+-		zh_CN.UTF-8 \
+-		zh_TW \
+-		zh_TW.UTF-8
++		zh_TW
+ 
+ MOFILES = \
+ 		af.mo \
+@@ -45,7 +43,7 @@
+ 		it.mo \
+ 		ja.mo \
+ 		ko.mo \
+-		no.mo \
++		nb.mo \
+ 		pl.mo \
+ 		pt_BR.mo \
+ 		ru.mo \
+@@ -53,9 +51,7 @@
+ 		sv.mo \
+ 		uk.mo \
+ 		vi.mo \
+-		zh_CN.UTF-8.mo \
+ 		zh_CN.mo \
+-		zh_TW.UTF-8.mo \
+ 		zh_TW.mo
+ 
+ CONVERTED = \
+@@ -82,7 +78,7 @@
+ 		it.ck \
+ 		ja.ck \
+ 		ko.ck \
+-		no.ck \
++		nb.ck \
+ 		pl.ck \
+ 		pt_BR.ck \
+ 		ru.ck \
