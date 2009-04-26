@@ -30,7 +30,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -101,6 +101,7 @@ Patch109:	%{name}-pam.patch
 Patch110:	%{name}-ft-bash.patch
 Patch111:	%{name}-gzhelp.patch
 Patch112:	%{name}-localedir.patch
+Patch113:	%{name}-locales.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -699,6 +700,7 @@ jak również GUI GTK+2.
 %patch110 -p1
 %patch111 -p1
 %patch112 -p1
+%patch113 -p1
 
 install %{SOURCE20} runtime/syntax
 install %{SOURCE21} runtime/syntax
@@ -709,6 +711,19 @@ install %{SOURCE31} runtime/colors
 install %{SOURCE32} runtime/colors
 
 %{__unzip} -qd runtime/doc %{SOURCE4}
+
+# remove unsupported locales
+rm -f src/po/zh_{CN,TW}.UTF-8.po
+rm -f runtime/lang/menu_zh_{cn,tw}.utf-8.vim
+
+# fix nb/no
+mv -f src/po/n{o,b}.po
+mv -f runtime/tutor/tutor.n{o,b}
+mv -f runtime/tutor/tutor.n{o,b}.utf-8
+mv -f runtime/lang/menu_n{o,b}.latin1.vim
+mv -f runtime/lang/menu_n{o,b}.utf-8.vim
+mv -f runtime/lang/menu_n{o,b}_no.latin1.vim
+mv -f runtime/lang/menu_n{o,b}_no.utf-8.vim
 
 %build
 cd src
@@ -1112,7 +1127,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_datadir}/vim/v*/lang/menu_ja*
 %lang(ko) %{_datadir}/vim/v*/lang/menu_ko*
 %lang(nl) %{_datadir}/vim/v*/lang/menu_nl*
-%lang(nb) %{_datadir}/vim/v*/lang/menu_no*
+%lang(nb) %{_datadir}/vim/v*/lang/menu_nb*
 %lang(pl) %{_datadir}/vim/v*/lang/menu_pl*
 %lang(pl) %{_datadir}/vim/v*/lang/menu_*polish*
 %lang(pt) %{_datadir}/vim/v*/lang/menu_pt*
@@ -1208,8 +1223,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_datadir}/vim/v*/tutor/tutor.ja.utf-8
 %lang(ko) %{_datadir}/vim/v*/tutor/tutor.ko.euc
 %lang(ko) %{_datadir}/vim/v*/tutor/tutor.ko.utf-8
-%lang(no) %{_datadir}/vim/v*/tutor/tutor.no
-%lang(no) %{_datadir}/vim/v*/tutor/tutor.no.utf-8
+%lang(nb) %{_datadir}/vim/v*/tutor/tutor.nb
+%lang(nb) %{_datadir}/vim/v*/tutor/tutor.nb.utf-8
 %lang(pl) %{_datadir}/vim/v*/tutor/tutor.pl
 %lang(pl) %{_datadir}/vim/v*/tutor/tutor.pl.cp1250
 %lang(pl) %{_datadir}/vim/v*/tutor/tutor.pl.utf-8
