@@ -567,6 +567,7 @@ Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GTK
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Requires:	%{name}-rt-extras = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
@@ -602,6 +603,7 @@ Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GNOME
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Requires:	%{name}-rt-extras = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
@@ -636,6 +638,7 @@ Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vima z interfejsem dla X-window
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Requires:	%{name}-rt-extras = %{epoch}:%{version}-%{release}
 Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
