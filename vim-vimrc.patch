@@ -1,6 +1,6 @@
---- vim72/runtime/vimrc_example.vim~	2008-07-02 23:11:53.000000000 +0300
-+++ vim72/runtime/vimrc_example.vim	2008-08-18 13:33:06.007243535 +0300
-@@ -42,9 +42,9 @@
+--- vim72/runtime/vimrc_example.vim	2008-08-18 13:33:06.007243535 +0300
++++ vim72/runtime/vimrc_example.vim	2009-05-14 02:04:43.261671071 +0300
+@@ -42,13 +42,13 @@
  inoremap <C-U> <C-G>u<C-U>
  
  " In many terminal emulators the mouse works just fine, thus enable it.
@@ -13,10 +13,12 @@
  
  " Switch syntax highlighting on, when the terminal has colors
  " Also switch on highlighting the last used search pattern.
-@@ -90,7 +90,10 @@
- " Convenient command to see the difference between the current buffer and the
- " file it was loaded from, thus the changes you made.
- " Only define it when not defined already.
+-if &t_Co > 2 || has("gui_running")
++if (&t_Co > 2 || has("gui_running")) && filereadable($VIMRUNTIME."/syntax/syntax.vim")
+   syntax on
+   set hlsearch
+ endif
+@@ -93,4 +93,7 @@
 -if !exists(":DiffOrig")
 +if v:progname =~! "vi" && !exists(":DiffOrig")
    command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
