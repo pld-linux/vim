@@ -1,0 +1,11 @@
+--- vim72/src/Makefile~	2009-04-15 10:30:56.000000000 +0300
++++ vim72/src/Makefile	2009-05-14 01:59:10.382898411 +0300
+@@ -947,7 +947,7 @@
+ ### You can override these if you want to install them somewhere else.
+ ### Edit feature.h for compile-time settings.
+ VIMLOC		= $(DATADIR)$(VIMDIR)
+-VIMRTLOC	= $(DATADIR)$(VIMDIR)$(VIMRTDIR)
++VIMRTLOC	= $(VIMLOC)
+ VIMRCLOC	= $(VIMLOC)
+ HELPSUBLOC	= $(VIMRTLOC)$(HELPSUBDIR)
+ COLSUBLOC	= $(VIMRTLOC)$(COLSUBDIR)
