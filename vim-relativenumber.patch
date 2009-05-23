@@ -655,17 +655,17 @@ Index: src/option.c
   # define PV_NUW		OPT_WIN(WV_NUW)
   #endif
 ***************
-*** 2000,2005 ****
---- 2001,2009 ----
+*** 2018,2023 ****
+--- 2018,2026 ----
   			    (char_u *)NULL, PV_NONE,
   #endif
-  			    {(char_u *)2000L, (char_u *)0L}},
+  			    {(char_u *)2000L, (char_u *)0L} SCRIPTID_INIT},
 +     {"relativenumber", "rnu", P_BOOL|P_VI_DEF|P_RWIN,
 + 			    (char_u *)VAR_WIN, PV_RNU,
-+ 			    {(char_u *)FALSE, (char_u *)0L}},
++ 			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
       {"remap",	    NULL,   P_BOOL|P_VI_DEF,
   			    (char_u *)&p_remap, PV_NONE,
-  			    {(char_u *)TRUE, (char_u *)0L}},
+  			    {(char_u *)TRUE, (char_u *)0L} SCRIPTID_INIT},
 ***************
 *** 7318,7323 ****
 --- 7322,7340 ----
