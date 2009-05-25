@@ -11,13 +11,9 @@
 %bcond_with	tcl		# with Tcl interp
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
-#
-%define		ver		7.2
-%define		patchlevel	187
 
-# cflags get changed while configuring
-%undefine	configure_cache
-#
+%define		ver		7.2
+%define		patchlevel	188
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -163,6 +159,9 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # that's example script
 %define		_noautoreq	'/bin/csh'
+
+# cflags get changed while configuring
+%undefine	configure_cache
 
 %description
 Text editor similar to Vi. Important improvements: multiple windows,
@@ -1075,6 +1074,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vim/gvimrc
 
 %dir %{_datadir}/vim
+%{_datadir}/vim/vimfiles
 %{_datadir}/vim/vimfiles/after
 %{_datadir}/vim/vimfiles/ftdetect
 
