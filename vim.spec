@@ -26,7 +26,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -1074,9 +1074,25 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vim/gvimrc
 
 %dir %{_datadir}/vim
-%{_datadir}/vim/vimfiles
-%{_datadir}/vim/vimfiles/after
-%{_datadir}/vim/vimfiles/ftdetect
+
+%dir %{_datadir}/vim/vimfiles
+%dir %{_datadir}/vim/vimfiles/doc
+%dir %{_datadir}/vim/vimfiles/after
+%dir %{_datadir}/vim/vimfiles/after/compiler
+%dir %{_datadir}/vim/vimfiles/after/ftdetect
+%dir %{_datadir}/vim/vimfiles/after/ftplugin
+%dir %{_datadir}/vim/vimfiles/after/indent
+%dir %{_datadir}/vim/vimfiles/after/plugin
+%dir %{_datadir}/vim/vimfiles/after/spell
+%dir %{_datadir}/vim/vimfiles/after/syntax
+%dir %{_datadir}/vim/vimfiles/compiler
+%dir %{_datadir}/vim/vimfiles/ftdetect
+%dir %{_datadir}/vim/vimfiles/ftplugin
+%dir %{_datadir}/vim/vimfiles/indent
+%dir %{_datadir}/vim/vimfiles/plugin
+%dir %{_datadir}/vim/vimfiles/spell
+%dir %{_datadir}/vim/vimfiles/syntax
+%verify(not md5 mtime size) %{_datadir}/vim/vimfiles/doc/tags
 
 %{_datadir}/vim/*.vim
 
