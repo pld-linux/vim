@@ -168,9 +168,9 @@ Text editor similar to Vi. Important improvements: multiple windows,
 multi-level undo, block highliting, folding, and many other.
 
 %description -l cs.UTF-8
-ViM je nový a vylepšený editor vycházející z klasického editoru vi. Vi
+VIM je nový a vylepšený editor vycházející z klasického editoru vi. Vi
 byl prvním celoobrazovkovým editorem pro Unix a je stále velmi
-populární. ViM je obohacený funkcemi jako: podpora více oken,
+populární. VIM je obohacený funkcemi jako: podpora více oken,
 víceúrovňové undo, zvýrazňování bloků a řadu dalších užitečných
 funkcí.
 
@@ -352,7 +352,7 @@ zalecana, może on pomóc Ci uratować system w czasie awarii.
 
 %package rt
 Summary:	Vim runtime files
-Summary(cs.UTF-8):	Soubory nezbytné pro libovolný editor ViM
+Summary(cs.UTF-8):	Soubory nezbytné pro libovolný editor VIM
 Summary(da.UTF-8):	Fælles filer som er nødvendige for enhver version af VIM editoren
 Summary(de.UTF-8):	Die von allen Versionen des VIM-Editors benötigten gemeinsamen Dateien
 Summary(es.UTF-8):	Ficheros comunes a todas las versiones de VIM
@@ -449,19 +449,19 @@ Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 
 %description rt-extras
-This package contains more runtime extra files, not really useful If
+This package contains more runtime extra files, not really useful. If
 you want to take full advantage of Vim more powerful features, you
 should install this package.
 
 %package doc
-Summary:	Online Vim documentation.
+Summary:	Context Vim documentation
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	gzip
 
 %description doc
-This package contains Vim documentation accessible from vim itself using :help
-command.
+This package contains Vim documentation accessible from vim itself
+using :help command.
 
 %package spell-en
 Summary:	English dictionaries for VIMspell
@@ -614,8 +614,8 @@ Obsoletes:	vim-X11
 The classic Unix text editor now also under X Window System! This
 version is build with GNOME.
 
-%description -n gvim-gtk -l hu.UTF-8
-A Vim X Window verziója, a Gnome felhasználásával.
+%description -n gvim-gnome -l hu.UTF-8
+A Vim X Window verziója, a GNOME felhasználásával.
 
 %description -n gvim-gnome -l pl.UTF-8
 Wersja edytora Vim pracująca w środowisku X Window z wykorzystaniem
