@@ -48,7 +48,6 @@ Source14:	%{name}.desktop
 # syntax files
 # http://www.vim.org/scripts/script.php?script_id=1491 (0.7.5)
 Source20:	javascript.vim
-Source21:	nagios.vim
 # http://www.vim.org/scripts/script.php?script_id=447 (20040206)
 Source22:	exim.vim
 # http://www.vim.org/scripts/script.php?script_id=1571 (0.9.7)
@@ -707,7 +706,6 @@ jak również GUI GTK+2.
 %patch114 -p1
 
 install %{SOURCE20} runtime/syntax
-install %{SOURCE21} runtime/syntax
 install %{SOURCE22} runtime/syntax
 install %{SOURCE23} runtime/syntax
 install %{SOURCE30} runtime/colors
