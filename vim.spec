@@ -26,7 +26,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -1094,6 +1094,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_datadir}/vim/*.vim
 
+%dir %{_datadir}/vim/autoload
+%{_datadir}/vim/autoload/gzip.vim
+
 %dir %{_datadir}/vim/ftplugin
 %doc %{_datadir}/vim/ftplugin/README.txt
 %{_datadir}/vim/ftplugin/*.vim
@@ -1182,7 +1185,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files rt-extras
 %defattr(644,root,root,755)
-%{_datadir}/vim/autoload
+%{_datadir}/vim/autoload/*
+%exclude %{_datadir}/vim/autoload/gzip.vim
 %{_datadir}/vim/compiler
 %{_datadir}/vim/macros
 %{_datadir}/vim/print
