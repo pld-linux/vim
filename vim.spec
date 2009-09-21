@@ -1095,7 +1095,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/*.vim
 
 %dir %{_datadir}/vim/autoload
-%{_datadir}/vim/autoload/gzip.vim
+%doc %{_datadir}/vim/autoload/README.txt
 
 %dir %{_datadir}/vim/ftplugin
 %doc %{_datadir}/vim/ftplugin/README.txt
@@ -1111,7 +1111,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %dir %{_datadir}/vim/plugin
 %doc %{_datadir}/vim/plugin/README.txt
-%{_datadir}/vim/plugin/*.vim
 
 %dir %{_datadir}/vim/syntax
 %doc %{_datadir}/vim/syntax/README.txt
@@ -1183,13 +1182,24 @@ rm -rf $RPM_BUILD_ROOT
 %{_iconsdir}/hicolor/32x32/apps/vim.png
 %{_iconsdir}/hicolor/48x48/apps/vim.png
 
+# plugins in base -rt package
+%{_datadir}/vim/autoload/gzip.vim
+%{_datadir}/vim/plugin/gzip.vim
+%{_datadir}/vim/plugin/matchparen.vim
+
 %files rt-extras
 %defattr(644,root,root,755)
-%{_datadir}/vim/autoload/*
-%exclude %{_datadir}/vim/autoload/gzip.vim
+%{_datadir}/vim/plugin/*.vim
+%{_datadir}/vim/autoload/*.vim
+%{_datadir}/vim/autoload/xml
 %{_datadir}/vim/compiler
 %{_datadir}/vim/macros
 %{_datadir}/vim/print
+
+# plugins in base -rt package
+%exclude %{_datadir}/vim/autoload/gzip.vim
+%exclude %{_datadir}/vim/plugin/gzip.vim
+%exclude %{_datadir}/vim/plugin/matchparen.vim
 
 %files doc
 %defattr(644,root,root,755)
