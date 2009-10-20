@@ -1,0 +1,11 @@
+--- vim72/runtime/filetype.vim~	2009-10-20 18:35:37.000000000 +0300
++++ vim72/runtime/filetype.vim	2009-10-20 18:36:20.600517648 +0300
+@@ -1818,7 +1818,7 @@
+ au BufNewFile,BufRead *.sno,*.spt		setf snobol4
+ 
+ " SNMP MIB files
+-au BufNewFile,BufRead *.mib,*.my		setf mib
++au BufNewFile,BufRead *.mib,*.my,*/mibs/*.txt		setf mib
+ 
+ " Snort Configuration
+ au BufNewFile,BufRead *.hog,snort.conf,vision.conf	setf hog
