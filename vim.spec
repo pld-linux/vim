@@ -372,8 +372,6 @@ Summary(sv.UTF-8):	De gemensamma filerna som behövs av alla versioner av redige
 Summary(uk.UTF-8):	Файли, потрібні для будь-якої версії редактору vim
 Summary(zh_CN.UTF-8):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
-# for hicolor icons
-Requires:	hicolor-icon-theme
 Requires:	rpm-whiteout >= 1.3
 Requires:	vim-plugin-securemodelines
 Suggests:	vim-syntax-spec
@@ -707,12 +705,12 @@ jak również GUI GTK+2.
 %patch114 -p1
 %patch115 -p1
 
-install %{SOURCE20} runtime/syntax
-install %{SOURCE22} runtime/syntax
-install %{SOURCE23} runtime/syntax
-install %{SOURCE30} runtime/colors
-install %{SOURCE31} runtime/colors
-install %{SOURCE32} runtime/colors
+cp -a %{SOURCE20} runtime/syntax
+cp -a %{SOURCE22} runtime/syntax
+cp -a %{SOURCE23} runtime/syntax
+cp -a %{SOURCE30} runtime/colors
+cp -a %{SOURCE31} runtime/colors
+cp -a %{SOURCE32} runtime/colors
 
 %{__unzip} -qd runtime/doc %{SOURCE4}
 
@@ -879,14 +877,14 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
 
 %if %{with static}
-install src/bin/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim
-install src/bin/vim.static	$RPM_BUILD_ROOT/bin/vi
+install -p src/bin/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim
+install -p src/bin/vim.static	$RPM_BUILD_ROOT/bin/vi
 %else
-install src/bin/vim.ncurses	$RPM_BUILD_ROOT/bin/vi
+install -p src/bin/vim.ncurses	$RPM_BUILD_ROOT/bin/vi
 ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
 %endif
-install src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
-install src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
+install -p src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
+install -p src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
@@ -905,38 +903,36 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
-install %{SOURCE14}	$RPM_BUILD_ROOT%{_desktopdir}
+cp -a %{SOURCE14}	$RPM_BUILD_ROOT%{_desktopdir}
 
 %if %{with athena}
-install src/bin/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena
-install %{SOURCE10}	$RPM_BUILD_ROOT%{_desktopdir}
+install -p src/bin/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena
+cp -a %{SOURCE10}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with motif}
-install src/bin/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif
-install %{SOURCE11}	$RPM_BUILD_ROOT%{_desktopdir}
+install -p src/bin/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif
+cp -a %{SOURCE11}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with gnome}
-install src/bin/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome
-install %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
+install -p src/bin/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome
+cp -a %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with gtk}
-install src/bin/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
+install -p src/bin/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
 ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_bindir}/gvim
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gvimdiff
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
-install %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
+cp -a %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with heavy}
-install src/bin/vim.heavy	$RPM_BUILD_ROOT%{_bindir}
-install src/bin/gvim.heavy	$RPM_BUILD_ROOT%{_bindir}
+install -p src/bin/vim.heavy	$RPM_BUILD_ROOT%{_bindir}
+install -p src/bin/gvim.heavy	$RPM_BUILD_ROOT%{_bindir}
 %endif
 
-install -d $RPM_BUILD_ROOT%{_iconsdir}/hicolor/{16x16,32x32,48x48}/apps
-install runtime/vim16x16.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/16x16/apps/vim.png
-install runtime/vim32x32.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/32x32/apps/vim.png
-install runtime/vim48x48.png $RPM_BUILD_ROOT%{_iconsdir}/hicolor/48x48/apps/vim.png
+install -d $RPM_BUILD_ROOT%{_pixmapsdir}
+cp -a runtime/vim48x48.png $RPM_BUILD_ROOT%{_pixmapsdir}/vim.png
 
 bzip2 -dc %{SOURCE3} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
@@ -1180,9 +1176,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fi) %{_mandir}/fi/man1/vim.1*
 %lang(fr) %{_mandir}/fr/man1/rvim.1*
 %lang(fr) %{_mandir}/fr/man1/vim.1*
-%{_iconsdir}/hicolor/16x16/apps/vim.png
-%{_iconsdir}/hicolor/32x32/apps/vim.png
-%{_iconsdir}/hicolor/48x48/apps/vim.png
+%{_pixmapsdir}/vim.png
 
 # plugins in base -rt package
 %{_datadir}/vim/autoload/gzip.vim
