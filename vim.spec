@@ -13,7 +13,7 @@
 %bcond_without	home_etc	# without home_etc support
 
 %define		ver		7.2
-%define		patchlevel	344
+%define		patchlevel	356
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
