@@ -1,0 +1,11 @@
+--- vim72/runtime/syntax/exports.vim~	2005-09-06 19:27:19.000000000 +0200
++++ vim72/runtime/syntax/exports.vim	2010-02-25 16:51:37.279124885 +0100
+@@ -20,7 +20,7 @@
+ syn match exportsOptError contained	"[a-z]\+"
+ 
+ " Settings: word=
+-syn keyword exportsKeySettings contained	access	anon	root	rw
++syn keyword exportsKeySettings contained	access	anon	root	rw	fsid	sec
+ syn match exportsSetError contained	"[a-z]\+"
+ 
+ " OptSet: -word=

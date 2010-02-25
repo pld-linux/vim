@@ -26,7 +26,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	1
+Release:	2
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -86,6 +86,7 @@ Patch20:	%{name}-nagios.patch
 Patch21:	%{name}-filetypes.patch
 Patch22:	%{name}-man_installation.patch
 Patch23:	%{name}-vimrc.patch
+Patch24:	%{name}-syntax-exports.patch
 Patch102:	%{name}-gtkfilechooser.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-autopaste.patch
@@ -687,6 +688,7 @@ jak również GUI GTK+2.
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
+%patch24 -p1
 
 # home etc
 %{?with_home_etc:%patch104 -p1}
