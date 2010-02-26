@@ -87,6 +87,7 @@ Patch21:	%{name}-filetypes.patch
 Patch22:	%{name}-man_installation.patch
 Patch23:	%{name}-vimrc.patch
 Patch24:	%{name}-syntax-exports.patch
+Patch25:	%{name}-syntax-sshconfig.patch
 Patch102:	%{name}-gtkfilechooser.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-autopaste.patch
@@ -689,6 +690,7 @@ jak również GUI GTK+2.
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
 
 # home etc
 %{?with_home_etc:%patch104 -p1}
