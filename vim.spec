@@ -160,6 +160,9 @@ Obsoletes:	vim-ispell
 Obsoletes:	vim-plugin-multvals
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
+# configure redefines it to =1
+%define		filterout_cpp	-D_FORTIFY_SOURCE=[0-9]*
+
 # that's example script
 %define		_noautoreq	'/bin/csh'
 
