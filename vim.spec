@@ -26,7 +26,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	3
+Release:	4
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -101,6 +101,7 @@ Patch112:	%{name}-localedir.patch
 Patch113:	%{name}-locales.patch
 Patch114:	%{name}-rtdir.patch
 Patch115:	%{name}-ft-mib.patch
+Patch116:	%{name}-ruby1.9.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -712,6 +713,7 @@ jak również GUI GTK+2.
 %patch113 -p1
 %patch114 -p1
 %patch115 -p1
+%patch116 -p1
 
 cp -a %{SOURCE20} runtime/syntax
 cp -a %{SOURCE22} runtime/syntax
