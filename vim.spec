@@ -13,7 +13,7 @@
 %bcond_without	home_etc	# without home_etc support
 
 %define		ver		7.2
-%define		patchlevel	356
+%define		patchlevel	394
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -26,7 +26,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	4
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -101,7 +101,6 @@ Patch112:	%{name}-localedir.patch
 Patch113:	%{name}-locales.patch
 Patch114:	%{name}-rtdir.patch
 Patch115:	%{name}-ft-mib.patch
-Patch116:	%{name}-ruby1.9.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -713,7 +712,6 @@ jak również GUI GTK+2.
 %patch113 -p1
 %patch114 -p1
 %patch115 -p1
-%patch116 -p1
 
 cp -a %{SOURCE20} runtime/syntax
 cp -a %{SOURCE22} runtime/syntax
