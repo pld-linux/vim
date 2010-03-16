@@ -12,6 +12,9 @@
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 
+# Command to check for latest patch:
+# wget -q -O - ftp://ftp.vim.org/pub/editors/vim/patches/7.2/MD5SUMS|grep -vF .gz|tail -n1|awk '{print $2}'
+
 %define		ver		7.2
 %define		patchlevel	394
 Summary:	Vi IMproved - a Vi clone
@@ -101,6 +104,7 @@ Patch112:	%{name}-localedir.patch
 Patch113:	%{name}-locales.patch
 Patch114:	%{name}-rtdir.patch
 Patch115:	%{name}-ft-mib.patch
+Patch116:	%{name}-ft-lib-udevrules.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -712,6 +716,7 @@ jak również GUI GTK+2.
 %patch113 -p1
 %patch114 -p1
 %patch115 -p1
+%patch116 -p1
 
 cp -a %{SOURCE20} runtime/syntax
 cp -a %{SOURCE22} runtime/syntax
