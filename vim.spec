@@ -5,6 +5,7 @@
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	heavy		# don't build heavy (full-featured GNOME-based gvim/vim)
+%bcond_without	gui			# don't build any GUI
 %bcond_with	perl		# with Perl interp in vim package
 %bcond_with	python		# with Python interp in vim package
 %bcond_with	ruby		# with Ruby interp in vim package
@@ -12,11 +13,18 @@
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 
+%if %{without gui}
+%undefine	with_athena
+%undefine	with_motif
+%undefine	with_gtk
+%undefine	with_gnome
+%endif
+
 # Command to check for latest patch:
 # wget -q -O - ftp://ftp.vim.org/pub/editors/vim/patches/7.2/MD5SUMS|grep -vF .gz|tail -n1|awk '{print $2}'
 
 %define		ver		7.2
-%define		patchlevel	394
+%define		patchlevel	411
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -872,7 +880,7 @@ build gvim.heavy \
 rm -rf $RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
-	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim} \
+	$RPM_BUILD_ROOT{/bin,%{_mandir}/man1,%{_datadir}/vim/ftdetect} \
 	$RPM_BUILD_ROOT%{_desktopdir}
 
 %{__make} -j1 install \
@@ -1107,6 +1115,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %dir %{_datadir}/vim/autoload
 %doc %{_datadir}/vim/autoload/README.txt
+
+%dir %{_datadir}/vim/ftdetect
 
 %dir %{_datadir}/vim/ftplugin
 %doc %{_datadir}/vim/ftplugin/README.txt
