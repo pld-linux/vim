@@ -113,6 +113,7 @@ Patch113:	%{name}-locales.patch
 Patch114:	%{name}-rtdir.patch
 Patch115:	%{name}-ft-mib.patch
 Patch116:	%{name}-ft-lib-udevrules.patch
+Patch117:	%{name}-ft-mysql.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -725,6 +726,7 @@ jak również GUI GTK+2.
 %patch114 -p1
 %patch115 -p1
 %patch116 -p1
+%patch117 -p1
 
 cp -a %{SOURCE20} runtime/syntax
 cp -a %{SOURCE22} runtime/syntax
