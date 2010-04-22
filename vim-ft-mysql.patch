@@ -9,3 +9,14 @@
  
  " Comments (c-style, mysql-style and modified sql-style)
  syn region mysqlComment          start="/\*"  end="\*/"
+--- vim72/runtime/filetype.vim~	2010-01-21 21:47:56.000000000 +0200
++++ vim72/runtime/filetype.vim	2010-04-22 14:27:15.550974158 +0300
+@@ -1151,7 +1151,7 @@
+ au BufNewFile,BufRead *.msql			setf msql
+ 
+ " Mysql
+-au BufNewFile,BufRead *.mysql			setf mysql
++au BufNewFile,BufRead *.mysql,.*mysql_history*			setf mysql
+ 
+ " M$ Resource files
+ au BufNewFile,BufRead *.rc			setf rc
