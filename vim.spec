@@ -37,7 +37,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	3
+Release:	4
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
