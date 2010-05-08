@@ -1,3 +1,6 @@
+# TODO
+# - evim manuals not installed if no gui is built, move to -gui packages?
+#
 # Conditional build:
 %bcond_without	static		# don't build static version
 %bcond_without	athena		# don't build Athena Widgets-based gvim
@@ -24,7 +27,7 @@
 # wget -q -O - ftp://ftp.vim.org/pub/editors/vim/patches/7.2/MD5SUMS|grep -vF .gz|tail -n1|awk '{print $2}'
 
 %define		ver		7.2
-%define		patchlevel	411
+%define		patchlevel	416
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -37,7 +40,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	4
+Release:	1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -1122,6 +1125,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/ftplugin
 %doc %{_datadir}/vim/ftplugin/README.txt
 %{_datadir}/vim/ftplugin/*.vim
+%{_datadir}/vim/ftplugin/logtalk.dict
 
 %dir %{_datadir}/vim/indent
 %doc %{_datadir}/vim/indent/README.txt
