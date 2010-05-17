@@ -776,7 +776,11 @@ build() {
 		--enable-gpm \
 		--enable-multibyte \
 		--enable-nls \
+%if "%{pld_release}" == "th"
 		--with-tlib="ncursesw -ltinfow" \
+%else
+		--with-tlib="ncurses -ltinfo" \
+%endif
 		--with-modified-by="PLD Linux Distribution" \
 		--with-compiledby="PLD Linux Distribution" \
 		"$@"
