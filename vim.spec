@@ -27,7 +27,7 @@
 # wget -q -O - ftp://ftp.vim.org/pub/editors/vim/patches/7.2/MD5SUMS|grep -vF .gz|tail -n1|awk '{print $2}'
 
 %define		ver		7.2
-%define		patchlevel	436
+%define		patchlevel	444
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
