@@ -1,6 +1,10 @@
 # TODO
 # - evim manuals not installed if no gui is built, move to -gui packages?
 #
+# NOTE
+# - static package is not quite static, it must be linked with shared glibc
+#   because of glibc nss brokeness wrt all static linking
+#
 # Conditional build:
 %bcond_without	static		# don't build static version
 %bcond_without	athena		# don't build Athena Widgets-based gvim
@@ -8,7 +12,7 @@
 %bcond_without	gtk		# don't build GTK+-based gvim support
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	heavy		# don't build heavy (full-featured GNOME-based gvim/vim)
-%bcond_without	gui			# don't build any GUI
+%bcond_without	gui		# don't build any GUI
 %bcond_with	perl		# with Perl interp in vim package
 %bcond_with	python		# with Python interp in vim package
 %bcond_with	ruby		# with Ruby interp in vim package
@@ -40,7 +44,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	4
+Release:	4.1
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -762,6 +766,7 @@ install -d bin
 build() {
 	set -x
 	local target=$1
+	local shlink
 	shift
 
 	%{__make} distclean
@@ -786,11 +791,24 @@ build() {
 		"$@"
 
 	%{__make} vim
+	# Hack around glibc brokeness wrt static linking and NSS (Name Service Shit)
+	if [ "$target" = "vim.static" ]; then
+		echo "s| -l\([^ ]\+\)| %{_libdir}/lib\1.a|g" >>auto/link.sed
+		rm -f vim
+		%{__make} vim
+		shlink=$(ldd ./vim | grep -v "linux-vdso\|libc.so\|ld-linux.*" || :)
+		if [ -n "$shlink" ]; then
+			echo "Looks like static link failed!"
+			echo "These libs should be linked static:"
+			echo $shlink
+			return 1
+		fi
+	fi
 	mv -f vim bin/$target
 }
 
 %if %{with static}
-LDFLAGS="%{rpmldflags} -static"
+#LDFLAGS="%{rpmldflags} -static"
 build vim.static \
 	--disable-gui \
 	--without-x \
@@ -804,7 +822,7 @@ build vim.static \
 	--disable-multibyte \
 	--disable-nls
 
-LDFLAGS="%{rpmldflags}"
+#LDFLAGS="%{rpmldflags}"
 %endif
 
 build vim.ncurses \
