@@ -796,7 +796,7 @@ build() {
 		echo "s| -l\([^ ]\+\)| %{_libdir}/lib\1.a|g" >>auto/link.sed
 		rm -f vim
 		%{__make} vim
-		shlink=$(ldd ./vim | grep -v "linux-vdso\|libc.so\|ld-linux.*" || :)
+		shlink=$(ldd ./vim | grep -v "linux-\(gate\|vdso\)\|libc.so\|ld-linux.*" || :)
 		if [ -n "$shlink" ]; then
 			echo "Looks like static link failed!"
 			echo "These libs should be linked static:"
