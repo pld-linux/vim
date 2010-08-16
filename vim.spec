@@ -1,9 +1,10 @@
 # TODO
 # - evim manuals not installed if no gui is built, move to -gui packages?
+# - fix glibc so that static work without hacks
 #
 # NOTE
 # - static package is not quite static, it must be linked with shared glibc
-#   because of glibc nss brokeness wrt all static linking
+#   because of glibc nss brokeness wrt all static linking (see TODO)
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -44,7 +45,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	4.1
+Release:	5
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
