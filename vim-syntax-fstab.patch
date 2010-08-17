@@ -1,10 +1,12 @@
+recognize btrfs, cpuset, ext4dev and reiser4
+
 --- vim71/runtime/syntax/fstab.vim~	2007-05-13 08:59:42.255604785 +0200
 +++ vim71/runtime/syntax/fstab.vim	2007-05-13 10:01:25.786883411 +0200
 @@ -43,7 +43,7 @@
  " Type
  syn cluster fsTypeCluster contains=fsTypeKeyword,fsTypeUnknown
  syn match fsTypeUnknown /\s\+\zs\w\+/ contained
--syn keyword fsTypeKeyword contained adfs ados affs atfs audiofs auto autofs befs bfs cd9660 cfs cifs coda cramfs devfs devpts e2compr efs ext2 ext2fs ext3 fdesc ffs filecore fuse hfs hpfs iso9660 jffs jffs2 jfs kernfs lfs linprocfs mfs minix msdos ncpfs nfs none ntfs null nwfs overlay ovlfs portal proc procfs ptyfs qnx4 reiserfs romfs shm smbfs sshfs std subfs swap sysfs sysv tcfs tmpfs udf ufs umap umsdos union usbfs userfs vfat vs3fs vxfs wrapfs wvfs xfs zisofs
+-syn keyword fsTypeKeyword contained adfs ados affs atfs audiofs auto autofs befs bfs cd9660 cfs cifs coda cramfs devfs devpts e2compr efs ext2 ext2fs ext3 ext4 fdesc ffs filecore fuse hfs hpfs iso9660 jffs jffs2 jfs kernfs lfs linprocfs mfs minix msdos ncpfs nfs none ntfs null nwfs overlay ovlfs portal proc procfs ptyfs qnx4 reiserfs romfs shm smbfs sshfs std subfs swap sysfs sysv tcfs tmpfs udf ufs umap umsdos union usbfs userfs vfat vs3fs vxfs wrapfs wvfs xfs zisofs
 +syn keyword fsTypeKeyword contained adfs ados affs atfs audiofs auto autofs befs bfs btrfs cd9660 cfs cifs coda cpuset cramfs devfs devpts e2compr efs ext2 ext2fs ext3 ext4 ext4dev fdesc ffs filecore fuse hfs hpfs iso9660 jffs jffs2 jfs kernfs lfs linprocfs mfs minix msdos ncpfs nfs none ntfs null nwfs overlay ovlfs portal proc procfs ptyfs qnx4 reiserfs reiser4 romfs shm smbfs sshfs std subfs swap sysfs sysv tcfs tmpfs udf ufs umap umsdos union usbfs userfs vfat vs3fs vxfs wrapfs wvfs xfs zisofs
  
  " Options
