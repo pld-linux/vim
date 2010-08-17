@@ -45,3 +45,16 @@
  		pl.ck \
  		pt_BR.ck \
  		ru.ck \
+@@ -160,12 +160,6 @@
+ 
+ converted: $(CONVERTED)
+ 
+-# Norwegian/Bokmal: "nb" is an alias for "no".
+-# Copying the file is not efficient, but I don't know of another way to make
+-# this work.
+-nb.po: no.po
+-	cp no.po nb.po
+-
+ # Convert ja.po to create ja.sjis.po.  Requires doubling backslashes in the
+ # second byte.  Don't depend on sjiscorr, it should only be compiled when
+ # ja.sjis.po is outdated.
