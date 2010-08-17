@@ -31,8 +31,8 @@
 # Command to check for latest patch:
 # wget -q -O - ftp://ftp.vim.org/pub/editors/vim/patches/7.2/MD5SUMS|grep -vF .gz|tail -n1|awk '{print $2}'
 
-%define		ver		7.2
-%define		patchlevel	444
+%define		ver		7.3
+%define		patchlevel	002
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -50,11 +50,7 @@ Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
-# Source0-md5:	f0901284b338e448bfd79ccca0041254
-Source1:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{ver}-lang.tar.gz
-# Source1-md5:	d8884786979e0e520c112faf2e176f05
-Source2:	ftp://ftp.vim.org/pub/vim/extra/%{name}-%{ver}-extra.tar.gz
-# Source2-md5:	35e04482f07c57221c9a751aaa3b8dac
+# Source0-md5:	5b9510a17074e2b37d8bb38ae09edbf2
 Source3:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source3-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source4:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -80,7 +76,7 @@ Source31:	borland.vim
 Source32:	oceandeep.vim
 # http://www.vim.org/scripts/script.php?script_id=1464 (2.6.3)
 Source33:	moria.vim
-%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.2/7.2.%03g 1 %{patchlevel}
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.3/7.3.%03g 1 %{patchlevel}
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -111,7 +107,6 @@ Patch102:	%{name}-gtkfilechooser.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-autopaste.patch
 Patch106:	%{name}-ft-cron.patch
-Patch107:	%{name}-relativenumber.patch
 Patch108:	%{name}-phpscript.patch
 Patch109:	%{name}-pam.patch
 Patch110:	%{name}-ft-bash.patch
@@ -683,7 +678,7 @@ zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl
 jak również GUI GTK+2.
 
 %prep
-%setup -q -n %{name}72 -b1 -b2
+%setup -q -n %{name}73
 
 # official patches
 %patchset_patch 1 %{patchlevel}
@@ -723,7 +718,7 @@ jak również GUI GTK+2.
 %patch105 -p1
 
 %patch106 -p1
-%patch107 -p0
+
 %patch108 -p1
 %patch109 -p1
 %patch110 -p1
@@ -993,7 +988,9 @@ install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdet
 # unuseful
 rm -rf $RPM_BUILD_ROOT%{_datadir}/vim/tools
 rm -f $RPM_BUILD_ROOT%{_datadir}/vim/bugreport.vim
+rm -f $RPM_BUILD_ROOT%{_datadir}/vim/spell/check_locales.vim
 rm -f $RPM_BUILD_ROOT%{_datadir}/vim/spell/cleanadd.vim
+rm -f $RPM_BUILD_ROOT%{_datadir}/vim/spell/fixdup.vim
 rm -f $RPM_BUILD_ROOT%{_datadir}/vim/doc/vim2html.pl
 
 %clean
@@ -1267,8 +1264,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/tutor/tutor
 
 %{_datadir}/vim/tutor/README.txt
-%{_datadir}/vim/tutor/README.txt.info
-%{_datadir}/vim/tutor/tutor.info
 %{_datadir}/vim/tutor/tutor.vim
 %{_datadir}/vim/tutor/tutor.utf-8
 %lang(el) %{_datadir}/vim/tutor/README.el.cp737.txt
@@ -1284,6 +1279,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(el) %{_datadir}/vim/tutor/tutor.el
 %lang(el) %{_datadir}/vim/tutor/tutor.el.cp737
 %lang(el) %{_datadir}/vim/tutor/tutor.el.utf-8
+%lang(eo) %{_datadir}/vim/tutor/tutor.eo
 %lang(eo) %{_datadir}/vim/tutor/tutor.eo.utf-8
 %lang(es) %{_datadir}/vim/tutor/tutor.es
 %lang(es) %{_datadir}/vim/tutor/tutor.es.utf-8
@@ -1307,6 +1303,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_datadir}/vim/tutor/tutor.pl
 %lang(pl) %{_datadir}/vim/tutor/tutor.pl.cp1250
 %lang(pl) %{_datadir}/vim/tutor/tutor.pl.utf-8
+%lang(pt) %{_datadir}/vim/tutor/tutor.pt
+%lang(pt) %{_datadir}/vim/tutor/tutor.pt.utf-8
 %lang(ru) %{_datadir}/vim/tutor/tutor.ru
 %lang(ru) %{_datadir}/vim/tutor/tutor.ru.cp1251
 %lang(ru) %{_datadir}/vim/tutor/tutor.ru.utf-8
