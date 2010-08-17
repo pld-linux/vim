@@ -51,10 +51,10 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 # Source0-md5:	5b9510a17074e2b37d8bb38ae09edbf2
-Source3:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
-# Source3-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
-Source4:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
-# Source4-md5:	ff96284b1c913d55cf0877839b34d490
+Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
+# Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
+Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
+# Source2-md5:	ff96284b1c913d55cf0877839b34d490
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
@@ -737,7 +737,7 @@ cp -a %{SOURCE30} runtime/colors
 cp -a %{SOURCE31} runtime/colors
 cp -a %{SOURCE32} runtime/colors
 
-%{__unzip} -qd runtime/doc %{SOURCE4}
+%{__unzip} -qd runtime/doc %{SOURCE2}
 
 # remove unsupported locales
 rm -f src/po/zh_{CN,TW}.UTF-8.po
@@ -977,7 +977,7 @@ install -p src/bin/gvim.heavy	$RPM_BUILD_ROOT%{_bindir}
 install -d $RPM_BUILD_ROOT%{_pixmapsdir}
 cp -a runtime/vim48x48.png $RPM_BUILD_ROOT%{_pixmapsdir}/vim.png
 
-bzip2 -dc %{SOURCE3} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
+bzip2 -dc %{SOURCE1} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 
 install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdetect,ftplugin,indent,plugin,spell,syntax}}
 > $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/doc/tags
