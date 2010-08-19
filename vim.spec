@@ -1,10 +1,5 @@
 # TODO
 # - evim manuals not installed if no gui is built, move to -gui packages?
-# - fix glibc so that static work without hacks
-#
-# NOTE
-# - static package is not quite static, it must be linked with shared glibc
-#   because of glibc nss brokeness wrt all static linking (see TODO)
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -45,7 +40,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	2
+Release:	3
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
@@ -762,7 +757,6 @@ install -d bin
 build() {
 	set -x
 	local target=$1
-	local shlink
 	shift
 
 	%{__make} distclean
@@ -787,24 +781,11 @@ build() {
 		"$@"
 
 	%{__make} vim
-	# Hack around glibc brokeness wrt static linking and NSS (Name Service Shit)
-	if [ "$target" = "vim.static" ]; then
-		echo "s| -l\([^ ]\+\)| %{_libdir}/lib\1.a|g" >>auto/link.sed
-		rm -f vim
-		%{__make} vim
-		shlink=$(ldd ./vim | grep -v "linux-\(gate\|vdso\)\|libc.so\|ld-linux.*" || :)
-		if [ -n "$shlink" ]; then
-			echo "Looks like static link failed!"
-			echo "These libs should be linked static:"
-			echo $shlink
-			return 1
-		fi
-	fi
 	mv -f vim bin/$target
 }
 
 %if %{with static}
-#LDFLAGS="%{rpmldflags} -static"
+LDFLAGS="%{rpmldflags} -static"
 build vim.static \
 	--disable-gui \
 	--without-x \
@@ -818,7 +799,7 @@ build vim.static \
 	--disable-multibyte \
 	--disable-nls
 
-#LDFLAGS="%{rpmldflags}"
+LDFLAGS="%{rpmldflags}"
 %endif
 
 build vim.ncurses \
