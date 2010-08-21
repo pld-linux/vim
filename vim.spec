@@ -1250,6 +1250,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(el) %{_datadir}/vim/tutor/README.el.cp737.txt
 %lang(el) %{_datadir}/vim/tutor/README.el.txt
 
+%lang(bj) %{_datadir}/vim/tutor/tutor.bj
+%lang(bj) %{_datadir}/vim/tutor/tutor.bj.utf-8
 %lang(ca) %{_datadir}/vim/tutor/tutor.ca
 %lang(ca) %{_datadir}/vim/tutor/tutor.ca.utf-8
 %lang(cs) %{_datadir}/vim/tutor/tutor.cs
@@ -1270,8 +1272,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(hr) %{_datadir}/vim/tutor/tutor.hr.cp1250
 %lang(hr) %{_datadir}/vim/tutor/tutor.hr.utf-8
 %lang(hu) %{_datadir}/vim/tutor/tutor.hu
-%lang(hu) %{_datadir}/vim/tutor/tutor.hu.utf-8
 %lang(hu) %{_datadir}/vim/tutor/tutor.hu.cp1250
+%lang(hu) %{_datadir}/vim/tutor/tutor.hu.utf-8
 %lang(it) %{_datadir}/vim/tutor/tutor.it
 %lang(it) %{_datadir}/vim/tutor/tutor.it.utf-8
 %lang(ja) %{_datadir}/vim/tutor/tutor.ja.euc
