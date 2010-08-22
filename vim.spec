@@ -24,10 +24,11 @@
 %endif
 
 # Command to check for latest patch:
-# wget -q -O - ftp://ftp.vim.org/pub/editors/vim/patches/7.2/MD5SUMS|grep -vF .gz|tail -n1|awk '{print $2}'
+# curl -s ftp://ftp.vim.org/pub/editors/vim/patches/7.3/MD5SUMS | grep -vF .gz | tail -n1 | awk '{print $2}'
 
 %define		ver		7.3
-%define		patchlevel	002
+%define		patchlevel	003
+%define		rel			1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -40,7 +41,7 @@ Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
 Version:	%{ver}.%{patchlevel}
-Release:	4
+Release:	%{rel}
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
