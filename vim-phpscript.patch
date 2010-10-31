@@ -11,3 +11,15 @@
      " RCS/CVS log output
    elseif s:line1 =~ '^RCS file:' || s:line2 =~ '^RCS file:'
      set ft=rcslog
+--- vim73/runtime/filetype.vim~	2010-10-31 13:26:19.000000000 +0200
++++ vim73/runtime/filetype.vim	2010-10-31 13:27:17.615314321 +0200
+@@ -1326,7 +1326,8 @@
+ " Php, php3, php4, etc.
+ " Also Phtml (was used for PHP 2 in the past)
+ " Also .ctp for Cake template file
+-au BufNewFile,BufRead *.php,*.php\d,*.phtml,*.ctp	setf php
++" Also .phpt for PHP Test files
++au BufNewFile,BufRead *.php,*.php\d,*.phtml,*.ctp,*.phpt	setf php
+ 
+ " Pike
+ au BufNewFile,BufRead *.pike,*.lpc,*.ulpc,*.pmod setf pike
