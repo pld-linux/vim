@@ -28,7 +28,7 @@
    syntax on
    set hlsearch
  endif
-@@ -90,7 +93,10 @@
+@@ -90,7 +93,15 @@
  " Convenient command to see the difference between the current buffer and the
  " file it was loaded from, thus the changes you made.
  " Only define it when not defined already.
@@ -40,3 +40,8 @@
 +
 +" Use :help colorscheme for info
 +"set background=dark
++
++" Source a global configuration file if available
++if filereadable("/etc/vim/vimrc.local")
++  source /etc/vim/vimrc.local
++endif
