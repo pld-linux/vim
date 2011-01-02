@@ -106,7 +106,6 @@ Patch106:	%{name}-ft-cron.patch
 Patch108:	%{name}-phpscript.patch
 Patch109:	%{name}-pam.patch
 Patch110:	%{name}-ft-bash.patch
-Patch111:	%{name}-gzhelp.patch
 Patch112:	%{name}-localedir.patch
 Patch113:	%{name}-locales.patch
 Patch114:	%{name}-rtdir.patch
@@ -718,7 +717,6 @@ jak również GUI GTK+2.
 %patch108 -p1
 %patch109 -p1
 %patch110 -p1
-%patch111 -p1
 %patch112 -p1
 %patch113 -p1
 %patch114 -p1

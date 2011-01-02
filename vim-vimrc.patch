@@ -1,6 +1,16 @@
---- vim72/runtime/vimrc_example.vim	2008-08-18 13:33:06.007243535 +0300
-+++ vim72/runtime/vimrc_example.vim	2009-05-14 02:04:43.261671071 +0300
-@@ -42,13 +42,13 @@
+--- vim73/runtime/vimrc_example.vim~	2010-05-15 14:03:57.000000000 +0300
++++ vim73/runtime/vimrc_example.vim	2011-01-02 22:53:43.246560000 +0200
+@@ -31,6 +31,9 @@
+ set showcmd		" display incomplete commands
+ set incsearch		" do incremental searching
+ 
++" use compressed docs, see :help gzip-helpfile
++set helpfile=$VIMRUNTIME/doc/help.txt.gz
++
+ " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
+ " let &guioptions = substitute(&guioptions, "t", "", "g")
+ 
+@@ -42,13 +45,13 @@
  inoremap <C-U> <C-G>u<C-U>
  
  " In many terminal emulators the mouse works just fine, thus enable it.
@@ -18,7 +28,10 @@
    syntax on
    set hlsearch
  endif
-@@ -93,4 +93,7 @@
+@@ -90,7 +93,10 @@
+ " Convenient command to see the difference between the current buffer and the
+ " file it was loaded from, thus the changes you made.
+ " Only define it when not defined already.
 -if !exists(":DiffOrig")
 +if v:progname =~! "vi" && !exists(":DiffOrig")
    command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
