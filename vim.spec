@@ -1,5 +1,5 @@
 # TODO
-# - evim manuals not installed if no gui is built, move to -gui packages?
+# - eview manuals not installed if no gui is built, move to -gui packages?
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -1017,28 +1017,28 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/rvim
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/vimdiff
-%{_mandir}/man1/eview.1*
+%{?with_gui:%{_mandir}/man1/eview.1*}
 %{_mandir}/man1/evim.1*
 %{_mandir}/man1/rvim.1*
 %{_mandir}/man1/vimdiff.1*
 %lang(fi) %{_mandir}/fi/man1/rvim.1*
-%lang(fr) %{_mandir}/fr/man1/eview.1*
+%{?with_gui:%lang(fr) %{_mandir}/fr/man1/eview.1*}
 %lang(fr) %{_mandir}/fr/man1/evim.1*
 %lang(fr) %{_mandir}/fr/man1/rvim.1*
 %lang(fr) %{_mandir}/fr/man1/vimdiff.1*
 %lang(id) %{_mandir}/id/man1/rvim.1*
 %lang(id) %{_mandir}/id/man1/vim.1*
-%lang(it) %{_mandir}/it/man1/eview.1*
+%{?with_gui:%lang(it) %{_mandir}/it/man1/eview.1*}
 %lang(it) %{_mandir}/it/man1/evim.1*
 %lang(it) %{_mandir}/it/man1/rvim.1*
 %lang(it) %{_mandir}/it/man1/vim.1*
 %lang(it) %{_mandir}/it/man1/vimdiff.1*
-%lang(pl) %{_mandir}/pl/man1/eview.1*
+%{?with_gui:%lang(pl) %{_mandir}/pl/man1/eview.1*}
 %lang(pl) %{_mandir}/pl/man1/evim.1*
 %lang(pl) %{_mandir}/pl/man1/rvim.1*
 %lang(pl) %{_mandir}/pl/man1/vim.1*
 %lang(pl) %{_mandir}/pl/man1/vimdiff.1*
-%lang(ru) %{_mandir}/ru/man1/eview.1*
+%{?with_gui:%lang(ru) %{_mandir}/ru/man1/eview.1*}
 %lang(ru) %{_mandir}/ru/man1/evim.1*
 %lang(ru) %{_mandir}/ru/man1/rvim.1*
 %lang(ru) %{_mandir}/ru/man1/vim.1*
