@@ -758,6 +758,13 @@ build() {
 	local target=$1
 	shift
 
+	%configure \
+%if "%{pld_release}" == "th"
+		--with-tlib="ncursesw -ltinfow" \
+%else
+		--with-tlib="ncurses -ltinfo"
+%endif
+
 	%{__make} distclean
 	# add common options, can override (disable) if needed with args
 	%configure \
