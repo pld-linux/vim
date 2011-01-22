@@ -1,5 +1,3 @@
-# TODO
-# - eview manuals not installed if no gui is built, move to -gui packages?
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -380,7 +378,7 @@ Summary(is.UTF-8):	Grunnskrár sem allar útgáfur VIM ritilsins þurfa á að h
 Summary(it.UTF-8):	File comuni necessari per tutte le versioni dell'editor VIM
 Summary(ja.UTF-8):	すべてのバージョンの VIM エディタで必要とされる共通ファイル
 Summary(nb.UTF-8):	Felles filer som er nødvendige for enhver versjon av VIM editoren
-Summary(pl.UTF-8):	Pliki przydatne edytorowi Vim
+Summary(pl.UTF-8):	Pliki przydatne dla edytora Vim
 Summary(pt.UTF-8):	Os ficheiros comuns necessários para qualquer versão do editor VIM
 Summary(ru.UTF-8):	Файлы, требуемые для любой версии редактора vim
 Summary(sk.UTF-8):	Spoločné súbory potrebné pre všetky verzie editoru VIM
@@ -402,10 +400,6 @@ powerful features, you should install this package.
 %description rt -l cs.UTF-8
 Tento balíček obsahuje společné soubory pro všechny další balíčky s
 vim.
-
-%description rt -l da.UTF-8
-The vim-rt package contains files which every VIM binary will need in
-order to run.
 
 %description rt -l de.UTF-8
 Das Paket vim-rt enthält Dateien, die jede VIM-Binärdatei für die
@@ -433,9 +427,9 @@ Il pacchetto vim-rt contiene i file necessari a ogni binario di VIM
 per poter funzionare.
 
 %description rt -l pl.UTF-8
-W tym pakiecie znajdziesz dokumentację, makra, pliki konfiguracyjne i
-strony podręcznika dla edytora Vim. Jeżeli chcesz korzystać z
-zaawansowanych możliwości Vima, powinieneś zainstalować ten pakiet.
+W tym pakiecie znajdują się makra, pliki konfiguracyjne i strony
+podręcznika dla edytora Vim. Aby korzystać z zaawansowanych możliwości
+Vima, należy zainstalować ten pakiet.
 
 %description rt -l pt.UTF-8
 O pacote vim-rt contém os ficheiros que todos os executáveis do VIM
@@ -459,6 +453,7 @@ köra.
 
 %package rt-extras
 Summary:	Vim runtime extra files
+Summary(pl.UTF-8):	Dodatkowe pliki uruchomieniowe Vima
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 
@@ -467,8 +462,14 @@ This package contains more runtime extra files, not really useful. If
 you want to take full advantage of Vim more powerful features, you
 should install this package.
 
+%description rt-extras -l pl.UTF-8
+Ten pakiet zawiera dodatkowe pliki uruchomieniowe, nie tak bardzo
+przydatne. Aby korzystać ze wszystkich możliwości Vima, należy
+zainstalować ten pakiet.
+
 %package doc
 Summary:	Context Vim documentation
+Summary(pl.UTF-8):	Dokumentacja kontekstowa do Vima
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	gzip
@@ -476,6 +477,10 @@ Requires:	gzip
 %description doc
 This package contains Vim documentation accessible from vim itself
 using :help command.
+
+%description doc -l pl.UTF-8
+Ten pakiet zawiera dokumentację do Vima dostępną z poziomu samego
+vima za pomocą polecenia :help.
 
 %package spell-en
 Summary:	English dictionaries for VIMspell
@@ -542,9 +547,9 @@ Set, що дозволяє запускати VIM як прикладну про
 з повністю графічним інтерфейсом та підтримкою миші.
 
 %package -n gvim-motif
-Summary:	Vim for X Window built with Motif
+Summary:	Vim for X Window System built with Motif
 Summary(hu.UTF-8):	A Vim X Window verziója, a Motif felhasználásával
-Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Motif
+Summary(pl.UTF-8):	Vim dla systemu X Window korzystający z biblioteki Motif
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -575,9 +580,9 @@ Motif, что позволяет запускать VIM как приложен�
 повністю графічним інтерфейсом та підтримкою миші.
 
 %package -n gvim-gtk
-Summary:	Vim for X Window built with gtk
-Summary(hu.UTF-8):	A Vim X Window verziója, a GTK felhasználásával
-Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GTK
+Summary:	Vim for X Window System built with GTK+
+Summary(hu.UTF-8):	A Vim X Window verziója, a GTK+ felhasználásával
+Summary(pl.UTF-8):	Vim dla systemu X Window korzystający z biblioteki GTK+
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -590,14 +595,14 @@ Obsoletes:	vim-X11
 
 %description -n gvim-gtk
 The classic Unix text editor now also under X Window System! This
-version is built with GTK.
+version is built with GTK+.
 
 %description -n gvim-gtk -l hu.UTF-8
-A Vim X Window verziója, a GTK Widgetkészlet felhasználásával.
+A Vim X Window verziója, a GTK+ Widgetkészlet felhasználásával.
 
 %description -n gvim-gtk -l pl.UTF-8
 Wersja edytora Vim pracująca w środowisku X Window z wykorzystaniem
-biblioteki GTK.
+biblioteki GTK+.
 
 %description -n gvim-gtk -l ru.UTF-8
 Этот пакет представляет собой версию VIM, собранную с библиотеками
@@ -611,9 +616,9 @@ GTK, что позволяет запускать VIM как приложени�
 графічним інтерфейсом та підтримкою миші. Просто скажіть 'gvim'...
 
 %package -n gvim-gnome
-Summary:	Vim for X Window built with GNOME
-Summary(hu.UTF-8):	A Vim X Window verziója, a GTK felhasználásával
-Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki GNOME
+Summary:	Vim for X Window System built with GNOME
+Summary(hu.UTF-8):	A Vim X Window verziója, a GNOME felhasználásával
+Summary(pl.UTF-8):	Vim dla systemu X Window korzystający z biblioteki GNOME
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -646,9 +651,9 @@ GNOME, что позволяет запускать VIM как приложен�
 повністю графічним інтерфейсом та підтримкою миші.
 
 %package -n gvim-heavy
-Summary:	Full featured build of Vim with X-window support
+Summary:	Full featured build of Vim with X Window support
 Summary(hu.UTF-8):	A gvim legteljesebb verziója
-Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vima z interfejsem dla X-window
+Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vima z interfejsem dla X Window
 Group:		Applications/Editors/Vim
 Requires(post,postun):	gtk+2
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
@@ -904,7 +909,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 %{__gzip} -9 $RPM_BUILD_ROOT%{_datadir}/vim/doc/*.??x
 %{__sed} -i -e 's=\(\t.*\.plx\)\t=\1.gz\t=' $RPM_BUILD_ROOT%{_datadir}/vim/doc/tags-pl
 
-rm -f $RPM_BUILD_ROOT%{_bindir}/*
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/*
 
 %if %{with static}
 install -p src/bin/vim.ncurses	$RPM_BUILD_ROOT%{_bindir}/vim
@@ -920,13 +925,11 @@ echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
 echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 
 # not supported directories
-rm -rf $RPM_BUILD_ROOT%{_mandir}/??.*/
+%{__rm} -r $RPM_BUILD_ROOT%{_mandir}/??.*/
 
 mv -f $RPM_BUILD_ROOT{%{_datadir}/vim/vimrc_example.vim,%{_sysconfdir}/vim/vimrc}
 mv -f $RPM_BUILD_ROOT{%{_datadir}/vim/gvimrc_example.vim,%{_sysconfdir}/vim/gvimrc}
 
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/eview
-ln -sf vim $RPM_BUILD_ROOT%{_bindir}/evim
 ln -sf vim $RPM_BUILD_ROOT%{_bindir}/rvim
 ln -sf vim $RPM_BUILD_ROOT%{_bindir}/vimdiff
 ln -sf vi  $RPM_BUILD_ROOT/bin/ex
@@ -950,6 +953,8 @@ cp -a %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
 %if %{with gtk}
 install -p src/bin/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
 ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_bindir}/gvim
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/eview
+ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/evim
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gvimdiff
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
@@ -973,12 +978,12 @@ install -d $RPM_BUILD_ROOT%{_datadir}/vim/vimfiles/{doc,{after/,}{compiler,ftdet
 %{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/{ftplugin,syntax}/spec.vim
 
 # unuseful
-rm -rf $RPM_BUILD_ROOT%{_datadir}/vim/tools
-rm -f $RPM_BUILD_ROOT%{_datadir}/vim/bugreport.vim
-rm -f $RPM_BUILD_ROOT%{_datadir}/vim/spell/check_locales.vim
-rm -f $RPM_BUILD_ROOT%{_datadir}/vim/spell/cleanadd.vim
-rm -f $RPM_BUILD_ROOT%{_datadir}/vim/spell/fixdup.vim
-rm -f $RPM_BUILD_ROOT%{_datadir}/vim/doc/vim2html.pl
+%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/vim/tools
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/bugreport.vim
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/spell/check_locales.vim
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/spell/cleanadd.vim
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/spell/fixdup.vim
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/doc/vim2html.pl
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -1019,34 +1024,22 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/eview
-%attr(755,root,root) %{_bindir}/evim
 %attr(755,root,root) %{_bindir}/rvim
 %attr(755,root,root) %{_bindir}/vim
 %attr(755,root,root) %{_bindir}/vimdiff
-%{?with_gui:%{_mandir}/man1/eview.1*}
-%{_mandir}/man1/evim.1*
 %{_mandir}/man1/rvim.1*
 %{_mandir}/man1/vimdiff.1*
 %lang(fi) %{_mandir}/fi/man1/rvim.1*
-%{?with_gui:%lang(fr) %{_mandir}/fr/man1/eview.1*}
-%lang(fr) %{_mandir}/fr/man1/evim.1*
 %lang(fr) %{_mandir}/fr/man1/rvim.1*
 %lang(fr) %{_mandir}/fr/man1/vimdiff.1*
 %lang(id) %{_mandir}/id/man1/rvim.1*
 %lang(id) %{_mandir}/id/man1/vim.1*
-%{?with_gui:%lang(it) %{_mandir}/it/man1/eview.1*}
-%lang(it) %{_mandir}/it/man1/evim.1*
 %lang(it) %{_mandir}/it/man1/rvim.1*
 %lang(it) %{_mandir}/it/man1/vim.1*
 %lang(it) %{_mandir}/it/man1/vimdiff.1*
-%{?with_gui:%lang(pl) %{_mandir}/pl/man1/eview.1*}
-%lang(pl) %{_mandir}/pl/man1/evim.1*
 %lang(pl) %{_mandir}/pl/man1/rvim.1*
 %lang(pl) %{_mandir}/pl/man1/vim.1*
 %lang(pl) %{_mandir}/pl/man1/vimdiff.1*
-%{?with_gui:%lang(ru) %{_mandir}/ru/man1/eview.1*}
-%lang(ru) %{_mandir}/ru/man1/evim.1*
 %lang(ru) %{_mandir}/ru/man1/rvim.1*
 %lang(ru) %{_mandir}/ru/man1/vim.1*
 %lang(ru) %{_mandir}/ru/man1/vimdiff.1*
@@ -1056,7 +1049,10 @@ rm -rf $RPM_BUILD_ROOT
 %files static
 %endif
 %defattr(644,root,root,755)
-%attr(755,root,root) /bin/*
+%attr(755,root,root) /bin/ex
+%attr(755,root,root) /bin/rview
+%attr(755,root,root) /bin/vi
+%attr(755,root,root) /bin/view
 %{_mandir}/man1/vi.1*
 %{_mandir}/man1/ex.1*
 %{_mandir}/man1/view.1*
@@ -1343,23 +1339,35 @@ rm -rf $RPM_BUILD_ROOT
 %files -n gvim-gtk
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/gvim.gtk
-%attr(755,root,root) %{_bindir}/gvimdiff
-%attr(755,root,root) %{_bindir}/gview
-%attr(755,root,root) %{_bindir}/rgvim
-%attr(755,root,root) %{_bindir}/rgview
 %attr(755,root,root) %verify(not link) %{_bindir}/gvim
+%attr(755,root,root) %{_bindir}/eview
+%attr(755,root,root) %{_bindir}/evim
+%attr(755,root,root) %{_bindir}/gview
+%attr(755,root,root) %{_bindir}/gvimdiff
+%attr(755,root,root) %{_bindir}/rgview
+%attr(755,root,root) %{_bindir}/rgvim
+%{_mandir}/man1/eview.1*
+%{_mandir}/man1/evim.1*
 %{_mandir}/man1/gvi*
 %{_mandir}/man1/rgv*
 %lang(fi) %{_mandir}/fi/man1/gvi*
 %lang(fi) %{_mandir}/fi/man1/rgv*
+%lang(fr) %{_mandir}/fr/man1/eview.1*
+%lang(fr) %{_mandir}/fr/man1/evim.1*
 %lang(fr) %{_mandir}/fr/man1/gvi*
 %lang(fr) %{_mandir}/fr/man1/rgv*
 %lang(id) %{_mandir}/id/man1/gvi*
 %lang(id) %{_mandir}/id/man1/rgv*
+%lang(it) %{_mandir}/it/man1/eview.1*
+%lang(it) %{_mandir}/it/man1/evim.1*
 %lang(it) %{_mandir}/it/man1/gvi*
 %lang(it) %{_mandir}/it/man1/rgv*
+%lang(pl) %{_mandir}/pl/man1/eview.1*
+%lang(pl) %{_mandir}/pl/man1/evim.1*
 %lang(pl) %{_mandir}/pl/man1/gvi*
 %lang(pl) %{_mandir}/pl/man1/rgv*
+%lang(ru) %{_mandir}/ru/man1/eview.1*
+%lang(ru) %{_mandir}/ru/man1/evim.1*
 %lang(ru) %{_mandir}/ru/man1/gvi*
 %lang(ru) %{_mandir}/ru/man1/rgv*
 %{_desktopdir}/gvim-gtk.desktop
