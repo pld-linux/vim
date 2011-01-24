@@ -32,18 +32,22 @@ else
 	ver=$(curl -s $baseurl/MD5SUMS | grep -vF .gz | tail -n1 | awk '{print $2}')
 fi
 
+# cvs up specfile, rename in case of conflicts
+cvs up $specfile || { set -x; mv -b $specfile $specfile.old; }
+
 curpatch=$(awk '/^%define[ 	]+patchlevel[ 	]+/{print $NF}' $specfile)
 curver=$basever.$curpatch
 
 if [ "$curver" != "$ver" ]; then
 	echo "Updating $specfile to $ver"
 	patch=${ver#$basever.}
+	if [ -z "$patch" ]; then
+		echo >&2 "Will not set empty patchlevel"
+		exit 1
+	fi
 	sed -i -e "
 		s/^\(%define[ \t]\+patchlevel[ \t]\+\)[0-9]\+\$/\1$patch/
 	" $specfile
-
-	# cvs up specfile, rename in case of conflicts
-	cvs up $specfile || { set -x; mv -b $specfile $specfile.old; };
 
 	WGET_OPTS="-nv" ../builder -g $specfile
 	cvs -Q add $basever.??? || :
