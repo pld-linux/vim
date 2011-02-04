@@ -26,7 +26,7 @@
 
 %define		ver		7.3
 %define		patchlevel	112
-%define		rel			1
+%define		rel			2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -584,7 +584,8 @@ Summary:	Vim for X Window System built with GTK+
 Summary(hu.UTF-8):	A Vim X Window verziója, a GTK+ felhasználásával
 Summary(pl.UTF-8):	Vim dla systemu X Window korzystający z biblioteki GTK+
 Group:		Applications/Editors/Vim
-Requires(post,postun):	gtk+2
+Requires(post,postun):	gtk-update-icon-cache
+Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	%{name}-rt-extras = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -620,7 +621,8 @@ Summary:	Vim for X Window System built with GNOME
 Summary(hu.UTF-8):	A Vim X Window verziója, a GNOME felhasználásával
 Summary(pl.UTF-8):	Vim dla systemu X Window korzystający z biblioteki GNOME
 Group:		Applications/Editors/Vim
-Requires(post,postun):	gtk+2
+Requires(post,postun):	gtk-update-icon-cache
+Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	%{name}-rt-extras = %{epoch}:%{version}-%{release}
 Requires:	iconv
