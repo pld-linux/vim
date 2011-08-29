@@ -115,8 +115,7 @@ Files:	    src/quickfix.c, src/testdir/test10.in, src/testdir/test10.ok
 ! :copen
 ! :let a=w:quickfix_title
 ! :wincmd p
-! gR=a
-
+! gR=a
 ! :cf Xerrorfile1
   rA
   :cn
@@ -131,8 +130,7 @@ Files:	    src/quickfix.c, src/testdir/test10.in, src/testdir/test10.ok
 + :wincmd w
 + :let a=w:quickfix_title
 + :wincmd p
-+ gR=a
-
++ gR=a
   :w! test.out             " Write contents of this file
   :qa!
   ENDTEST
