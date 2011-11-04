@@ -26,7 +26,7 @@
 
 %define		ver		7.3
 %define		patchlevel	289
-%define		rel		3
+%define		rel		4
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -766,10 +766,10 @@ build() {
 	shift
 
 	%configure \
-%if "%{pld_release}" == "th"
-		--with-tlib="ncursesw" \
-%else
+%if "%{pld_release}" == "ac"
 		--with-tlib="ncurses -ltinfo"
+%else
+		--with-tlib="ncursesw"
 %endif
 
 	%{__make} distclean
@@ -784,10 +784,10 @@ build() {
 		--enable-gpm \
 		--enable-multibyte \
 		--enable-nls \
-%if "%{pld_release}" == "th"
-		--with-tlib="ncursesw" \
-%else
+%if "%{pld_release}" == "ac"
 		--with-tlib="ncurses -ltinfo" \
+%else
+		--with-tlib="ncursesw" \
 %endif
 		--with-modified-by="PLD Linux Distribution" \
 		--with-compiledby="PLD Linux Distribution" \
