@@ -26,24 +26,29 @@
  # endif
 --- vim72/src/misc1.c~	2009-04-15 01:00:48.000000000 +0300
 +++ vim72/src/misc1.c	2009-04-15 01:13:00.319209732 +0300
-@@ -4056,17 +4056,6 @@
- 	{
- 	    vim_setenv((char_u *)"VIMRUNTIME", p);
- 	    didset_vimruntime = TRUE;
+@@ -4215,22 +4215,6 @@
+ 	putenv((char *)envbuf);
+     }
+ #endif
 -#ifdef FEAT_GETTEXT
--	    {
--		char_u	*buf = concat_str(p, (char_u *)"/lang");
+-    /*
+-     * When setting $VIMRUNTIME adjust the directory to find message
+-     * translations to $VIMRUNTIME/lang.
+-     */
+-    if (*val != NUL && STRICMP(name, "VIMRUNTIME") == 0)
+-    {
+-	char_u	*buf = concat_str(val, (char_u *)"/lang");
 -
--		if (buf != NULL)
--		{
--		    bindtextdomain(VIMPACKAGE, (char *)buf);
--		    vim_free(buf);
--		}
--	    }
+-	if (buf != NULL)
+-	{
+-	    bindtextdomain(VIMPACKAGE, (char *)buf);
+-	    vim_free(buf);
+-	}
+-    }
 -#endif
- 	}
- 	else
- 	{
+ }
+ 
+ #if defined(FEAT_CMDL_COMPL) || defined(PROTO)
 --- vim72/src/Makefile~	2009-04-15 01:00:48.000000000 +0300
 +++ vim72/src/Makefile	2009-04-15 01:19:18.519171979 +0300
 @@ -957,6 +957,7 @@
