@@ -880,7 +880,7 @@ Files:	    src/tag.c, src/testdir/Make_amiga.mak, src/testdir/Make_dos.mak,
 *** 0 ****
 --- 1,2 ----
 + !_TAG_FILE_ENCODING	cp932	//
-+ Â‚`Â‚aÂ‚b	Xtags2.txt	/Â‚`Â‚aÂ‚b
++ ‚`‚a‚b	Xtags2.txt	/‚`‚a‚b
 *** ../vim-7.3.335/src/testdir/test83-tags3	2011-10-12 19:49:38.000000000 +0200
 --- src/testdir/test83-tags3	2011-10-12 19:35:42.000000000 +0200
 ***************
@@ -888,106 +888,106 @@ Files:	    src/tag.c, src/testdir/Make_amiga.mak, src/testdir/Make_dos.mak,
 --- 1,102 ----
 + !_TAG_FILE_SORTED	1	//
 + !_TAG_FILE_ENCODING	cp932	//
-+ abc1	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc2	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc3	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc4	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc5	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc6	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc7	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc8	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc9	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc10	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc11	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc12	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc13	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc14	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc15	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc16	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc17	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc18	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc19	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc20	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc21	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc22	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc23	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc24	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc25	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc26	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc27	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc28	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc29	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc30	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc31	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc32	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc33	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc34	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc35	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc36	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc37	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc38	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc39	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc40	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc41	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc42	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc43	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc44	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc45	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc46	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc47	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc48	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc49	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc50	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc51	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc52	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc53	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc54	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc55	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc56	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc57	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc58	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc59	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc60	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc61	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc62	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc63	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc64	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc65	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc66	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc67	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc68	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc69	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc70	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc71	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc72	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc73	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc74	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc75	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc76	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc77	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc78	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc79	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc80	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc81	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc82	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc83	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc84	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc85	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc86	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc87	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc88	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc89	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc90	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc91	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc92	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc93	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc94	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc95	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc96	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc97	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc98	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc99	Xtags3.txt	/Â‚`Â‚aÂ‚b
-+ abc100	Xtags3.txt	/Â‚`Â‚aÂ‚b
++ abc1	Xtags3.txt	/‚`‚a‚b
++ abc2	Xtags3.txt	/‚`‚a‚b
++ abc3	Xtags3.txt	/‚`‚a‚b
++ abc4	Xtags3.txt	/‚`‚a‚b
++ abc5	Xtags3.txt	/‚`‚a‚b
++ abc6	Xtags3.txt	/‚`‚a‚b
++ abc7	Xtags3.txt	/‚`‚a‚b
++ abc8	Xtags3.txt	/‚`‚a‚b
++ abc9	Xtags3.txt	/‚`‚a‚b
++ abc10	Xtags3.txt	/‚`‚a‚b
++ abc11	Xtags3.txt	/‚`‚a‚b
++ abc12	Xtags3.txt	/‚`‚a‚b
++ abc13	Xtags3.txt	/‚`‚a‚b
++ abc14	Xtags3.txt	/‚`‚a‚b
++ abc15	Xtags3.txt	/‚`‚a‚b
++ abc16	Xtags3.txt	/‚`‚a‚b
++ abc17	Xtags3.txt	/‚`‚a‚b
++ abc18	Xtags3.txt	/‚`‚a‚b
++ abc19	Xtags3.txt	/‚`‚a‚b
++ abc20	Xtags3.txt	/‚`‚a‚b
++ abc21	Xtags3.txt	/‚`‚a‚b
++ abc22	Xtags3.txt	/‚`‚a‚b
++ abc23	Xtags3.txt	/‚`‚a‚b
++ abc24	Xtags3.txt	/‚`‚a‚b
++ abc25	Xtags3.txt	/‚`‚a‚b
++ abc26	Xtags3.txt	/‚`‚a‚b
++ abc27	Xtags3.txt	/‚`‚a‚b
++ abc28	Xtags3.txt	/‚`‚a‚b
++ abc29	Xtags3.txt	/‚`‚a‚b
++ abc30	Xtags3.txt	/‚`‚a‚b
++ abc31	Xtags3.txt	/‚`‚a‚b
++ abc32	Xtags3.txt	/‚`‚a‚b
++ abc33	Xtags3.txt	/‚`‚a‚b
++ abc34	Xtags3.txt	/‚`‚a‚b
++ abc35	Xtags3.txt	/‚`‚a‚b
++ abc36	Xtags3.txt	/‚`‚a‚b
++ abc37	Xtags3.txt	/‚`‚a‚b
++ abc38	Xtags3.txt	/‚`‚a‚b
++ abc39	Xtags3.txt	/‚`‚a‚b
++ abc40	Xtags3.txt	/‚`‚a‚b
++ abc41	Xtags3.txt	/‚`‚a‚b
++ abc42	Xtags3.txt	/‚`‚a‚b
++ abc43	Xtags3.txt	/‚`‚a‚b
++ abc44	Xtags3.txt	/‚`‚a‚b
++ abc45	Xtags3.txt	/‚`‚a‚b
++ abc46	Xtags3.txt	/‚`‚a‚b
++ abc47	Xtags3.txt	/‚`‚a‚b
++ abc48	Xtags3.txt	/‚`‚a‚b
++ abc49	Xtags3.txt	/‚`‚a‚b
++ abc50	Xtags3.txt	/‚`‚a‚b
++ abc51	Xtags3.txt	/‚`‚a‚b
++ abc52	Xtags3.txt	/‚`‚a‚b
++ abc53	Xtags3.txt	/‚`‚a‚b
++ abc54	Xtags3.txt	/‚`‚a‚b
++ abc55	Xtags3.txt	/‚`‚a‚b
++ abc56	Xtags3.txt	/‚`‚a‚b
++ abc57	Xtags3.txt	/‚`‚a‚b
++ abc58	Xtags3.txt	/‚`‚a‚b
++ abc59	Xtags3.txt	/‚`‚a‚b
++ abc60	Xtags3.txt	/‚`‚a‚b
++ abc61	Xtags3.txt	/‚`‚a‚b
++ abc62	Xtags3.txt	/‚`‚a‚b
++ abc63	Xtags3.txt	/‚`‚a‚b
++ abc64	Xtags3.txt	/‚`‚a‚b
++ abc65	Xtags3.txt	/‚`‚a‚b
++ abc66	Xtags3.txt	/‚`‚a‚b
++ abc67	Xtags3.txt	/‚`‚a‚b
++ abc68	Xtags3.txt	/‚`‚a‚b
++ abc69	Xtags3.txt	/‚`‚a‚b
++ abc70	Xtags3.txt	/‚`‚a‚b
++ abc71	Xtags3.txt	/‚`‚a‚b
++ abc72	Xtags3.txt	/‚`‚a‚b
++ abc73	Xtags3.txt	/‚`‚a‚b
++ abc74	Xtags3.txt	/‚`‚a‚b
++ abc75	Xtags3.txt	/‚`‚a‚b
++ abc76	Xtags3.txt	/‚`‚a‚b
++ abc77	Xtags3.txt	/‚`‚a‚b
++ abc78	Xtags3.txt	/‚`‚a‚b
++ abc79	Xtags3.txt	/‚`‚a‚b
++ abc80	Xtags3.txt	/‚`‚a‚b
++ abc81	Xtags3.txt	/‚`‚a‚b
++ abc82	Xtags3.txt	/‚`‚a‚b
++ abc83	Xtags3.txt	/‚`‚a‚b
++ abc84	Xtags3.txt	/‚`‚a‚b
++ abc85	Xtags3.txt	/‚`‚a‚b
++ abc86	Xtags3.txt	/‚`‚a‚b
++ abc87	Xtags3.txt	/‚`‚a‚b
++ abc88	Xtags3.txt	/‚`‚a‚b
++ abc89	Xtags3.txt	/‚`‚a‚b
++ abc90	Xtags3.txt	/‚`‚a‚b
++ abc91	Xtags3.txt	/‚`‚a‚b
++ abc92	Xtags3.txt	/‚`‚a‚b
++ abc93	Xtags3.txt	/‚`‚a‚b
++ abc94	Xtags3.txt	/‚`‚a‚b
++ abc95	Xtags3.txt	/‚`‚a‚b
++ abc96	Xtags3.txt	/‚`‚a‚b
++ abc97	Xtags3.txt	/‚`‚a‚b
++ abc98	Xtags3.txt	/‚`‚a‚b
++ abc99	Xtags3.txt	/‚`‚a‚b
++ abc100	Xtags3.txt	/‚`‚a‚b
 *** ../vim-7.3.335/src/testdir/test83.in	2011-10-12 19:49:38.000000000 +0200
 --- src/testdir/test83.in	2011-10-12 19:40:47.000000000 +0200
 ***************
@@ -1030,8 +1030,8 @@ Files:	    src/tag.c, src/testdir/Make_amiga.mak, src/testdir/Make_dos.mak,
 + :new
 + :set tags=test83-tags2
 + :let v:errmsg = ''
-+ :tag /.Ã¯Â¼Â¢Ã¯Â¼Â£
-+ :if v:errmsg =~ 'E426:' || getline('.') != 'Ã¯Â¼Â¡Ã¯Â¼Â¢Ã¯Â¼Â£'
++ :tag /.ï¼¢ï¼£
++ :if v:errmsg =~ 'E426:' || getline('.') != 'ï¼¡ï¼¢ï¼£'
 + : close
 + : put ='case2: failed'
 + :else
@@ -1044,7 +1044,7 @@ Files:	    src/tag.c, src/testdir/Make_amiga.mak, src/testdir/Make_dos.mak,
 + :set tags=test83-tags3
 + :let v:errmsg = ''
 + :tag abc50
-+ :if v:errmsg =~ 'E426:' || getline('.') != 'Ã¯Â¼Â¡Ã¯Â¼Â¢Ã¯Â¼Â£'
++ :if v:errmsg =~ 'E426:' || getline('.') != 'ï¼¡ï¼¢ï¼£'
 + : close
 + : put ='case3: failed'
 + :else
@@ -1060,10 +1060,10 @@ Files:	    src/tag.c, src/testdir/Make_amiga.mak, src/testdir/Make_dos.mak,
 + abcdefghijklmnopqrs
 + 
 + text for tags2
-+ Ã¯Â¼Â¡Ã¯Â¼Â¢Ã¯Â¼Â£
++ ï¼¡ï¼¢ï¼£
 + 
 + text for tags3
-+ Ã¯Â¼Â¡Ã¯Â¼Â¢Ã¯Â¼Â£
++ ï¼¡ï¼¢ï¼£
 + 
 + tags1
 + !_TAG_FILE_ENCODING	utf-8	//

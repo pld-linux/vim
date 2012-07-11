@@ -32,8 +32,8 @@ else
 	ver=$(curl -s $baseurl/MD5SUMS | grep -vF .gz | tail -n1 | awk '{print $2}')
 fi
 
-# cvs up specfile, rename in case of conflicts
-cvs up $specfile || { set -x; mv -b $specfile $specfile.old; }
+# update specfile, fail on conflicts
+#git pull --rebase || exit 1
 
 curpatch=$(awk '/^%define[ 	]+patchlevel[ 	]+/{print $NF}' $specfile)
 curver=$basever.$curpatch
@@ -50,7 +50,7 @@ if [ "$curver" != "$ver" ]; then
 	" $specfile
 
 	WGET_OPTS="-nv" ../builder -g $specfile
-	cvs -Q add $basever.??? || :
+	git add $basever.??? || :
 
 	if [ "$build_package" != 0 ]; then
 		dist=$(rpm -E %{pld_release})

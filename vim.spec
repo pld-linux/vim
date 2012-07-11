@@ -25,7 +25,7 @@
 # curl -s ftp://ftp.vim.org/pub/editors/vim/patches/7.3/MD5SUMS | grep -vF .gz | tail -n1 | awk '{print $2}'
 
 %define		ver		7.3
-%define		patchlevel	515
+%define		patchlevel	600
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
