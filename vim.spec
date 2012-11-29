@@ -25,7 +25,7 @@
 # curl -s ftp://ftp.vim.org/pub/editors/vim/patches/7.3/MD5SUMS | grep -vF .gz | tail -n1 | awk '{print $2}'
 
 %define		ver		7.3
-%define		patchlevel	618
+%define		patchlevel	743
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -1203,11 +1203,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(he) %{_datadir}/vim/spell/he.*
 %lang(yi) %{_datadir}/vim/spell/yi.*
 
-%{_mandir}/man1/rvim.1*
 %{_mandir}/man1/vim.1*
-%lang(fi) %{_mandir}/fi/man1/rvim.1*
 %lang(fi) %{_mandir}/fi/man1/vim.1*
-%lang(fr) %{_mandir}/fr/man1/rvim.1*
 %lang(fr) %{_mandir}/fr/man1/vim.1*
 %{_pixmapsdir}/vim.png
 
