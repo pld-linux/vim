@@ -160,7 +160,7 @@ Obsoletes:	vim-minimal
 Obsoletes:	vim-static
 %endif
 BuildRequires:	unzip
-Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Suggests:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
