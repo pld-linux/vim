@@ -22,11 +22,12 @@
 %endif
 
 # Command to check for latest patch:
-# curl -s ftp://ftp.vim.org/pub/editors/vim/patches/7.3/MD5SUMS | grep -vF .gz | tail -n1 | awk '{print $2}'
+# wget ftp://ftp.vim.org/pub/editors/vim/patches/7.3/MD5SUMS -O sources
+# tail -n1 sources | awk '{print $2}'
 
 %define		ver		7.3
-%define		patchlevel	743
-%define		rel		2
+%define		patchlevel	754
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -70,7 +71,7 @@ Source31:	borland.vim
 Source32:	oceandeep.vim
 # http://www.vim.org/scripts/script.php?script_id=1464 (2.6.3)
 Source33:	moria.vim
-%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/7.3/7.3.%03g 1 %{patchlevel}
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/%{ver}/%{ver}.%03g 1 %{patchlevel}
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
