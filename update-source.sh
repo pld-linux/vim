@@ -1,6 +1,6 @@
 #!/bin/sh
 # Usage:
-# ./autoup.sh
+# ./update-source.sh
 # env variables controlling behaviour
 #  build_package=[0|1] - build package when new version is fetched
 #  publish_packages=[0|1] - publish built packages in ~/public_html/$dist/$arch
