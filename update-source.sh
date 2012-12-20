@@ -24,16 +24,30 @@ pkg=vim
 specfile=$pkg.spec
 basever=7.3
 baseurl=ftp://ftp.vim.org/pub/editors/vim/patches/$basever
+sources=ftp://ftp.vim.org/pub/editors/vim/patches/$basever/MD5SUMS
+
+status=$(git status --porcelain sources)
+if [ "$status" ]; then
+	echo >&2 "sources status not clean; commit or stash any pending changes"
+	echo "$status"
+	exit 1
+fi
 
 if [ "$1" ]; then
 	ver=$1
 else
-	echo "Fetching latest $pkg version..."
-	ver=$(curl -s $baseurl/MD5SUMS | grep -vF .gz | tail -n1 | awk '{print $2}')
-fi
+	echo "Fetching latest patches list..."
+	wget -nv $sources -O sources
+	git status --porcelain sources
 
-# update specfile, fail on conflicts
-#git pull --rebase || exit 1
+	status=$(git status --porcelain sources)
+	if [ -z "$status" ]; then
+		echo >&2 "No changes to 'sources'. All done"
+		echo "$status"
+		exit 0
+	fi
+	ver=$(tail -n1 sources | awk '{print $NF}')
+fi
 
 curpatch=$(awk '/^%define[ 	]+patchlevel[ 	]+/{print $NF}' $specfile)
 curver=$basever.$curpatch
@@ -50,12 +64,11 @@ if [ "$curver" != "$ver" ]; then
 	" $specfile
 
 	WGET_OPTS="-nv" ../builder -g $specfile
-	git add $basever.??? || :
 
 	if [ "$build_package" != 0 ]; then
 		dist=$(rpm -E %{pld_release})
 		arch=$(rpm -E %{_host_cpu})
-		outdir=$(readlink -f $dir)/build-$dist-$arch
+		outdir=$(readlink -f $dir)/BUILD-$dist-$arch
 		logfile=$outdir/$pkg.log
 		rpmdir=$outdir/RPMS
 		install -d $rpmdir
