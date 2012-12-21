@@ -38,14 +38,6 @@ if [ "$1" ]; then
 else
 	echo "Fetching latest patches list..."
 	wget -nv $sources -O sources
-	git status --porcelain sources
-
-	status=$(git status --porcelain sources)
-	if [ -z "$status" ]; then
-		echo >&2 "No changes to 'sources'. All done"
-		echo "$status"
-		exit 0
-	fi
 	ver=$(tail -n1 sources | awk '{print $NF}')
 fi
 
@@ -62,6 +54,11 @@ if [ "$curver" != "$ver" ]; then
 	sed -i -e "
 		s/^\(%define[ \t]\+patchlevel[ \t]\+\)[0-9]\+\$/\1$patch/
 	" $specfile
+
+	# fetch missing/mismatching files manually. faster than builder does that
+	md5sum -c sources 2>/dev/null|awk -F: '$NF != " OK" {print $1}' | while read file; do
+		echo "$baseurl/$file"
+	done | wget -nv -i -
 
 	WGET_OPTS="-nv" ../builder -g $specfile
 
