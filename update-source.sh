@@ -38,6 +38,8 @@ if [ "$1" ]; then
 else
 	echo "Fetching latest patches list..."
 	wget -nv $sources -O sources
+	# also update patches README
+	wget -nv $baseurl/README -O README.patches
 	ver=$(tail -n1 sources | awk '{print $NF}')
 fi
 
