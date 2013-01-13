@@ -27,7 +27,7 @@
 
 %define		ver		7.3
 %define		patchlevel	762
-%define		rel		1
+%define		rel		2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -111,6 +111,7 @@ Patch114:	%{name}-rtdir.patch
 Patch115:	%{name}-ft-mib.patch
 Patch116:	%{name}-ft-lib-udevrules.patch
 Patch117:	%{name}-ft-mysql.patch
+Patch118:	%{name}-ft-gyp.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -731,28 +732,29 @@ jak również GUI GTK+2.
 %patch115 -p1
 %patch116 -p1
 %patch117 -p1
+%patch118 -p1
 
-cp -a %{SOURCE20} runtime/syntax
-cp -a %{SOURCE22} runtime/syntax
-cp -a %{SOURCE23} runtime/syntax
-cp -a %{SOURCE30} runtime/colors
-cp -a %{SOURCE31} runtime/colors
-cp -a %{SOURCE32} runtime/colors
+cp -p %{SOURCE20} runtime/syntax
+cp -p %{SOURCE22} runtime/syntax
+cp -p %{SOURCE23} runtime/syntax
+cp -p %{SOURCE30} runtime/colors
+cp -p %{SOURCE31} runtime/colors
+cp -p %{SOURCE32} runtime/colors
 
 %{__unzip} -qd runtime/doc %{SOURCE2}
 
 # remove unsupported locales
-rm -f src/po/zh_{CN,TW}.UTF-8.po
-rm -f runtime/lang/menu_zh_{cn,tw}.utf-8.vim
+%{__rm} src/po/zh_{CN,TW}.UTF-8.po
+%{__rm} runtime/lang/menu_zh_{cn,tw}.utf-8.vim
 
 # fix nb/no
-mv -f src/po/n{o,b}.po
-mv -f runtime/tutor/tutor.n{o,b}
-mv -f runtime/tutor/tutor.n{o,b}.utf-8
-mv -f runtime/lang/menu_n{o,b}.latin1.vim
-mv -f runtime/lang/menu_n{o,b}.utf-8.vim
-mv -f runtime/lang/menu_n{o,b}_no.latin1.vim
-mv -f runtime/lang/menu_n{o,b}_no.utf-8.vim
+%{__mv} src/po/n{o,b}.po
+%{__mv} runtime/tutor/tutor.n{o,b}
+%{__mv} runtime/tutor/tutor.n{o,b}.utf-8
+%{__mv} runtime/lang/menu_n{o,b}.latin1.vim
+%{__mv} runtime/lang/menu_n{o,b}.utf-8.vim
+%{__mv} runtime/lang/menu_n{o,b}_no.latin1.vim
+%{__mv} runtime/lang/menu_n{o,b}_no.utf-8.vim
 
 %build
 cd src
@@ -939,19 +941,19 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
-cp -a %{SOURCE14}	$RPM_BUILD_ROOT%{_desktopdir}
+cp -p %{SOURCE14}	$RPM_BUILD_ROOT%{_desktopdir}
 
 %if %{with athena}
 install -p src/bin/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena
-cp -a %{SOURCE10}	$RPM_BUILD_ROOT%{_desktopdir}
+cp -p %{SOURCE10}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with motif}
 install -p src/bin/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif
-cp -a %{SOURCE11}	$RPM_BUILD_ROOT%{_desktopdir}
+cp -p %{SOURCE11}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with gnome}
 install -p src/bin/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome
-cp -a %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
+cp -p %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with gtk}
 install -p src/bin/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
@@ -962,7 +964,7 @@ ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gvimdiff
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
-cp -a %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
+cp -p %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with heavy}
 install -p src/bin/vim.heavy	$RPM_BUILD_ROOT%{_bindir}
@@ -970,7 +972,7 @@ install -p src/bin/gvim.heavy	$RPM_BUILD_ROOT%{_bindir}
 %endif
 
 install -d $RPM_BUILD_ROOT%{_pixmapsdir}
-cp -a runtime/vim48x48.png $RPM_BUILD_ROOT%{_pixmapsdir}/vim.png
+cp -p runtime/vim48x48.png $RPM_BUILD_ROOT%{_pixmapsdir}/vim.png
 
 bzip2 -dc %{SOURCE1} | tar xf - -C $RPM_BUILD_ROOT%{_mandir}
 

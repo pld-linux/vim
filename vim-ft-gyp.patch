@@ -1,0 +1,12 @@
+--- vim73/runtime/filetype.vim~	2013-01-14 00:28:28.000000000 +0200
++++ vim73/runtime/filetype.vim	2013-01-14 00:35:03.379486193 +0200
+@@ -1517,6 +1517,9 @@
+ " Radiance
+ au BufNewFile,BufRead *.rad,*.mat		setf radiance
+ 
++" GYP (Python syntax)
++au BufNewFile,BufRead *.gyp,*.gypi,DEPS		set filetype=python expandtab tabstop=2 shiftwidth=2
++
+ " Ratpoison config/command files
+ au BufNewFile,BufRead .ratpoisonrc,ratpoisonrc	setf ratpoison
+ 
