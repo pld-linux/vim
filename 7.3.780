@@ -1,0 +1,193 @@
+To: vim_dev@googlegroups.com
+Subject: Patch 7.3.780
+Fcc: outbox
+From: Bram Moolenaar <Bram@moolenaar.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+------------
+
+Patch 7.3.780
+Problem:    char2nr() and nr2char() always use 'encoding'.
+Solution:   Add argument to use utf-8 characters. (Yasuhiro Matsumoto)
+Files:	    runtime/doc/eval.txt, src/eval.c
+
+
+*** ../vim-7.3.779/runtime/doc/eval.txt	2012-12-05 16:10:21.000000000 +0100
+--- runtime/doc/eval.txt	2013-01-23 17:00:52.000000000 +0100
+***************
+*** 1705,1711 ****
+  				any	call {func} with arguments {arglist}
+  ceil( {expr})			Float	round {expr} up
+  changenr()			Number	current change number
+! char2nr( {expr})		Number	ASCII value of first char in {expr}
+  cindent( {lnum})		Number	C indent for line {lnum}
+  clearmatches()			none	clear all matches
+  col( {expr})			Number	column nr of cursor or mark
+--- 1716,1722 ----
+  				any	call {func} with arguments {arglist}
+  ceil( {expr})			Float	round {expr} up
+  changenr()			Number	current change number
+! char2nr( {expr}[, {utf8}])	Number	ASCII/UTF8 value of first char in {expr}
+  cindent( {lnum})		Number	C indent for line {lnum}
+  clearmatches()			none	clear all matches
+  col( {expr})			Number	column nr of cursor or mark
+***************
+*** 1862,1868 ****
+  mode( [expr])			String	current editing mode
+  mzeval( {expr})			any	evaluate |MzScheme| expression
+  nextnonblank( {lnum})		Number	line nr of non-blank line >= {lnum}
+! nr2char( {expr})		String	single char with ASCII value {expr}
+  or( {expr}, {expr})		Number  bitwise OR
+  pathshorten( {expr})		String	shorten directory names in a path
+  pow( {x}, {y})			Float	{x} to the power of {y}
+--- 1873,1879 ----
+  mode( [expr])			String	current editing mode
+  mzeval( {expr})			any	evaluate |MzScheme| expression
+  nextnonblank( {lnum})		Number	line nr of non-blank line >= {lnum}
+! nr2char( {expr}[, {utf8}])	String	single char with ASCII/UTF8 value {expr}
+  or( {expr}, {expr})		Number  bitwise OR
+  pathshorten( {expr})		String	shorten directory names in a path
+  pow( {x}, {y})			Float	{x} to the power of {y}
+***************
+*** 2282,2295 ****
+  		redo it is the number of the redone change.  After undo it is
+  		one less than the number of the undone change.
+  
+! char2nr({expr})						*char2nr()*
+  		Return number value of the first char in {expr}.  Examples: >
+  			char2nr(" ")		returns 32
+  			char2nr("ABC")		returns 65
+! <		The current 'encoding' is used.  Example for "utf-8": >
+  			char2nr("á")		returns 225
+  			char2nr("á"[0])		returns 195
+! <		|nr2char()| does the opposite.
+  
+  cindent({lnum})						*cindent()*
+  		Get the amount of indent for line {lnum} according the C
+--- 2294,2310 ----
+  		redo it is the number of the redone change.  After undo it is
+  		one less than the number of the undone change.
+  
+! char2nr({expr}[, {utf8}])					*char2nr()*
+  		Return number value of the first char in {expr}.  Examples: >
+  			char2nr(" ")		returns 32
+  			char2nr("ABC")		returns 65
+! <		When {utf8} is omitted or zero, the current 'encoding' is used.
+! 		Example for "utf-8": >
+  			char2nr("á")		returns 225
+  			char2nr("á"[0])		returns 195
+! <		With {utf8} set to 1, always treat as utf-8 characters.
+! 		A combining character is a separate character.
+! 		|nr2char()| does the opposite.
+  
+  cindent({lnum})						*cindent()*
+  		Get the amount of indent for line {lnum} according the C
+*** ../vim-7.3.779/src/eval.c	2013-01-23 15:53:08.000000000 +0100
+--- src/eval.c	2013-01-23 16:57:48.000000000 +0100
+***************
+*** 7854,7860 ****
+      {"ceil",		1, 1, f_ceil},
+  #endif
+      {"changenr",	0, 0, f_changenr},
+!     {"char2nr",		1, 1, f_char2nr},
+      {"cindent",		1, 1, f_cindent},
+      {"clearmatches",	0, 0, f_clearmatches},
+      {"col",		1, 1, f_col},
+--- 7854,7860 ----
+      {"ceil",		1, 1, f_ceil},
+  #endif
+      {"changenr",	0, 0, f_changenr},
+!     {"char2nr",		1, 2, f_char2nr},
+      {"cindent",		1, 1, f_cindent},
+      {"clearmatches",	0, 0, f_clearmatches},
+      {"col",		1, 1, f_col},
+***************
+*** 8003,8009 ****
+      {"mzeval",		1, 1, f_mzeval},
+  #endif
+      {"nextnonblank",	1, 1, f_nextnonblank},
+!     {"nr2char",		1, 1, f_nr2char},
+      {"or",		2, 2, f_or},
+      {"pathshorten",	1, 1, f_pathshorten},
+  #ifdef FEAT_FLOAT
+--- 8003,8009 ----
+      {"mzeval",		1, 1, f_mzeval},
+  #endif
+      {"nextnonblank",	1, 1, f_nextnonblank},
+!     {"nr2char",		1, 2, f_nr2char},
+      {"or",		2, 2, f_or},
+      {"pathshorten",	1, 1, f_pathshorten},
+  #ifdef FEAT_FLOAT
+***************
+*** 9303,9309 ****
+  {
+  #ifdef FEAT_MBYTE
+      if (has_mbyte)
+! 	rettv->vval.v_number = (*mb_ptr2char)(get_tv_string(&argvars[0]));
+      else
+  #endif
+      rettv->vval.v_number = get_tv_string(&argvars[0])[0];
+--- 9303,9319 ----
+  {
+  #ifdef FEAT_MBYTE
+      if (has_mbyte)
+!     {
+! 	int	utf8 = 0;
+! 
+! 	if (argvars[1].v_type != VAR_UNKNOWN)
+! 	    utf8 = get_tv_number_chk(&argvars[1], NULL);
+! 
+! 	if (utf8)
+! 	    rettv->vval.v_number = (*utf_ptr2char)(get_tv_string(&argvars[0]));
+! 	else
+! 	    rettv->vval.v_number = (*mb_ptr2char)(get_tv_string(&argvars[0]));
+!     }
+      else
+  #endif
+      rettv->vval.v_number = get_tv_string(&argvars[0])[0];
+***************
+*** 14360,14366 ****
+  
+  #ifdef FEAT_MBYTE
+      if (has_mbyte)
+! 	buf[(*mb_char2bytes)((int)get_tv_number(&argvars[0]), buf)] = NUL;
+      else
+  #endif
+      {
+--- 14370,14385 ----
+  
+  #ifdef FEAT_MBYTE
+      if (has_mbyte)
+!     {
+! 	int	utf8 = 0;
+! 
+! 	if (argvars[1].v_type != VAR_UNKNOWN)
+! 	    utf8 = get_tv_number_chk(&argvars[1], NULL);
+! 	if (utf8)
+! 	    buf[(*utf_char2bytes)((int)get_tv_number(&argvars[0]), buf)] = NUL;
+! 	else
+! 	    buf[(*mb_char2bytes)((int)get_tv_number(&argvars[0]), buf)] = NUL;
+!     }
+      else
+  #endif
+      {
+*** ../vim-7.3.779/src/version.c	2013-01-23 16:43:07.000000000 +0100
+--- src/version.c	2013-01-23 17:06:36.000000000 +0100
+***************
+*** 727,728 ****
+--- 727,730 ----
+  {   /* Add new patch number below this line */
++ /**/
++     780,
+  /**/
+
+-- 
+A real patriot is the fellow who gets a parking ticket and rejoices
+that the system works.
+
+
+ /// Bram Moolenaar -- Bram@Moolenaar.net -- http://www.Moolenaar.net   \\\
+///        sponsor Vim, vote for features -- http://www.Vim.org/sponsor/ \\\
+\\\  an exciting new programming language -- http://www.Zimbu.org        ///
+ \\\            help me help AIDS victims -- http://ICCF-Holland.org    ///
