@@ -76,13 +76,13 @@
  	   INSTALL_DATA=$(INSTALL_DATA) FILEMOD=$(FILEMOD) install; \
  	fi
  	if test -d $(LANGSOURCE); then \
---- vim72/src/po/Makefile~	2008-07-24 21:52:54.000000000 +0300
-+++ vim72/src/po/Makefile	2009-04-15 11:25:53.058913958 +0300
-@@ -132,6 +132,7 @@
+--- vim73/src/po/Makefile~	2013-02-22 17:28:18.000000000 +0200
++++ vim73/src/po/Makefile	2013-02-22 17:46:40.771918175 +0200
+@@ -151,6 +151,7 @@
  
- install: $(MOFILES)
+ install: $(MOFILES) $(MOCONVERTED)
  	@$(MAKE) prefixcheck
 +	install -d $(LOCALEDIR); \
- 	for lang in $(LANGUAGES); do \
+ 	for lang in $(LANGUAGES) $(CONVERTED); do \
  	  dir=$(LOCALEDIR)/$$lang/; \
  	  if test ! -x "$$dir"; then \

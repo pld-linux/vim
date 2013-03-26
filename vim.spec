@@ -26,8 +26,8 @@
 # tail -n1 sources | awk '{print $2}'
 
 %define		ver		7.3
-%define		patchlevel	762
-%define		rel		2
+%define		patchlevel	854
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -685,7 +685,9 @@ jak również GUI GTK+2.
 %setup -q -n %{name}73
 
 # official patches
-%patchset_patch 1 %{patchlevel}
+%patchset_patch 1 779
+# 7.3.780 patch is broken, does not apply and i fail to make it apply, bug in patch?
+%patchset_patch 781 %{patchlevel}
 
 %patch0 -p1
 %patch1 -p1
