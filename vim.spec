@@ -685,9 +685,7 @@ jak również GUI GTK+2.
 %setup -q -n %{name}73
 
 # official patches
-%patchset_patch 1 779
-# 7.3.780 patch is broken, does not apply and i fail to make it apply, bug in patch?
-%patchset_patch 781 %{patchlevel}
+%patchset_patch 1 %{patchlevel}
 
 %patch0 -p1
 %patch1 -p1
