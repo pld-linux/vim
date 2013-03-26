@@ -26,7 +26,7 @@
 # tail -n1 sources | awk '{print $2}'
 
 %define		ver		7.3
-%define		patchlevel	854
+%define		patchlevel	875
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -928,8 +928,8 @@ ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
 install -p src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
 install -p src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
-echo ".so vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
+echo ".so man1/vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/vi.1
+echo ".so man1/vim.1" > $RPM_BUILD_ROOT%{_mandir}/man1/view.1
 
 # not supported directories
 %{__rm} -r $RPM_BUILD_ROOT%{_mandir}/??.*/
