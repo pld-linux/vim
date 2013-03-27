@@ -27,7 +27,7 @@
 
 %define		ver		7.3
 %define		patchlevel	875
-%define		rel		1
+%define		rel		2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -481,8 +481,8 @@ This package contains Vim documentation accessible from vim itself
 using :help command.
 
 %description doc -l pl.UTF-8
-Ten pakiet zawiera dokumentację do Vima dostępną z poziomu samego
-vima za pomocą polecenia :help.
+Ten pakiet zawiera dokumentację do Vima dostępną z poziomu samego vima
+za pomocą polecenia :help.
 
 %package spell-en
 Summary:	English dictionaries for VIMspell
@@ -904,6 +904,16 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 
 %{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+# not supported locales added by 7.3.764
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/cs.cp1250
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/ja.sjis
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/pl.UTF-8
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/pl.cp1250
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/ru.cp1251
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/sk.cp1250
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/uk.cp1251
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/zh_CN.cp936
 
 %find_lang %{name}
 
