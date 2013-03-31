@@ -37,7 +37,10 @@ if [ "$1" ]; then
 	ver=$1
 else
 	echo "Fetching latest patches list..."
-	wget -nv $sources -O sources
+	wget -nv $sources -O sources.new
+	# exclude files already in git tree
+	git ls-files "$basever.*" | sed -e 's/\./\\./g;s/$/$/'| grep -vf - sources.new > sources
+	rm sources.new
 	# also update patches README
 	wget -nv $baseurl/README -O README.patches
 	ver=$(tail -n1 sources | awk '{print $NF}')
