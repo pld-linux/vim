@@ -26,7 +26,7 @@
 # tail -n1 sources | awk '{print $2}'
 
 %define		ver		7.3
-%define		patchlevel	877
+%define		patchlevel	884
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
