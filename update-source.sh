@@ -37,10 +37,11 @@ if [ "$1" ]; then
 	ver=$1
 else
 	echo "Fetching latest patches list..."
-	wget -nv $sources -O sources.new 2>&1
+	wget -nv $sources -O sources.tmp 2>&1
+	sort -k 2 -V < sources.tmp > sources.new
 	# exclude files already in git tree
 	git ls-files "$basever.*" | sed -e 's/\./\\./g;s/$/$/'| grep -vf - sources.new > sources
-	rm sources.new
+	rm sources.new sources.tmp
 	# also update patches README
 	wget -nv $baseurl/README -O README.patches 2>&1
 	ver=$(tail -n1 sources | awk '{print $NF}')
@@ -94,10 +95,11 @@ if [ "$curver" != "$ver" ]; then
 			--define "_builddir $outdir" \
 			--define "_rpmdir $rpmdir" \
 			$specfile || {
-			echo "Package build failed"
+			echo "Package build failed" >&2
 			tail -n 1000 $logfile >&2
 			exit 1
 		}
+		echo >&2 "Package build OK"
 
 		rpmdest=~/public_html/$dist/$arch/
 		if [ "$publish_packages" ] && [ "$(ls $rpmdir/*.rpm 2>/dev/null)" ]; then
