@@ -393,6 +393,9 @@ Requires:	rpm-whiteout >= 1.3
 Requires:	vim-plugin-securemodelines
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description rt
 This package contains macros, documentation, syntax configuration and
@@ -458,6 +461,9 @@ Summary:	Vim runtime extra files
 Summary(pl.UTF-8):	Dodatkowe pliki uruchomieniowe Vima
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description rt-extras
 This package contains more runtime extra files, not really useful. If
@@ -475,6 +481,9 @@ Summary(pl.UTF-8):	Dokumentacja kontekstowa do Vima
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	gzip
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description doc
 This package contains Vim documentation accessible from vim itself
@@ -489,6 +498,9 @@ Summary:	English dictionaries for VIMspell
 Summary(pl.UTF-8):	Angielskie słowniki dla VIMspella
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description spell-en
 English dictionaries for VIMspell.
@@ -504,6 +516,9 @@ Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	mktemp
 Requires:	vim-editor = %{epoch}:%{version}-%{release}
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description tutor
 This package contains Vim tutorial.
