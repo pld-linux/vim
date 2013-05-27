@@ -110,6 +110,15 @@ if [ "$curver" != "$ver" ]; then
 			poldek --cachedir=$HOME/tmp --mkidx -s $rpmdest/ --mt=pndir
 		fi
 	fi
+
+	# autocommit
+	msg=$(mktemp)
+	echo "updated to $ver" > $msg
+	echo "" >> $msg
+	over=$(git diff sources | awk '/^\+[0-9a-f]+/{over=$NF; gsub(/\./, "\\.",over); print over; exit}')
+	sed -ne "/$over/,\$p" README.patches | sed -re 's,^[ 0-9]+ ,,' >> $msg
+	git commit -F $msg $specfile sources
+	rm -f $msg
 else
 	echo "$specfile already up to $ver"
 fi
