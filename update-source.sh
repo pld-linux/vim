@@ -28,9 +28,8 @@ sources=ftp://ftp.vim.org/pub/editors/vim/patches/$basever/MD5SUMS
 
 status=$(git status --porcelain sources)
 if [ "$status" ]; then
-	echo >&2 "sources status not clean; commit or stash any pending changes"
+	echo >&2 "WARNING: sources status not clean; commit or stash any pending changes"
 	echo "$status"
-	exit 1
 fi
 
 if [ "$1" ]; then
