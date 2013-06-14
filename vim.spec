@@ -24,6 +24,7 @@
 # Command to check for latest patch:
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/7.3/MD5SUMS -O sources
 # tail -n1 sources | awk '{print $2}'
+# VCS Commits: https://code.google.com/p/vim/source/browse/
 
 %define		ver		7.3
 %define		patchlevel	1109
