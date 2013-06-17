@@ -27,7 +27,7 @@
 # VCS Commits: https://code.google.com/p/vim/source/browse/
 
 %define		ver		7.3
-%define		patchlevel	1212
+%define		patchlevel	1219
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -174,6 +174,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # configure redefines it to =1
 %define		filterout_cpp	-D_FORTIFY_SOURCE=[0-9]*
+%define		filterout_c		-Wp,-D_FORTIFY_SOURCE=2
 
 # that's example script
 %define		_noautoreq	'/bin/csh'
