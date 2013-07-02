@@ -61,8 +61,6 @@ Source14:	%{name}.desktop
 Source20:	javascript.vim
 # http://www.vim.org/scripts/script.php?script_id=447 (20040206)
 Source22:	exim.vim
-# http://www.vim.org/scripts/script.php?script_id=1571 (0.9.7)
-Source23:	php.vim
 # color schemes
 # http://www.vim.org/scripts/script.php?script_id=415 (1.15)
 Source30:	zenburn.vim
@@ -753,7 +751,6 @@ jak również GUI GTK+2.
 
 cp -p %{SOURCE20} runtime/syntax
 cp -p %{SOURCE22} runtime/syntax
-cp -p %{SOURCE23} runtime/syntax
 cp -p %{SOURCE30} runtime/colors
 cp -p %{SOURCE31} runtime/colors
 cp -p %{SOURCE32} runtime/colors
