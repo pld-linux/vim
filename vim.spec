@@ -56,6 +56,7 @@ Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
 Source14:	%{name}.desktop
+Source15:	update-source.sh
 # syntax files
 # http://www.vim.org/scripts/script.php?script_id=1491 (0.7.5)
 Source20:	javascript.vim
