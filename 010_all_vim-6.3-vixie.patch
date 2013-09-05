@@ -1,7 +1,6 @@
-diff -bur vim-7.0f.orig/runtime/syntax/crontab.vim vim-7.0f/runtime/syntax/crontab.vim
---- vim-7.0f.orig/runtime/syntax/crontab.vim	2006-04-20 14:30:15.000000000 +0200
-+++ vim-7.0f/runtime/syntax/crontab.vim	2006-04-25 11:43:06.032452000 +0200
-@@ -19,17 +19,20 @@
+--- vim74/runtime/syntax/crontab.vim~	2013-09-06 00:07:40.000000000 +0300
++++ vim74/runtime/syntax/crontab.vim	2013-09-06 00:09:14.394009460 +0300
+@@ -18,17 +18,20 @@
    finish
  endif
  
@@ -16,15 +15,14 @@ diff -bur vim-7.0f.orig/runtime/syntax/crontab.vim vim-7.0f/runtime/syntax/cront
 +syntax match crontabMnth "\<[a-z0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?" nextgroup=crontabDow skipwhite contained
  syntax keyword crontabMnth12 contained jan feb mar apr may jun jul aug sep oct nov dec
  
--syntax match crontabDow "\s[-a-z0-9/,.*]\+" nextgroup=crontabCmd skipwhite contained
-+syntax match crontabDow "\<[a-z0-9\-\/\,\.]\{}\>\|\*\(/[0-9]\{}\)\?" nextgroup=crontabCmd skipwhite contained
+ syntax match crontabDow "\s[-a-z0-9/,.*]\+" nextgroup=crontabCmd skipwhite contained
  syntax keyword crontabDow7 contained sun mon tue wed thu fri sat
  
 +syntax match crontabSpecial  "@\w\+" nextgroup=crontabCmd skipwhite
 +syntax match crontabCmdSpecial contained /\\.\|%/
  syntax region crontabCmd start="\S" end="$" skipwhite contained keepend contains=crontabPercent
-+syntax region crontabCmd  start="\S" end="$" nextgroup=crontabCmnt skipwhite contained contains=crontabCmnt,crontabCmdSpecial keepend
- syntax match crontabCmnt "^\s*#.*"
++syntax region crontabCmd start="\S" end="$" nextgroup=crontabCmnt skipwhite contained contains=crontabCmnt,crontabCmdSpecial keepend
+ syntax match crontabCmnt "^\s*#.*" contains=@Spell
  syntax match crontabPercent "[^\\]%.*"lc=1 contained
  
 @@ -37,6 +40,12 @@
@@ -62,4 +60,3 @@ diff -bur vim-7.0f.orig/runtime/syntax/crontab.vim vim-7.0f/runtime/syntax/cront
    HiLink crontabCmnt		Comment
  
    delcommand HiLink
-Only in vim-7.0f/runtime/syntax: crontab.vim.rej

@@ -1,22 +1,11 @@
---- vim72/runtime/filetype.vim~	2009-02-11 07:35:48.210984868 +0200
-+++ vim72/runtime/filetype.vim	2009-02-11 07:34:49.298491103 +0200
-@@ -1242,7 +1242,7 @@
+--- vim74/runtime/filetype.vim~	2013-09-06 00:12:00.000000000 +0300
++++ vim74/runtime/filetype.vim	2013-09-06 00:12:35.086158130 +0300
+@@ -1330,7 +1330,7 @@
  au BufNewFile,BufRead pf.conf			setf pf
  
  " Pam conf
--au BufNewFile,BufRead /etc/pam.conf		setf pamconf
-+au BufNewFile,BufRead /etc/pam.conf,*.pam,*.pamd		setf pamconf
+-au BufNewFile,BufRead */etc/pam.conf		setf pamconf
++au BufNewFile,BufRead */etc/pam.conf,*.pam,*.pamd	setf pamconf
  
  " PApp
  au BufNewFile,BufRead *.papp,*.pxml,*.pxsl	setf papp
---- vim72/runtime/syntax/pamconf.vim~	2008-12-27 04:32:58.000000000 +0200
-+++ vim72/runtime/syntax/pamconf.vim	2009-02-11 07:43:32.936198958 +0200
-@@ -33,7 +33,7 @@
-                                     \ pamconfTypeLineCont skipwhite skipnl
- 
- syn keyword pamconfControl          contained requisite required sufficient
--                                    \ optional
-+                                    \ optional include
-                                     \ nextgroup=pamconfMPath,
-                                     \ pamconfControlLineContH skipwhite
- 

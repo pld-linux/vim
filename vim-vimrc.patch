@@ -1,5 +1,5 @@
---- vim73/runtime/vimrc_example.vim~	2010-05-15 14:03:57.000000000 +0300
-+++ vim73/runtime/vimrc_example.vim	2011-01-02 22:53:43.246560000 +0200
+--- vim74/runtime/vimrc_example.vim~	2013-09-06 00:10:56.000000000 +0300
++++ vim74/runtime/vimrc_example.vim	2013-09-06 00:11:24.756404306 +0300
 @@ -31,6 +31,9 @@
  set showcmd		" display incomplete commands
  set incsearch		" do incremental searching
@@ -28,13 +28,13 @@
    syntax on
    set hlsearch
  endif
-@@ -90,7 +93,15 @@
+@@ -93,7 +93,15 @@
  " Convenient command to see the difference between the current buffer and the
  " file it was loaded from, thus the changes you made.
  " Only define it when not defined already.
 -if !exists(":DiffOrig")
 +if v:progname =~! "vi" && !exists(":DiffOrig")
-   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+   command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
  		  \ | wincmd p | diffthis
  endif
 +

@@ -714,11 +714,9 @@ jak również GUI GTK+2.
 %patch9 -p0
 %patch10 -p1
 %patch11 -p1
-# FIXME
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
-# FIXME
 %patch15 -p1
 %patch16 -p0
 %patch17 -p0
@@ -727,7 +725,6 @@ jak również GUI GTK+2.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-# FIXME
 %patch23 -p1
 %patch24 -p1
 
@@ -741,7 +738,6 @@ jak również GUI GTK+2.
 %patch106 -p1
 
 %patch108 -p1
-# FIXME
 %patch109 -p1
 %patch110 -p1
 %patch112 -p1

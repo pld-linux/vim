@@ -22,7 +22,7 @@ fi
 
 pkg=vim
 specfile=$pkg.spec
-basever=7.3
+basever=7.4
 baseurl=ftp://ftp.vim.org/pub/editors/vim/patches/$basever
 sources=ftp://ftp.vim.org/pub/editors/vim/patches/$basever/MD5SUMS
 

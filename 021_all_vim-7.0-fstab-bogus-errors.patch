@@ -1,12 +1,12 @@
---- vim71/runtime/syntax/fstab.vim~	2007-05-13 10:06:54.941399738 +0200
-+++ vim71/runtime/syntax/fstab.vim	2007-05-13 10:16:31.814544999 +0200
-@@ -27,7 +27,7 @@
+--- vim74/runtime/syntax/fstab.vim~	2013-09-06 00:10:00.000000000 +0300
++++ vim74/runtime/syntax/fstab.vim	2013-09-06 00:10:28.307258334 +0300
+@@ -35,7 +35,7 @@
  
  " Device
  syn cluster fsDeviceCluster contains=fsOperator,fsDeviceKeyword,fsDeviceError
 -syn match fsDeviceError /\%([^a-zA-Z0-9_\/#@:\.-]\|^\w\{-}\ze\W\)/ contained
 +syn match fsDeviceError /\%([^a-zA-Z0-9_\/#@:\.-]\)/ contained
- syn keyword fsDeviceKeyword contained none proc linproc tmpfs devpts sysfs usbfs
+ syn keyword fsDeviceKeyword contained none proc linproc tmpfs devpts devtmpfs sysfs usbfs
  syn keyword fsDeviceKeyword contained LABEL nextgroup=fsDeviceLabel
  syn keyword fsDeviceKeyword contained UUID nextgroup=fsDeviceUUID
 @@ -37,7 +37,7 @@
