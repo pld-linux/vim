@@ -119,19 +119,19 @@
  	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_RU_U) "" $(INSTALLMANARGS)
  	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
  		$(DEST_MAN) $(INSTALLMLARGS)
-@@ -2112,12 +2118,14 @@
- 	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+@@ -2307,12 +2307,14 @@
  		$(DEST_MAN_RU) $(INSTALLMLARGS)
  	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
-+		$(DEST_MAN_RU_K) $(INSTALLMLARGS)
-+	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
  		$(DEST_MAN_RU_U) $(INSTALLMLARGS)
++	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
++		$(DEST_MAN_RU_K) $(INSTALLMLARGS)
  	-rm -f $(DEST_MAN)/xxd.1
  	-rm -f $(DEST_MAN_FR)/xxd.1 $(DEST_MAN_FR_I)/xxd.1 $(DEST_MAN_FR_U)/xxd.1
  	-rm -f $(DEST_MAN_IT)/xxd.1 $(DEST_MAN_IT_I)/xxd.1 $(DEST_MAN_IT_U)/xxd.1
+ 	-rm -f $(DEST_MAN_JA_U)/xxd.1
  	-rm -f $(DEST_MAN_PL)/xxd.1 $(DEST_MAN_PL_I)/xxd.1 $(DEST_MAN_PL_U)/xxd.1
 -	-rm -f $(DEST_MAN_RU)/xxd.1 $(DEST_MAN_RU_U)/xxd.1
-+	-rm -f $(DEST_MAN_RU)/xxd.1 $(DEST_MAN_RU_K)/xxd.1 $(DEST_MAN_RU_U)/xxd.1
++	-rm -f $(DEST_MAN_RU)/xxd.1 $(DEST_MAN_RU_U)/xxd.1 $(DEST_MAN_RU_K)/xxd.1
  	-rm -f $(DEST_HELP)/*.txt $(DEST_HELP)/tags $(DEST_HELP)/*.pl
  	-rm -f $(DEST_HELP)/*.??x $(DEST_HELP)/tags-??
  	-rm -f $(SYS_MENU_FILE) $(SYS_SYNMENU_FILE) $(SYS_DELMENU_FILE)

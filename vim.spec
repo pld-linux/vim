@@ -22,13 +22,13 @@
 %endif
 
 # Command to check for latest patch:
-# wget ftp://ftp.vim.org/pub/editors/vim/patches/7.3/MD5SUMS -O sources
+# wget ftp://ftp.vim.org/pub/editors/vim/patches/7.4/MD5SUMS -O sources
 # tail -n1 sources | awk '{print $2}'
 # VCS Commits: https://code.google.com/p/vim/source/browse/
 
-%define		ver		7.3
-%define		patchlevel	1314
-%define		rel		1
+%define		ver		7.4
+%define		patchlevel	022
+%define		rel		0.1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -46,7 +46,7 @@ Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
-# Source0-md5:	5b9510a17074e2b37d8bb38ae09edbf2
+# Source0-md5:	607e135c559be642f210094ad023dc65
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -96,7 +96,7 @@ Patch21:	%{name}-filetypes.patch
 Patch22:	%{name}-man_installation.patch
 Patch23:	%{name}-vimrc.patch
 Patch24:	%{name}-syntax-exports.patch
-Patch25:	%{name}-syntax-sshconfig.patch
+
 Patch102:	%{name}-gtkfilechooser.patch
 Patch104:	%{name}-home_etc.patch
 Patch105:	%{name}-autopaste.patch
@@ -697,7 +697,7 @@ zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl
 jak również GUI GTK+2.
 
 %prep
-%setup -q -n %{name}73
+%setup -q -n %{name}74
 
 # official patches
 %patchset_patch 1 %{patchlevel}
@@ -714,9 +714,11 @@ jak również GUI GTK+2.
 %patch9 -p0
 %patch10 -p1
 %patch11 -p1
+# FIXME
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+# FIXME
 %patch15 -p1
 %patch16 -p0
 %patch17 -p0
@@ -725,9 +727,9 @@ jak również GUI GTK+2.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+# FIXME
 %patch23 -p1
 %patch24 -p1
-%patch25 -p1
 
 # home etc
 %{?with_home_etc:%patch104 -p1}
@@ -739,6 +741,7 @@ jak również GUI GTK+2.
 %patch106 -p1
 
 %patch108 -p1
+# FIXME
 %patch109 -p1
 %patch110 -p1
 %patch112 -p1
