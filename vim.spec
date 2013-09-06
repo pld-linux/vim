@@ -28,7 +28,7 @@
 
 %define		ver		7.4
 %define		patchlevel	022
-%define		rel		0.1
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -919,9 +919,10 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 %{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-# not supported locales added by 7.3.764
+# not supported locales added by 7.3.764 or later
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/cs.cp1250
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/ja.sjis
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/ja.euc-jp
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/pl.UTF-8
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/pl.cp1250
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/ru.cp1251
@@ -1066,6 +1067,9 @@ rm -rf $RPM_BUILD_ROOT
 %lang(it) %{_mandir}/it/man1/rvim.1*
 %lang(it) %{_mandir}/it/man1/vim.1*
 %lang(it) %{_mandir}/it/man1/vimdiff.1*
+%lang(ja) %{_mandir}/ja/man1/rvim.1*
+%lang(ja) %{_mandir}/ja/man1/vim.1*
+%lang(ja) %{_mandir}/ja/man1/vimdiff.1*
 %lang(pl) %{_mandir}/pl/man1/rvim.1*
 %lang(pl) %{_mandir}/pl/man1/vim.1*
 %lang(pl) %{_mandir}/pl/man1/vimdiff.1*
@@ -1102,6 +1106,9 @@ rm -rf $RPM_BUILD_ROOT
 %lang(it) %{_mandir}/it/man1/ex.1*
 %lang(it) %{_mandir}/it/man1/view.1*
 %lang(it) %{_mandir}/it/man1/rview.1*
+%lang(ja) %{_mandir}/ja/man1/ex.1*
+%lang(ja) %{_mandir}/ja/man1/view.1*
+%lang(ja) %{_mandir}/ja/man1/rview.1*
 %lang(pl) %{_mandir}/pl/man1/vi.1*
 %lang(pl) %{_mandir}/pl/man1/ex.1*
 %lang(pl) %{_mandir}/pl/man1/view.1*
@@ -1117,6 +1124,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/xxd.1*
 %lang(fr) %{_mandir}/fr/man1/xxd.1*
 %lang(it) %{_mandir}/it/man1/xxd.1*
+%lang(ja) %{_mandir}/ja/man1/xxd.1*
 %lang(pl) %{_mandir}/pl/man1/xxd.1*
 %lang(ru) %{_mandir}/ru/man1/xxd.1*
 
@@ -1227,6 +1235,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/lang/menu_*taiwan*
 
 %dir %{_datadir}/vim/spell
+%{_datadir}/vim/spell/spell.vim
 %lang(he) %{_datadir}/vim/spell/he.*
 %lang(yi) %{_datadir}/vim/spell/yi.*
 
@@ -1278,8 +1287,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(el) %{_datadir}/vim/tutor/README.el.cp737.txt
 %lang(el) %{_datadir}/vim/tutor/README.el.txt
 
-%lang(bj) %{_datadir}/vim/tutor/tutor.bj
-%lang(bj) %{_datadir}/vim/tutor/tutor.bj.utf-8
+%lang(de) %{_datadir}/vim/tutor/tutor.bar
+%lang(de) %{_datadir}/vim/tutor/tutor.bar.utf-8
 %lang(ca) %{_datadir}/vim/tutor/tutor.ca
 %lang(ca) %{_datadir}/vim/tutor/tutor.ca.utf-8
 %lang(cs) %{_datadir}/vim/tutor/tutor.cs
@@ -1309,6 +1318,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_datadir}/vim/tutor/tutor.ja.utf-8
 %lang(ko) %{_datadir}/vim/tutor/tutor.ko.euc
 %lang(ko) %{_datadir}/vim/tutor/tutor.ko.utf-8
+%lang(nl) %{_datadir}/vim/tutor/tutor.nl
+%lang(nl) %{_datadir}/vim/tutor/tutor.nl.utf-8
 %lang(nb) %{_datadir}/vim/tutor/tutor.nb
 %lang(nb) %{_datadir}/vim/tutor/tutor.nb.utf-8
 %lang(pl) %{_datadir}/vim/tutor/tutor.pl
@@ -1327,13 +1338,16 @@ rm -rf $RPM_BUILD_ROOT
 %lang(tr) %{_datadir}/vim/tutor/tutor.tr.iso9
 %lang(tr) %{_datadir}/vim/tutor/tutor.tr.utf-8
 %lang(vi) %{_datadir}/vim/tutor/tutor.vi.utf-8
+%lang(zh_CN) %{_datadir}/vim/tutor/tutor.zh_cn.utf-8
 %lang(zh_TW) %{_datadir}/vim/tutor/tutor.zh.big5
 %lang(zh_TW) %{_datadir}/vim/tutor/tutor.zh.euc
 %lang(zh_TW) %{_datadir}/vim/tutor/tutor.zh.utf-8
+%lang(zh_TW) %{_datadir}/vim/tutor/tutor.zh_tw.utf-8
 
 %{_mandir}/man1/vimtutor.1*
 %lang(fr) %{_mandir}/fr/man1/vimtutor.1*
 %lang(it) %{_mandir}/it/man1/vimtutor.1*
+%lang(ja) %{_mandir}/ja/man1/vimtutor.1*
 %lang(pl) %{_mandir}/pl/man1/vimtutor.1*
 %lang(ru) %{_mandir}/ru/man1/vimtutor.1*
 
@@ -1388,6 +1402,10 @@ rm -rf $RPM_BUILD_ROOT
 %lang(it) %{_mandir}/it/man1/evim.1*
 %lang(it) %{_mandir}/it/man1/gvi*
 %lang(it) %{_mandir}/it/man1/rgv*
+%lang(ja) %{_mandir}/ja/man1/eview.1*
+%lang(ja) %{_mandir}/ja/man1/evim.1*
+%lang(ja) %{_mandir}/ja/man1/gvi*
+%lang(ja) %{_mandir}/ja/man1/rgv*
 %lang(pl) %{_mandir}/pl/man1/eview.1*
 %lang(pl) %{_mandir}/pl/man1/evim.1*
 %lang(pl) %{_mandir}/pl/man1/gvi*
