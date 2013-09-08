@@ -28,7 +28,7 @@
 
 %define		ver		7.4
 %define		patchlevel	023
-%define		rel		1
+%define		rel		2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -330,6 +330,26 @@ tartalmazza, amelyben benne van a Perl, Python, Ruby és Tcl támogatás.
 %description heavy -l pl.UTF-8
 Pakiet ten dostarcza w pełni funkcjonalną wersję Vima, czyli
 zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl.
+
+%package -n vimx
+Summary:	Vi IMproved - a Vi clone
+Summary(pl.UTF-8):	Vi IMproved - klon edytora Vi
+Group:		Applications/Editors/Vim
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Provides:	vi-editor
+Provides:	vi
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
+Obsoletes:	vim-enhanced
+Obsoletes:	vim-ispell
+Obsoletes:	vim-plugin-multvals
+
+%description -n vimx
+This package provides console version of Vim, with support for basic
+X11 features like system clipboard.
+
+%description -n vimx -l pl.UTF-8
+Pakiet ten dostarcza konsolową wersję Vima, posiadającą wsparcie dla
+podstawowych funckcji X11, takich jak systemowy schowek.
 
 %package static
 Summary:	Statically linked Vim
@@ -837,6 +857,11 @@ build vim.ncurses \
 	--without-x \
 	--with-features=huge
 
+build vimx \
+	--disable-gui \
+	--with-x \
+	--with-features=huge
+
 %if %{with athena}
 build gvim.athena \
 	--with-features=huge \
@@ -948,6 +973,7 @@ install -p src/bin/vim.static	$RPM_BUILD_ROOT/bin/vi
 install -p src/bin/vim.ncurses	$RPM_BUILD_ROOT/bin/vi
 ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
 %endif
+install -p src/bin/vimx	$RPM_BUILD_ROOT%{_bindir}/vimx
 install -p src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
 install -p src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
@@ -1350,6 +1376,10 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_mandir}/ja/man1/vimtutor.1*
 %lang(pl) %{_mandir}/pl/man1/vimtutor.1*
 %lang(ru) %{_mandir}/ru/man1/vimtutor.1*
+
+%files -n vimx
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/vimx
 
 %if %{with heavy}
 %files heavy
