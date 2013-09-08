@@ -28,7 +28,7 @@
 
 %define		ver		7.4
 %define		patchlevel	023
-%define		rel		2
+%define		rel		3
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -169,6 +169,7 @@ Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-enhanced
 Obsoletes:	vim-ispell
 Obsoletes:	vim-plugin-multvals
+Obsoletes:	vim-syntax-upstart
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # configure redefines it to =1
