@@ -130,7 +130,7 @@ BuildRequires:	gtk+2-devel >= 2:2.6.0
 BuildRequires:	libselinux-devel
 %endif
 BuildRequires:	ncurses-devel
-%{?with_motif:BuildRequires:	openmotif-devel}
+%{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	pkgconfig
 %if %{with perl} || %{with heavy}
 BuildRequires:	perl-devel
