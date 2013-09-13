@@ -169,7 +169,6 @@ Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-enhanced
 Obsoletes:	vim-ispell
 Obsoletes:	vim-plugin-multvals
-Obsoletes:	vim-syntax-upstart
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # configure redefines it to =1
@@ -415,6 +414,7 @@ Requires:	rpm-whiteout >= 1.3
 Requires:	vim-plugin-securemodelines
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
+Obsoletes:	vim-syntax-upstart
 %if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
 %endif
