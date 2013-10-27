@@ -1162,6 +1162,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vim/gvimrc
 
 %dir %{_datadir}/vim
+%dir %{_datadir}/vim/doc
 
 %dir %{_datadir}/vim/vimfiles
 %dir %{_datadir}/vim/vimfiles/doc
@@ -1292,8 +1293,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files doc
 %defattr(644,root,root,755)
-%dir %{_datadir}/vim/doc
-
 # English
 %{_datadir}/vim/doc/*.txt.gz
 %verify(not md5 mtime size) %{_datadir}/vim/doc/tags
