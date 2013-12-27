@@ -98,21 +98,21 @@ Patch22:	%{name}-man_installation.patch
 Patch23:	%{name}-vimrc.patch
 Patch24:	%{name}-syntax-exports.patch
 Patch25:	sudoers-include.patch
-
+# FIXME: unused?
 Patch102:	%{name}-gtkfilechooser.patch
-Patch104:	%{name}-home_etc.patch
-Patch105:	%{name}-autopaste.patch
-Patch106:	%{name}-ft-cron.patch
-Patch108:	%{name}-phpscript.patch
-Patch109:	%{name}-pam.patch
-Patch110:	%{name}-ft-bash.patch
-Patch112:	%{name}-localedir.patch
-Patch113:	%{name}-locales.patch
-Patch114:	%{name}-rtdir.patch
-Patch115:	%{name}-ft-mib.patch
-Patch116:	%{name}-ft-lib-udevrules.patch
-Patch117:	%{name}-ft-mysql.patch
-Patch118:	%{name}-ft-gyp.patch
+Patch26:	%{name}-home_etc.patch
+Patch27:	%{name}-autopaste.patch
+Patch28:	%{name}-ft-cron.patch
+Patch29:	%{name}-phpscript.patch
+Patch30:	%{name}-pam.patch
+Patch31:	%{name}-ft-bash.patch
+Patch32:	%{name}-localedir.patch
+Patch33:	%{name}-locales.patch
+Patch34:	%{name}-rtdir.patch
+Patch35:	%{name}-ft-mib.patch
+Patch36:	%{name}-ft-lib-udevrules.patch
+Patch37:	%{name}-ft-mysql.patch
+Patch38:	%{name}-ft-gyp.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -751,26 +751,22 @@ jak również GUI GTK+2.
 %patch23 -p1
 %patch24 -p1
 %patch25 -p1
-
-# home etc
-%{?with_home_etc:%patch104 -p1}
+%{?with_home_etc:%patch26 -p1}
 
 # autopaste patch - automatically switch to paste mode
 # when `really fast typing' situation happens
-%patch105 -p1
-
-%patch106 -p1
-
-%patch108 -p1
-%patch109 -p1
-%patch110 -p1
-%patch112 -p1
-%patch113 -p1
-%patch114 -p1
-%patch115 -p1
-%patch116 -p1
-%patch117 -p1
-%patch118 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+%patch33 -p1
+%patch34 -p1
+%patch35 -p1
+%patch36 -p1
+%patch37 -p1
+%patch38 -p1
 
 cp -p %{SOURCE20} runtime/syntax
 cp -p %{SOURCE22} runtime/syntax
