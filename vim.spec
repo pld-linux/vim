@@ -235,8 +235,8 @@ fleira.
 VIM (Vi IMproved) è una versione aggiornata e perfezionata dell'editor
 vi. Vi è stato il primo editor per UNIX realmente basato su video ed è
 ancora molto diffuso. VIM perfeziona vi aggiungendo nuove funzioni:
-finestre multiple, funzione \"annulla\" multilivello, evidenziazione
-dei blocchi e altro.
+finestre multiple, funzione "annulla" multilivello, evidenziazione dei
+blocchi e altro.
 
 %description -l pl.UTF-8
 Edytor tekstu podobny do Vi. Ważne ulepszenia: możliwość pracy w wielu
