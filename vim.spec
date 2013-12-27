@@ -98,8 +98,6 @@ Patch22:	%{name}-man_installation.patch
 Patch23:	%{name}-vimrc.patch
 Patch24:	%{name}-syntax-exports.patch
 Patch25:	sudoers-include.patch
-# FIXME: unused?
-Patch102:	%{name}-gtkfilechooser.patch
 Patch26:	%{name}-home_etc.patch
 Patch27:	%{name}-autopaste.patch
 Patch28:	%{name}-ft-cron.patch
