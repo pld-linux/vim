@@ -97,6 +97,7 @@ Patch21:	%{name}-filetypes.patch
 Patch22:	%{name}-man_installation.patch
 Patch23:	%{name}-vimrc.patch
 Patch24:	%{name}-syntax-exports.patch
+Patch25:	sudoers-include.patch
 
 Patch102:	%{name}-gtkfilechooser.patch
 Patch104:	%{name}-home_etc.patch
@@ -129,8 +130,8 @@ BuildRequires:	gtk+2-devel >= 2:2.6.0
 %if %{with selinux} || %{with heavy}
 BuildRequires:	libselinux-devel
 %endif
-BuildRequires:	ncurses-devel
 %{?with_motif:BuildRequires:	motif-devel}
+BuildRequires:	ncurses-devel
 BuildRequires:	pkgconfig
 %if %{with perl} || %{with heavy}
 BuildRequires:	perl-devel
@@ -749,6 +750,7 @@ jak również GUI GTK+2.
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
 
 # home etc
 %{?with_home_etc:%patch104 -p1}
