@@ -333,7 +333,7 @@ zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl.
 %package -n vimx
 Summary:	Vi IMproved - a Vi clone
 Summary(pl.UTF-8):	Vi IMproved - klon edytora Vi
-Group:		Applications/Editors/Vim
+Group:		X11/Applications/Editors
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
