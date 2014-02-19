@@ -28,7 +28,7 @@
 
 %define		ver		7.4
 %define		patchlevel	182
-%define		rel		1
+%define		rel		2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -111,6 +111,7 @@ Patch35:	%{name}-ft-mib.patch
 Patch36:	%{name}-ft-lib-udevrules.patch
 Patch37:	%{name}-ft-mysql.patch
 Patch38:	%{name}-ft-gyp.patch
+Patch39:	%{name}-revert-7.4.165-noundo.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -765,6 +766,7 @@ jak również GUI GTK+2.
 %patch36 -p1
 %patch37 -p1
 %patch38 -p1
+%patch39 -p1
 
 cp -p %{SOURCE20} runtime/syntax
 cp -p %{SOURCE22} runtime/syntax

@@ -1,0 +1,10 @@
+--- vim74/runtime/vimrc_example.vim~	2014-02-19 09:38:17.000000000 +0100
++++ vim74/runtime/vimrc_example.vim	2014-02-19 09:38:56.196879355 +0100
+@@ -25,7 +25,6 @@
+   set nobackup		" do not keep a backup file, use versions instead
+ else
+   set backup		" keep a backup file (restore to previous version)
+-  set undofile		" keep an undo file (undo changes after closing)
+ endif
+ set history=50		" keep 50 lines of command line history
+ set ruler		" show the cursor position all the time
