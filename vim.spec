@@ -27,7 +27,7 @@
 # VCS Commits: https://code.google.com/p/vim/source/browse/
 
 %define		ver		7.4
-%define		patchlevel	182
+%define		patchlevel	192
 %define		rel		2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
