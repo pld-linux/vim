@@ -414,6 +414,7 @@ Requires:	rpm-whiteout >= 1.3
 Requires:	vim-plugin-securemodelines
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
+Obsoletes:	vim-syntax-gitcommit
 Obsoletes:	vim-syntax-upstart
 %if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
