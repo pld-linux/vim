@@ -7,6 +7,7 @@
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	heavy		# don't build heavy (full-featured GNOME-based gvim/vim)
 %bcond_without	gui		# don't build any GUI
+%bcond_without	light		# don't build light (minimal, ncurses, but not static)
 %bcond_with	perl		# with Perl interp in vim package
 %bcond_with	python		# with Python interp in vim package
 %bcond_with	ruby		# with Ruby interp in vim package
@@ -330,6 +331,20 @@ tartalmazza, amelyben benne van a Perl, Python, Ruby és Tcl támogatás.
 %description heavy -l pl.UTF-8
 Pakiet ten dostarcza w pełni funkcjonalną wersję Vima, czyli
 zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl.
+
+%package light
+Summary:	Minimal build of Vim
+Group:		Applications/Editors/Vim
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Provides:	vi-editor
+Provides:	vi
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
+
+%description light
+This package provides light featured version of Vim.
+
+%description light -l pl.UTF-8
+Pakiet ten dostarcza minimalną wersję Vima.
 
 %package -n vimx
 Summary:	Vi IMproved - a Vi clone
@@ -862,6 +877,20 @@ build vimx \
 	--with-x \
 	--with-features=huge
 
+%if %{with light}
+build vim.light \
+	--disable-gui \
+	--without-x \
+	--with-features=small \
+	--disable-perlinterp \
+	--disable-pythoninterp \
+	--disable-rubyinterp \
+	--disable-tclinterp \
+	--disable-cscope \
+	--disable-gpm \
+	--disable-nls
+%endif
+
 %if %{with athena}
 build gvim.athena \
 	--with-features=huge \
@@ -1020,6 +1049,9 @@ cp -p %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %if %{with heavy}
 install -p src/bin/vim.heavy	$RPM_BUILD_ROOT%{_bindir}
 install -p src/bin/gvim.heavy	$RPM_BUILD_ROOT%{_bindir}
+%endif
+%if %{with light}
+install -p src/bin/vim.light	$RPM_BUILD_ROOT%{_bindir}
 %endif
 
 install -d $RPM_BUILD_ROOT%{_pixmapsdir}
@@ -1384,6 +1416,12 @@ rm -rf $RPM_BUILD_ROOT
 %files heavy
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vim.heavy
+%endif
+
+%if %{with light}
+%files light
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/vim.light
 %endif
 
 %files spell-en
