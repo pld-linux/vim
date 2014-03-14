@@ -867,16 +867,6 @@ build vim.static \
 LDFLAGS="%{rpmldflags}"
 %endif
 
-build vim.ncurses \
-	--disable-gui \
-	--without-x \
-	--with-features=huge
-
-build vimx \
-	--disable-gui \
-	--with-x \
-	--with-features=huge
-
 %if %{with light}
 build vim.light \
 	--disable-gui \
@@ -890,6 +880,16 @@ build vim.light \
 	--disable-gpm \
 	--disable-nls
 %endif
+
+build vim.ncurses \
+	--disable-gui \
+	--without-x \
+	--with-features=huge
+
+build vimx \
+	--disable-gui \
+	--with-x \
+	--with-features=huge
 
 %if %{with athena}
 build gvim.athena \
