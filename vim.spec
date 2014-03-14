@@ -335,7 +335,6 @@ zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl.
 %package light
 Summary:	Minimal build of Vim
 Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
