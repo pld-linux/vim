@@ -334,6 +334,7 @@ zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl.
 
 %package light
 Summary:	Minimal build of Vim
+Summary(pl.UTF-8):	Minimalna wersja vima
 Group:		Applications/Editors/Vim
 Provides:	vi-editor
 Provides:	vi
