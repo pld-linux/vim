@@ -427,6 +427,7 @@ Summary(zh_CN.UTF-8):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
 Requires:	rpm-whiteout >= 1.3
 Requires:	vim-plugin-securemodelines
+Provides:	vim-syntax-gitcommit
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
 Obsoletes:	vim-syntax-gitcommit
