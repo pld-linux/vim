@@ -28,7 +28,7 @@
 # VCS Commits: https://code.google.com/p/vim/source/browse/
 
 %define		ver		7.4
-%define		patchlevel	206
+%define		patchlevel	253
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,6 +52,8 @@ Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-ma
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
 # Source2-md5:	ff96284b1c913d55cf0877839b34d490
+Source3:	https://vim.googlecode.com/hg-history/v7-4-207/.hgignore
+# Source3-md5:	11760a30af26645127530e3c1bfc3405
 Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
@@ -736,6 +738,9 @@ jak również GUI GTK+2.
 
 %prep
 %setup -q -n %{name}74
+
+# make patch 7.4.208 able to apply
+cp -p %{SOURCE3} .
 
 # official patches
 %patchset_patch 1 %{patchlevel}
