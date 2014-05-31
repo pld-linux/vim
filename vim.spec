@@ -29,7 +29,7 @@
 
 %define		ver		7.4
 %define		patchlevel	307
-%define		rel		1
+%define		rel		2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
