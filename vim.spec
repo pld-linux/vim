@@ -1194,6 +1194,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %dir %{_datadir}/vim
 %dir %{_datadir}/vim/doc
+%verify(not md5 mtime size) %{_datadir}/vim/doc/tags
+%lang(pl) %verify(not md5 mtime size) %{_datadir}/vim/doc/tags-pl
+%verify(not md5 mtime size) %{_datadir}/vim/vimfiles/doc/tags
 
 %dir %{_datadir}/vim/vimfiles
 %dir %{_datadir}/vim/vimfiles/doc
@@ -1212,7 +1215,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/vimfiles/plugin
 %dir %{_datadir}/vim/vimfiles/spell
 %dir %{_datadir}/vim/vimfiles/syntax
-%verify(not md5 mtime size) %{_datadir}/vim/vimfiles/doc/tags
 
 %{_datadir}/vim/*.vim
 
@@ -1326,11 +1328,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 # English
 %{_datadir}/vim/doc/*.txt.gz
-%verify(not md5 mtime size) %{_datadir}/vim/doc/tags
 
 # Polish
 %lang(pl) %{_datadir}/vim/doc/*.plx.gz
-%lang(pl) %verify(not md5 mtime size) %{_datadir}/vim/doc/tags-pl
 
 %files tutor
 %defattr(644,root,root,755)
