@@ -28,7 +28,7 @@
 # VCS Commits: https://code.google.com/p/vim/source/browse/
 
 %define		ver		7.4
-%define		patchlevel	354
+%define		patchlevel	383
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -824,7 +824,7 @@ build() {
 		--with-tlib="ncursesw"
 %endif
 
-	%{__make} distclean
+	%{__make} -j1 distclean
 	# add common options, can override (disable) if needed with args
 	%configure \
 		--%{!?with_perl:dis}%{?with_perl:en}able-perlinterp \
