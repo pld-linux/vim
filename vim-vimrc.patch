@@ -28,7 +28,7 @@
    syntax on
    set hlsearch
  endif
-@@ -93,7 +93,15 @@
+@@ -93,10 +93,18 @@
  " Convenient command to see the difference between the current buffer and the
  " file it was loaded from, thus the changes you made.
  " Only define it when not defined already.
@@ -45,3 +45,6 @@
 +if filereadable("/etc/vim/vimrc.local")
 +  source /etc/vim/vimrc.local
 +endif
+ 
+ if has('langmap') && exists('+langnoremap')
+   " Prevent that the langmap option applies to characters that result from a
