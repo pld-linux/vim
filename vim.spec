@@ -116,7 +116,7 @@ Patch39:	%{name}-revert-7.4.165-noundo.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
-BuildRequires:	gettext-devel
+BuildRequires:	gettext-tools
 BuildRequires:	gpm-devel
 %if "%{pld_release}" == "ac"
 %{?with_athena:BuildRequires:	XFree86-devel}
