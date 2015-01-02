@@ -22,11 +22,6 @@
 %undefine	with_gnome
 %endif
 
-%ifarch x32
-%undefine	with_ruby
-%undefine	with_heavy
-%endif
-
 # Command to check for latest patch:
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/7.4/MD5SUMS -O sources
 # tail -n1 sources | awk '{print $2}'
