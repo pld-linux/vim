@@ -58,11 +58,11 @@ if [ "$curver" != "$ver" ]; then
 	fi
 	sed -i -e "
 		s/^\(%define[ \t]\+patchlevel[ \t]\+\)[0-9]\+\$/\1$patch/
-		s/^\(%define[ \t]\+rel[ \t]\+\)[0-9]\+\$/\11/
+		s/^\(%define[ \t]\+rel[ \t]\+\)[0-9.]\+\$/\11/
 	" $specfile
 
-	# fetch missing/mismatching files manually. faster than builder does that
-	md5sum -c sources 2>/dev/null|awk -F: '$NF != " OK" {print $1}' | while read file; do
+	# fetch missing/mismatching files manually. faster than builder script does that
+	md5sum -c sources 2>/dev/null | awk -F: '$NF != " OK" {print $1}' | while read file; do
 		echo "$baseurl/$file"
 	done | wget -nv -i -
 
