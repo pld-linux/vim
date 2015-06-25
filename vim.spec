@@ -138,6 +138,7 @@ BuildRequires:	perl-devel
 %endif
 %if %{with python} || %{with heavy}
 BuildRequires:	python-devel
+BuildRequires:	rpm-pythonprov
 %endif
 BuildRequires:	rpm >= 4.4.9-56
 BuildRequires:	rpmbuild(macros) >= 1.426
