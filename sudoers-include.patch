@@ -1,3 +1,8 @@
+Status: Mailed to maintainer, but no response
+
+To: Nikolai Weibull <now@bitwi.se>
+Date: Fri, 27 Dec 2013 19:57:35 +0200
+
 --- vim74/runtime/syntax/sudoers.vim	2011-02-25 15:05:44.000000000 +0200
 +++ vim74/runtime/syntax/sudoers.vim	2013-12-27 20:00:19.631344071 +0200
 @@ -23,7 +23,7 @@
