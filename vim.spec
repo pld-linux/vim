@@ -28,7 +28,7 @@
 # VCS Commits: https://code.google.com/p/vim/source/browse/
 
 %define		ver		7.4
-%define		patchlevel	796
+%define		patchlevel	812
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -740,7 +740,11 @@ jak również GUI GTK+2.
 %setup -q -n %{name}74
 
 # official patches
-%patchset_patch 1 %{patchlevel}
+# patches 7.4.802, 7.4.809 do not apply
+# 7.4.802 does not apply and 7.4.809 attempts to revert 7.4.802
+%patchset_patch 1 801
+%patchset_patch 803 808
+%patchset_patch 810 %{patchlevel}
 
 %patch0 -p1
 %patch1 -p1
