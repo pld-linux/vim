@@ -28,8 +28,8 @@
 # VCS Commits: https://code.google.com/p/vim/source/browse/
 
 %define		ver		7.4
-%define		patchlevel	812
-%define		rel		1
+%define		patchlevel	861
+%define		rel		0.1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -89,7 +89,6 @@ Patch12:	010_all_%{name}-6.3-vixie.patch
 Patch13:	013_all_%{name}-7.0-cron-vars-79981.patch
 Patch14:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
 Patch15:	021_all_%{name}-7.0-fstab-bogus-errors.patch
-Patch16:	024_all_%{name}-6.3-bash-83565.patch
 Patch17:	027_all_%{name}-7.0-automake-substitutions-93378.patch
 Patch18:	%{name}-smarty.patch
 Patch19:	%{name}-tutor-lessdeps.patch
@@ -104,7 +103,6 @@ Patch27:	%{name}-autopaste.patch
 Patch28:	%{name}-ft-cron.patch
 Patch29:	%{name}-phpscript.patch
 Patch30:	%{name}-pam.patch
-Patch31:	%{name}-ft-bash.patch
 Patch32:	%{name}-localedir.patch
 Patch33:	%{name}-locales.patch
 Patch34:	%{name}-rtdir.patch
@@ -762,7 +760,6 @@ jak również GUI GTK+2.
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
-%patch16 -p0
 %patch17 -p0
 %patch18 -p1
 %patch19 -p1
@@ -780,7 +777,6 @@ jak również GUI GTK+2.
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
-%patch31 -p1
 %patch32 -p1
 %patch33 -p1
 %patch34 -p1
