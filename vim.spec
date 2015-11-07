@@ -1,3 +1,6 @@
+# TODO
+# - use upstream gvim.desktop as base for our gvim .desktop files (more translations)
+#
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -974,6 +977,9 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 
 %{__make} -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+# generic gvim from upstream, but we have bunch of subpackages
+%{__rm} $RPM_BUILD_ROOT%{_desktopdir}/gvim.desktop
 
 # not supported locales added by 7.3.764 or later
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/cs.cp1250
