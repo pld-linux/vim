@@ -1,0 +1,11 @@
+--- vim74/runtime/filetype.vim~	2015-12-21 18:34:48.000000000 +0200
++++ vim74/runtime/filetype.vim	2015-12-21 18:36:19.559607432 +0200
+@@ -1023,7 +1023,7 @@
+ au BufNewFile,BufRead *.jov,*.j73,*.jovial	setf jovial
+ 
+ " JSON
+-au BufNewFile,BufRead *.json,*.jsonp		setf json
++au BufNewFile,BufRead *.json,*.jsonp		setf javascript
+ 
+ " Kixtart
+ au BufNewFile,BufRead *.kix			setf kix
