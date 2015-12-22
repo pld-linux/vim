@@ -30,7 +30,7 @@
 # VCS Commits: https://github.com/vim/vim/commits/master
 
 %define		ver		7.4.979
-%define		rel		0.1
+%define		rel		0.2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -112,7 +112,6 @@ Patch36:	%{name}-ft-lib-udevrules.patch
 Patch37:	%{name}-ft-mysql.patch
 Patch38:	%{name}-ft-gyp.patch
 Patch39:	%{name}-revert-7.4.165-noundo.patch
-Patch40:	bug-512.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -780,7 +779,6 @@ jak również GUI GTK+2.
 %patch37 -p1
 %patch38 -p1
 %patch39 -p1
-%patch40 -p1
 
 cp -p %{SOURCE20} runtime/syntax
 cp -p %{SOURCE22} runtime/syntax
