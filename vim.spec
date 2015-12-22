@@ -172,6 +172,8 @@ Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-enhanced
 Obsoletes:	vim-ispell
 Obsoletes:	vim-plugin-multvals
+Obsoletes:	vim-syntax-golang <= 1.3.3-1
+Obsoletes:	vim-syntax-lxc-docker <= 0.9.0-1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # configure redefines it to =1
@@ -737,7 +739,7 @@ zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl
 jak również GUI GTK+2.
 
 %prep
-%setup -q -n vim-%{ver}
+%setup -q
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
