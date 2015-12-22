@@ -1,7 +1,6 @@
 # TODO
 # - use upstream gvim.desktop as base for our gvim .desktop files (more translations)
 #
-#
 # Conditional build:
 %bcond_without	static		# don't build static version
 %bcond_without	athena		# don't build Athena Widgets-based gvim
@@ -30,10 +29,8 @@
 # tail -n1 sources | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		7.4
-%define		basever		%{ver}.979
-%define		patchlevel	%{nil}
-%define		rel		1
+%define		ver		7.4.979
+%define		rel		0.1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -45,13 +42,14 @@ Summary(ru.UTF-8):	Visual editor IMproved - Единственно Правил�
 Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
-Version:	%{ver}.%{patchlevel}
+Version:	%{ver}
+# keep macro for release, otherwise people tend to increment Epoch instead
 Release:	%{rel}
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
-Source0:	https://github.com/vim/vim/archive/v%{basever}.tar.gz
+Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
 # Source0-md5:	dc289e3d5dd1b25e1e976ce7e704b47c
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
@@ -77,9 +75,6 @@ Source31:	borland.vim
 Source32:	oceandeep.vim
 # http://www.vim.org/scripts/script.php?script_id=1464 (2.6.3)
 Source33:	moria.vim
-%if 0
-%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/%{ver}/%{ver}.%03g 1 %{patchlevel}
-%endif
 Patch0:		%{name}-sysconfdir.patch
 Patch1:		%{name}-visual.patch
 Patch2:		%{name}-paths.patch
@@ -742,17 +737,7 @@ zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl
 jak również GUI GTK+2.
 
 %prep
-%setup -q -n vim-%{basever}
-
-%if 0
-# official patches
-# patches 7.4.802, 7.4.809 do not apply
-# 7.4.802 does not apply and 7.4.809 attempts to revert 7.4.802
-%patchset_patch 1 801
-%patchset_patch 803 808
-%patchset_patch 810 %{patchlevel}
-%endif
-
+%setup -q -n vim-%{ver}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
