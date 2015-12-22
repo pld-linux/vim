@@ -89,7 +89,6 @@ Patch9:		%{name}-modprobe.patch
 Patch10:	%{name}-doubleparenthesis.patch
 Patch11:	%{name}-syntax-fstab.patch
 Patch12:	010_all_%{name}-6.3-vixie.patch
-Patch13:	013_all_%{name}-7.0-cron-vars-79981.patch
 Patch14:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
 Patch15:	021_all_%{name}-7.0-fstab-bogus-errors.patch
 Patch17:	027_all_%{name}-7.0-automake-substitutions-93378.patch
@@ -761,7 +760,6 @@ jak również GUI GTK+2.
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
-%patch13 -p1
 %patch14 -p1
 %patch15 -p1
 %patch17 -p0

@@ -1,5 +1,5 @@
---- vim74/runtime/syntax/crontab.vim~	2013-09-06 00:07:40.000000000 +0300
-+++ vim74/runtime/syntax/crontab.vim	2013-09-06 00:09:14.394009460 +0300
+--- vim74/runtime/syntax/crontab.vim~	2012-05-18 14:05:25.000000000 +0300
++++ vim74/runtime/syntax/crontab.vim	2015-12-22 10:46:53.994022359 +0200
 @@ -18,17 +18,20 @@
    finish
  endif
@@ -25,7 +25,7 @@
  syntax match crontabCmnt "^\s*#.*" contains=@Spell
  syntax match crontabPercent "[^\\]%.*"lc=1 contained
  
-@@ -37,6 +40,12 @@
+@@ -36,6 +39,17 @@
  
  syntax match crontabVar "^\s*\k\w*\s*="me=e-1
  
@@ -35,10 +35,15 @@
 +syntax match crontabVarVal contained /["']\@!\S\+/ skipwhite
 + 
 +
++syntax match crontabVar /^[A-Za-z][A-Za-z0-9\-\_]*/ nextgroup=crontabVarEq skipwhite
++syntax match crontabVarEq contained /=/ nextgroup=CrontabVarValQ,CrontabVarVal skipwhite
++syntax match crontabVarValQ contained /\(["']\).*\1/ skipwhite
++syntax match crontabVarVal contained /["']\@!\S\+/ skipwhite
++
  " Define the default highlighting.
  " For version 5.7 and earlier: only when not done already
  " For version 5.8 and later: only when an item doesn't have highlighting yet
-@@ -48,6 +57,7 @@
+@@ -47,6 +61,7 @@
      command -nargs=+ HiLink hi def link <args>
    endif
  
@@ -46,7 +51,7 @@
    HiLink crontabMin		Number
    HiLink crontabHr		PreProc
    HiLink crontabDay		Type
-@@ -69,6 +79,13 @@
+@@ -68,6 +83,18 @@
  " comment out next line for to suppress unix commands coloring.
    HiLink crontabCmd		Statement
  
@@ -56,6 +61,11 @@
 +  HiLink crontabVarEq          Special
 +  HiLink crontabVarVal         Constant
 +  HiLink crontabVarValQ                String
++
++  HiLink crontabVar		Identifier
++  HiLink crontabVarEq		Special
++  HiLink crontabVarVal		Constant
++  HiLink crontabVarValQ		String
 +
    HiLink crontabCmnt		Comment
  
