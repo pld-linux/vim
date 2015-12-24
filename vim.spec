@@ -30,7 +30,7 @@
 # VCS Commits: https://github.com/vim/vim/commits/master
 
 %define		ver		7.4.979
-%define		rel		2
+%define		rel		3
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
