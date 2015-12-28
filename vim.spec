@@ -29,8 +29,11 @@
 # tail -n1 sources | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		7.4.979
-%define		rel		3
+%define		basever		7.4
+%define		patchbase	979
+%define		patchlevel	979
+%define		rel			1
+%define		patchstart	%(echo $((%{patchbase} + 1)))
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -42,14 +45,14 @@ Summary(ru.UTF-8):	Visual editor IMproved - Единственно Правил�
 Summary(tr.UTF-8):	Gelişmiş bir vi sürümü
 Summary(uk.UTF-8):	Visual editor IMproved - Єдино Вірний Редактор :)
 Name:		vim
-Version:	%{ver}
+Version:	%{basever}.%{patchlevel}
 # keep macro for release, otherwise people tend to increment Epoch instead
 Release:	%{rel}
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
-#Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
-Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
+#Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{basever}.tar.bz2
+Source0:	https://github.com/vim/vim/archive/v%{basever}.%{patchbase}.tar.gz
 # Source0-md5:	dc289e3d5dd1b25e1e976ce7e704b47c
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
@@ -112,6 +115,7 @@ Patch36:	%{name}-ft-lib-udevrules.patch
 Patch37:	%{name}-ft-mysql.patch
 Patch38:	%{name}-ft-gyp.patch
 Patch39:	%{name}-revert-7.4.165-noundo.patch
+%patchset_source -f ftp://ftp.vim.org/pub/editors/vim/patches/%{basever}/%{basever}.%03g %{patchstart} %{patchlevel}
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -738,7 +742,12 @@ zawierającą obsługę skryptów w językach Perl, Python, Ruby oraz Tcl
 jak również GUI GTK+2.
 
 %prep
-%setup -q
+%setup -qc
+mv %{name}-%{basever}.%{patchbase}/* .
+
+# official patches
+%patchset_patch %{patchstart} %{patchlevel}
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
