@@ -1,0 +1,10 @@
+--- vim-7.4.979/runtime/vim.desktop~	2015-12-19 16:28:18.000000000 +0200
++++ vim-7.4.979/runtime/vim.desktop	2015-12-28 08:15:06.355590605 +0200
+@@ -75,6 +75,6 @@
+ Terminal=true
+ Type=Application
+ Icon=gvim
+-Categories=Utility;TextEditor;
++Categories=ConsoleOnly;TextEditor;
+ StartupNotify=false
+ MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;

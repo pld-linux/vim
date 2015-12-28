@@ -59,7 +59,6 @@ Source10:	g%{name}-athena.desktop
 Source11:	g%{name}-motif.desktop
 Source12:	g%{name}-gtk.desktop
 Source13:	g%{name}-gnome.desktop
-Source14:	%{name}.desktop
 Source15:	update-source.sh
 # syntax files
 # http://www.vim.org/scripts/script.php?script_id=1491 (0.7.5)
@@ -112,6 +111,7 @@ Patch36:	%{name}-ft-lib-udevrules.patch
 Patch37:	%{name}-ft-mysql.patch
 Patch38:	%{name}-ft-gyp.patch
 Patch39:	%{name}-revert-7.4.165-noundo.patch
+Patch40:	desktop.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -779,6 +779,7 @@ jak również GUI GTK+2.
 %patch37 -p1
 %patch38 -p1
 %patch39 -p1
+%patch40 -p1
 
 cp -p %{SOURCE20} runtime/syntax
 cp -p %{SOURCE22} runtime/syntax
@@ -1019,8 +1020,6 @@ ln -sf vim $RPM_BUILD_ROOT%{_bindir}/vimdiff
 ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
-
-cp -p %{SOURCE14}	$RPM_BUILD_ROOT%{_desktopdir}
 
 %if %{with athena}
 install -p src/bin/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena
