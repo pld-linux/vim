@@ -1,5 +1,3 @@
-# TODO
-# - use upstream gvim.desktop as base for our gvim .desktop files (more translations)
 #
 # Conditional build:
 %bcond_without	static		# don't build static version
@@ -55,10 +53,6 @@ Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-ma
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
 # Source2-md5:	ff96284b1c913d55cf0877839b34d490
-Source10:	g%{name}-athena.desktop
-Source11:	g%{name}-motif.desktop
-Source12:	g%{name}-gtk.desktop
-Source13:	g%{name}-gnome.desktop
 Source15:	update-source.sh
 # syntax files
 # http://www.vim.org/scripts/script.php?script_id=1491 (0.7.5)
@@ -739,6 +733,12 @@ jak również GUI GTK+2.
 
 %prep
 %setup -q
+
+cp -p runtime/gvim.desktop gvim-athena.desktop
+cp -p runtime/gvim.desktop gvim-gnome.desktop
+cp -p runtime/gvim.desktop gvim-gtk.desktop
+cp -p runtime/gvim.desktop gvim-motif.desktop
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -1022,19 +1022,20 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
 %if %{with athena}
-install -p src/bin/gvim.athena	$RPM_BUILD_ROOT%{_bindir}/gvim.athena
-cp -p %{SOURCE10}	$RPM_BUILD_ROOT%{_desktopdir}
+install -p src/bin/gvim.athena $RPM_BUILD_ROOT%{_bindir}/gvim.athena
+cp -p gvim-athena.desktop $RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with motif}
-install -p src/bin/gvim.motif	$RPM_BUILD_ROOT%{_bindir}/gvim.motif
-cp -p %{SOURCE11}	$RPM_BUILD_ROOT%{_desktopdir}
+install -p src/bin/gvim.motif $RPM_BUILD_ROOT%{_bindir}/gvim.motif
+cp -p gvim-motif.desktop $RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with gnome}
-install -p src/bin/gvim.gnome	$RPM_BUILD_ROOT%{_bindir}/gvim.gnome
-cp -p %{SOURCE13}	$RPM_BUILD_ROOT%{_desktopdir}
+install -p src/bin/gvim.gnome $RPM_BUILD_ROOT%{_bindir}/gvim.gnome
+cp -p gvim-gnome.desktop $RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with gtk}
 install -p src/bin/gvim.gtk	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk
+cp -p gvim-gtk.desktop $RPM_BUILD_ROOT%{_desktopdir}
 ln -sf gvim.gtk		$RPM_BUILD_ROOT%{_bindir}/gvim
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/eview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/evim
@@ -1042,7 +1043,6 @@ ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gvimdiff
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
-cp -p %{SOURCE12}	$RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with heavy}
 install -p src/bin/vim.heavy	$RPM_BUILD_ROOT%{_bindir}
@@ -1132,7 +1132,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ru) %{_mandir}/ru/man1/rvim.1*
 %lang(ru) %{_mandir}/ru/man1/vim.1*
 %lang(ru) %{_mandir}/ru/man1/vimdiff.1*
-%{_desktopdir}/%{name}.desktop
+%{_desktopdir}/vim.desktop
 
 %if %{with static}
 %files static

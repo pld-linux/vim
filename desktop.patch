@@ -8,3 +8,133 @@
 +Categories=ConsoleOnly;TextEditor;
  StartupNotify=false
  MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
+--- vim-7.4.979/gvim-athena.desktop~	2015-12-19 16:28:18.000000000 +0200
++++ vim-7.4.979/gvim-athena.desktop	2015-12-28 08:24:02.106735918 +0200
+@@ -1,5 +1,5 @@
+ [Desktop Entry]
+-Name=GVim
++Name=GVim Athena
+ GenericName=Text Editor
+ GenericName[de]=Texteditor
+ Comment=Edit text files
+@@ -71,7 +71,7 @@
+ Comment[zh_CN]=编辑文本文件
+ Comment[zh_TW]=編輯文字檔
+-TryExec=gvim
+-Exec=gvim -f %F
++TryExec=gvim.gnome
++Exec=gvim.gnome -f %F
+ Terminal=false
+ Type=Application
+ Icon=gvim
+--- vim-7.4.979/gvim-gnome.desktop~	2015-12-28 08:32:38.000000000 +0200
++++ vim-7.4.979/gvim-gnome.desktop	2015-12-28 08:33:14.285396908 +0200
+@@ -1,8 +1,8 @@
+ [Desktop Entry]
+-Name=GVim
++Name=GVim GNOME
+ GenericName=Text Editor
+ GenericName[de]=Texteditor
+-Comment=Edit text files
++Comment=The vi editor for X Window System with GNOME L&F
+ Comment[af]=Redigeer tekslêers
+ Comment[am]=የጽሑፍ ፋይሎች ያስተካክሉ
+ Comment[ar]=حرّر ملفات نصية
+@@ -50,7 +50,7 @@
+ Comment[no]=Rediger tekstfiler
+ Comment[or]=ପାଠ୍ଯ ଫାଇଲଗୁଡ଼ିକୁ ସମ୍ପାଦନ କରନ୍ତୁ
+ Comment[pa]=ਪਾਠ ਫਾਇਲਾਂ ਸੰਪਾਦਨ
+-Comment[pl]=Edytor plików tekstowych
++Comment[pl]=Edytor vi dla Systemu X Window jako aplikacja GNOME
+ Comment[pt]=Editar ficheiros de texto
+ Comment[pt_BR]=Edite arquivos de texto
+ Comment[ro]=Editare fişiere text
+@@ -70,11 +70,11 @@
+ Comment[wa]=Asspougnî des fitchîs tecses
+ Comment[zh_CN]=编辑文本文件
+ Comment[zh_TW]=編輯文字檔
+-TryExec=gvim
+-Exec=gvim -f %F
++TryExec=gvim.gnome
++Exec=gvim.gnome -f %F
+ Terminal=false
+ Type=Application
+ Icon=gvim
+-Categories=Utility;TextEditor;
++Categories=GTK;GNOME;TextEditor;
+ StartupNotify=true
+ MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
+--- vim-7.4.979/gvim-gtk.desktop~	2015-12-19 16:28:18.000000000 +0200
++++ vim-7.4.979/gvim-gtk.desktop	2015-12-28 08:29:28.577015888 +0200
+@@ -1,8 +1,8 @@
+ [Desktop Entry]
+-Name=GVim
++Name=GVim GTK
+ GenericName=Text Editor
+ GenericName[de]=Texteditor
+-Comment=Edit text files
++Comment=The vi editor for X Window System with GTK L&F
+ Comment[af]=Redigeer tekslêers
+ Comment[am]=የጽሑፍ ፋይሎች ያስተካክሉ
+ Comment[ar]=حرّر ملفات نصية
+@@ -50,7 +50,7 @@
+ Comment[no]=Rediger tekstfiler
+ Comment[or]=ପାଠ୍ଯ ଫାଇଲଗୁଡ଼ିକୁ ସମ୍ପାଦନ କରନ୍ତୁ
+ Comment[pa]=ਪਾਠ ਫਾਇਲਾਂ ਸੰਪਾਦਨ
+-Comment[pl]=Edytor plików tekstowych
++Comment[pl]=Edytor vi dla Systemu X Window jako aplikacja GTK
+ Comment[pt]=Editar ficheiros de texto
+ Comment[pt_BR]=Edite arquivos de texto
+ Comment[ro]=Editare fişiere text
+@@ -70,11 +70,11 @@
+ Comment[wa]=Asspougnî des fitchîs tecses
+ Comment[zh_CN]=编辑文本文件
+ Comment[zh_TW]=編輯文字檔
+-TryExec=gvim
+-Exec=gvim -f %F
++TryExec=gvim.gtk
++Exec=gvim.gtk -f %F
+ Terminal=false
+ Type=Application
+ Icon=gvim
+-Categories=Utility;TextEditor;
++Categories=GTK;TextEditor;
+ StartupNotify=true
+ MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
+--- vim-7.4.979/gvim-motif.desktop~	2015-12-19 16:28:18.000000000 +0200
++++ vim-7.4.979/gvim-motif.desktop	2015-12-28 08:31:11.245677767 +0200
+@@ -1,8 +1,8 @@
+ [Desktop Entry]
+-Name=GVim
++Name=GVim Motif
+ GenericName=Text Editor
+ GenericName[de]=Texteditor
+-Comment=Edit text files
++Comment=The vi editor for X Window System with Motif L&F
+ Comment[af]=Redigeer tekslêers
+ Comment[am]=የጽሑፍ ፋይሎች ያስተካክሉ
+ Comment[ar]=حرّر ملفات نصية
+@@ -50,7 +50,7 @@
+ Comment[no]=Rediger tekstfiler
+ Comment[or]=ପାଠ୍ଯ ଫାଇଲଗୁଡ଼ିକୁ ସମ୍ପାଦନ କରନ୍ତୁ
+ Comment[pa]=ਪਾਠ ਫਾਇਲਾਂ ਸੰਪਾਦਨ
+-Comment[pl]=Edytor plików tekstowych
++Comment[pl]=Edytor vi dla Systemu X Window jako aplikacja Motif
+ Comment[pt]=Editar ficheiros de texto
+ Comment[pt_BR]=Edite arquivos de texto
+ Comment[ro]=Editare fişiere text
+@@ -70,11 +70,11 @@
+ Comment[wa]=Asspougnî des fitchîs tecses
+ Comment[zh_CN]=编辑文本文件
+ Comment[zh_TW]=編輯文字檔
+-TryExec=gvim
+-Exec=gvim -f %F
++TryExec=gvim.motif
++Exec=gvim.motif -f %F
+ Terminal=false
+ Type=Application
+ Icon=gvim
+-Categories=Utility;TextEditor;
++Categories=Motif;TextEditor;
+ StartupNotify=true
+ MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
