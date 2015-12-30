@@ -31,7 +31,7 @@
 
 %define		basever		7.4
 %define		patchbase	979
-%define		patchlevel	979
+%define		patchlevel	998
 %define		rel			1
 %define		patchstart	%(echo $((%{patchbase} + 1)))
 Summary:	Vi IMproved - a Vi clone
