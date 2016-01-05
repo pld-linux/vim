@@ -1,0 +1,12 @@
+diff -ruN vim-7.4.979.orig/src/configure.in vim-7.4.979/src/configure.in
+--- vim-7.4.979.orig/src/configure.in	2015-12-19 15:28:18.000000000 +0100
++++ vim-7.4.979/src/configure.in	2016-01-05 01:33:07.501230977 +0100
+@@ -535,7 +535,7 @@
+       fi
+     else
+       dnl -- try to find Lua executable
+-      AC_PATH_PROG(vi_cv_path_plain_lua, lua)
++      AC_PATH_PROG(vi_cv_path_plain_lua, lua5.2)
+       if test "X$vi_cv_path_plain_lua" != "X"; then
+ 	dnl -- find Lua version
+ 	AC_CACHE_CHECK(Lua version, vi_cv_version_plain_lua,

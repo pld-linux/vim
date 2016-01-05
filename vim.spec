@@ -8,6 +8,7 @@
 %bcond_without	heavy		# don't build heavy (full-featured GNOME-based gvim/vim)
 %bcond_without	gui		# don't build any GUI
 %bcond_without	light		# don't build light (minimal, ncurses, but not static)
+%bcond_with	lua		# with Lua interp in vim package
 %bcond_with	perl		# with Perl interp in vim package
 %bcond_with	python		# with Python interp in vim package
 %bcond_with	ruby		# with Ruby interp in vim package
@@ -28,7 +29,7 @@
 # VCS Commits: https://github.com/vim/vim/commits/master
 
 %define		ver		7.4.979
-%define		rel		3
+%define		rel		4
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -106,6 +107,7 @@ Patch37:	%{name}-ft-mysql.patch
 Patch38:	%{name}-ft-gyp.patch
 Patch39:	%{name}-revert-7.4.165-noundo.patch
 Patch40:	desktop.patch
+Patch41:	%{name}-lua.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	autoconf
@@ -123,6 +125,9 @@ BuildRequires:	gtk+2-devel >= 2:2.6.0
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %if %{with selinux} || %{with heavy}
 BuildRequires:	libselinux-devel
+%endif
+%if %{with lua} || %{with heavy}
+BuildRequires:	lua52-devel
 %endif
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	ncurses-devel
@@ -780,6 +785,7 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 %patch38 -p1
 %patch39 -p1
 %patch40 -p1
+%patch41 -p1
 
 cp -p %{SOURCE20} runtime/syntax
 cp -p %{SOURCE22} runtime/syntax
@@ -824,6 +830,7 @@ build() {
 	%{__make} -j1 distclean
 	# add common options, can override (disable) if needed with args
 	%configure \
+		--%{!?with_lua:dis}%{?with_lua:en}able-luainterp \
 		--%{!?with_perl:dis}%{?with_perl:en}able-perlinterp \
 		--%{!?with_python:dis}%{?with_python:en}able-pythoninterp \
 		--%{!?with_ruby:dis}%{?with_ruby:en}able-rubyinterp \
@@ -852,6 +859,7 @@ build vim.static \
 	--disable-gui \
 	--without-x \
 	--with-features=small \
+	--disable-luainterp \
 	--disable-perlinterp \
 	--disable-pythoninterp \
 	--disable-rubyinterp \
@@ -869,6 +877,7 @@ build vim.light \
 	--disable-gui \
 	--without-x \
 	--with-features=small \
+	--disable-luainterp \
 	--disable-perlinterp \
 	--disable-pythoninterp \
 	--disable-rubyinterp \
@@ -938,6 +947,7 @@ build vim.heavy \
 	--with-features=huge \
 	--disable-gui \
 	--without-x \
+	--enable-luainterp \
 	--enable-perlinterp \
 	--enable-pythoninterp \
 	--enable-rubyinterp \
@@ -950,6 +960,7 @@ build gvim.heavy \
 	--enable-gtk2-check \
 	--enable-gnome-check \
 	--with-x \
+	--enable-luainterp \
 	--enable-perlinterp \
 	--enable-pythoninterp \
 	--enable-rubyinterp \
