@@ -808,6 +808,12 @@ cp -p %{SOURCE32} runtime/colors
 %{__mv} runtime/lang/menu_n{o,b}_no.latin1.vim
 %{__mv} runtime/lang/menu_n{o,b}_no.utf-8.vim
 
+# not info files but some binary files for Amiga:
+# Amiga Workbench drawer icon
+# Amiga Workbench project icon
+# Amiga Workbench tool icon
+find -name '*.info' | xargs rm -v
+
 %build
 cd src
 %{__autoconf}
