@@ -1,6 +1,6 @@
 --- vim72/src/main.c~	2009-04-15 01:00:47.000000000 +0300
 +++ vim72/src/main.c	2009-04-15 01:11:33.555899981 +0300
-@@ -1382,23 +1382,10 @@
+@@ -1573,24 +1573,10 @@ init_locale(void)
  
  # ifdef FEAT_GETTEXT
      {
@@ -9,10 +9,10 @@
 -
  #  ifdef DYNAMIC_GETTEXT
  	/* Initialize the gettext library */
- 	dyn_libintl_init(NULL);
+ 	dyn_libintl_init();
  #  endif
--	/* expand_env() doesn't work yet, because chartab[] is not initialized
--	 * yet, call vim_getenv() directly */
+-	/* expand_env() doesn't work yet, because g_chartab[] is not
+-	 * initialized yet, call vim_getenv() directly */
 -	p = vim_getenv((char_u *)"VIMRUNTIME", &mustfree);
 -	if (p != NULL && *p != NUL)
 -	{
@@ -21,9 +21,10 @@
 -	}
 -	if (mustfree)
 -	    vim_free(p);
- 	textdomain(VIMPACKAGE);
+-	textdomain(VIMPACKAGE);
      }
  # endif
+ }
 --- vim72/src/misc1.c~	2009-04-15 01:00:48.000000000 +0300
 +++ vim72/src/misc1.c	2009-04-15 01:13:00.319209732 +0300
 @@ -4215,22 +4215,6 @@
