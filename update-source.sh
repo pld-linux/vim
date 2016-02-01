@@ -6,6 +6,9 @@
 #  publish_packages=[0|1] - publish built packages in ~/public_html/$dist/$arch
 #  quiet=[0|1] - discard stdout of process
 
+echo >&2 This script no longer works
+exit 1
+
 # work in package dir
 dir=$(dirname "$0")
 cd "$dir"
