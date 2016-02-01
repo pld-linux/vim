@@ -6,6 +6,7 @@
 #  publish_packages=[0|1] - publish built packages in ~/public_html/$dist/$arch
 #  quiet=[0|1] - discard stdout of process
 
+# there's "patches" branch which mixes tarball and patches
 echo >&2 This script no longer works
 exit 1
 
