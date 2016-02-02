@@ -29,7 +29,7 @@
 # VCS Commits: https://github.com/vim/vim/commits/master
 
 %define		ver		7.4.1236
-%define		rel		1
+%define		rel		2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -1234,6 +1234,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/*.vim
 
 %dir %{_datadir}/vim/autoload
+%{_datadir}/vim/autoload/*complete.vim
 %doc %{_datadir}/vim/autoload/README.txt
 
 %dir %{_datadir}/vim/ftdetect
@@ -1329,6 +1330,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_datadir}/vim/plugin/*.vim
 %{_datadir}/vim/autoload/*.vim
+%exclude %{_datadir}/vim/autoload/*complete.vim
 %{_datadir}/vim/autoload/xml
 %{_datadir}/vim/compiler
 %{_datadir}/vim/macros
