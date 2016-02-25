@@ -29,7 +29,7 @@
 # VCS Commits: https://github.com/vim/vim/commits/master
 
 %define		ver		7.4.1236
-%define		rel		2
+%define		rel		3
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -432,6 +432,7 @@ Obsoletes:	vim-common
 Obsoletes:	vim-syntax-gitcommit
 Obsoletes:	vim-syntax-golang <= 1.3.3-1
 Obsoletes:	vim-syntax-lxc-docker <= 0.9.0-1
+Obsoletes:	vim-syntax-docker < 1.10.1
 Obsoletes:	vim-syntax-upstart
 %if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
