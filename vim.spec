@@ -170,8 +170,6 @@ Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	vim-enhanced
 Obsoletes:	vim-ispell
 Obsoletes:	vim-plugin-multvals
-Obsoletes:	vim-syntax-golang <= 1.3.3-1
-Obsoletes:	vim-syntax-lxc-docker <= 0.9.0-1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # configure redefines it to =1
@@ -432,6 +430,8 @@ Requires:	vim-plugin-securemodelines
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
 Obsoletes:	vim-syntax-gitcommit
+Obsoletes:	vim-syntax-golang <= 1.3.3-1
+Obsoletes:	vim-syntax-lxc-docker <= 0.9.0-1
 Obsoletes:	vim-syntax-upstart
 %if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
