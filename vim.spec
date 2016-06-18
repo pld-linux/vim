@@ -28,8 +28,8 @@
 # tail -n1 sources | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		7.4.1236
-%define		rel		4
+%define		ver		7.4.1943
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -49,7 +49,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	bca123584eb843c485c687861d54ad27
+# Source0-md5:	0ea9464041fe4b1f09e760c8ab6687ec
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -70,7 +70,7 @@ Source32:	oceandeep.vim
 # http://www.vim.org/scripts/script.php?script_id=1464 (2.6.3)
 Source33:	moria.vim
 Patch0:		%{name}-sysconfdir.patch
-Patch1:		%{name}-visual.patch
+
 Patch2:		%{name}-paths.patch
 Patch3:		%{name}-no_libelf.patch
 Patch4:		%{name}-egrep.patch
@@ -746,7 +746,7 @@ cp -p runtime/gvim.desktop gvim-gtk.desktop
 cp -p runtime/gvim.desktop gvim-motif.desktop
 
 %patch0 -p1
-%patch1 -p1
+
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
@@ -1252,6 +1252,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/keymap
 %doc %{_datadir}/vim/keymap/README.txt
 %{_datadir}/vim/keymap/*.vim
+
+%{_datadir}/vim/pack
 
 %dir %{_datadir}/vim/plugin
 %doc %{_datadir}/vim/plugin/README.txt

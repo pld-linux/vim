@@ -50,7 +50,6 @@
  Comment[pt_BR]=Edite arquivos de texto
  Comment[ro]=Editare fişiere text
 @@ -70,11 +70,11 @@
- Comment[wa]=Asspougnî des fitchîs tecses
  Comment[zh_CN]=编辑文本文件
  Comment[zh_TW]=編輯文字檔
 -TryExec=gvim
@@ -59,6 +58,7 @@
 +Exec=gvim.gnome -f %F
  Terminal=false
  Type=Application
+ Keywords=Text;editor;
  Icon=gvim
 -Categories=Utility;TextEditor;
 +Categories=GTK;GNOME;TextEditor;
@@ -87,7 +87,6 @@
  Comment[pt_BR]=Edite arquivos de texto
  Comment[ro]=Editare fişiere text
 @@ -70,11 +70,11 @@
- Comment[wa]=Asspougnî des fitchîs tecses
  Comment[zh_CN]=编辑文本文件
  Comment[zh_TW]=編輯文字檔
 -TryExec=gvim
@@ -96,6 +95,7 @@
 +Exec=gvim.gtk -f %F
  Terminal=false
  Type=Application
+ Keywords=Text;editor;
  Icon=gvim
 -Categories=Utility;TextEditor;
 +Categories=GTK;TextEditor;
@@ -124,7 +124,6 @@
  Comment[pt_BR]=Edite arquivos de texto
  Comment[ro]=Editare fişiere text
 @@ -70,11 +70,11 @@
- Comment[wa]=Asspougnî des fitchîs tecses
  Comment[zh_CN]=编辑文本文件
  Comment[zh_TW]=編輯文字檔
 -TryExec=gvim
@@ -133,6 +132,7 @@
 +Exec=gvim.motif -f %F
  Terminal=false
  Type=Application
+ Keywords=Text;editor;
  Icon=gvim
 -Categories=Utility;TextEditor;
 +Categories=Motif;TextEditor;
