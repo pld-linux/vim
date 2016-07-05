@@ -1213,6 +1213,8 @@ rm -rf $RPM_BUILD_ROOT
 %verify(not md5 mtime size) %{_datadir}/vim/doc/tags
 %lang(pl) %verify(not md5 mtime size) %{_datadir}/vim/doc/tags-pl
 %verify(not md5 mtime size) %{_datadir}/vim/vimfiles/doc/tags
+# X11 colours definition for colour name lookup
+%{_datadir}/vim/rgb.txt
 
 %dir %{_datadir}/vim/vimfiles
 %dir %{_datadir}/vim/vimfiles/doc
