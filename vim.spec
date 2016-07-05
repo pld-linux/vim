@@ -28,7 +28,7 @@
 # tail -n1 sources | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		7.4.1943
+%define		ver		7.4.1989
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -49,7 +49,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	0ea9464041fe4b1f09e760c8ab6687ec
+# Source0-md5:	f8a364b4be839f2cf6cbe1d4f0af32a0
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
