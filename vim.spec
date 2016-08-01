@@ -140,7 +140,7 @@ BuildRequires:	python-devel
 BuildRequires:	rpm-pythonprov
 %endif
 BuildRequires:	rpm >= 4.4.9-56
-BuildRequires:	rpmbuild(macros) >= 1.426
+BuildRequires:	rpmbuild(macros) >= 1.718
 %if %{with ruby} || %{with heavy}
 BuildRequires:	ruby-devel
 %endif
@@ -520,8 +520,8 @@ zainstalować ten pakiet.
 Summary:	Context Vim documentation
 Summary(pl.UTF-8):	Dokumentacja kontekstowa do Vima
 Group:		Applications/Editors/Vim
+Requires(post,postun):	/usr/bin/vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
-Requires:	gzip
 %if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
 %endif
@@ -1090,6 +1090,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %postun
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
+
+%post doc
+%vim_doc_helptags
+
+%postun doc
+%vim_doc_helptags
 
 %post -n gvim-athena
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
