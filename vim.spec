@@ -1004,13 +1004,6 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 
 %find_lang %{name}
 
-# use compressed docs, see :help gzip-helpfile
-%{__gzip} -9 $RPM_BUILD_ROOT%{_datadir}/vim/doc/*.txt
-%{__sed} -i -e 's=\(\t.*\.txt\)\t=\1.gz\t=' $RPM_BUILD_ROOT%{_datadir}/vim/doc/tags
-
-%{__gzip} -9 $RPM_BUILD_ROOT%{_datadir}/vim/doc/*.??x
-%{__sed} -i -e 's=\(\t.*\.plx\)\t=\1.gz\t=' $RPM_BUILD_ROOT%{_datadir}/vim/doc/tags-pl
-
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/*
 
 %if %{with static}
@@ -1349,10 +1342,10 @@ rm -rf $RPM_BUILD_ROOT
 %files doc
 %defattr(644,root,root,755)
 # English
-%{_datadir}/vim/doc/*.txt.gz
+%{_datadir}/vim/doc/*.txt
 
 # Polish
-%lang(pl) %{_datadir}/vim/doc/*.plx.gz
+%lang(pl) %{_datadir}/vim/doc/*.plx
 
 %files tutor
 %defattr(644,root,root,755)

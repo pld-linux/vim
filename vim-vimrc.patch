@@ -1,15 +1,5 @@
 --- vim74/runtime/vimrc_example.vim~	2013-09-06 00:10:56.000000000 +0300
 +++ vim74/runtime/vimrc_example.vim	2013-09-06 00:11:24.756404306 +0300
-@@ -31,6 +31,9 @@
- set showcmd		" display incomplete commands
- set incsearch		" do incremental searching
- 
-+" use compressed docs, see :help gzip-helpfile
-+set helpfile=$VIMRUNTIME/doc/help.txt.gz
-+
- " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
- " let &guioptions = substitute(&guioptions, "t", "", "g")
- 
 @@ -46,13 +46,13 @@ map Q gq
  inoremap <C-U> <C-G>u<C-U>
  
