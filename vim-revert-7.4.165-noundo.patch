@@ -1,10 +1,12 @@
---- vim74/runtime/vimrc_example.vim~	2014-02-19 09:38:17.000000000 +0100
-+++ vim74/runtime/vimrc_example.vim	2014-02-19 09:38:56.196879355 +0100
-@@ -25,7 +25,6 @@
+--- vim-7.4.2189/runtime/vimrc_example.vim~	2016-08-09 22:27:05.000000000 +0200
++++ vim-7.4.2189/runtime/vimrc_example.vim	2016-08-09 22:28:15.756581654 +0200
+@@ -21,9 +21,6 @@ if has("vms")
    set nobackup		" do not keep a backup file, use versions instead
  else
    set backup		" keep a backup file (restore to previous version)
--  set undofile		" keep an undo file (undo changes after closing)
+-  if has('persistent_undo')
+-    set undofile	" keep an undo file (undo changes after closing)
+-  endif
  endif
- set history=50		" keep 50 lines of command line history
- set ruler		" show the cursor position all the time
+ 
+ if (&t_Co > 2 || has("gui_running")) && filereadable($VIMRUNTIME."/syntax/syntax.vim")

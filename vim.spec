@@ -28,8 +28,8 @@
 # tail -n1 sources | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		7.4.2054
-%define		rel		2
+%define		ver		7.4.2189
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -49,7 +49,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	76acebdc395e57fc993d444d9e9b97df
+# Source0-md5:	7d8edf9269bb12f888f5585681e69bcc
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -1367,6 +1367,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %lang(de) %{_datadir}/vim/tutor/tutor.bar
 %lang(de) %{_datadir}/vim/tutor/tutor.bar.utf-8
+%lang(bg) %{_datadir}/vim/tutor/tutor.bg.utf-8
 %lang(ca) %{_datadir}/vim/tutor/tutor.ca
 %lang(ca) %{_datadir}/vim/tutor/tutor.ca.utf-8
 %lang(cs) %{_datadir}/vim/tutor/tutor.cs
