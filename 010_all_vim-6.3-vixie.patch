@@ -38,24 +38,24 @@
  " For version 5.7 and earlier: only when not done already
  " For version 5.8 and later: only when an item doesn't have highlighting yet
 @@ -63,6 +57,7 @@
- 		command -nargs=+ HiLink hi def link <args>
+ 		command -nargs=+ hi def link hi def link <args>
  	endif
  
-+	HiLink crontabSpecial		PreProc
- 	HiLink crontabMin		Number
- 	HiLink crontabHr		PreProc
- 	HiLink crontabDay		Type
++hi def link crontabSpecial		PreProc
+ hi def link crontabMin		Number
+ hi def link crontabHr		PreProc
+ hi def link crontabDay		Type
 @@ -84,6 +79,13 @@
  " comment out next line for to suppress unix commands coloring.
- 	HiLink crontabCmd		Statement
+ hi def link crontabCmd		Statement
  
-+	HiLink crontabCmdSpecial	Special
++hi def link crontabCmdSpecial	Special
 +
-+	HiLink crontabVar		Identifier
-+	HiLink crontabVarEq		Special
-+	HiLink crontabVarVal		Constant
-+	HiLink crontabVarValQ		String
++hi def link crontabVar		Identifier
++hi def link crontabVarEq		Special
++hi def link crontabVarVal		Constant
++hi def link crontabVarValQ		String
 +
- 	HiLink crontabCmnt		Comment
+ hi def link crontabCmnt		Comment
  
- 	delcommand HiLink
+ hi def link

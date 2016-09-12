@@ -9,10 +9,10 @@
  " Translations (also includes header fields as they appear in a translation msgstr)
  syn region poCommentKDE	  start=+"_: +ms=s+1 end="\\n" end="\"\n^msgstr"me=s-1 contained
 @@ -103,6 +104,7 @@
-   HiLink poDiffOld           Todo
-   HiLink poDiffNew          Special
-   HiLink poObsolete         Comment
-+  HiLink poUntranslated      Todo
+ hi def link poDiffOld           Todo
+ hi def link poDiffNew          Special
+ hi def link poObsolete         Comment
++hi def link poUntranslated      Todo
  
-   HiLink poStatementMsgid   Statement
-   HiLink poStatementMsgstr  Statement
+ hi def link poStatementMsgid   Statement
+ hi def link poStatementMsgstr  Statement
