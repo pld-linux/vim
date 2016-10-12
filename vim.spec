@@ -4,10 +4,12 @@
 %bcond_without	athena		# don't build Athena Widgets-based gvim
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
+%bcond_with	gtk3		# use GTK+ 3.x instead of 2.x
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	heavy		# don't build heavy (full-featured GNOME-based gvim/vim)
 %bcond_without	gui		# don't build any GUI
 %bcond_without	light		# don't build light (minimal, ncurses, but not static)
+%bcond_without	x11		# don't build vimx (non-GUI with X11 clipboard support)
 %bcond_with	lua		# with Lua interp in vim package
 %bcond_with	perl		# with Perl interp in vim package
 %bcond_with	python		# with Python interp in vim package
@@ -110,24 +112,37 @@ Patch40:	desktop.patch
 Patch41:	%{name}-lua.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
-BuildRequires:	autoconf
+BuildRequires:	attr-devel
+BuildRequires:	autoconf >= 2.12
 BuildRequires:	gpm-devel
 %if "%{pld_release}" == "ac"
-%{?with_athena:BuildRequires:	XFree86-devel}
+%if %{with athena} || %{with x11}
+BuildRequires:	XFree86-devel
+%endif
 BuildRequires:	gettext-devel
 %else
 BuildRequires:	gettext-tools
 %{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
+%if %{with x11} || %{with gui}
+BuildRequires:	xorg-lib-libICE-devel
+BuildRequires:	xorg-lib-libSM-devel
+BuildRequires:	xorg-lib-libX11-devel
+BuildRequires:	xorg-lib-libXt-devel
+%endif
 %endif
 %if %{with gtk} || %{with heavy}
+%if %{with gtk3}
+BuildRequires:	gtk+3-devel >= 3.0
+%else
 BuildRequires:	gtk+2-devel >= 2:2.6.0
+%endif
 %endif
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %if %{with selinux} || %{with heavy}
 BuildRequires:	libselinux-devel
 %endif
 %if %{with lua} || %{with heavy}
-BuildRequires:	lua52-devel
+BuildRequires:	lua52-devel >= 5.2
 %endif
 %{?with_motif:BuildRequires:	motif-devel}
 BuildRequires:	ncurses-devel
@@ -136,16 +151,16 @@ BuildRequires:	pkgconfig
 BuildRequires:	perl-devel
 %endif
 %if %{with python} || %{with heavy}
-BuildRequires:	python-devel
+BuildRequires:	python-devel >= 2.3
 BuildRequires:	rpm-pythonprov
 %endif
 BuildRequires:	rpm >= 4.4.9-56
 BuildRequires:	rpmbuild(macros) >= 1.718
 %if %{with ruby} || %{with heavy}
-BuildRequires:	ruby-devel
+BuildRequires:	ruby-devel >= 1.6.0
 %endif
 %if %{with tcl} || %{with heavy}
-BuildRequires:	tcl-devel
+BuildRequires:	tcl-devel >= 8.0
 %endif
 Obsoletes:	kvim
 %if %{with static}
@@ -715,7 +730,8 @@ Summary:	Full featured build of Vim with X Window support
 Summary(hu.UTF-8):	A gvim legteljesebb verziója
 Summary(pl.UTF-8):	W pełni funkcjonalna wersja Vima z interfejsem dla X Window
 Group:		Applications/Editors/Vim
-Requires(post,postun):	gtk+2
+Requires(post,postun):	gtk-update-icon-cache
+Requires(post,postun):	hicolor-icon-theme
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	%{name}-rt-extras = %{epoch}:%{version}-%{release}
 Requires:	iconv
@@ -899,10 +915,12 @@ build vim.ncurses \
 	--without-x \
 	--with-features=huge
 
+%if %{with x11}
 build vimx \
 	--disable-gui \
 	--with-x \
 	--with-features=huge
+%endif
 
 %if %{with athena}
 build gvim.athena \
@@ -930,8 +948,13 @@ build gvim.motif \
 %if %{with gtk}
 build gvim.gtk \
 	--with-features=huge \
+%if %{with gtk3}
+	--enable-gui=gtk3 \
+	--enable-gtk3-check \
+%else
 	--enable-gui=gtk2 \
 	--enable-gtk2-check \
+%endif
 	--with-x \
 	--disable-gpm
 
@@ -973,7 +996,6 @@ build gvim.heavy \
 	--enable-rubyinterp \
 	--enable-tclinterp \
 	--disable-gpm
-
 %endif
 
 %{__make} xxd/xxd languages
@@ -1013,7 +1035,9 @@ install -p src/bin/vim.static	$RPM_BUILD_ROOT/bin/vi
 install -p src/bin/vim.ncurses	$RPM_BUILD_ROOT/bin/vi
 ln -sf /bin/vi		$RPM_BUILD_ROOT%{_bindir}/vim
 %endif
+%if %{with x11}
 install -p src/bin/vimx	$RPM_BUILD_ROOT%{_bindir}/vimx
+%endif
 install -p src/xxd/xxd	$RPM_BUILD_ROOT%{_bindir}/xxd
 install -p src/vimtutor	$RPM_BUILD_ROOT%{_bindir}/vimtutor
 
@@ -1123,6 +1147,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %postun -n gvim-gnome
 %update_desktop_database_postun
+%update_icon_cache hicolor
+
+%post -n gvim-heavy
+%update_icon_cache hicolor
+
+%postun -n gvim-heavy
 %update_icon_cache hicolor
 
 %files
@@ -1433,9 +1463,11 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_mandir}/pl/man1/vimtutor.1*
 %lang(ru) %{_mandir}/ru/man1/vimtutor.1*
 
+%if %{with x11}
 %files -n vimx
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vimx
+%endif
 
 %if %{with heavy}
 %files heavy
