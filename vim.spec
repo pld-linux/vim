@@ -1087,6 +1087,9 @@ install -p src/bin/gvim.heavy	$RPM_BUILD_ROOT%{_bindir}
 install -p src/bin/vim.light	$RPM_BUILD_ROOT%{_bindir}
 %endif
 
+install -d $RPM_BUILD_ROOT%{_pixmapsdir}
+mv $RPM_BUILD_ROOT{%{_iconsdir}/hicolor/48x48/apps,%{_pixmapsdir}}/gvim.png
+
 # locolor scheme no longer supported
 %{__rm} -r $RPM_BUILD_ROOT%{_iconsdir}/locolor
 
@@ -1353,7 +1356,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/vim.1*
 %lang(fi) %{_mandir}/fi/man1/vim.1*
 %lang(fr) %{_mandir}/fr/man1/vim.1*
-%{_iconsdir}/hicolor/48x48/apps/gvim.png
+%{_pixmapsdir}/gvim.png
 
 # plugins in base -rt package
 %{_datadir}/vim/autoload/gzip.vim
