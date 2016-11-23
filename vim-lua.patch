@@ -1,6 +1,6 @@
-diff -ruN vim-7.4.979.orig/src/configure.in vim-7.4.979/src/configure.in
---- vim-7.4.979.orig/src/configure.in	2015-12-19 15:28:18.000000000 +0100
-+++ vim-7.4.979/src/configure.in	2016-01-05 01:33:07.501230977 +0100
+diff -ruN vim-7.4.979.orig/src/configure.ac vim-7.4.979/src/configure.ac
+--- vim-7.4.979.orig/src/configure.ac	2015-12-19 15:28:18.000000000 +0100
++++ vim-7.4.979/src/configure.ac	2016-01-05 01:33:07.501230977 +0100
 @@ -535,7 +535,7 @@
        fi
      else

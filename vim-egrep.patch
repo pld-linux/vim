@@ -1,5 +1,5 @@
---- vim61/src/configure.in.orig	Fri Oct 11 23:57:55 2002
-+++ vim61/src/configure.in	Sat Oct 12 00:04:37 2002
+--- vim61/src/configure.ac.orig	Fri Oct 11 23:57:55 2002
++++ vim61/src/configure.ac	Sat Oct 12 00:04:37 2002
 @@ -12,6 +12,8 @@
  
  dnl Checks for programs.
