@@ -30,7 +30,7 @@
 # VCS Commits: https://github.com/vim/vim/commits/master
 
 %define		ver		8.0.1173
-%define		rel		1
+%define		rel		2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -1011,7 +1011,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 # remove unsupported locales
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/ko.UTF-8
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/no
-%{__rm} -r $RPM_BUILD_ROOT%{_localedir},zh_CN.UTF-8
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/zh_CN.UTF-8
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/zh_TW.UTF-8
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/cs.cp1250
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/ja.sjis
