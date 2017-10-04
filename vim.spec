@@ -26,12 +26,11 @@
 %endif
 
 # Command to check for latest patch:
-# wget ftp://ftp.vim.org/pub/editors/vim/patches/7.4/MD5SUMS -O sources
-# tail -n1 sources | awk '{print $2}'
+# wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		8.0.0095
-%define		rel		3
+%define		ver		8.0.1173
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -51,7 +50,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	d59dcdd985dfe4fffc6be6c20dd45ef1
+# Source0-md5:	68385a625d161e979df809c30b4ae6c0
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -75,7 +74,7 @@ Patch0:		%{name}-sysconfdir.patch
 
 Patch2:		%{name}-paths.patch
 Patch3:		%{name}-no_libelf.patch
-Patch4:		%{name}-egrep.patch
+
 Patch5:		%{name}-awk.patch
 Patch6:		%{name}-filetype_vim-perl_tests.patch
 Patch7:		%{name}-apache.patch
@@ -101,7 +100,7 @@ Patch28:	%{name}-ft-cron.patch
 Patch29:	%{name}-phpscript.patch
 Patch30:	%{name}-pam.patch
 Patch32:	%{name}-localedir.patch
-Patch33:	%{name}-locales.patch
+
 Patch34:	%{name}-rtdir.patch
 Patch35:	%{name}-ft-mib.patch
 Patch36:	%{name}-ft-lib-udevrules.patch
@@ -130,6 +129,7 @@ BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xorg-lib-libXt-devel
 %endif
 %endif
+BuildRequires:	grep
 %if %{with gtk} || %{with heavy}
 %if %{with gtk3}
 BuildRequires:	gtk+3-devel >= 3.0
@@ -444,10 +444,10 @@ Requires:	rpm-whiteout >= 1.3
 Requires:	vim-plugin-securemodelines
 Obsoletes:	gvim-bonobo
 Obsoletes:	vim-common
+Obsoletes:	vim-syntax-docker < 1.10.1
 Obsoletes:	vim-syntax-gitcommit
 Obsoletes:	vim-syntax-golang <= 1.3.3-1
 Obsoletes:	vim-syntax-lxc-docker <= 0.9.0-1
-Obsoletes:	vim-syntax-docker < 1.10.1
 Obsoletes:	vim-syntax-upstart
 %if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
@@ -765,7 +765,7 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
+
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
@@ -794,7 +794,7 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 %patch29 -p1
 %patch30 -p1
 %patch32 -p1
-%patch33 -p1
+
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
@@ -811,19 +811,6 @@ cp -p %{SOURCE31} runtime/colors
 cp -p %{SOURCE32} runtime/colors
 
 %{__unzip} -qd runtime/doc %{SOURCE2}
-
-# remove unsupported locales
-%{__rm} src/po/zh_{CN,TW}.UTF-8.po
-%{__rm} runtime/lang/menu_zh_{cn,tw}.utf-8.vim
-
-# fix nb/no
-%{__mv} src/po/n{o,b}.po
-%{__mv} runtime/tutor/tutor.n{o,b}
-%{__mv} runtime/tutor/tutor.n{o,b}.utf-8
-%{__mv} runtime/lang/menu_n{o,b}.latin1.vim
-%{__mv} runtime/lang/menu_n{o,b}.utf-8.vim
-%{__mv} runtime/lang/menu_n{o,b}_no.latin1.vim
-%{__mv} runtime/lang/menu_n{o,b}_no.utf-8.vim
 
 # not info files but some binary files for Amiga:
 # Amiga Workbench drawer icon
@@ -1013,7 +1000,19 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 # generic gvim from upstream, but we have bunch of subpackages
 %{__rm} $RPM_BUILD_ROOT%{_desktopdir}/gvim.desktop
 
-# not supported locales added by 7.3.764 or later
+# fix nb/no
+%{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/tutor/tutor.n{o,b}
+%{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/tutor/tutor.n{o,b}.utf-8
+%{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/lang/menu_n{o,b}.latin1.vim
+%{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/lang/menu_n{o,b}.utf-8.vim
+%{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/lang/menu_n{o,b}_no.latin1.vim
+%{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/lang/menu_n{o,b}_no.utf-8.vim
+
+# remove unsupported locales
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/ko.UTF-8
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/no
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir},zh_CN.UTF-8
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/zh_TW.UTF-8
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/cs.cp1250
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/ja.sjis
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/ja.euc-jp
@@ -1023,6 +1022,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/sk.cp1250
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/uk.cp1251
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/zh_CN.cp936
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/vim/lang/menu_zh_{cn,tw}.utf-8.vim
 
 %find_lang %{name}
 
@@ -1430,6 +1430,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_datadir}/vim/tutor/tutor.ja.utf-8
 %lang(ko) %{_datadir}/vim/tutor/tutor.ko.euc
 %lang(ko) %{_datadir}/vim/tutor/tutor.ko.utf-8
+%lang(lv) %{_datadir}/vim/tutor/tutor.lv
 %lang(nl) %{_datadir}/vim/tutor/tutor.nl
 %lang(nl) %{_datadir}/vim/tutor/tutor.nl.utf-8
 %lang(nb) %{_datadir}/vim/tutor/tutor.nb
