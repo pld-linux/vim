@@ -1,5 +1,5 @@
---- vim72/runtime/filetype.vim~	2010-03-16 20:11:19.304293041 +0200
-+++ vim72/runtime/filetype.vim	2010-03-16 20:03:33.541017783 +0200
+--- vim72/runtime/autoload/dist/ft.vim~	2010-03-16 20:11:19.304293041 +0200
++++ vim72/runtime/autoload/dist/ft.vim	2010-03-16 20:03:33.541017783 +0200
 @@ -1830,6 +1830,10 @@
      setf udevrules
      return
