@@ -29,7 +29,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		8.0.1473
+%define		ver		8.0.1788
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -50,7 +50,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	7b6d0450cbc11727829cdb73e5068c51
+# Source0-md5:	a206af0538248328286e1a8b3a186838
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -1301,6 +1301,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/colors
 %doc %{_datadir}/vim/colors/README.txt
 %{_datadir}/vim/colors/*.vim
+%dir %{_datadir}/vim/colors/tools
+%{_datadir}/vim/colors/tools/check_colors.vim
 
 %dir %{_datadir}/vim/lang
 %doc %{_datadir}/vim/lang/README*
