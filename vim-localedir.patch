@@ -79,11 +79,12 @@
  	if test -d $(LANGSOURCE); then \
 --- vim73/src/po/Makefile~	2013-02-22 17:28:18.000000000 +0200
 +++ vim73/src/po/Makefile	2013-02-22 17:46:40.771918175 +0200
-@@ -151,6 +151,7 @@
+@@ -38,6 +38,7 @@ check: $(CHECKFILES)
  
  install: $(MOFILES) $(MOCONVERTED)
  	@$(MAKE) prefixcheck
 +	install -d $(LOCALEDIR); \
- 	for lang in $(LANGUAGES) $(CONVERTED); do \
+ 	for lang in $(LANGUAGES); do \
  	  dir=$(LOCALEDIR)/$$lang/; \
  	  if test ! -x "$$dir"; then \
+
