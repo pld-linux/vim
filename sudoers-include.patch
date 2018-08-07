@@ -5,15 +5,15 @@ Date: Fri, 27 Dec 2013 19:57:35 +0200
 
 --- vim74/runtime/syntax/sudoers.vim	2011-02-25 15:05:44.000000000 +0200
 +++ vim74/runtime/syntax/sudoers.vim	2013-12-27 20:00:19.631344071 +0200
-@@ -23,7 +23,7 @@
+@@ -24,7 +24,7 @@ syn cluster sudoersCmndSpecList       co
  
  syn keyword sudoersTodo               contained TODO FIXME XXX NOTE
  
 -syn region  sudoersComment            display oneline start='#' end='$' contains=sudoersTodo
 +syn region  sudoersComment            display oneline start='#' end='$' contains=sudoersTodo,sudoersIncludeDirective
+ syn region  sudoersInclude            display oneline start='#\(include\|includedir\)' end='$'
  
  syn keyword sudoersAlias              User_Alias Runas_Alias nextgroup=sudoersUserAlias skipwhite skipnl
- syn keyword sudoersAlias              Host_Alias nextgroup=sudoersHostAlias skipwhite skipnl
 @@ -142,6 +142,8 @@
  syn match   sudoersCommandArgsInSpec contained '[^[:space:],:=\\]\+\%(\\[[:space:],:=\\][^[:space:],:=\\]*\)*' nextgroup=sudoersCommandArgsInSpec,@sudoersCmndSpec skipwhite
  syn match   sudoersCommandEmptyInSpec contained '""' nextgroup=@sudoersCmndSpec skipwhite skipnl
