@@ -69,16 +69,21 @@ diff -Nru vim62.orig/src/misc1.c vim62/src/misc1.c
  # endif
  #endif
  
-@@ -370,10 +370,10 @@ typedef struct dsc$descriptor   DESC;
- #else
+@@ -371,14 +371,14 @@
  # ifdef RUNTIME_GLOBAL
- #  define DFLT_RUNTIMEPATH	"~/.vim," RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL "/after,~/.vim/after"
--#  define CLEAN_RUNTIMEPATH	RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL "/after"
-+#  define CLEAN_RUNTIMEPATH	"$HOME_ETC/.vim," RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL "/after,$HOME_ETC/.vim/after"
+ #  ifdef RUNTIME_GLOBAL_AFTER
+ #   define DFLT_RUNTIMEPATH	"~/.vim," RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL_AFTER ",~/.vim/after"
+-#   define CLEAN_RUNTIMEPATH	RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL_AFTER
++#   define CLEAN_RUNTIMEPATH	"$HOME_ETC/.vim/after," RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL_AFTER
+ #  else
+ #   define DFLT_RUNTIMEPATH	"~/.vim," RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL "/after,~/.vim/after"
+-#   define CLEAN_RUNTIMEPATH	RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL "/after"
++#   define CLEAN_RUNTIMEPATH	"$HOME_ETC/.vim," RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL "/after"
+ #  endif
  # else
  #  define DFLT_RUNTIMEPATH	"~/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,~/.vim/after"
 -#  define CLEAN_RUNTIMEPATH	"$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after"
-+#  define CLEAN_RUNTIMEPATH	"$HOME_ETC/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME_ETC/.vim/after"
++#  define CLEAN_RUNTIMEPATH	"$HOME_ETC/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after"
  # endif
  #endif
  
