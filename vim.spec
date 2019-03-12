@@ -876,7 +876,7 @@ build vim.static \
 	--disable-tclinterp \
 	--disable-cscope \
 	--disable-gpm \
-	--disable-multibyte \
+	--enable-multibyte \
 	--disable-nls
 
 LDFLAGS="%{rpmldflags}"
