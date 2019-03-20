@@ -4,7 +4,7 @@
 %bcond_without	athena		# don't build Athena Widgets-based gvim
 %bcond_without	motif		# don't build Motif-based gvim
 %bcond_without	gtk		# don't build GTK+-based gvim support
-%bcond_with	gtk3		# use GTK+ 3.x instead of 2.x
+%bcond_without	gtk3		# use GTK+ 2.x instead of 3.x
 %bcond_without	gnome		# don't build GNOME-based gvim support
 %bcond_without	heavy		# don't build heavy (full-featured GNOME-based gvim/vim)
 %bcond_without	gui		# don't build any GUI
