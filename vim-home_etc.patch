@@ -1,27 +1,26 @@
 diff -Nru vim62.orig/src/misc1.c vim62/src/misc1.c
 --- vim62.orig/src/misc1.c	2003-11-11 18:53:52.000000000 +0100
 +++ vim62/src/misc1.c	2003-11-11 19:29:32.000000000 +0100
-@@ -3333,7 +3333,7 @@
-     if (STRCMP(name, "HOME") == 0)
- 	return homedir;
- #endif
--
+@@ -2220,12 +2220,19 @@
+ 	return p;
+     }
+ #else
 +first_test:
      p = mch_getenv(name);
-     if (p != NULL && *p == NUL)	    /* empty is the same as not set */
+     if (p != NULL && *p == NUL)	    // empty is the same as not set
  	p = NULL;
-@@ -3341,6 +3341,11 @@
+ 
      if (p != NULL)
  	return p;
- 
++
 +    if (strcmp(name, "HOME_ETC") == 0) {
-+      name = "HOME";
-+      goto first_test;
++	name = "HOME";
++	goto first_test;
 +    }
 +
-     vimruntime = (STRCMP(name, "VIMRUNTIME") == 0);
-     if (!vimruntime && STRCMP(name, "VIM") != 0)
- 	return NULL;
+ #endif
+ 
+     // handling $VIMRUNTIME and $VIM is below, bail out if it's another name.
 --- vim62.orig/src/os_unix.h	2003-11-11 18:53:52.000000000 +0100
 +++ vim62/src/os_unix.h	2003-11-11 19:53:54.000000000 +0100
 @@ -264,7 +264,7 @@

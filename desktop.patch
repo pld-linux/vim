@@ -11,12 +11,14 @@
 --- vim-7.4.979/gvim-athena.desktop~	2015-12-19 16:28:18.000000000 +0200
 +++ vim-7.4.979/gvim-athena.desktop	2015-12-28 08:24:02.106735918 +0200
 @@ -1,5 +1,5 @@
- [Desktop Entry]
--Name=gVim
-+Name=gVim Athena
- GenericName=Text Editor
- GenericName[da]=Teksteditor
+ # Translators: This is the Application Name used in the GVim desktop file
+ Name[de]=GVim
+ Name[eo]=GVim
+-Name=GVim
++Name=GVim Athena
+ # Translators: This is the Generic Application Name used in the Vim desktop file
  GenericName[de]=Texteditor
+ GenericName[eo]=Tekstoredaktilo
 @@ -71,7 +71,7 @@
  Comment[zh_CN]=编辑文本文件
  Comment[zh_TW]=編輯文字檔
@@ -29,21 +31,24 @@
  Icon=gvim
 --- vim-7.4.979/gvim-gnome.desktop~	2015-12-28 08:32:38.000000000 +0200
 +++ vim-7.4.979/gvim-gnome.desktop	2015-12-28 08:33:14.285396908 +0200
-@@ -1,12 +1,12 @@
- [Desktop Entry]
--Name=gVim
-+Name=gVim GNOME
- GenericName=Text Editor
- GenericName[da]=Teksteditor
+@@ -1,5 +1,5 @@
+ # Translators: This is the Application Name used in the GVim desktop file
+ Name[de]=GVim
+ Name[eo]=GVim
+-Name=GVim
++Name=GVim GNOME
+ # Translators: This is the Generic Application Name used in the Vim desktop file
  GenericName[de]=Texteditor
  GenericName[eo]=Tekstoredaktilo
- GenericName[fr]=Éditeur de texte
- GenericName[pl]=Edytor tekstu
+@@ -1,14 +1,14
+ Comment[de]=Textdateien bearbeiten
+ Comment[eo]=Redakti tekstajn dosierojn
+ Comment[ja]=テキストファイルを編集します
 -Comment=Edit text files
 +Comment=The vi editor for X Window System with GNOME L&F
- Comment[af]=Redigeer tekslêers
- Comment[am]=የጽሑፍ ፋይሎች ያስተካክሉ
- Comment[ar]=حرّر ملفات نصية
+ # The translations should come from the po file. Leave them here for now, they will
+ # be overwritten by the po file when generating the desktop.file!
+ GenericName[da]=Teksteditor
 @@ -55,7 +55,7 @@ Comment[nn]=Rediger tekstfiler
  Comment[no]=Rediger tekstfiler
  Comment[or]=ପାଠ୍ଯ ଫାଇଲଗୁଡ଼ିକୁ ସମ୍ପାଦନ କରନ୍ତୁ
@@ -70,21 +75,24 @@
  MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
 --- vim-7.4.979/gvim-gtk.desktop~	2015-12-19 16:28:18.000000000 +0200
 +++ vim-7.4.979/gvim-gtk.desktop	2015-12-28 08:29:28.577015888 +0200
-@@ -1,12 +1,12 @@
- [Desktop Entry]
--Name=gVim
-+Name=gVim GTK
- GenericName=Text Editor
- GenericName[da]=Teksteditor
+@@ -1,5 +1,5 @@
+ # Translators: This is the Application Name used in the GVim desktop file
+ Name[de]=GVim
+ Name[eo]=GVim
+-Name=GVim
++Name=GVim GTK
+ # Translators: This is the Generic Application Name used in the Vim desktop file
  GenericName[de]=Texteditor
  GenericName[eo]=Tekstoredaktilo
- GenericName[fr]=Éditeur de texte
- GenericName[pl]=Edytor tekstu
+@@ -1,14 +1,14 @@
+ Comment[de]=Textdateien bearbeiten
+ Comment[eo]=Redakti tekstajn dosierojn
+ Comment[ja]=テキストファイルを編集します
 -Comment=Edit text files
 +Comment=The vi editor for X Window System with GTK L&F
- Comment[af]=Redigeer tekslêers
- Comment[am]=የጽሑፍ ፋይሎች ያስተካክሉ
- Comment[ar]=حرّر ملفات نصية
+ # The translations should come from the po file. Leave them here for now, they will
+ # be overwritten by the po file when generating the desktop.file!
+ GenericName[da]=Teksteditor
 @@ -55,7 +55,7 @@ Comment[nn]=Rediger tekstfiler
  Comment[no]=Rediger tekstfiler
  Comment[or]=ପାଠ୍ଯ ଫାଇଲଗୁଡ଼ିକୁ ସମ୍ପାଦନ କରନ୍ତୁ
@@ -111,21 +119,24 @@
  MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
 --- vim-7.4.979/gvim-motif.desktop~	2015-12-19 16:28:18.000000000 +0200
 +++ vim-7.4.979/gvim-motif.desktop	2015-12-28 08:31:11.245677767 +0200
-@@ -1,12 +1,12 @@
- [Desktop Entry]
--Name=gVim
-+Name=gVim Motif
- GenericName=Text Editor
- GenericName[da]=Teksteditor
+@@ -1,5 +1,5 @@
+ # Translators: This is the Application Name used in the GVim desktop file
+ Name[de]=GVim
+ Name[eo]=GVim
+-Name=GVim
++Name=GVim Motif
+ # Translators: This is the Generic Application Name used in the Vim desktop file
  GenericName[de]=Texteditor
  GenericName[eo]=Tekstoredaktilo
- GenericName[fr]=Éditeur de texte
- GenericName[pl]=Edytor tekstu
+@@ -1,14 +1,14 @@
+ Comment[de]=Textdateien bearbeiten
+ Comment[eo]=Redakti tekstajn dosierojn
+ Comment[ja]=テキストファイルを編集します
 -Comment=Edit text files
 +Comment=The vi editor for X Window System with Motif L&F
- Comment[af]=Redigeer tekslêers
- Comment[am]=የጽሑፍ ፋይሎች ያስተካክሉ
- Comment[ar]=حرّر ملفات نصية
+ # The translations should come from the po file. Leave them here for now, they will
+ # be overwritten by the po file when generating the desktop.file!
+ GenericName[da]=Teksteditor
 @@ -55,7 +55,7 @@ Comment[nn]=Rediger tekstfiler
  Comment[no]=Rediger tekstfiler
  Comment[or]=ପାଠ୍ଯ ଫାଇଲଗୁଡ଼ିକୁ ସମ୍ପାଦନ କରନ୍ତୁ
