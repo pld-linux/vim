@@ -29,7 +29,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		8.1.2125
+%define		ver		8.1.2141
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -50,7 +50,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	90d7ef346d8539fab2aab0a4cf2e7b41
+# Source0-md5:	168b628c0df82197bed699ce8f97b2d9
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -137,6 +137,7 @@ BuildRequires:	gtk+3-devel >= 3.0
 BuildRequires:	gtk+2-devel >= 2:2.6.0
 %endif
 %endif
+BuildRequires:	libcanberra-devel
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %if %{with selinux} || %{with heavy}
 BuildRequires:	libselinux-devel
@@ -869,6 +870,7 @@ build vim.static \
 	--disable-gui \
 	--without-x \
 	--with-features=small \
+	--disable-canberra \
 	--disable-luainterp \
 	--disable-perlinterp \
 	--disable-pythoninterp \
@@ -887,6 +889,7 @@ build vim.light \
 	--disable-gui \
 	--without-x \
 	--with-features=small \
+	--disable-canberra \
 	--disable-luainterp \
 	--disable-perlinterp \
 	--disable-pythoninterp \
@@ -900,12 +903,14 @@ build vim.light \
 build vim.ncurses \
 	--disable-gui \
 	--without-x \
+	--disable-canberra \
 	--with-features=huge
 
 %if %{with x11}
 build vimx \
 	--disable-gui \
 	--with-x \
+	--disable-canberra \
 	--with-features=huge
 %endif
 
@@ -915,6 +920,7 @@ build gvim.athena \
 	--enable-gui=athena \
 	--with-x \
 	--enable-fontset \
+	--disable-canberra \
 	--disable-gpm \
 	--without-gnome
 
@@ -927,6 +933,7 @@ build gvim.motif \
 	--with-x \
 	--enable-multibyte \
 	--enable-fontset \
+	--disable-canberra \
 	--disable-gpm \
 	--without-gnome
 
@@ -943,6 +950,7 @@ build gvim.gtk \
 	--enable-gtk2-check \
 %endif
 	--with-x \
+	--disable-canberra \
 	--disable-gpm
 
 %endif
