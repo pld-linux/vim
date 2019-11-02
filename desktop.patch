@@ -12,8 +12,8 @@
 +++ vim-7.4.979/gvim-athena.desktop	2015-12-28 08:24:02.106735918 +0200
 @@ -1,5 +1,5 @@
  # Translators: This is the Application Name used in the GVim desktop file
- Name[de]=GVim
  Name[eo]=GVim
+ Name[tr]=GVim
 -Name=GVim
 +Name=GVim Athena
  # Translators: This is the Generic Application Name used in the Vim desktop file
@@ -33,8 +33,8 @@
 +++ vim-7.4.979/gvim-gnome.desktop	2015-12-28 08:33:14.285396908 +0200
 @@ -1,5 +1,5 @@
  # Translators: This is the Application Name used in the GVim desktop file
- Name[de]=GVim
  Name[eo]=GVim
+ Name[tr]=GVim
 -Name=GVim
 +Name=GVim GNOME
  # Translators: This is the Generic Application Name used in the Vim desktop file
@@ -77,8 +77,8 @@
 +++ vim-7.4.979/gvim-gtk.desktop	2015-12-28 08:29:28.577015888 +0200
 @@ -1,5 +1,5 @@
  # Translators: This is the Application Name used in the GVim desktop file
- Name[de]=GVim
  Name[eo]=GVim
+ Name[tr]=GVim
 -Name=GVim
 +Name=GVim GTK
  # Translators: This is the Generic Application Name used in the Vim desktop file
@@ -121,8 +121,8 @@
 +++ vim-7.4.979/gvim-motif.desktop	2015-12-28 08:31:11.245677767 +0200
 @@ -1,5 +1,5 @@
  # Translators: This is the Application Name used in the GVim desktop file
- Name[de]=GVim
  Name[eo]=GVim
+ Name[tr]=GVim
 -Name=GVim
 +Name=GVim Motif
  # Translators: This is the Generic Application Name used in the Vim desktop file
