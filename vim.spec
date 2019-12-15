@@ -12,7 +12,8 @@
 %bcond_without	x11		# don't build vimx (non-GUI with X11 clipboard support)
 %bcond_with	lua		# with Lua interp in vim package
 %bcond_with	perl		# with Perl interp in vim package
-%bcond_with	python		# with Python interp in vim package
+%bcond_with	python		# with Python 2 interp in vim package
+%bcond_with	python3		# with Python 3 interp in vim package
 %bcond_with	ruby		# with Ruby interp in vim package
 %bcond_with	tcl		# with Tcl interp
 %bcond_without	selinux		# without selinux support
@@ -153,6 +154,11 @@ BuildRequires:	perl-devel
 %endif
 %if %{with python} || %{with heavy}
 BuildRequires:	python-devel >= 2.3
+%endif
+%if %{with python3} || %{with heavy}
+BuildRequires:	python3-devel
+%endif
+%if %{with python} || %{with python3} || %{with heavy}
 BuildRequires:	rpm-pythonprov
 %endif
 BuildRequires:	rpm >= 4.4.9-56
@@ -844,6 +850,7 @@ build() {
 		--%{!?with_lua:dis}%{?with_lua:en}able-luainterp \
 		--%{!?with_perl:dis}%{?with_perl:en}able-perlinterp \
 		--%{!?with_python:dis}%{?with_python:en}able-pythoninterp \
+		--%{!?with_python3:dis}%{?with_python3:en}able-python3interp \
 		--%{!?with_ruby:dis}%{?with_ruby:en}able-rubyinterp \
 		--%{!?with_tcl:dis}%{?with_tcl:en}able-tclinterp \
 		%{!?with_selinux:--disable-selinux} \
@@ -975,6 +982,7 @@ build vim.heavy \
 	--enable-luainterp \
 	--enable-perlinterp \
 	--enable-pythoninterp \
+	--enable-python3interp \
 	--enable-rubyinterp \
 	--enable-tclinterp \
 	--disable-canberra \
@@ -989,6 +997,7 @@ build gvim.heavy \
 	--enable-luainterp \
 	--enable-perlinterp \
 	--enable-pythoninterp \
+	--enable-python3interp \
 	--enable-rubyinterp \
 	--enable-tclinterp \
 	--disable-gpm
