@@ -16,6 +16,7 @@
 %bcond_with	python3		# with Python 3 interp in vim package
 %bcond_with	ruby		# with Ruby interp in vim package
 %bcond_with	tcl		# with Tcl interp
+%bcond_with	x		# with X11 support
 %bcond_without	selinux		# without selinux support
 %bcond_without	home_etc	# without home_etc support
 
@@ -116,14 +117,14 @@ BuildRequires:	attr-devel
 BuildRequires:	autoconf >= 2.12
 BuildRequires:	gpm-devel
 %if "%{pld_release}" == "ac"
-%if %{with athena} || %{with x11}
+%if %{with athena} || %{with x11} || %{with x}
 BuildRequires:	XFree86-devel
 %endif
 BuildRequires:	gettext-devel
 %else
 BuildRequires:	gettext-tools
 %{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
-%if %{with x11} || %{with gui}
+%if %{with x11} || %{with gui} || %{with x}
 BuildRequires:	xorg-lib-libICE-devel
 BuildRequires:	xorg-lib-libSM-devel
 BuildRequires:	xorg-lib-libX11-devel
@@ -909,7 +910,7 @@ build vim.light \
 
 build vim.ncurses \
 	--disable-gui \
-	--without-x \
+	%{__with_without x} \
 	--disable-canberra \
 	--with-features=huge
 
