@@ -21,9 +21,20 @@
 +if filereadable("/etc/vim/vimrc.local")
 +  source /etc/vim/vimrc.local
 +endi
---- vim-7.4.2189/runtime/defaults.vim~	2016-08-09 22:14:05.000000000 +0200
-+++ vim-7.4.2189/runtime/defaults.vim	2016-08-09 22:26:29.727124083 +0200
-@@ -77,13 +77,13 @@ inoremap <C-U> <C-G>u<C-U>
+--- vim-7.4.2189/runtime/defaults.vim	2016-08-09 22:26:29.727124083 +0200
++++ vim-8.2.0241/runtime/defaults.vim	2020-05-13 10:02:53.863204152 +0300
+@@ -68,6 +68,10 @@
+ " Revert with ":unmap Q".
+ map Q gq
+ 
++" Avoid common :X mistype. replace it with :x
++" http://stackoverflow.com/a/17793858
++cnoreabbrev X x
++
+ " CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
+ " so that you can undo CTRL-U after inserting a line break.
+ " Revert with ":iunmap <C-U>".
+@@ -77,13 +81,13 @@
  " can position the cursor, Visually select and scroll with the mouse.
  " Only xterm can grab the mouse events when using the shift key, for other
  " terminals use ":", select text and press Esc.
@@ -44,7 +55,7 @@
  
  " Switch syntax highlighting on when the terminal has colors or when using the
  " GUI (which always has colors).
-@@ -99,7 +99,7 @@ endif " has("autocmd")
+@@ -99,7 +103,7 @@
  " file it was loaded from, thus the changes you made.
  " Only define it when not defined already.
  " Revert with: ":delcommand DiffOrig".
