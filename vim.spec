@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		8.2.0241
+%define		ver		8.2.1524
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	a69b492a02dfd671fc70af2e212355bc
+# Source0-md5:	00e6782f70651a49b976c85ec0ab1895
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -784,7 +784,7 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 %patch12 -p1
 %patch14 -p1
 %patch15 -p1
-%patch17 -p0
+%patch17 -p1
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1

@@ -1,5 +1,5 @@
---- vim72/src/main.c~	2009-04-15 01:00:47.000000000 +0300
-+++ vim72/src/main.c	2009-04-15 01:11:33.555899981 +0300
+--- vim72/src/locale.c~	2009-04-15 01:00:47.000000000 +0300
++++ vim72/src/locale.c	2009-04-15 01:11:33.555899981 +0300
 @@ -1741,17 +1741,6 @@ init_locale(void)
  	// Initialize the gettext library
  	dyn_libintl_init();

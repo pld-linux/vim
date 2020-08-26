@@ -119,15 +119,15 @@
  	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_RU_U) "" $(INSTALLMANARGS)
  	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
  		$(DEST_MAN) $(INSTALLMLARGS)
-@@ -2672,6 +2672,8 @@ uninstall_runtime:
- 		$(DEST_MAN_RU) $(INSTALLMLARGS)
+@@ -2660,6 +2660,8 @@ uninstall_runtime:
  	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
- 		$(DEST_MAN_RU_U) $(INSTALLMLARGS)
-+	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_TR) $(INSTALLMLARGS)
+ 	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
 +		$(DEST_MAN_RU_K) $(INSTALLMLARGS)
- 	-rm -f $(DEST_MAN)/xxd.1
- 	-rm -f $(DEST_MAN_DA)/xxd.1 $(DEST_MAN_DA_I)/xxd.1 $(DEST_MAN_DA_U)/xxd.1
- 	-rm -f $(DEST_MAN_DE)/xxd.1 $(DEST_MAN_DE_I)/xxd.1 $(DEST_MAN_DE_U)/xxd.1
++	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_TR_I) $(INSTALLMLARGS)
+ 	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_TR_U) $(INSTALLMLARGS)
 @@ -2679,7 +2681,7 @@ uninstall_runtime:
  	-rm -f $(DEST_MAN_IT)/xxd.1 $(DEST_MAN_IT_I)/xxd.1 $(DEST_MAN_IT_U)/xxd.1
  	-rm -f $(DEST_MAN_JA_U)/xxd.1
