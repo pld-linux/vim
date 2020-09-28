@@ -1184,23 +1184,23 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/vimdiff
 %{_mandir}/man1/rvim.1*
 %{_mandir}/man1/vimdiff.1*
+%lang(da) %{_mandir}/da/man1/rvim.1*
+%lang(da) %{_mandir}/da/man1/vimdiff.1*
+%lang(de) %{_mandir}/de/man1/rvim.1*
 %lang(fi) %{_mandir}/fi/man1/rvim.1*
 %lang(fr) %{_mandir}/fr/man1/rvim.1*
 %lang(fr) %{_mandir}/fr/man1/vimdiff.1*
 %lang(id) %{_mandir}/id/man1/rvim.1*
-%lang(id) %{_mandir}/id/man1/vim.1*
 %lang(it) %{_mandir}/it/man1/rvim.1*
-%lang(it) %{_mandir}/it/man1/vim.1*
 %lang(it) %{_mandir}/it/man1/vimdiff.1*
 %lang(ja) %{_mandir}/ja/man1/rvim.1*
-%lang(ja) %{_mandir}/ja/man1/vim.1*
 %lang(ja) %{_mandir}/ja/man1/vimdiff.1*
 %lang(pl) %{_mandir}/pl/man1/rvim.1*
-%lang(pl) %{_mandir}/pl/man1/vim.1*
 %lang(pl) %{_mandir}/pl/man1/vimdiff.1*
 %lang(ru) %{_mandir}/ru/man1/rvim.1*
-%lang(ru) %{_mandir}/ru/man1/vim.1*
 %lang(ru) %{_mandir}/ru/man1/vimdiff.1*
+%lang(tr) %{_mandir}/tr/man1/rvim.1*
+%lang(tr) %{_mandir}/tr/man1/vimdiff.1*
 %{_desktopdir}/vim.desktop
 
 %if %{with static}
@@ -1215,6 +1215,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/ex.1*
 %{_mandir}/man1/view.1*
 %{_mandir}/man1/rview.1*
+%lang(da) %{_mandir}/da/man1/ex.1*
+%lang(da) %{_mandir}/da/man1/rview.1*
+%lang(da) %{_mandir}/da/man1/view.1*
+%lang(de) %{_mandir}/de/man1/ex.1*
+%lang(de) %{_mandir}/de/man1/rview.1*
+%lang(de) %{_mandir}/de/man1/view.1*
 %lang(fi) %{_mandir}/fi/man1/vi.1*
 %lang(fi) %{_mandir}/fi/man1/ex.1*
 %lang(fi) %{_mandir}/fi/man1/view.1*
@@ -1242,6 +1248,9 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ru) %{_mandir}/ru/man1/ex.1*
 %lang(ru) %{_mandir}/ru/man1/view.1*
 %lang(ru) %{_mandir}/ru/man1/rview.1*
+%lang(tr) %{_mandir}/tr/man1/ex.1*
+%lang(tr) %{_mandir}/tr/man1/view.1*
+%lang(tr) %{_mandir}/tr/man1/rview.1*
 
 %files -n xxd
 %defattr(644,root,root,755)
@@ -1330,6 +1339,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ca) %{_datadir}/vim/lang/menu_ca*
 %lang(cs) %{_datadir}/vim/lang/menu_cs*
 %lang(cs) %{_datadir}/vim/lang/menu_*czech*
+%lang(da) %{_datadir}/vim/lang/menu_da*
 %lang(de) %{_datadir}/vim/lang/menu_de*
 %lang(de) %{_datadir}/vim/lang/menu_*german*
 %lang(en_GB) %{_datadir}/vim/lang/menu_en_gb*
@@ -1346,6 +1356,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(fi) %{_datadir}/vim/lang/menu_finnish_finland.1252.vim
 %lang(fr) %{_datadir}/vim/lang/menu_fr*
 %lang(hu) %{_datadir}/vim/lang/menu_hu*
+%lang(is) %{_datadir}/vim/lang/menu_is*
 %lang(it) %{_datadir}/vim/lang/menu_it*
 %lang(ja) %{_datadir}/vim/lang/menu_ja*
 %lang(ko) %{_datadir}/vim/lang/menu_ko*
@@ -1360,6 +1371,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sl) %{_datadir}/vim/lang/menu_sl_si*
 %lang(sr) %{_datadir}/vim/lang/menu_sr*
 %lang(sv) %{_datadir}/vim/lang/menu_sv*
+%lang(tr) %{_datadir}/vim/lang/menu_tr*
 %lang(uk) %{_datadir}/vim/lang/menu_uk*
 %lang(vi) %{_datadir}/vim/lang/menu_vi*
 %lang(zh_CN) %{_datadir}/vim/lang/menu_zh.cp936*
@@ -1377,8 +1389,16 @@ rm -rf $RPM_BUILD_ROOT
 %lang(yi) %{_datadir}/vim/spell/yi.*
 
 %{_mandir}/man1/vim.1*
+%lang(da) %{_mandir}/da/man1/vim.1*
+%lang(de) %{_mandir}/de/man1/vim.1*
 %lang(fi) %{_mandir}/fi/man1/vim.1*
 %lang(fr) %{_mandir}/fr/man1/vim.1*
+%lang(id) %{_mandir}/id/man1/vim.1*
+%lang(it) %{_mandir}/it/man1/vim.1*
+%lang(ja) %{_mandir}/ja/man1/vim.1*
+%lang(pl) %{_mandir}/pl/man1/vim.1*
+%lang(ru) %{_mandir}/ru/man1/vim.1*
+%lang(tr) %{_mandir}/tr/man1/vim.1*
 %{_pixmapsdir}/gvim.png
 
 # plugins in base -rt package
@@ -1429,6 +1449,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(cs) %{_datadir}/vim/tutor/tutor.cs
 %lang(cs) %{_datadir}/vim/tutor/tutor.cs.cp1250
 %lang(cs) %{_datadir}/vim/tutor/tutor.cs.utf-8
+%lang(da) %{_datadir}/vim/tutor/tutor.da
+%lang(da) %{_datadir}/vim/tutor/tutor.da.utf-8
 %lang(de) %{_datadir}/vim/tutor/tutor.de
 %lang(de) %{_datadir}/vim/tutor/tutor.de.utf-8
 %lang(el) %{_datadir}/vim/tutor/tutor.el
@@ -1451,8 +1473,10 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_datadir}/vim/tutor/tutor.ja.euc
 %lang(ja) %{_datadir}/vim/tutor/tutor.ja.sjis
 %lang(ja) %{_datadir}/vim/tutor/tutor.ja.utf-8
+%lang(ko) %{_datadir}/vim/tutor/tutor.ko
 %lang(ko) %{_datadir}/vim/tutor/tutor.ko.euc
 %lang(ko) %{_datadir}/vim/tutor/tutor.ko.utf-8
+%lang(lv) %{_datadir}/vim/tutor/tutor.lv.utf-8
 %lang(nl) %{_datadir}/vim/tutor/tutor.nl
 %lang(nl) %{_datadir}/vim/tutor/tutor.nl.utf-8
 %lang(nb) %{_datadir}/vim/tutor/tutor.nb
@@ -1483,11 +1507,13 @@ rm -rf $RPM_BUILD_ROOT
 %lang(zh_TW) %{_datadir}/vim/tutor/tutor.zh_tw.utf-8
 
 %{_mandir}/man1/vimtutor.1*
+%lang(da) %{_mandir}/da/man1/vimtutor.1*
 %lang(fr) %{_mandir}/fr/man1/vimtutor.1*
 %lang(it) %{_mandir}/it/man1/vimtutor.1*
 %lang(ja) %{_mandir}/ja/man1/vimtutor.1*
 %lang(pl) %{_mandir}/pl/man1/vimtutor.1*
 %lang(ru) %{_mandir}/ru/man1/vimtutor.1*
+%lang(tr) %{_mandir}/tr/man1/vimtutor.1*
 
 %if %{with x11}
 %files -n vimx
@@ -1538,32 +1564,43 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/rgvim
 %{_mandir}/man1/eview.1*
 %{_mandir}/man1/evim.1*
-%{_mandir}/man1/gvi*
-%{_mandir}/man1/rgv*
-%lang(fi) %{_mandir}/fi/man1/gvi*
-%lang(fi) %{_mandir}/fi/man1/rgv*
+%{_mandir}/man1/gview.1*
+%{_mandir}/man1/gvim.1*
+%{_mandir}/man1/gvimdiff.1*
+%{_mandir}/man1/rgview.1*
+%{_mandir}/man1/rgvim.1*
+%lang(da) %{_mandir}/da/man1/gvi*.1*
+%lang(da) %{_mandir}/da/man1/rgv*.1*
+%lang(de) %{_mandir}/de/man1/gvi*.1*
+%lang(de) %{_mandir}/de/man1/rgv*.1*
+%lang(fi) %{_mandir}/fi/man1/gvi*.1*
+%lang(fi) %{_mandir}/fi/man1/rgv*.1*
 %lang(fr) %{_mandir}/fr/man1/eview.1*
 %lang(fr) %{_mandir}/fr/man1/evim.1*
-%lang(fr) %{_mandir}/fr/man1/gvi*
-%lang(fr) %{_mandir}/fr/man1/rgv*
-%lang(id) %{_mandir}/id/man1/gvi*
-%lang(id) %{_mandir}/id/man1/rgv*
+%lang(fr) %{_mandir}/fr/man1/gvi*.1*
+%lang(fr) %{_mandir}/fr/man1/rgv*.1*
+%lang(id) %{_mandir}/id/man1/gvi*.1*
+%lang(id) %{_mandir}/id/man1/rgv*.1*
 %lang(it) %{_mandir}/it/man1/eview.1*
 %lang(it) %{_mandir}/it/man1/evim.1*
-%lang(it) %{_mandir}/it/man1/gvi*
-%lang(it) %{_mandir}/it/man1/rgv*
+%lang(it) %{_mandir}/it/man1/gvi*.1*
+%lang(it) %{_mandir}/it/man1/rgv*.1*
 %lang(ja) %{_mandir}/ja/man1/eview.1*
 %lang(ja) %{_mandir}/ja/man1/evim.1*
-%lang(ja) %{_mandir}/ja/man1/gvi*
-%lang(ja) %{_mandir}/ja/man1/rgv*
+%lang(ja) %{_mandir}/ja/man1/gvi*.1*
+%lang(ja) %{_mandir}/ja/man1/rgv*.1*
 %lang(pl) %{_mandir}/pl/man1/eview.1*
 %lang(pl) %{_mandir}/pl/man1/evim.1*
-%lang(pl) %{_mandir}/pl/man1/gvi*
-%lang(pl) %{_mandir}/pl/man1/rgv*
+%lang(pl) %{_mandir}/pl/man1/gvi*.1*
+%lang(pl) %{_mandir}/pl/man1/rgv*.1*
 %lang(ru) %{_mandir}/ru/man1/eview.1*
 %lang(ru) %{_mandir}/ru/man1/evim.1*
-%lang(ru) %{_mandir}/ru/man1/gvi*
-%lang(ru) %{_mandir}/ru/man1/rgv*
+%lang(ru) %{_mandir}/ru/man1/gvi*.1*
+%lang(ru) %{_mandir}/ru/man1/rgv*.1*
+%lang(tr) %{_mandir}/tr/man1/eview.1*
+%lang(tr) %{_mandir}/tr/man1/evim.1*
+%lang(tr) %{_mandir}/tr/man1/gvi*.1*
+%lang(tr) %{_mandir}/tr/man1/rgv*.1*
 %{_desktopdir}/gvim-gtk.desktop
 %endif
 
