@@ -1433,7 +1433,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vimtutor
 %dir %{_datadir}/vim/tutor
-%dir %{_datadir}/vim/tutor/tutor
+%{_datadir}/vim/tutor/tutor
 
 %{_datadir}/vim/tutor/README.txt
 %{_datadir}/vim/tutor/tutor.vim
