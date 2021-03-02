@@ -7,6 +7,6 @@
 +" tests for perl modules
 +au BufNewFile,BufRead t/*.t			call s:FTpl()
 +
- " Sysctl
- au BufNewFile,BufRead /etc/sysctl.conf          setf sysctl
+ " Sratus VOS command macro
+ au BufNewFile,BufRead *.cm			setf voscm
  

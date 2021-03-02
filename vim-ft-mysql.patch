@@ -7,5 +7,5 @@
 -au BufNewFile,BufRead *.mysql			setf mysql
 +au BufNewFile,BufRead *.mysql,.*mysql_history*			setf mysql
  
- " M$ Resource files
- au BufNewFile,BufRead *.rc			setf rc
+ " Mutt setup files (must be before catch *.rc)
+ au BufNewFile,BufRead */etc/Muttrc.d/*		call s:StarSetf('muttrc')

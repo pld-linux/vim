@@ -74,9 +74,9 @@
        fi
     fi
  fi
---- vim70/src/Makefile~	2006-06-06 14:56:14.000000000 +0200
-+++ vim70/src/Makefile	2006-06-06 14:56:14.000000000 +0200
-@@ -1325,7 +1325,8 @@
+--- vim-8.2.2529/src/Makefile.orig	2021-03-02 13:50:22.236523989 +0100
++++ vim-8.2.2529/src/Makefile	2021-03-02 13:50:34.519785983 +0100
+@@ -1565,7 +1565,8 @@
  DEST_MAN_PL = $(DEST_MAN_TOP)/pl$(MAN1DIR)
  DEST_MAN_PL_I = $(DEST_MAN_TOP)/pl.ISO8859-2$(MAN1DIR)
  DEST_MAN_PL_U = $(DEST_MAN_TOP)/pl.UTF-8$(MAN1DIR)
@@ -84,42 +84,42 @@
 +DEST_MAN_RU = $(DEST_MAN_TOP)/ru$(MAN1DIR)
 +DEST_MAN_RU_K = $(DEST_MAN_TOP)/ru.KOI8-R$(MAN1DIR)
  DEST_MAN_RU_U = $(DEST_MAN_TOP)/ru.UTF-8$(MAN1DIR)
- 
- #	     BASIC_SRC: files that are always used
-@@ -1912,6 +1913,7 @@
+ DEST_MAN_TR = $(DEST_MAN_TOP)/tr$(MAN1DIR)
+ DEST_MAN_TR_I = $(DEST_MAN_TOP)/tr.ISO8859-9$(MAN1DIR)
+@@ -2577,6 +2578,7 @@
  	-$(SHELL) ./installman.sh xxd $(DEST_MAN_PL_I) "-pl" $(INSTALLMANARGS)
  	-$(SHELL) ./installman.sh xxd $(DEST_MAN_PL_U) "-pl.UTF-8" $(INSTALLMANARGS)
  	-$(SHELL) ./installman.sh xxd $(DEST_MAN_RU) "-ru" $(INSTALLMANARGS)
 +	-$(SHELL) ./installman.sh xxd $(DEST_MAN_RU_K) "-ru" $(INSTALLMANARGS)
  	-$(SHELL) ./installman.sh xxd $(DEST_MAN_RU_U) "-ru.UTF-8" $(INSTALLMANARGS)
- 
- # install the language specific files, if they were unpacked
-@@ -1926,6 +1928,7 @@
+ 	-$(SHELL) ./installman.sh xxd $(DEST_MAN_TR) "-tr" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh xxd $(DEST_MAN_TR_I) "-tr" $(INSTALLMANARGS)
+@@ -2602,6 +2604,7 @@
  	-$(SHELL) ./installman.sh install $(DEST_MAN_PL_I) "-pl" $(INSTALLMANARGS)
  	-$(SHELL) ./installman.sh install $(DEST_MAN_PL_U) "-pl.UTF-8" $(INSTALLMANARGS)
  	-$(SHELL) ./installman.sh install $(DEST_MAN_RU) "-ru" $(INSTALLMANARGS)
 +	-$(SHELL) ./installman.sh install $(DEST_MAN_RU_K) "-ru" $(INSTALLMANARGS)
  	-$(SHELL) ./installman.sh install $(DEST_MAN_RU_U) "-ru.UTF-8" $(INSTALLMANARGS)
- 	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
- 		$(DEST_MAN_FR) $(INSTALLMLARGS)
-@@ -1948,6 +1951,8 @@
+ 	-$(SHELL) ./installman.sh install $(DEST_MAN_TR) "-tr" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh install $(DEST_MAN_TR_I) "-tr" $(INSTALLMANARGS)
+@@ -2641,6 +2644,8 @@
  	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
  		$(DEST_MAN_RU) $(INSTALLMLARGS)
  	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
 +		$(DEST_MAN_RU_K) $(INSTALLMLARGS)
 +	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
  		$(DEST_MAN_RU_U) $(INSTALLMLARGS)
- 	if test -n "$(MAKEMO)" -a -f $(PODIR)/Makefile; then \
- 	   cd $(PODIR); $(MAKE) prefix=$(DESTDIR)$(prefix) LOCALEDIR=$(DEST_LANG) \
-@@ -2088,6 +2093,7 @@
+ 	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
+ 		$(DEST_MAN_TR) $(INSTALLMLARGS)
+@@ -2820,6 +2825,7 @@
  	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_PL_I) "" $(INSTALLMANARGS)
  	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_PL_U) "" $(INSTALLMANARGS)
  	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_RU) "" $(INSTALLMANARGS)
 +	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_RU_K) "" $(INSTALLMANARGS)
  	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_RU_U) "" $(INSTALLMANARGS)
- 	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
- 		$(DEST_MAN) $(INSTALLMLARGS)
-@@ -2660,6 +2660,8 @@ uninstall_runtime:
+ 	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_TR) "" $(INSTALLMANARGS)
+ 	-$(SHELL) ./installman.sh uninstall $(DEST_MAN_TR_I) "" $(INSTALLMANARGS)
+@@ -2865,6 +2871,8 @@
  	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
  		$(DEST_MAN_TR) $(INSTALLMLARGS)
  	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
@@ -128,7 +128,7 @@
  		$(DEST_MAN_TR_I) $(INSTALLMLARGS)
  	-$(SHELL) ./installml.sh uninstall "$(GUI_MAN_TARGETS)" \
  		$(DEST_MAN_TR_U) $(INSTALLMLARGS)
-@@ -2679,7 +2681,7 @@ uninstall_runtime:
+@@ -2875,7 +2883,7 @@
  	-rm -f $(DEST_MAN_IT)/xxd.1 $(DEST_MAN_IT_I)/xxd.1 $(DEST_MAN_IT_U)/xxd.1
  	-rm -f $(DEST_MAN_JA_U)/xxd.1
  	-rm -f $(DEST_MAN_PL)/xxd.1 $(DEST_MAN_PL_I)/xxd.1 $(DEST_MAN_PL_U)/xxd.1
@@ -137,4 +137,3 @@
  	-rm -f $(DEST_HELP)/*.txt $(DEST_HELP)/tags $(DEST_HELP)/*.pl
  	-rm -f $(DEST_HELP)/*.??x $(DEST_HELP)/tags-??
  	-rm -f $(SYS_RGB_FILE)
-

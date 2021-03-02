@@ -42,7 +42,7 @@
 -#endif
  }
  
- #if defined(FEAT_CMDL_COMPL) || defined(PROTO)
+ /*
 --- vim72/src/Makefile~	2009-04-15 01:00:48.000000000 +0300
 +++ vim72/src/Makefile	2009-04-15 01:19:18.519171979 +0300
 @@ -957,6 +957,7 @@
@@ -63,7 +63,7 @@
  DEST_MACRO = $(DESTDIR)$(MACROSUBLOC)
 @@ -1988,7 +1988,7 @@
  	-$(SHELL) ./installml.sh install "$(GUI_MAN_TARGETS)" \
- 		$(DEST_MAN_RU_U) $(INSTALLMLARGS)
+ 		$(DEST_MAN_TR_U) $(INSTALLMLARGS)
  	if test -n "$(MAKEMO)" -a -f $(PODIR)/Makefile; then \
 -	   cd $(PODIR); $(MAKE) prefix=$(DESTDIR)$(prefix) LOCALEDIR=$(DEST_LANG) \
 +	   cd $(PODIR); $(MAKE) prefix=$(DESTDIR)$(prefix) LOCALEDIR=$(DEST_LOCALE) \
@@ -73,7 +73,7 @@
 --- vim73/src/po/Makefile~	2013-02-22 17:28:18.000000000 +0200
 +++ vim73/src/po/Makefile	2013-02-22 17:46:40.771918175 +0200
 @@ -38,6 +38,7 @@ check: $(CHECKFILES)
- 
+ # installing for real
  install: $(MOFILES) $(MOCONVERTED)
  	@$(MAKE) prefixcheck
 +	install -d $(LOCALEDIR); \

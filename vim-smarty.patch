@@ -7,8 +7,8 @@
 +" Smarty templates (must be before HTML)
 +au BufNewFile,BufRead *.tpl.html,*.tpl			setf smarty
 +
- " Tilde (must be before HTML)
- au BufNewFile,BufRead *.t.html			setf tilde
+ " Hollywood
+ au BufRead,BufNewFile *.hws			setf hollywood
  
 @@ -1396,9 +1399,6 @@
  	\  setf st |

@@ -1,8 +1,15 @@
---- vim-7.4.979/runtime/syntax/crontab.vim~	2015-12-22 11:05:52.000000000 +0200
-+++ vim-7.4.979/runtime/syntax/crontab.vim	2015-12-22 11:06:53.383500266 +0200
-@@ -18,17 +18,20 @@
-   finish
- endif
+--- vim-8.2.2529/runtime/syntax/crontab.vim.orig	2021-03-02 13:31:41.344169187 +0100
++++ vim-8.2.2529/runtime/syntax/crontab.vim	2021-03-02 13:33:36.243347329 +0100
+@@ -19,25 +19,34 @@
+ 
+ syntax match crontabVar "^\s*\k\w*\s*="me=e-1
+ 
++syntax match crontabVar /^[A-Za-z][A-Za-z0-9\-\_]*/ nextgroup=crontabVarEq skipwhite
++syntax match crontabVarEq contained /=/ nextgroup=CrontabVarValQ,CrontabVarVal skipwhite
++syntax match crontabVarValQ contained /\(["']\).*\1/ skipwhite
++syntax match crontabVarVal contained /["']\@!\S\+/ skipwhite
++
+ syntax case ignore
  
 -syntax match crontabMin "^\s*[-0-9/,.*]\+" nextgroup=crontabHr skipwhite
 -syntax match crontabHr "\s[-0-9/,.*]\+" nextgroup=crontabDay skipwhite contained
@@ -25,27 +32,14 @@
  syntax match crontabCmnt "^\s*#.*" contains=@Spell
  syntax match crontabPercent "[^\\]%.*"lc=1 contained
  
-@@ -36,6 +39,11 @@
- 
- syntax match crontabVar "^\s*\k\w*\s*="me=e-1
- 
-+syntax match crontabVar /^[A-Za-z][A-Za-z0-9\-\_]*/ nextgroup=crontabVarEq skipwhite
-+syntax match crontabVarEq contained /=/ nextgroup=CrontabVarValQ,CrontabVarVal skipwhite
-+syntax match crontabVarValQ contained /\(["']\).*\1/ skipwhite
-+syntax match crontabVarVal contained /["']\@!\S\+/ skipwhite
-+
  " Define the default highlighting.
- " For version 5.7 and earlier: only when not done already
- " For version 5.8 and later: only when an item doesn't have highlighting yet
-@@ -63,6 +57,7 @@
- 		command -nargs=+ hi def link hi def link <args>
- 	endif
+ " Only when an item doesn't have highlighting yet
  
 +hi def link crontabSpecial		PreProc
  hi def link crontabMin		Number
  hi def link crontabHr		PreProc
  hi def link crontabDay		Type
-@@ -84,6 +79,13 @@
+@@ -59,6 +68,13 @@
  " comment out next line for to suppress unix commands coloring.
  hi def link crontabCmd		Statement
  
@@ -58,4 +52,4 @@
 +
  hi def link crontabCmnt		Comment
  
- hi def link
+ 

@@ -58,7 +58,7 @@ diff -Nru vim62.orig/src/misc1.c vim62/src/misc1.c
 +#   define VIMINFO_FILE "$HOME_ETC/.viminfo"
  #  endif
  # endif
- # if !defined(VIMINFO_FILE2) && defined(OS2)
+ # if !defined(VIMINFO_FILE2) && defined(VMS)
 @@ -358,7 +358,7 @@ typedef struct dsc$descriptor   DESC;
  # ifdef VMS
  #  define DFLT_VDIR    "sys$login:vimfiles/view"

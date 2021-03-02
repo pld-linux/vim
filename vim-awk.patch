@@ -10,4 +10,4 @@
 +	sed -e "s+/usr/bin/nawk+/bin/awk+" $(TOOLSSOURCE)/mve.awk >$(DEST_TOOLS)/mve.awk
  	-chmod $(SCRIPTMOD) `grep -l "^#!" $(DEST_TOOLS)/*`
  
- # install the language specific files, if they were unpacked
+ # install the language specific files for tools, if they were unpacked
