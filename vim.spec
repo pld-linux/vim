@@ -872,6 +872,7 @@ build vim.static \
 	--disable-luainterp \
 	--disable-perlinterp \
 	--disable-pythoninterp \
+	--disable-python3interp \
 	--disable-rubyinterp \
 	--disable-tclinterp \
 	--disable-cscope \
@@ -891,6 +892,7 @@ build vim.light \
 	--disable-luainterp \
 	--disable-perlinterp \
 	--disable-pythoninterp \
+	--disable-python3interp \
 	--disable-rubyinterp \
 	--disable-tclinterp \
 	--disable-cscope \
