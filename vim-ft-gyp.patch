@@ -1,12 +1,12 @@
---- vim73/runtime/filetype.vim~	2013-01-14 00:28:28.000000000 +0200
-+++ vim73/runtime/filetype.vim	2013-01-14 00:35:03.379486193 +0200
-@@ -1517,6 +1517,9 @@
- " Radiance
- au BufNewFile,BufRead *.rad,*.mat		setf radiance
+--- vim-8.2.2976/runtime/filetype.vim~	2021-06-12 10:01:08.000000000 +0200
++++ vim-8.2.2976/runtime/filetype.vim	2021-06-12 10:02:30.456368850 +0200
+@@ -711,6 +711,9 @@ au BufNewFile,BufRead */etc/group,*/etc/
+ " GTK RC
+ au BufNewFile,BufRead .gtkrc,gtkrc		setf gtkrc
  
 +" GYP (Python syntax)
 +au BufNewFile,BufRead *.gyp,*.gypi,DEPS		set filetype=python expandtab tabstop=2 shiftwidth=2
 +
- " Ratpoison config/command files
- au BufNewFile,BufRead .ratpoisonrc,ratpoisonrc	setf ratpoison
+ " Haml
+ au BufNewFile,BufRead *.haml			setf haml
  
