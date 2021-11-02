@@ -31,8 +31,8 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		8.2.2976
-%define		rel		2
+%define		ver		8.2.3570
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	7f4423540a6e9bc17612ac846190a7c9
+# Source0-md5:	50cbcd6e830061176ab268fdedd4690a
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -1265,8 +1265,6 @@ rm -rf $RPM_BUILD_ROOT
 %verify(not md5 mtime size) %{_datadir}/vim/doc/tags
 %lang(pl) %verify(not md5 mtime size) %{_datadir}/vim/doc/tags-pl
 %verify(not md5 mtime size) %{_datadir}/vim/vimfiles/doc/tags
-# X11 colours definition for colour name lookup
-%{_datadir}/vim/rgb.txt
 
 %dir %{_datadir}/vim/vimfiles
 %dir %{_datadir}/vim/vimfiles/doc
@@ -1321,6 +1319,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/colors
 %doc %{_datadir}/vim/colors/README.txt
 %{_datadir}/vim/colors/*.vim
+%dir %{_datadir}/vim/colors/lists
+%{_datadir}/vim/colors/lists/*.vim
 %dir %{_datadir}/vim/colors/tools
 %{_datadir}/vim/colors/tools/check_colors.vim
 

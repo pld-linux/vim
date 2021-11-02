@@ -7,6 +7,6 @@
 -au BufNewFile,BufRead */etc/modules.conf,*/etc/modules,*/etc/conf.modules setf modconf
 +au BufNewFile,BufRead */etc/modules.conf,*/etc/modules,*/etc/conf.modules,*/etc/modprobe.conf setf modconf
  
- " Mplayer config
- au BufNewFile,BufRead mplayer.conf,*/.mplayer/config	setf mplayerconf
+ " MPD is based on XML
+ au BufNewFile,BufRead *.mpd			setf xml
 
