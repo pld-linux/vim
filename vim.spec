@@ -114,7 +114,7 @@ Patch41:	%{name}-lua.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	attr-devel
-BuildRequires:	autoconf >= 2.12
+BuildRequires:	autoconf >= 2.50
 BuildRequires:	gpm-devel
 %if "%{pld_release}" == "ac"
 %if %{with athena} || %{with x11} || %{with x}
@@ -128,11 +128,15 @@ BuildRequires:	gettext-tools
 BuildRequires:	xorg-lib-libICE-devel
 BuildRequires:	xorg-lib-libSM-devel
 BuildRequires:	xorg-lib-libX11-devel
+BuildRequires:	xorg-lib-libXaw-devel
+BuildRequires:	xorg-lib-libXdmcp-devel
+BuildRequires:	xorg-lib-libXpm-devel
 BuildRequires:	xorg-lib-libXt-devel
 %endif
 %endif
 BuildRequires:	grep
 %if %{with gtk} || %{with heavy}
+BuildRequires:	gdk-pixbuf2-devel >= 2.31
 %if %{with gtk3}
 BuildRequires:	gtk+3-devel >= 3.0
 %else
@@ -144,6 +148,7 @@ BuildRequires:	libcanberra-devel
 %if %{with selinux} || %{with heavy}
 BuildRequires:	libselinux-devel
 %endif
+BuildRequires:	libsodium-devel
 %if %{with lua} || %{with heavy}
 BuildRequires:	lua52-devel >= 5.2
 %endif
