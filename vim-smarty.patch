@@ -1,14 +1,14 @@
 --- ./runtime/filetype.vim	2006-01-12 17:26:15.000000000 +0200
 +++ /tmp/filetype.vim	2006-01-12 17:25:53.000000000 +0200
-@@ -590,6 +590,9 @@
+@@ -792,6 +792,9 @@ au BufRead,BufNewFile *.heex			setf heex
  " HEX (Intel)
  au BufNewFile,BufRead *.hex,*.h32		setf hex
  
 +" Smarty templates (must be before HTML)
-+au BufNewFile,BufRead *.tpl.html,*.tpl			setf smarty
++au BufNewFile,BufRead *.tpl.html,*.tpl		setf smarty
 +
- " Hollywood
- au BufRead,BufNewFile *.hws			setf hollywood
+ " Hjson
+ au BufNewFile,BufRead *.hjson			setf hjson
  
 @@ -1396,9 +1399,6 @@
  	\  setf st |

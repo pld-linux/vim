@@ -1,11 +1,12 @@
 --- vim72/runtime/filetype.vim~	2010-01-21 21:47:56.000000000 +0200
 +++ vim72/runtime/filetype.vim	2010-04-22 14:27:15.550974158 +0300
-@@ -1151,7 +1151,7 @@
+@@ -1171,7 +1171,7 @@ au BufNewFile,BufRead mrxvtrc,.mrxvtrc
  au BufNewFile,BufRead *.msql			setf msql
  
  " Mysql
 -au BufNewFile,BufRead *.mysql			setf mysql
-+au BufNewFile,BufRead *.mysql,.*mysql_history*			setf mysql
++au BufNewFile,BufRead *.mysql,.*mysql_history*	setf mysql
  
- " Mutt setup files (must be before catch *.rc)
- au BufNewFile,BufRead */etc/Muttrc.d/*		call s:StarSetf('muttrc')
+ " Tcl Shell RC file
+ au BufNewFile,BufRead tclsh.rc			setf tcl
+

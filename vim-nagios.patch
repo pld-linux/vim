@@ -1,11 +1,12 @@
 --- vim-7.0/runtime/filetype.vim~	2006-03-30 22:10:33.046344554 +0300
 +++ vim-7.0/runtime/filetype.vim	2006-03-30 23:14:19.721780355 +0300
-@@ -2095,6 +2095,8 @@
- au BufNewFile,BufRead .zsh*,.zlog*,.zcompdump*  call s:StarSetf('zsh')
- au BufNewFile,BufRead zsh*,zlog*		call s:StarSetf('zsh')
+@@ -2255,6 +2255,8 @@ au BufNewFile,BufRead *
+ 	\ | runtime! scripts.vim | endif
+ au StdinReadPost * if !did_filetype() | runtime! scripts.vim | endif
  
 +" Nagios config
 +au BufNewFile,BufRead /*etc/nagios/*.cfg,*sample-config/template-object/*.cfg{,.in},/var/lib/nagios/objects.cache set filetype=nagios
  
  " Plain text files, needs to be far down to not override others.  This avoids
  " the "conf" type being used if there is a line starting with '#'.
+
