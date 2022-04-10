@@ -24,8 +24,8 @@
 --- vim-7.4.2189/runtime/defaults.vim	2016-08-09 22:26:29.727124083 +0200
 +++ vim-8.2.0241/runtime/defaults.vim	2020-05-13 10:02:53.863204152 +0300
 @@ -68,6 +68,10 @@
- " Revert with ":unmap Q".
  map Q gq
+ sunmap Q
  
 +" Avoid common :X mistype. replace it with :x
 +" http://stackoverflow.com/a/17793858

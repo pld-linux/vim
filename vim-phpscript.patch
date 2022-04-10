@@ -1,25 +1,14 @@
---- vim72/runtime/scripts.vim~	2008-10-09 03:12:50.000000000 +0300
-+++ vim72/runtime/scripts.vim	2008-10-09 03:12:54.703954160 +0300
-@@ -246,6 +246,10 @@
-   elseif s:line1 =~# '^\x\{7}: \x\{2} \=\x\{2} \=\x\{2} \=\x\{2} '
+--- vim-8.2.4726/runtime/autoload/dist/script.vim~	2022-04-09 22:42:10.000000000 +0200
++++ vim-8.2.4726/runtime/autoload/dist/script.vim	2022-04-10 12:01:55.436645032 +0200
+@@ -297,6 +297,10 @@ def DetectFromText(line1: string)
+   elseif line1 =~ '^\x\{7}: \x\{2} \=\x\{2} \=\x\{2} \=\x\{2} '
      set ft=xxd
  
-+    " PHP script tag
-+  elseif s:line1 =~ '^<?php'
-+    set ft=php
++    # PHP script tag
++  elseif line1 =~ '^<?php'
++     set ft=php
 +
-     " RCS/CVS log output
-   elseif s:line1 =~# '^RCS file:' || s:line2 =~# '^RCS file:'
+     # RCS/CVS log output
+   elseif line1 =~ '^RCS file:' || line2 =~ '^RCS file:'
      set ft=rcslog
---- vim73/runtime/filetype.vim~	2010-10-31 13:26:19.000000000 +0200
-+++ vim73/runtime/filetype.vim	2010-10-31 13:27:17.615314321 +0200
-@@ -1326,7 +1326,8 @@
- " Php, php3, php4, etc.
- " Also Phtml (was used for PHP 2 in the past)
- " Also .ctp for Cake template file
--au BufNewFile,BufRead *.php,*.php\d,*.phtml,*.ctp	setf php
-+" Also .phpt for PHP Test files
-+au BufNewFile,BufRead *.php,*.php\d,*.phtml,*.ctp,*.phpt	setf php
- 
- " PHP config
- au BufNewFile,BufRead php.ini-*			setf dosini
+

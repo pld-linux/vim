@@ -31,8 +31,8 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		8.2.4295
-%define		rel		2
+%define		ver		8.2.4726
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	4fbb220d69db1931ac4b71de340b7b73
+# Source0-md5:	d39ab76fa2d6d9b25377dc110bb507dd
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -105,7 +105,7 @@ Patch32:	%{name}-localedir.patch
 
 Patch34:	%{name}-rtdir.patch
 Patch35:	%{name}-ft-mib.patch
-Patch36:	%{name}-ft-lib-udevrules.patch
+
 Patch37:	%{name}-ft-mysql.patch
 Patch38:	%{name}-ft-gyp.patch
 Patch39:	%{name}-revert-7.4.165-noundo.patch
@@ -461,6 +461,7 @@ Obsoletes:	vim-syntax-docker < 1.10.1
 Obsoletes:	vim-syntax-gitcommit
 Obsoletes:	vim-syntax-golang <= 1.3.3-1
 Obsoletes:	vim-syntax-lxc-docker <= 0.9.0-1
+Obsoletes:	vim-syntax-nginx <= 0.3.3-2
 Obsoletes:	vim-syntax-upstart
 BuildArch:	noarch
 
@@ -800,7 +801,7 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 
 %patch34 -p1
 %patch35 -p1
-%patch36 -p1
+
 %patch37 -p1
 %patch38 -p1
 %patch39 -p1
@@ -1296,6 +1297,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/vim/autoload/README.txt
 %dir %{_datadir}/vim/autoload/dist
 %{_datadir}/vim/autoload/dist/ft.vim
+%{_datadir}/vim/autoload/dist/script.vim
 
 %dir %{_datadir}/vim/ftdetect
 
