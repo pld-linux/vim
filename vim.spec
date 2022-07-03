@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		8.2.4726
+%define		ver		9.0.0032
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	d39ab76fa2d6d9b25377dc110bb507dd
+# Source0-md5:	c43a251b992e2b728058474c15dfa20f
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -81,7 +81,7 @@ Patch5:		%{name}-awk.patch
 Patch6:		%{name}-filetype_vim-perl_tests.patch
 Patch7:		%{name}-apache.patch
 Patch8:		%{name}-po-syntax.patch
-Patch9:		%{name}-modprobe.patch
+
 Patch10:	%{name}-doubleparenthesis.patch
 Patch11:	%{name}-syntax-fstab.patch
 Patch12:	010_all_%{name}-6.3-vixie.patch
@@ -774,7 +774,7 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
-%patch9 -p0
+
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
@@ -1297,6 +1297,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/vim/autoload/README.txt
 %dir %{_datadir}/vim/autoload/dist
 %{_datadir}/vim/autoload/dist/ft.vim
+%{_datadir}/vim/autoload/dist/man.vim
 %{_datadir}/vim/autoload/dist/script.vim
 
 %dir %{_datadir}/vim/ftdetect
@@ -1305,6 +1306,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/vim/ftplugin/README.txt
 %{_datadir}/vim/ftplugin/*.vim
 %{_datadir}/vim/ftplugin/logtalk.dict
+
+%dir %{_datadir}/vim/import
+%dir %{_datadir}/vim/import/dist
+%{_datadir}/vim/import/dist/vimhelp.vim
 
 %dir %{_datadir}/vim/indent
 %doc %{_datadir}/vim/indent/README.txt

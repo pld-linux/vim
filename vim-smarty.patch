@@ -10,9 +10,7 @@
  " Hjson
  au BufNewFile,BufRead *.hjson			setf hjson
  
-@@ -1396,9 +1399,6 @@
- 	\  setf st |
- 	\ endif
+@@ -1396,7 +1399,4 @@
  
 -" Smarty templates
 -au BufNewFile,BufRead *.tpl			setf smarty

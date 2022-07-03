@@ -2,9 +2,9 @@ diff --color -ur vim-8.2.2529.orig/gvim-athena.desktop vim-8.2.2529/gvim-athena.
 --- vim-8.2.2529.orig/gvim-athena.desktop	2021-02-17 21:57:03.000000000 +0100
 +++ vim-8.2.2529/gvim-athena.desktop	2021-03-02 14:24:51.277064340 +0100
 @@ -8,7 +8,7 @@
- Name[ru]=GVim
- Name[sr]=GVim
  Name[tr]=GVim
+ Name[uk]=GVim
+ Name[zh_CN]=GVim
 -Name=GVim
 +Name=GVim Athena
  # Translators: This is the Generic Application Name used in the Vim desktop file
@@ -14,9 +14,9 @@ diff --color -ur vim-8.2.2529.orig/gvim-gnome.desktop vim-8.2.2529/gvim-gnome.de
 --- vim-8.2.2529.orig/gvim-gnome.desktop	2021-02-17 21:57:03.000000000 +0100
 +++ vim-8.2.2529/gvim-gnome.desktop	2021-03-02 14:24:51.277064340 +0100
 @@ -8,7 +8,7 @@
- Name[ru]=GVim
- Name[sr]=GVim
  Name[tr]=GVim
+ Name[uk]=GVim
+ Name[zh_CN]=GVim
 -Name=GVim
 +Name=GVim GNOME
  # Translators: This is the Generic Application Name used in the Vim desktop file
@@ -26,9 +26,9 @@ diff --color -ur vim-8.2.2529.orig/gvim-gtk.desktop vim-8.2.2529/gvim-gtk.deskto
 --- vim-8.2.2529.orig/gvim-gtk.desktop	2021-02-17 21:57:03.000000000 +0100
 +++ vim-8.2.2529/gvim-gtk.desktop	2021-03-02 14:24:51.277064340 +0100
 @@ -8,7 +8,7 @@
- Name[ru]=GVim
- Name[sr]=GVim
  Name[tr]=GVim
+ Name[uk]=GVim
+ Name[zh_CN]=GVim
 -Name=GVim
 +Name=GVim GTK
  # Translators: This is the Generic Application Name used in the Vim desktop file
@@ -38,9 +38,9 @@ diff --color -ur vim-8.2.2529.orig/gvim-motif.desktop vim-8.2.2529/gvim-motif.de
 --- vim-8.2.2529.orig/gvim-motif.desktop	2021-02-17 21:57:03.000000000 +0100
 +++ vim-8.2.2529/gvim-motif.desktop	2021-03-02 14:24:51.277064340 +0100
 @@ -8,7 +8,7 @@
- Name[ru]=GVim
- Name[sr]=GVim
  Name[tr]=GVim
+ Name[uk]=GVim
+ Name[zh_CN]=GVim
 -Name=GVim
 +Name=GVim Motif
  # Translators: This is the Generic Application Name used in the Vim desktop file
