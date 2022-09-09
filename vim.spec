@@ -175,7 +175,7 @@ BuildRequires:	ruby-devel >= 1.6.0
 %if %{with tcl} || %{with heavy}
 BuildRequires:	tcl-devel >= 8.0
 %endif
-Obsoletes:	kvim
+Obsoletes:	kvim < 4:7.0
 %if %{with static}
 BuildRequires:	acl-static
 BuildRequires:	attr-static
@@ -187,17 +187,18 @@ Provides:	%{name}-static = %{epoch}:%{version}-%{release}
 Obsoletes:	elvis-static
 Obsoletes:	nvi
 Obsoletes:	vi
-Obsoletes:	vim-minimal
-Obsoletes:	vim-static
+Obsoletes:	vim-minimal < 5.6
+Obsoletes:	vim-static < %{epoch}:%{version}-%{release}
 %endif
 BuildRequires:	unzip
 Suggests:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
-Obsoletes:	vim-enhanced
-Obsoletes:	vim-ispell
-Obsoletes:	vim-plugin-multvals
+Obsoletes:	vim-enhanced < 5.6
+Obsoletes:	vim-ispell < 4:7.0
+Obsoletes:	vim-ncurses < 5.6
+Obsoletes:	vim-plugin-multvals < 1.1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 # configure redefines it to =1
@@ -344,9 +345,10 @@ Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
-Obsoletes:	vim-enhanced
-Obsoletes:	vim-ispell
-Obsoletes:	vim-plugin-multvals
+Obsoletes:	vim-enhanced < 5.6
+Obsoletes:	vim-ispell < 4:7.0
+Obsoletes:	vim-ncurses < 5.6
+Obsoletes:	vim-plugin-multvals < 1.1
 
 %description heavy
 This package provides full featured version of Vim, which includes
@@ -382,9 +384,9 @@ Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
-Obsoletes:	vim-enhanced
-Obsoletes:	vim-ispell
-Obsoletes:	vim-plugin-multvals
+Obsoletes:	vim-enhanced < 5.6
+Obsoletes:	vim-ispell < 4:7.0
+Obsoletes:	vim-plugin-multvals < 1.1
 
 %description -n vimx
 This package provides console version of Vim, with support for basic
@@ -404,7 +406,7 @@ Provides:	vi
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
 Obsoletes:	elvis-static
 Obsoletes:	nvi
-Obsoletes:	vim-minimal
+Obsoletes:	vim-minimal < 5.6
 
 %description static
 Text editor similar to Vi. This version is built with minimal feature
@@ -455,14 +457,14 @@ Summary(zh_CN.UTF-8):	任何版本的 VIM 编辑器所需的公用文件。
 Group:		Applications/Editors/Vim
 Requires:	rpm-whiteout >= 1.3
 Requires:	vim-plugin-securemodelines
-Obsoletes:	gvim-bonobo
-Obsoletes:	vim-common
+Obsoletes:	gvim-bonobo < 4:7.1.063
+Obsoletes:	vim-common < 5.6
 Obsoletes:	vim-syntax-docker < 1.10.1
-Obsoletes:	vim-syntax-gitcommit
+Obsoletes:	vim-syntax-gitcommit < 2
 Obsoletes:	vim-syntax-golang <= 1.3.3-1
 Obsoletes:	vim-syntax-lxc-docker <= 0.9.0-1
 Obsoletes:	vim-syntax-nginx <= 0.3.3-2
-Obsoletes:	vim-syntax-upstart
+Obsoletes:	vim-syntax-upstart < 1.4
 BuildArch:	noarch
 
 %description rt
@@ -600,7 +602,8 @@ Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
-Obsoletes:	vim-X11
+Obsoletes:	vim-X11 < 5.6
+Obsoletes:	vim-athena < 5.6
 
 %description -n gvim-athena
 The classic Unix text editor now also under X Window System! This
@@ -633,7 +636,9 @@ Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
-Obsoletes:	vim-X11
+Obsoletes:	gvim-lesstif < 5.6-5
+Obsoletes:	vim-X11 < 5.6
+Obsoletes:	vim-lesstif < 5.6
 
 %description -n gvim-motif
 The classic Unix text editor now also under X Window System! This
@@ -669,7 +674,8 @@ Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
-Obsoletes:	vim-X11
+Obsoletes:	vim-X11 < 5.6
+Obsoletes:	vim-gtk < 5.6
 
 %description -n gvim-gtk
 The classic Unix text editor now also under X Window System! This
@@ -706,7 +712,7 @@ Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
-Obsoletes:	vim-X11
+Obsoletes:	vim-X11 < 5.6
 
 %description -n gvim-gnome
 The classic Unix text editor now also under X Window System! This
@@ -742,7 +748,7 @@ Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
-Obsoletes:	vim-X11
+Obsoletes:	vim-X11 < 5.6
 
 %description -n gvim-heavy
 This package provides full featured version of Vim, which includes
