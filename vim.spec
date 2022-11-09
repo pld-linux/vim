@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.0.0392
+%define		ver		9.0.0846
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	0f908a0640dde251e9b4ab5a3a4e98ad
+# Source0-md5:	1c1a291b83709286d82fbf56645ae448
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -1305,6 +1305,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/autoload/dist/ft.vim
 %{_datadir}/vim/autoload/dist/man.vim
 %{_datadir}/vim/autoload/dist/script.vim
+%{_datadir}/vim/autoload/dist/vimindent.vim
 
 %dir %{_datadir}/vim/ftdetect
 
