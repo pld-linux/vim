@@ -168,6 +168,7 @@ BuildRequires:	python3-devel
 BuildRequires:	rpm-pythonprov
 %endif
 BuildRequires:	rpm >= 4.4.9-56
+BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.718
 %if %{with ruby} || %{with heavy}
 BuildRequires:	ruby-devel >= 1.6.0
