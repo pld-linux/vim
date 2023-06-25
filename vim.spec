@@ -159,7 +159,7 @@ BuildRequires:	pkgconfig
 BuildRequires:	perl-devel
 %endif
 %if %{with python} || %{with heavy}
-BuildRequires:	python-devel >= 2.3
+BuildRequires:	python-devel >= 1:2.3
 %endif
 %if %{with python3} || %{with heavy}
 BuildRequires:	python3-devel
