@@ -38,13 +38,13 @@
 +++ vim72/src/optiondefs.h	2009-05-18 22:30:25.277259155 +0300
 @@ -377,6 +377,9 @@
      {"autoindent",  "ai",   P_BOOL|P_VI_DEF,
- 			    (char_u *)&p_ai, PV_AI,
+ 			    (char_u *)&p_ai, PV_AI, NULL,
  			    {(char_u *)FALSE, (char_u *)0L} SCTX_INIT},
 +    {"autopaste",   "apa",  P_BOOL|P_VI_DEF,
-+                            (char_u *)&p_apa, PV_NONE,
++                            (char_u *)&p_apa, PV_NONE, NULL,
 +                            {(char_u *)FALSE, (char_u *)0L} SCTX_INIT},
      {"autoprint",   "ap",   P_BOOL|P_VI_DEF,
- 			    (char_u *)NULL, PV_NONE,
+ 			    (char_u *)NULL, PV_NONE, NULL,
  			    {(char_u *)FALSE, (char_u *)0L} SCTX_INIT},
 --- vim72/src/option.h~	2009-05-18 22:23:40.000000000 +0300
 +++ vim72/src/option.h	2009-05-18 22:30:25.277259155 +0300

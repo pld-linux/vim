@@ -2,13 +2,12 @@
 +++ vim-8.2.4726/runtime/autoload/dist/script.vim	2022-04-10 12:01:55.436645032 +0200
 @@ -297,6 +297,10 @@ def DetectFromText(line1: string)
    elseif line1 =~ '^\x\{7}: \x\{2} \=\x\{2} \=\x\{2} \=\x\{2} '
-     set ft=xxd
+     setl ft=xxd
  
 +    # PHP script tag
 +  elseif line1 =~ '^<?php'
-+     set ft=php
++     setl ft=php
 +
      # RCS/CVS log output
    elseif line1 =~ '^RCS file:' || line2 =~ '^RCS file:'
-     set ft=rcslog
-
+     setl ft=rcslog

@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.0.1259
+%define		ver		9.0.1664
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	cde628e2b3edc430716beb1621e2d035
+# Source0-md5:	6ca4affc0ea89b798b1b2a9f4c972afd
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -1318,6 +1318,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/import
 %dir %{_datadir}/vim/import/dist
 %{_datadir}/vim/import/dist/vimhelp.vim
+%{_datadir}/vim/import/dist/vimhighlight.vim
 
 %dir %{_datadir}/vim/indent
 %doc %{_datadir}/vim/indent/README.txt
@@ -1427,6 +1428,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/autoload/*.vim
 %exclude %{_datadir}/vim/autoload/*complete.vim
 %{_datadir}/vim/autoload/xml
+%{_datadir}/vim/autoload/zig
 %{_datadir}/vim/compiler
 %{_datadir}/vim/macros
 %{_datadir}/vim/print
