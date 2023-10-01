@@ -31,8 +31,8 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.0.1664
-%define		rel		2
+%define		ver		9.0.1968
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	6ca4affc0ea89b798b1b2a9f4c972afd
+# Source0-md5:	66147348ba84ea9c78b9d6595015f5a6
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -84,7 +84,7 @@ Patch8:		%{name}-po-syntax.patch
 
 Patch10:	%{name}-doubleparenthesis.patch
 Patch11:	%{name}-syntax-fstab.patch
-Patch12:	010_all_%{name}-6.3-vixie.patch
+
 Patch14:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
 Patch15:	021_all_%{name}-7.0-fstab-bogus-errors.patch
 Patch17:	027_all_%{name}-7.0-automake-substitutions-93378.patch
@@ -784,7 +784,7 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 
 %patch10 -p1
 %patch11 -p1
-%patch12 -p1
+
 %patch14 -p1
 %patch15 -p1
 %patch17 -p1
