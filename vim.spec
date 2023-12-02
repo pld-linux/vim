@@ -143,7 +143,9 @@ BuildRequires:	gtk+3-devel >= 3.0
 BuildRequires:	gtk+2-devel >= 2:2.6.0
 %endif
 %endif
+%if %{with gnome} || %{with heavy}
 BuildRequires:	libcanberra-devel
+%endif
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
 %if %{with selinux} || %{with heavy}
 BuildRequires:	libselinux-devel
