@@ -1,9 +1,7 @@
---- vim74/runtime/filetype.vim~	2013-09-06 00:12:00.000000000 +0300
-+++ vim74/runtime/filetype.vim	2013-09-06 00:12:35.086158130 +0300
 --- vim-8.2.1524/runtime/filetype.vim~	2020-08-26 09:16:25.000000000 +0200
 +++ vim-8.2.1524/runtime/filetype.vim	2020-08-26 09:17:06.450765953 +0200
 @@ -1153,7 +1153,7 @@ au BufNewFile,BufRead *.hook
- 	\ endif
+ au BufNewFile,BufRead pacman.log			setf pacmanlog
  
  " Pam conf
 -au BufNewFile,BufRead */etc/pam.conf			setf pamconf

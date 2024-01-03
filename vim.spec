@@ -31,8 +31,8 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.0.1968
-%define		rel		2
+%define		ver		9.1.0001
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	66147348ba84ea9c78b9d6595015f5a6
+# Source0-md5:	edb7652906cd7485b630f196e027cafd
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -1306,8 +1306,11 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_datadir}/vim/autoload/README.txt
 %dir %{_datadir}/vim/autoload/dist
 %{_datadir}/vim/autoload/dist/ft.vim
+%{_datadir}/vim/autoload/dist/json.vim
 %{_datadir}/vim/autoload/dist/man.vim
 %{_datadir}/vim/autoload/dist/script.vim
+%{_datadir}/vim/autoload/dist/vim.vim
+%{_datadir}/vim/autoload/dist/vim9.vim
 %{_datadir}/vim/autoload/dist/vimindent.vim
 
 %dir %{_datadir}/vim/ftdetect
@@ -1459,6 +1462,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/tutor/tutor.utf-8
 %lang(el) %{_datadir}/vim/tutor/README.el.cp737.txt
 %lang(el) %{_datadir}/vim/tutor/README.el.txt
+%lang(ru) %{_datadir}/vim/tutor/README.ru.utf-8.txt
 
 %lang(de) %{_datadir}/vim/tutor/tutor.bar
 %lang(de) %{_datadir}/vim/tutor/tutor.bar.utf-8
