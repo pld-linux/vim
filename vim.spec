@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.1.0001
+%define		ver		9.1.0004
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,25 +52,25 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	edb7652906cd7485b630f196e027cafd
+# Source0-md5:	9f41632dc9422fab0a2563ab8de3a01e
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
 # Source2-md5:	ff96284b1c913d55cf0877839b34d490
 Source15:	update-source.sh
 # syntax files
-# http://www.vim.org/scripts/script.php?script_id=1491 (0.7.5)
+# http://www.vim.org/scripts/script.php?script_id=1491 (0.7.7)
 Source20:	javascript.vim
 # http://www.vim.org/scripts/script.php?script_id=447 (20040206)
 Source22:	exim.vim
 # color schemes
-# http://www.vim.org/scripts/script.php?script_id=415 (1.15)
+# http://www.vim.org/scripts/script.php?script_id=415 (2.21)
 Source30:	zenburn.vim
 # http://www.vim.org/scripts/script.php?script_id=92 (1.0)
 Source31:	borland.vim
 # http://www.vim.org/scripts/script.php?script_id=368 (1.2.5)
 Source32:	oceandeep.vim
-# http://www.vim.org/scripts/script.php?script_id=1464 (2.6.3)
+# http://www.vim.org/scripts/script.php?script_id=1464 (2.6.5)
 Source33:	moria.vim
 Patch0:		%{name}-sysconfdir.patch
 
