@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.1.0004
+%define		ver		9.1.0168
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	9f41632dc9422fab0a2563ab8de3a01e
+# Source0-md5:	7cac4728ddb3a5ffb84ea0f69ef735ad
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -1338,12 +1338,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/plugin
 %doc %{_datadir}/vim/plugin/README.txt
 
-%dir %{_datadir}/vim/syntax
-%doc %{_datadir}/vim/syntax/README.txt
-%{_datadir}/vim/syntax/*.vim
-%dir  %{_datadir}/vim/syntax/shared
-%doc %{_datadir}/vim/syntax/shared/README.txt
-%{_datadir}/vim/syntax/shared/*.vim
+%{_datadir}/vim/syntax
 
 %dir %{_datadir}/vim/colors
 %doc %{_datadir}/vim/colors/README.txt
@@ -1499,6 +1494,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ko) %{_datadir}/vim/tutor/tutor.ko
 %lang(ko) %{_datadir}/vim/tutor/tutor.ko.euc
 %lang(ko) %{_datadir}/vim/tutor/tutor.ko.utf-8
+%lang(lt) %{_datadir}/vim/tutor/tutor.lt.utf-8
 %lang(lv) %{_datadir}/vim/tutor/tutor.lv.utf-8
 %lang(nl) %{_datadir}/vim/tutor/tutor.nl
 %lang(nl) %{_datadir}/vim/tutor/tutor.nl.utf-8
