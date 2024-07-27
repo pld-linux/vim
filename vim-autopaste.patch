@@ -25,7 +25,7 @@
 +        cps = 0;
 +      if (cps >= 30) {
 +        cps = 0;
-+	do_set(&sPaste, 0);
++	do_set(sPaste, 0);
 +	showmode();
 +      }
 +      last_call = now;
