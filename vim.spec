@@ -31,8 +31,8 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.1.0168
-%define		rel		2
+%define		ver		9.1.0630
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	7cac4728ddb3a5ffb84ea0f69ef735ad
+# Source0-md5:	172aefc43adf4e53c20a841b7d66be26
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -75,7 +75,6 @@ Source33:	moria.vim
 Patch0:		%{name}-sysconfdir.patch
 
 Patch2:		%{name}-paths.patch
-Patch3:		%{name}-no_libelf.patch
 
 Patch5:		%{name}-awk.patch
 Patch6:		%{name}-filetype_vim-perl_tests.patch
@@ -106,7 +105,6 @@ Patch32:	%{name}-localedir.patch
 Patch34:	%{name}-rtdir.patch
 Patch35:	%{name}-ft-mib.patch
 
-Patch37:	%{name}-ft-mysql.patch
 Patch38:	%{name}-ft-gyp.patch
 Patch39:	%{name}-revert-7.4.165-noundo.patch
 Patch40:	desktop.patch
@@ -777,7 +775,6 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 %patch0 -p1
 
 %patch2 -p1
-%patch3 -p1
 
 %patch5 -p1
 %patch6 -p1
@@ -811,7 +808,6 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 %patch34 -p1
 %patch35 -p1
 
-%patch37 -p1
 %patch38 -p1
 %patch39 -p1
 %patch40 -p1
@@ -1279,6 +1275,7 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_datadir}/vim/doc
 %verify(not md5 mtime size) %{_datadir}/vim/doc/tags
 %lang(pl) %verify(not md5 mtime size) %{_datadir}/vim/doc/tags-pl
+%lang(ru) %verify(not md5 mtime size) %{_datadir}/vim/doc/tags-ru
 %verify(not md5 mtime size) %{_datadir}/vim/vimfiles/doc/tags
 
 %dir %{_datadir}/vim/vimfiles
@@ -1427,8 +1424,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/plugin/*.vim
 %{_datadir}/vim/autoload/*.vim
 %exclude %{_datadir}/vim/autoload/*complete.vim
+%{_datadir}/vim/autoload/cargo
+%{_datadir}/vim/autoload/rust
 %{_datadir}/vim/autoload/xml
-%{_datadir}/vim/autoload/zig
 %{_datadir}/vim/compiler
 %{_datadir}/vim/macros
 %{_datadir}/vim/print
@@ -1442,6 +1440,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 # English
 %{_datadir}/vim/doc/*.txt
+%lang(ru) %{_datadir}/vim/doc/uganda.rux
 
 # Polish
 %lang(pl) %{_datadir}/vim/doc/*.plx

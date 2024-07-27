@@ -1,7 +1,7 @@
 --- vim74/runtime/filetype.vim~	2013-09-06 00:03:38.000000000 +0300
 +++ vim74/runtime/filetype.vim	2013-09-06 00:04:54.205952274 +0300
 @@ -110,8 +110,8 @@
- au BufNewFile,BufRead *.ino,*.pde		setf arduino
+ au BufNewFile,BufRead *.asy		setf asy
  
  " Apache config file
 -au BufNewFile,BufRead .htaccess,*/etc/httpd/*.conf		setf apache
