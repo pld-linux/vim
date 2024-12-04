@@ -1,16 +1,16 @@
---- vim-7.4.979/runtime/syntax/po.vim~	2015-12-19 16:28:18.000000000 +0200
-+++ vim-7.4.979/runtime/syntax/po.vim	2015-12-22 10:39:56.522234440 +0200
-@@ -55,6 +55,7 @@
- syn match     poDiffOld '\(^#| "[^{]*+}\|{+[^}]*+}\|{+[^}]*\|"$\)' contained
- syn match     poDiffNew '\(^#| "[^{]*-}\|{-[^}]*-}\|{-[^}]*\|"$\)' contained
- syn match     poCommentDiff "^#|.*$" contains=poDiffOld,poDiffNew
-+syn match     poUntranslated /^msgstr\s\+""\n\n/
+--- vim-9.1.0905/runtime/syntax/po.vim~	2024-12-04 20:31:43.000000000 +0100
++++ vim-9.1.0905/runtime/syntax/po.vim	2024-12-04 21:09:52.719975448 +0100
+@@ -21,6 +21,7 @@ syn match  poStatementMsgCTxt "^msgctxt"
+ syn match  poStatementMsgidplural "^msgid_plural" contained
+ syn match  poPluralCaseN "[0-9]" contained
+ syn match  poStatementMsgstr "^msgstr\(\[[0-9]\]\)" contains=poPluralCaseN
++syn match  poUntranslated /^msgstr\s\+""\n\n/
  
- " Translations (also includes header fields as they appear in a translation msgstr)
- syn region poCommentKDE	  start=+"_: +ms=s+1 end="\\n" end="\"\n^msgstr"me=s-1 contained
-@@ -103,6 +104,7 @@
- hi def link poDiffOld           Todo
- hi def link poDiffNew          Special
+ " Simple HTML and XML highlighting
+ syn match  poHtml "<\_[^<>]\+>" contains=poHtmlTranslatables,poLineBreak
+@@ -122,6 +123,7 @@ hi def link poCopyrightUnset    Todo
+ hi def link poFlagFuzzy         Todo
+ hi def link poFlagFormat        Todo
  hi def link poObsolete         Comment
 +hi def link poUntranslated      Todo
  
