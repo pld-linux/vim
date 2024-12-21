@@ -1449,11 +1449,16 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_bindir}/vimtutor
 %dir %{_datadir}/vim/tutor
+%{_datadir}/vim/tutor/tutor.tutor
+%{_datadir}/vim/tutor/tutor.tutor.json
+%{_datadir}/vim/tutor/tutor.vim
 %{_datadir}/vim/tutor/tutor1
+%{_datadir}/vim/tutor/tutor1.utf-8
+%{_datadir}/vim/tutor/tutor2
+%{_datadir}/vim/tutor/tutor2.utf-8
+%{_datadir}/vim/tutor/en
 
 %{_datadir}/vim/tutor/README.txt
-%{_datadir}/vim/tutor/tutor.vim
-%{_datadir}/vim/tutor/tutor1.utf-8
 %lang(el) %{_datadir}/vim/tutor/README.el.cp737.txt
 %lang(el) %{_datadir}/vim/tutor/README.el.txt
 %lang(ru) %{_datadir}/vim/tutor/README.ru.utf-8.txt
@@ -1487,6 +1492,9 @@ rm -rf $RPM_BUILD_ROOT
 %lang(hu) %{_datadir}/vim/tutor/tutor1.hu.utf-8
 %lang(it) %{_datadir}/vim/tutor/tutor1.it
 %lang(it) %{_datadir}/vim/tutor/tutor1.it.utf-8
+%lang(it) %{_datadir}/vim/tutor/tutor2.it
+%lang(it) %{_datadir}/vim/tutor/tutor2.it.utf-8
+%lang(it) %{_datadir}/vim/tutor/it
 %lang(ja) %{_datadir}/vim/tutor/tutor1.ja.euc
 %lang(ja) %{_datadir}/vim/tutor/tutor1.ja.sjis
 %lang(ja) %{_datadir}/vim/tutor/tutor1.ja.utf-8
