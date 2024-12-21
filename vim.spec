@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.1.0905
+%define		ver		9.1.0950
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	f5af4939c322cabe3ed72fba56fbb9c1
+# Source0-md5:	3ff636f9824a5a3c78c8c423514ca253
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -88,7 +88,7 @@ Patch14:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
 Patch15:	021_all_%{name}-7.0-fstab-bogus-errors.patch
 Patch17:	027_all_%{name}-7.0-automake-substitutions-93378.patch
 Patch18:	%{name}-smarty.patch
-Patch19:	%{name}-tutor-lessdeps.patch
+
 Patch20:	%{name}-nagios.patch
 Patch21:	%{name}-filetypes.patch
 Patch22:	%{name}-man_installation.patch
@@ -788,7 +788,7 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 %patch15 -p1
 %patch17 -p1
 %patch18 -p1
-%patch19 -p1
+
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
