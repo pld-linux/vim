@@ -1518,6 +1518,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sk) %{_datadir}/vim/tutor/tutor1.sk.utf-8
 %lang(sr) %{_datadir}/vim/tutor/tutor1.sr.cp1250
 %lang(sr) %{_datadir}/vim/tutor/tutor1.sr.utf-8
+%lang(sr) %{_datadir}/vim/tutor/tutor2.sr.utf-8
+%lang(sr) %{_datadir}/vim/tutor/sr
 %lang(sv) %{_datadir}/vim/tutor/tutor1.sv
 %lang(sv) %{_datadir}/vim/tutor/tutor1.sv.utf-8
 %lang(tr) %{_datadir}/vim/tutor/tutor1.tr.iso9
