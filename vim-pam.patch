@@ -1,12 +1,11 @@
---- vim-8.2.1524/runtime/filetype.vim~	2020-08-26 09:16:25.000000000 +0200
-+++ vim-8.2.1524/runtime/filetype.vim	2020-08-26 09:17:06.450765953 +0200
-@@ -1153,7 +1153,7 @@ au BufNewFile,BufRead *.hook
- au BufNewFile,BufRead pacman.log			setf pacmanlog
+--- vim-9.1.1288/runtime/filetype.vim~	2025-04-09 10:16:06.000000000 +0200
++++ vim-9.1.1288/runtime/filetype.vim	2025-04-09 10:25:41.479151284 +0200
+@@ -1823,7 +1823,7 @@ au BufNewFile,BufRead {.,}makepkg.conf
+ au BufRead pacman.log*					call s:StarSetf('pacmanlog')
  
  " Pam conf
 -au BufNewFile,BufRead */etc/pam.conf			setf pamconf
-+au BufNewFile,BufRead */etc/pam.conf,*.pam,*.pamd			setf pamconf
++au BufNewFile,BufRead */etc/pam.conf,*.pam,*.pamd	setf pamconf
  
  " Pam environment
  au BufNewFile,BufRead pam_env.conf,.pam_environment	setf pamenv
-
