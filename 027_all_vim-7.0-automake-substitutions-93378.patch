@@ -1,10 +1,5 @@
----
- runtime/syntax/automake.vim | 3 +++
- runtime/syntax/make.vim     | 6 ++----
- 2 files changed, 5 insertions(+), 4 deletions(-)
-
 diff --git a/runtime/syntax/automake.vim b/runtime/syntax/automake.vim
-index 8a7db7c..cb2b82f 100644
+index 2f1ad98..946e833 100644
 --- a/runtime/syntax/automake.vim
 +++ b/runtime/syntax/automake.vim
 @@ -53,6 +53,9 @@ syn region  automakeMakeSString start=+'+  skip=+\\'+  end=+'+  contains=makeIde
@@ -18,11 +13,11 @@ index 8a7db7c..cb2b82f 100644
  
  hi def link automakePrimary     Statement
 diff --git a/runtime/syntax/make.vim b/runtime/syntax/make.vim
-index 2a64dcd..7325db1 100644
+index a6d8ad4..2023080 100644
 --- a/runtime/syntax/make.vim
 +++ b/runtime/syntax/make.vim
-@@ -62,10 +62,8 @@ syn match makeSpecTarget	"^\.\(SUFFIXES\|PHONY\|DEFAULT\|PRECIOUS\|IGNORE\|SILEN
- 	\ skipnl nextgroup=makeCommands,makeCommandError
+@@ -91,10 +91,8 @@ elseif get(b:, 'make_flavor', s:make_flavor) == 'gnu'
+ endif
  
  syn match makeCommandError "^\s\+\S.*" contained
 -syn region makeCommands contained start=";"hs=s+1 start="^\t"
@@ -34,6 +29,3 @@ index 2a64dcd..7325db1 100644
  syn match makeCmdNextLine	"\\\n."he=e-1 contained
  
  " some directives
--- 
-2.24.1
-
