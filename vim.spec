@@ -1,24 +1,24 @@
 #
 # Conditional build:
-%bcond_without	static		# don't build static version
-%bcond_without	athena		# don't build Athena Widgets-based gvim
-%bcond_without	motif		# don't build Motif-based gvim
-%bcond_without	gtk		# don't build GTK+-based gvim support
+%bcond_without	static		# static version
+%bcond_without	athena		# Athena Widgets-based gvim
+%bcond_without	motif		# Motif-based gvim
+%bcond_without	gtk		# GTK+-based gvim support
 %bcond_without	gtk3		# use GTK+ 2.x instead of 3.x
-%bcond_without	gnome		# don't build GNOME-based gvim support
-%bcond_without	heavy		# don't build heavy (full-featured GNOME-based gvim/vim)
-%bcond_without	gui		# don't build any GUI
-%bcond_without	light		# don't build light (minimal, ncurses, but not static)
-%bcond_without	x11		# don't build vimx (non-GUI with X11 clipboard support)
-%bcond_with	lua		# with Lua interp in vim package
-%bcond_with	perl		# with Perl interp in vim package
-%bcond_with	python		# with Python 2 interp in vim package
-%bcond_with	python3		# with Python 3 interp in vim package
-%bcond_with	ruby		# with Ruby interp in vim package
-%bcond_with	tcl		# with Tcl interp
-%bcond_with	x		# with X11 support
-%bcond_without	selinux		# without selinux support
-%bcond_without	home_etc	# without home_etc support
+%bcond_without	gnome		# GNOME-based gvim support
+%bcond_without	heavy		# heavy (full-featured GNOME-based gvim/vim)
+%bcond_without	gui		# any GUI
+%bcond_without	light		# light (minimal, ncurses, but not static)
+%bcond_without	x11		# vimx (non-GUI with X11 clipboard support)
+%bcond_with	lua		# Lua interp in vim package
+%bcond_with	perl		# Perl interp in vim package
+%bcond_with	python		# Python 2 interp in vim package
+%bcond_with	python3		# Python 3 interp in vim package
+%bcond_with	ruby		# Ruby interp in vim package
+%bcond_with	tcl		# Tcl interp
+%bcond_with	x		# X11 support
+%bcond_without	selinux		# SELinux support
+%bcond_without	home_etc	# home_etc support
 
 %if %{without gui}
 %undefine	with_athena
@@ -50,7 +50,7 @@ Release:	%{rel}
 Epoch:		4
 License:	Charityware
 Group:		Applications/Editors/Vim
-#Source0:	ftp://ftp.vim.org/pub/vim/unix/%{name}-%{ver}.tar.bz2
+#TODO:	https://github.com/vim/vim/archive/v%{ver}/%{name}-%{ver}.tar.gz
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
 # Source0-md5:	8517249bc5d0bf835a7f01035220e281
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
@@ -1482,6 +1482,10 @@ rm -rf $RPM_BUILD_ROOT
 %lang(es) %{_datadir}/vim/tutor/tutor1.es.utf-8
 %lang(fr) %{_datadir}/vim/tutor/tutor1.fr
 %lang(fr) %{_datadir}/vim/tutor/tutor1.fr.utf-8
+%lang(gl) %{_datadir}/vim/tutor/tutor1.gl
+%lang(gl) %{_datadir}/vim/tutor/tutor1.gl.utf-8
+%lang(gl) %{_datadir}/vim/tutor/tutor2.gl
+%lang(gl) %{_datadir}/vim/tutor/tutor2.gl.utf-8
 %lang(hr) %{_datadir}/vim/tutor/tutor1.hr
 %lang(hr) %{_datadir}/vim/tutor/tutor1.hr.cp1250
 %lang(hr) %{_datadir}/vim/tutor/tutor1.hr.utf-8
@@ -1513,6 +1517,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ru) %{_datadir}/vim/tutor/tutor1.ru
 %lang(ru) %{_datadir}/vim/tutor/tutor1.ru.cp1251
 %lang(ru) %{_datadir}/vim/tutor/tutor1.ru.utf-8
+%lang(ru) %{_datadir}/vim/tutor/tutor2.ru.utf-8
+%lang(ru) %{_datadir}/vim/tutor/ru
 %lang(sk) %{_datadir}/vim/tutor/tutor1.sk
 %lang(sk) %{_datadir}/vim/tutor/tutor1.sk.cp1250
 %lang(sk) %{_datadir}/vim/tutor/tutor1.sk.utf-8
