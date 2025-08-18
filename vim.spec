@@ -31,8 +31,8 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.1.1453
-%define		rel		2
+%define		ver		9.1.1651
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #TODO:	https://github.com/vim/vim/archive/v%{ver}/%{name}-%{ver}.tar.gz
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	8517249bc5d0bf835a7f01035220e281
+# Source0-md5:	8139fe0c3556a2bc7679a8ebae7307d2
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -1024,7 +1024,6 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/vim,%{_bindir}} \
 
 # fix nb/no
 %{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/tutor/tutor1.n{o,b}
-%{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/tutor/tutor1.n{o,b}.utf-8
 %{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/lang/menu_n{o,b}.latin1.vim
 %{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/lang/menu_n{o,b}.utf-8.vim
 %{__mv} $RPM_BUILD_ROOT%{_datadir}/vim/lang/menu_n{o,b}_no.latin1.vim
@@ -1451,92 +1450,53 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/tutor/tutor.tutor.json
 %{_datadir}/vim/tutor/tutor.vim
 %{_datadir}/vim/tutor/tutor1
-%{_datadir}/vim/tutor/tutor1.utf-8
 %{_datadir}/vim/tutor/tutor2
-%{_datadir}/vim/tutor/tutor2.utf-8
 %{_datadir}/vim/tutor/en
 
 %{_datadir}/vim/tutor/README.txt
-%lang(el) %{_datadir}/vim/tutor/README.el.cp737.txt
 %lang(el) %{_datadir}/vim/tutor/README.el.txt
-%lang(ru) %{_datadir}/vim/tutor/README.ru.utf-8.txt
+%lang(ru) %{_datadir}/vim/tutor/README.ru.txt
 
-%lang(de) %{_datadir}/vim/tutor/tutor1.bar
-%lang(de) %{_datadir}/vim/tutor/tutor1.bar.utf-8
-%lang(bg) %{_datadir}/vim/tutor/tutor1.bg.utf-8
+%lang(bg) %{_datadir}/vim/tutor/tutor1.bg
 %lang(ca) %{_datadir}/vim/tutor/tutor1.ca
-%lang(ca) %{_datadir}/vim/tutor/tutor1.ca.utf-8
 %lang(cs) %{_datadir}/vim/tutor/tutor1.cs
-%lang(cs) %{_datadir}/vim/tutor/tutor1.cs.cp1250
-%lang(cs) %{_datadir}/vim/tutor/tutor1.cs.utf-8
 %lang(da) %{_datadir}/vim/tutor/tutor1.da
-%lang(da) %{_datadir}/vim/tutor/tutor1.da.utf-8
+%lang(de) %{_datadir}/vim/tutor/tutor1.bar
 %lang(de) %{_datadir}/vim/tutor/tutor1.de
-%lang(de) %{_datadir}/vim/tutor/tutor1.de.utf-8
 %lang(el) %{_datadir}/vim/tutor/tutor1.el
-%lang(el) %{_datadir}/vim/tutor/tutor1.el.cp737
-%lang(el) %{_datadir}/vim/tutor/tutor1.el.utf-8
 %lang(eo) %{_datadir}/vim/tutor/tutor1.eo
-%lang(eo) %{_datadir}/vim/tutor/tutor1.eo.utf-8
 %lang(es) %{_datadir}/vim/tutor/tutor1.es
-%lang(es) %{_datadir}/vim/tutor/tutor1.es.utf-8
 %lang(fr) %{_datadir}/vim/tutor/tutor1.fr
-%lang(fr) %{_datadir}/vim/tutor/tutor1.fr.utf-8
+%lang(fr) %{_datadir}/vim/tutor/tutor2.fr
 %lang(gl) %{_datadir}/vim/tutor/tutor1.gl
-%lang(gl) %{_datadir}/vim/tutor/tutor1.gl.utf-8
 %lang(gl) %{_datadir}/vim/tutor/tutor2.gl
-%lang(gl) %{_datadir}/vim/tutor/tutor2.gl.utf-8
 %lang(hr) %{_datadir}/vim/tutor/tutor1.hr
-%lang(hr) %{_datadir}/vim/tutor/tutor1.hr.cp1250
-%lang(hr) %{_datadir}/vim/tutor/tutor1.hr.utf-8
 %lang(hu) %{_datadir}/vim/tutor/tutor1.hu
-%lang(hu) %{_datadir}/vim/tutor/tutor1.hu.cp1250
-%lang(hu) %{_datadir}/vim/tutor/tutor1.hu.utf-8
 %lang(it) %{_datadir}/vim/tutor/tutor1.it
-%lang(it) %{_datadir}/vim/tutor/tutor1.it.utf-8
 %lang(it) %{_datadir}/vim/tutor/tutor2.it
-%lang(it) %{_datadir}/vim/tutor/tutor2.it.utf-8
 %lang(it) %{_datadir}/vim/tutor/it
-%lang(ja) %{_datadir}/vim/tutor/tutor1.ja.euc
-%lang(ja) %{_datadir}/vim/tutor/tutor1.ja.sjis
-%lang(ja) %{_datadir}/vim/tutor/tutor1.ja.utf-8
+%lang(ja) %{_datadir}/vim/tutor/tutor1.ja
 %lang(ko) %{_datadir}/vim/tutor/tutor1.ko
-%lang(ko) %{_datadir}/vim/tutor/tutor1.ko.euc
-%lang(ko) %{_datadir}/vim/tutor/tutor1.ko.utf-8
-%lang(lt) %{_datadir}/vim/tutor/tutor1.lt.utf-8
-%lang(lv) %{_datadir}/vim/tutor/tutor1.lv.utf-8
-%lang(nl) %{_datadir}/vim/tutor/tutor1.nl
-%lang(nl) %{_datadir}/vim/tutor/tutor1.nl.utf-8
+%lang(lt) %{_datadir}/vim/tutor/tutor1.lt
+%lang(lv) %{_datadir}/vim/tutor/tutor1.lv
 %lang(nb) %{_datadir}/vim/tutor/tutor1.nb
-%lang(nb) %{_datadir}/vim/tutor/tutor1.nb.utf-8
+%lang(nl) %{_datadir}/vim/tutor/tutor1.nl
 %lang(pl) %{_datadir}/vim/tutor/tutor1.pl
-%lang(pl) %{_datadir}/vim/tutor/tutor1.pl.cp1250
-%lang(pl) %{_datadir}/vim/tutor/tutor1.pl.utf-8
 %lang(pt) %{_datadir}/vim/tutor/tutor1.pt
-%lang(pt) %{_datadir}/vim/tutor/tutor1.pt.utf-8
 %lang(ru) %{_datadir}/vim/tutor/tutor1.ru
-%lang(ru) %{_datadir}/vim/tutor/tutor1.ru.cp1251
-%lang(ru) %{_datadir}/vim/tutor/tutor1.ru.utf-8
-%lang(ru) %{_datadir}/vim/tutor/tutor2.ru.utf-8
+%lang(ru) %{_datadir}/vim/tutor/tutor2.ru
 %lang(ru) %{_datadir}/vim/tutor/ru
 %lang(sk) %{_datadir}/vim/tutor/tutor1.sk
-%lang(sk) %{_datadir}/vim/tutor/tutor1.sk.cp1250
-%lang(sk) %{_datadir}/vim/tutor/tutor1.sk.utf-8
-%lang(sr) %{_datadir}/vim/tutor/tutor1.sr.cp1250
-%lang(sr) %{_datadir}/vim/tutor/tutor1.sr.utf-8
-%lang(sr) %{_datadir}/vim/tutor/tutor2.sr.utf-8
+%lang(sr) %{_datadir}/vim/tutor/tutor1.sr
+%lang(sr) %{_datadir}/vim/tutor/tutor2.sr
 %lang(sr) %{_datadir}/vim/tutor/sr
 %lang(sv) %{_datadir}/vim/tutor/tutor1.sv
-%lang(sv) %{_datadir}/vim/tutor/tutor1.sv.utf-8
-%lang(tr) %{_datadir}/vim/tutor/tutor1.tr.iso9
-%lang(tr) %{_datadir}/vim/tutor/tutor1.tr.utf-8
-%lang(uk) %{_datadir}/vim/tutor/tutor1.uk.utf-8
-%lang(vi) %{_datadir}/vim/tutor/tutor1.vi.utf-8
-%lang(zh_CN) %{_datadir}/vim/tutor/tutor1.zh_cn.utf-8
-%lang(zh_TW) %{_datadir}/vim/tutor/tutor1.zh.big5
-%lang(zh_TW) %{_datadir}/vim/tutor/tutor1.zh.euc
-%lang(zh_TW) %{_datadir}/vim/tutor/tutor1.zh.utf-8
-%lang(zh_TW) %{_datadir}/vim/tutor/tutor1.zh_tw.utf-8
+%lang(tr) %{_datadir}/vim/tutor/tutor1.tr
+%lang(uk) %{_datadir}/vim/tutor/tutor1.uk
+%lang(vi) %{_datadir}/vim/tutor/tutor1.vi
+%lang(zh_CN) %{_datadir}/vim/tutor/tutor1.zh_cn
+%lang(zh_TW) %{_datadir}/vim/tutor/tutor1.zh
+%lang(zh_TW) %{_datadir}/vim/tutor/tutor1.zh_tw
 
 %{_mandir}/man1/vimtutor.1*
 %lang(da) %{_mandir}/da/man1/vimtutor.1*
