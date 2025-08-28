@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.1.1651
+%define		ver		9.1.1706
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #TODO:	https://github.com/vim/vim/archive/v%{ver}/%{name}-%{ver}.tar.gz
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	8139fe0c3556a2bc7679a8ebae7307d2
+# Source0-md5:	1e64cc914925aafbd456d0b50e690581
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -1495,7 +1495,6 @@ rm -rf $RPM_BUILD_ROOT
 %lang(uk) %{_datadir}/vim/tutor/tutor1.uk
 %lang(vi) %{_datadir}/vim/tutor/tutor1.vi
 %lang(zh_CN) %{_datadir}/vim/tutor/tutor1.zh_cn
-%lang(zh_TW) %{_datadir}/vim/tutor/tutor1.zh
 %lang(zh_TW) %{_datadir}/vim/tutor/tutor1.zh_tw
 
 %{_mandir}/man1/vimtutor.1*
