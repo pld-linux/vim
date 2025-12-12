@@ -1,11 +1,12 @@
---- vim72/runtime/filetype.vim~	2009-10-20 18:35:37.000000000 +0300
-+++ vim72/runtime/filetype.vim	2009-10-20 18:36:20.600517648 +0300
-@@ -1818,7 +1818,7 @@
- au BufNewFile,BufRead *.sno,*.spt		setf snobol4
+--- vim-9.1.1975/runtime/filetype.vim~	2025-12-12 14:10:10.000000000 +0100
++++ vim-9.1.1975/runtime/filetype.vim	2025-12-12 14:11:42.881271150 +0100
+@@ -1077,6 +1077,9 @@ au BufNewFile,BufRead *.smi
+ " Snakemake
+ au BufNewFile,BufRead Snakefile,*.smk		setf snakemake
  
- " SNMP MIB files
--au BufNewFile,BufRead *.mib,*.my		setf mib
-+au BufNewFile,BufRead *.mib,*.my,*/mibs/*.txt		setf mib
- 
++" SNMP MIB files (additional to runtime/autoload/dist/ft.vim)
++au BufNewFile,BufRead */mibs/*.txt              setf mib
++
  " Snort Configuration
  au BufNewFile,BufRead *.hog,snort.conf,vision.conf	setf hog
+ au BufNewFile,BufRead *.rules			call dist#ft#FTRules()

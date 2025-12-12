@@ -1,12 +1,12 @@
---- vim62/runtime/filetype.vim.orig	2004-04-27 07:44:02.019203248 +0200
-+++ vim62/runtime/filetype.vim	2004-04-27 07:45:18.716543480 +0200
-@@ -1306,6 +1306,9 @@
- " Standard ML
- au BufNewFile,BufRead *.sml			setf sml
+--- vim-9.1.1975/runtime/filetype.vim~	2025-12-12 08:52:07.000000000 +0100
++++ vim-9.1.1975/runtime/filetype.vim	2025-12-12 13:54:21.961914854 +0100
+@@ -1150,6 +1150,9 @@ au BufNewFile,BufRead *.ttl
+ 	\   setf teraterm |
+ 	\ endif
  
 +" tests for perl modules
 +au BufNewFile,BufRead t/*.t			call s:FTpl()
 +
- " Sratus VOS command macro
- au BufNewFile,BufRead *.cm			setf voscm
- 
+ " TeX
+ au BufNewFile,BufRead *.tex			call dist#ft#FTtex()
+ au BufNewFile,BufRead texdoc.cnf		setf conf

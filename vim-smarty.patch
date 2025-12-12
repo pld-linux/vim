@@ -1,20 +1,10 @@
---- ./runtime/filetype.vim	2006-01-12 17:26:15.000000000 +0200
-+++ /tmp/filetype.vim	2006-01-12 17:25:53.000000000 +0200
-@@ -792,6 +792,9 @@ au BufRead,BufNewFile *.heex			setf heex
- " HEX (Intel)
- au BufNewFile,BufRead *.hex,*.ihex,*.int,*.ihe,*.ihx,*.mcs,*.h32,*.h80,*.h86,*.a43,*.a90	setf hex
- 
-+" Smarty templates (must be before HTML)
-+au BufNewFile,BufRead *.tpl.html,*.tpl		setf smarty
-+
- " Hjson
- au BufNewFile,BufRead *.hjson			setf hjson
- 
-@@ -1396,7 +1399,4 @@
- 
--" Smarty templates
--au BufNewFile,BufRead *.tpl			setf smarty
--
- " SMIL or XML
- au BufNewFile,BufRead *.smil
- 	\ if getline(1) =~ '<?\s*xml.*?>' |
+--- vim-9.1.1975/runtime/autoload/dist/ft.vim~	2025-12-12 08:52:07.000000000 +0100
++++ vim-9.1.1975/runtime/autoload/dist/ft.vim	2025-12-12 14:05:04.138142209 +0100
+@@ -2681,6 +2681,7 @@ const ft_from_ext = {
+   "st": "st",
+   # Smarty templates
+   "tpl": "smarty",
++  "tpl.html": "smarty",
+   # SMITH
+   "smt": "smith",
+   "smith": "smith",
