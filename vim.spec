@@ -86,6 +86,7 @@ Patch11:	%{name}-syntax-fstab.patch
 Patch14:	020_all_%{name}-7.0-fstab-tmpfs-size.patch
 Patch15:	021_all_%{name}-7.0-fstab-bogus-errors.patch
 Patch17:	027_all_%{name}-7.0-automake-substitutions-93378.patch
+Patch18:	%{name}-smarty.patch
 
 Patch20:	%{name}-nagios.patch
 Patch21:	%{name}-filetypes.patch
