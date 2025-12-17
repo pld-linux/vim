@@ -1466,6 +1466,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(el) %{_datadir}/vim/tutor/tutor1.el
 %lang(eo) %{_datadir}/vim/tutor/tutor1.eo
 %lang(es) %{_datadir}/vim/tutor/tutor1.es
+%lang(es) %{_datadir}/vim/tutor/tutor2.es
 %lang(fr) %{_datadir}/vim/tutor/tutor1.fr
 %lang(fr) %{_datadir}/vim/tutor/tutor2.fr
 %lang(gl) %{_datadir}/vim/tutor/tutor1.gl
