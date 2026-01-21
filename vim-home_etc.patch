@@ -32,9 +32,9 @@ diff -Nru vim62.orig/src/misc1.c vim62/src/misc1.c
  # endif
  #endif
  
-@@ -279,7 +279,7 @@
+@@ -232,7 +232,7 @@ typedef struct dsc$descriptor   DESC;
  # ifdef VMS
- # define USR_VIMRC_FILE  "sys$login:.vimrc"
+ #  define USR_VIMRC_FILE  "sys$login:.vimrc"
  # else
 -#  define USR_VIMRC_FILE "$HOME/.vimrc"
 +#  define USR_VIMRC_FILE "$HOME_ETC/.vimrc"
