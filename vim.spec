@@ -1201,6 +1201,8 @@ rm -rf $RPM_BUILD_ROOT
 %lang(pl) %{_mandir}/pl/man1/vimdiff.1*
 %lang(ru) %{_mandir}/ru/man1/rvim.1*
 %lang(ru) %{_mandir}/ru/man1/vimdiff.1*
+%lang(sv) %{_mandir}/sv/man1/rvim.1*
+%lang(sv) %{_mandir}/sv/man1/vimdiff.1*
 %lang(tr) %{_mandir}/tr/man1/rvim.1*
 %lang(tr) %{_mandir}/tr/man1/vimdiff.1*
 %{_desktopdir}/vim.desktop
@@ -1250,6 +1252,9 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ru) %{_mandir}/ru/man1/ex.1*
 %lang(ru) %{_mandir}/ru/man1/view.1*
 %lang(ru) %{_mandir}/ru/man1/rview.1*
+%lang(sv) %{_mandir}/sv/man1/ex.1*
+%lang(sv) %{_mandir}/sv/man1/view.1*
+%lang(sv) %{_mandir}/sv/man1/rview.1*
 %lang(tr) %{_mandir}/tr/man1/ex.1*
 %lang(tr) %{_mandir}/tr/man1/view.1*
 %lang(tr) %{_mandir}/tr/man1/rview.1*
@@ -1263,6 +1268,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_mandir}/ja/man1/xxd.1*
 %lang(pl) %{_mandir}/pl/man1/xxd.1*
 %lang(ru) %{_mandir}/ru/man1/xxd.1*
+%lang(sv) %{_mandir}/sv/man1/xxd.1*
 
 %files rt -f %{name}.lang
 %defattr(644,root,root,755)
@@ -1409,6 +1415,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_mandir}/ja/man1/vim.1*
 %lang(pl) %{_mandir}/pl/man1/vim.1*
 %lang(ru) %{_mandir}/ru/man1/vim.1*
+%lang(sv) %{_mandir}/sv/man1/vim.1*
 %lang(tr) %{_mandir}/tr/man1/vim.1*
 %{_pixmapsdir}/gvim.png
 
@@ -1456,6 +1463,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/vim/tutor/README.txt
 %lang(el) %{_datadir}/vim/tutor/README.el.txt
 %lang(ru) %{_datadir}/vim/tutor/README.ru.txt
+%lang(sv) %{_datadir}/vim/tutor/README.sv.txt
 
 %lang(bg) %{_datadir}/vim/tutor/tutor1.bg
 %lang(ca) %{_datadir}/vim/tutor/tutor1.ca
@@ -1492,7 +1500,9 @@ rm -rf $RPM_BUILD_ROOT
 %lang(sr) %{_datadir}/vim/tutor/tutor1.sr
 %lang(sr) %{_datadir}/vim/tutor/tutor2.sr
 %lang(sr) %{_datadir}/vim/tutor/sr
+%lang(sv) %{_datadir}/vim/tutor/sv
 %lang(sv) %{_datadir}/vim/tutor/tutor1.sv
+%lang(sv) %{_datadir}/vim/tutor/tutor2.sv
 %lang(tr) %{_datadir}/vim/tutor/tutor1.tr
 %lang(uk) %{_datadir}/vim/tutor/tutor1.uk
 %lang(vi) %{_datadir}/vim/tutor/tutor1.vi
@@ -1506,6 +1516,7 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ja) %{_mandir}/ja/man1/vimtutor.1*
 %lang(pl) %{_mandir}/pl/man1/vimtutor.1*
 %lang(ru) %{_mandir}/ru/man1/vimtutor.1*
+%lang(sv) %{_mandir}/sv/man1/vimtutor.1*
 %lang(tr) %{_mandir}/tr/man1/vimtutor.1*
 
 %if %{with x11}
@@ -1590,6 +1601,10 @@ rm -rf $RPM_BUILD_ROOT
 %lang(ru) %{_mandir}/ru/man1/evim.1*
 %lang(ru) %{_mandir}/ru/man1/gvi*.1*
 %lang(ru) %{_mandir}/ru/man1/rgv*.1*
+%lang(sv) %{_mandir}/sv/man1/eview.1*
+%lang(sv) %{_mandir}/sv/man1/evim.1*
+%lang(sv) %{_mandir}/sv/man1/gvi*.1*
+%lang(sv) %{_mandir}/sv/man1/rgv*.1*
 %lang(tr) %{_mandir}/tr/man1/eview.1*
 %lang(tr) %{_mandir}/tr/man1/evim.1*
 %lang(tr) %{_mandir}/tr/man1/gvi*.1*
