@@ -1,0 +1,16 @@
+--- vim-9.2.0/src/Makefile.orig	2026-02-15 20:52:38.188899899 +0100
++++ vim-9.2.0/src/Makefile	2026-02-15 20:56:26.392881918 +0100
+@@ -1610,8 +1610,11 @@
+ 	    gui_beval.c netbeans.c job.c channel.c \
+ 	    $(GRESOURCE_SRC)
+ 
+-$(WAYLAND_SRC):
+-	cd auto/wayland; $(MAKE)
++$(WAYLAND_SRC): gen-wayland-srcs
++
++.PHONY: gen-wayland-srcs
++gen-wayland-srcs:
++	$(MAKE) -C auto/wayland
+ 
+ # Needed for parallel jobs to work
+ auto/wayland/ext-data-control-v1.h: auto/wayland/ext-data-control-v1.c

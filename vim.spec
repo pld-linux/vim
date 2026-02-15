@@ -73,7 +73,7 @@ Source32:	oceandeep.vim
 # http://www.vim.org/scripts/script.php?script_id=1464 (2.6.5)
 Source33:	moria.vim
 Patch0:		%{name}-sysconfdir.patch
-
+Patch1:		parallel-wayland-gen.patch
 Patch2:		%{name}-paths.patch
 
 Patch5:		%{name}-awk.patch
@@ -774,7 +774,7 @@ cp -p runtime/gvim.desktop gvim-gtk.desktop
 cp -p runtime/gvim.desktop gvim-motif.desktop
 
 %patch -P0 -p1
-
+%patch -P1 -p1
 %patch -P2 -p1
 
 %patch -P5 -p1
