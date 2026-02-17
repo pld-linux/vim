@@ -112,13 +112,9 @@ URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	attr-devel
 BuildRequires:	autoconf >= 2.50
+# -std=gnu17
+BuildRequires:	gcc >= 6:7
 BuildRequires:	gpm-devel
-%if "%{pld_release}" == "ac"
-%if %{with athena} || %{with x11} || %{with x}
-BuildRequires:	XFree86-devel
-%endif
-BuildRequires:	gettext-devel
-%else
 BuildRequires:	gettext-tools
 %{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 %if %{with x11} || %{with gui} || %{with x}
@@ -129,7 +125,6 @@ BuildRequires:	xorg-lib-libXaw-devel
 BuildRequires:	xorg-lib-libXdmcp-devel
 BuildRequires:	xorg-lib-libXpm-devel
 BuildRequires:	xorg-lib-libXt-devel
-%endif
 %endif
 BuildRequires:	grep
 %if %{with gtk} || %{with heavy}
@@ -840,11 +835,7 @@ build() {
 	shift
 
 	%configure \
-%if "%{pld_release}" == "ac"
-		--with-tlib="ncurses -ltinfo"
-%else
 		--with-tlib="ncursesw"
-%endif
 
 	%{__make} -j1 distclean
 	# add common options, can override (disable) if needed with args
@@ -860,17 +851,13 @@ build() {
 		--enable-gpm \
 		--enable-multibyte \
 		--enable-nls \
-%if "%{pld_release}" == "ac"
-		--with-tlib="ncurses -ltinfo" \
-%else
 		--with-tlib="ncursesw" \
-%endif
 		--with-modified-by="PLD Linux Distribution" \
 		--with-compiledby="PLD Linux Distribution" \
 		"$@"
 
 	%{__make} vim
-	mv -f vim bin/$target
+	%{__mv} vim bin/$target
 }
 
 %if %{with static}
