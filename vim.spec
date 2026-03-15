@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.2.0010
+%define		ver		9.2.0171
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #TODO:	https://github.com/vim/vim/archive/v%{ver}/%{name}-%{ver}.tar.gz
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	27ce7a2f42d7e4917bb57258cd03d2d5
+# Source0-md5:	91b7b65cadd7b471af1495279b2f9e97
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -73,7 +73,6 @@ Source32:	oceandeep.vim
 # http://www.vim.org/scripts/script.php?script_id=1464 (2.6.5)
 Source33:	moria.vim
 Patch0:		%{name}-sysconfdir.patch
-Patch1:		parallel-wayland-gen.patch
 Patch2:		%{name}-paths.patch
 
 Patch5:		%{name}-awk.patch
@@ -768,7 +767,6 @@ cp -p runtime/gvim.desktop gvim-gtk.desktop
 cp -p runtime/gvim.desktop gvim-motif.desktop
 
 %patch -P0 -p1
-%patch -P1 -p1
 %patch -P2 -p1
 
 %patch -P5 -p1
