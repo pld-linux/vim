@@ -93,7 +93,6 @@ Patch21:	%{name}-filetypes.patch
 Patch22:	%{name}-man_installation.patch
 Patch23:	%{name}-vimrc.patch
 Patch24:	%{name}-syntax-exports.patch
-Patch25:	sudoers-include.patch
 Patch26:	%{name}-home_etc.patch
 Patch27:	%{name}-autopaste.patch
 Patch28:	%{name}-ft-cron.patch
@@ -789,7 +788,6 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 %patch -P22 -p1
 %patch -P23 -p1
 %patch -P24 -p1
-%patch -P25 -p1
 %{?with_home_etc:%patch -P26 -p1}
 
 # autopaste patch - automatically switch to paste mode
