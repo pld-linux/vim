@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.2.0171
+%define		ver		9.2.0437
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #TODO:	https://github.com/vim/vim/archive/v%{ver}/%{name}-%{ver}.tar.gz
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	91b7b65cadd7b471af1495279b2f9e97
+# Source0-md5:	b2e44dfc96ba032a3b02876998add261
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -1260,6 +1260,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/vim/gvimrc
 
 %dir %{_datadir}/vim
+%doc %{_datadir}/vim/LICENSE
+%doc %{_datadir}/vim/README.txt
 %dir %{_datadir}/vim/doc
 %verify(not md5 mtime size) %{_datadir}/vim/doc/tags
 %lang(pl) %verify(not md5 mtime size) %{_datadir}/vim/doc/tags-pl
