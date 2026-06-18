@@ -1,0 +1,13 @@
+--- a/src/feature.h
++++ b/src/feature.h
+@@ -1134,7 +1134,9 @@
+ #if defined(FEAT_IMAGE) && defined(FEAT_GUI_GTK)
+ # ifdef USE_GTK4_SNAPSHOT
+ #  define FEAT_IMAGE_GDK
+-# else
++// The cairo popup image backend draws onto gui.surface, which only exists
++// for GTK3/GTK4; GTK2 has no such surface, so leave the feature off there.
++# elif defined(USE_GTK3) || defined(USE_GTK4)
+ #  define FEAT_IMAGE_CAIRO
+ # endif
+ #endif

@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.2.0564
+%define		ver		9.2.0670
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #TODO:	https://github.com/vim/vim/archive/v%{ver}/%{name}-%{ver}.tar.gz
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	84db3749210e5984e635325eb2aeb272
+# Source0-md5:	7a9e4c108be8d1c60bf2478e15187aa2
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -106,6 +106,7 @@ Patch38:	%{name}-ft-gyp.patch
 Patch39:	%{name}-revert-7.4.165-noundo.patch
 Patch40:	desktop.patch
 Patch41:	%{name}-lua.patch
+Patch42:	%{name}-gtk2-popup-image.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	attr-devel
@@ -803,6 +804,7 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 %patch -P39 -p1
 %patch -P40 -p1
 %patch -P41 -p1
+%patch -P42 -p1
 
 cp -p %{SOURCE20} runtime/syntax
 cp -p %{SOURCE22} runtime/syntax
@@ -1447,6 +1449,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %{_datadir}/vim/tutor/README.txt
 %lang(el) %{_datadir}/vim/tutor/README.el.txt
+%lang(it) %{_datadir}/vim/tutor/README.it.txt
 %lang(ru) %{_datadir}/vim/tutor/README.ru.txt
 %lang(sv) %{_datadir}/vim/tutor/README.sv.txt
 
