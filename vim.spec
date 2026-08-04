@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.2.0804
+%define		ver		9.2.0909
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #TODO:	https://github.com/vim/vim/archive/v%{ver}/%{name}-%{ver}.tar.gz
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	3e950f943462f9317bf0c1bee4f70222
+# Source0-md5:	8f5f9296c6fbdcc00c618bd3fcdf2ffc
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -106,7 +106,7 @@ Patch38:	%{name}-ft-gyp.patch
 Patch39:	%{name}-revert-7.4.165-noundo.patch
 Patch40:	desktop.patch
 Patch41:	%{name}-lua.patch
-Patch42:	%{name}-gtk2-popup-image.patch
+Patch42:	%{name}-hardcopy-pango-libs.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	attr-devel

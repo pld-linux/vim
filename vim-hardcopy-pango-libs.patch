@@ -1,0 +1,21 @@
+--- a/src/configure.ac
++++ b/src/configure.ac
+@@ -3191,8 +3191,18 @@
+
+   CPPFLAGS=$cppflags_save
+   CFLAGS=$cflags_save
++else
++  dnl AC_SUBST() above expands unconditionally, so the values picked up by the
++  dnl "for cairo"/"for pango" checks would still reach ALL_LIBS and break e.g.
++  dnl a --disable-gui -static link on a host that has pango/cairo installed.
++  CAIRO_CFLAGS=
++  CAIRO_CPPFLAGS=
++  CAIRO_LIBS=
++  PANGO_CFLAGS=
++  PANGO_CPPFLAGS=
++  PANGO_LIBS=
+ fi
+
+
+ dnl Check for Motif include files location.
+ dnl The LAST one found is used, this makes the highest version to be used,
