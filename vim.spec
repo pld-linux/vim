@@ -31,7 +31,7 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.2.1036
+%define		ver		9.2.1252
 %define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #TODO:	https://github.com/vim/vim/archive/v%{ver}/%{name}-%{ver}.tar.gz
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	b26d4c5372f844a0c680e7c85c6d02f5
+# Source0-md5:	62554032c7ef580df40ac75ae28b1028
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -151,6 +151,7 @@ BuildRequires:	pkgconfig
 %if %{with perl} || %{with heavy}
 BuildRequires:	perl-devel
 %endif
+BuildRequires:	pixman-devel
 %if %{with python} || %{with heavy}
 BuildRequires:	python-devel >= 1:2.3
 %endif
@@ -185,6 +186,7 @@ Obsoletes:	vim-minimal < 5.6
 Obsoletes:	vim-static < %{epoch}:%{version}-%{release}
 %endif
 BuildRequires:	unzip
+BuildRequires:	wayland-devel
 Suggests:	%{name}-rt = %{epoch}:%{version}-%{release}
 Provides:	vi-editor
 Provides:	vi
@@ -849,6 +851,7 @@ build() {
 		--enable-gpm \
 		--enable-multibyte \
 		--enable-nls \
+		--enable-pixman \
 		--with-tlib="ncursesw" \
 		--with-modified-by="PLD Linux Distribution" \
 		--with-compiledby="PLD Linux Distribution" \
@@ -873,6 +876,7 @@ build vim.static \
 	--disable-tclinterp \
 	--disable-cscope \
 	--disable-gpm \
+	--disable-pixman \
 	--enable-multibyte \
 	--disable-nls
 
@@ -893,6 +897,7 @@ build vim.light \
 	--disable-tclinterp \
 	--disable-cscope \
 	--disable-gpm \
+	--disable-pixman \
 	--disable-nls
 %endif
 
