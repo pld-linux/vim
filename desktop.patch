@@ -1,54 +1,50 @@
-diff --color -ur vim-8.2.2529.orig/gvim-athena.desktop vim-8.2.2529/gvim-athena.desktop
---- vim-8.2.2529.orig/gvim-athena.desktop	2021-02-17 21:57:03.000000000 +0100
-+++ vim-8.2.2529/gvim-athena.desktop	2021-03-02 14:24:51.277064340 +0100
-@@ -8,7 +8,7 @@
+--- a/gvim-athena.desktop	2026-11-05 22:44:06.000000000 +0100
++++ b/gvim-athena.desktop	2026-11-07 02:48:45.176730138 +0100
+@@ -20,7 +20,7 @@
  Name[tr]=GVim
  Name[uk]=GVim
  Name[zh_CN]=GVim
 -Name=GVim
 +Name=GVim Athena
  # Translators: This is the Generic Application Name used in the Vim desktop file
+ GenericName[af]=Teksverwerker
  GenericName[ca]=Editor de text
- GenericName[de]=Texteditor
-diff --color -ur vim-8.2.2529.orig/gvim-gnome.desktop vim-8.2.2529/gvim-gnome.desktop
---- vim-8.2.2529.orig/gvim-gnome.desktop	2021-02-17 21:57:03.000000000 +0100
-+++ vim-8.2.2529/gvim-gnome.desktop	2021-03-02 14:24:51.277064340 +0100
-@@ -8,7 +8,7 @@
+--- a/gvim-gnome.desktop	2026-11-05 22:44:06.000000000 +0100
++++ b/gvim-gnome.desktop	2026-11-07 02:48:45.183479110 +0100
+@@ -20,7 +20,7 @@
  Name[tr]=GVim
  Name[uk]=GVim
  Name[zh_CN]=GVim
 -Name=GVim
 +Name=GVim GNOME
  # Translators: This is the Generic Application Name used in the Vim desktop file
+ GenericName[af]=Teksverwerker
  GenericName[ca]=Editor de text
- GenericName[de]=Texteditor
-diff --color -ur vim-8.2.2529.orig/gvim-gtk.desktop vim-8.2.2529/gvim-gtk.desktop
---- vim-8.2.2529.orig/gvim-gtk.desktop	2021-02-17 21:57:03.000000000 +0100
-+++ vim-8.2.2529/gvim-gtk.desktop	2021-03-02 14:24:51.277064340 +0100
-@@ -8,7 +8,7 @@
+--- a/gvim-gtk.desktop	2026-11-05 22:44:06.000000000 +0100
++++ b/gvim-gtk.desktop	2026-11-07 02:48:45.190000000 +0100
+@@ -20,7 +20,7 @@
  Name[tr]=GVim
  Name[uk]=GVim
  Name[zh_CN]=GVim
 -Name=GVim
 +Name=GVim GTK
  # Translators: This is the Generic Application Name used in the Vim desktop file
+ GenericName[af]=Teksverwerker
  GenericName[ca]=Editor de text
- GenericName[de]=Texteditor
-diff --color -ur vim-8.2.2529.orig/gvim-motif.desktop vim-8.2.2529/gvim-motif.desktop
---- vim-8.2.2529.orig/gvim-motif.desktop	2021-02-17 21:57:03.000000000 +0100
-+++ vim-8.2.2529/gvim-motif.desktop	2021-03-02 14:24:51.277064340 +0100
-@@ -8,7 +8,7 @@
+--- a/gvim-motif.desktop	2026-11-05 22:44:06.000000000 +0100
++++ b/gvim-motif.desktop	2026-11-07 02:48:45.194719401 +0100
+@@ -20,7 +20,7 @@
  Name[tr]=GVim
  Name[uk]=GVim
  Name[zh_CN]=GVim
 -Name=GVim
 +Name=GVim Motif
  # Translators: This is the Generic Application Name used in the Vim desktop file
+ GenericName[af]=Teksverwerker
  GenericName[ca]=Editor de text
- GenericName[de]=Texteditor
---- vim-8.2.3570/runtime/vim.desktop~	2021-11-01 23:58:43.000000000 +0100
-+++ vim-8.2.3570/runtime/vim.desktop	2021-11-02 20:11:30.533015830 +0100
-@@ -112,6 +112,6 @@ Keywords[tr]=Metin;düzenleyici;
+--- a/runtime/vim.desktop	2026-11-05 22:44:06.000000000 +0100
++++ b/runtime/vim.desktop	2026-11-07 02:48:45.213413441 +0100
+@@ -143,6 +143,6 @@
  Keywords=Text;editor;
  # Translators: This is the Icon file name. Do NOT translate
  Icon=gvim
@@ -56,4 +52,3 @@ diff --color -ur vim-8.2.2529.orig/gvim-motif.desktop vim-8.2.2529/gvim-motif.de
 +Categories=ConsoleOnly;TextEditor;
  StartupNotify=false
  MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
-
