@@ -1,11 +1,11 @@
---- a/gvim-athena.desktop	2026-11-05 22:44:06.000000000 +0100
-+++ b/gvim-athena.desktop	2026-11-07 02:48:45.176730138 +0100
+--- a/gvim-gtk4.desktop	2026-11-05 22:44:06.000000000 +0100
++++ b/gvim-gtk4.desktop	2026-11-07 02:48:45.176730138 +0100
 @@ -20,7 +20,7 @@
  Name[tr]=GVim
  Name[uk]=GVim
  Name[zh_CN]=GVim
 -Name=GVim
-+Name=GVim Athena
++Name=GVim GTK4
  # Translators: This is the Generic Application Name used in the Vim desktop file
  GenericName[af]=Teksverwerker
  GenericName[ca]=Editor de text

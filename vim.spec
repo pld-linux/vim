@@ -1,10 +1,10 @@
 #
 # Conditional build:
 %bcond_without	static		# static version
-%bcond_without	athena		# Athena Widgets-based gvim
 %bcond_without	motif		# Motif-based gvim
 %bcond_without	gtk		# GTK+-based gvim support
 %bcond_without	gtk3		# use GTK+ 2.x instead of 3.x
+%bcond_without	gtk4		# GTK 4-based gvim (experimental upstream)
 %bcond_without	gnome		# GNOME-based gvim support
 %bcond_without	heavy		# heavy (full-featured GNOME-based gvim/vim)
 %bcond_without	gui		# any GUI
@@ -21,9 +21,9 @@
 %bcond_without	home_etc	# home_etc support
 
 %if %{without gui}
-%undefine	with_athena
 %undefine	with_motif
 %undefine	with_gtk
+%undefine	with_gtk4
 %undefine	with_gnome
 %endif
 
@@ -32,7 +32,7 @@
 # VCS Commits: https://github.com/vim/vim/commits/master
 
 %define		ver		9.2.1351
-%define		rel		1
+%define		rel		2
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -115,7 +115,6 @@ BuildRequires:	autoconf >= 2.50
 BuildRequires:	gcc >= 6:7
 BuildRequires:	gpm-devel
 BuildRequires:	gettext-tools
-%{?with_athena:BuildRequires:	xorg-lib-libXaw-devel}
 %if %{with x11} || %{with gui} || %{with x}
 BuildRequires:	xorg-lib-libICE-devel
 BuildRequires:	xorg-lib-libSM-devel
@@ -134,7 +133,8 @@ BuildRequires:	gtk+3-devel >= 3.0
 BuildRequires:	gtk+2-devel >= 2:2.6.0
 %endif
 %endif
-%if %{with gnome} || %{with heavy}
+%{?with_gtk4:BuildRequires:	gtk4-devel >= 4.10.0}
+%if %{with gtk} || %{with gtk4} || %{with gnome} || %{with heavy}
 BuildRequires:	libcanberra-devel
 %endif
 %{?with_gnome:BuildRequires:	libgnomeui-devel >= 2.2.0.1}
@@ -588,40 +588,6 @@ bevezető a Vim-hez.
 %description tutor -l pl.UTF-8
 Ten pakiet zawiera samouczek do Vima.
 
-%package -n gvim-athena
-Summary:	Vim for X Window built with Athena
-Summary(hu.UTF-8):	A Vim X Window verziója, az Athena felhasználásával
-Summary(pl.UTF-8):	Vim dla X Window korzystający z biblioteki Athena
-Group:		Applications/Editors/Vim
-Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
-Requires:	iconv
-Provides:	gvim
-Provides:	vi-editor
-Provides:	vim-editor = %{epoch}:%{version}-%{release}
-Obsoletes:	vim-X11 < 5.6
-Obsoletes:	vim-athena < 5.6
-
-%description -n gvim-athena
-The classic Unix text editor now also under X Window System! This
-version is built with Athena Widget Set.
-
-%description -n gvim-athena -l hu.UTF-8
-A Vim X Window verziója, az Athena Widgetkészlet felhasználásával.
-
-%description -n gvim-athena -l pl.UTF-8
-Wersja edytora Vim pracująca w środowisku X Window z wykorzystaniem
-biblioteki Athena Widget Set.
-
-%description -n gvim-athena -l ru.UTF-8
-Этот пакет представляет собой версию VIM, собранную с библиотеками
-Athena Widget Set, что позволяет запускать VIM как приложение X Window
-System - с полностью графическим интерфейсом и поддержкой мыши.
-
-%description -n gvim-athena -l uk.UTF-8
-Цей пакет містить версію VIM, зібрану з бібліотеками Athena Widget
-Set, що дозволяє запускати VIM як прикладну програму X Window System -
-з повністю графічним інтерфейсом та підтримкою миші.
-
 %package -n gvim-motif
 Summary:	Vim for X Window System built with Motif
 Summary(hu.UTF-8):	A Vim X Window verziója, a Motif felhasználásával
@@ -632,8 +598,10 @@ Requires:	iconv
 Provides:	gvim
 Provides:	vi-editor
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
+Obsoletes:	gvim-athena < 4:9.2.1351-2
 Obsoletes:	gvim-lesstif < 5.6-5
 Obsoletes:	vim-X11 < 5.6
+Obsoletes:	vim-athena < 5.6
 Obsoletes:	vim-lesstif < 5.6
 
 %description -n gvim-motif
@@ -694,6 +662,30 @@ GTK, что позволяет запускать VIM как приложени�
 Цей пакет містить версію VIM, зібрану з бібліотеками GTK, що дозволяє
 запускати VIM як прикладну програму X Window System - з повністю
 графічним інтерфейсом та підтримкою миші. Просто скажіть 'gvim'...
+
+%package -n gvim-gtk4
+Summary:	Vim for X Window System and Wayland built with GTK 4
+Summary(pl.UTF-8):	Vim dla systemu X Window i Wayland korzystający z biblioteki GTK 4
+Group:		Applications/Editors/Vim
+Requires(post,postun):	gtk-update-icon-cache
+Requires(post,postun):	hicolor-icon-theme
+Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
+Requires:	%{name}-rt-extras = %{epoch}:%{version}-%{release}
+Requires:	gtk4 >= 4.10.0
+Requires:	iconv
+Provides:	gvim
+Provides:	vi-editor
+Provides:	vim-editor = %{epoch}:%{version}-%{release}
+
+%description -n gvim-gtk4
+The classic Unix text editor now also under X Window System and
+Wayland! This version is built with GTK 4 (experimental upstream; if
+it is slow or freezes, try GSK_RENDERER=cairo gvim.gtk4).
+
+%description -n gvim-gtk4 -l pl.UTF-8
+Wersja edytora Vim pracująca w środowisku X Window i Wayland z
+wykorzystaniem biblioteki GTK 4 (eksperymentalna; jeśli działa wolno
+lub się zawiesza, warto spróbować GSK_RENDERER=cairo gvim.gtk4).
 
 %package -n gvim-gnome
 Summary:	Vim for X Window System built with GNOME
@@ -764,9 +756,9 @@ jak również GUI GTK+2.
 %prep
 %setup -q
 
-cp -p runtime/gvim.desktop gvim-athena.desktop
 cp -p runtime/gvim.desktop gvim-gnome.desktop
 cp -p runtime/gvim.desktop gvim-gtk.desktop
+cp -p runtime/gvim.desktop gvim-gtk4.desktop
 cp -p runtime/gvim.desktop gvim-motif.desktop
 
 %patch -P0 -p1
@@ -806,6 +798,11 @@ cp -p runtime/gvim.desktop gvim-motif.desktop
 %patch -P39 -p1
 %patch -P40 -p1
 %patch -P41 -p1
+
+# each menu entry runs its own gvim flavour
+for f in gnome gtk gtk4 motif; do
+	%{__sed} -i -e "s/^TryExec=gvim$/TryExec=gvim.$f/" -e "s/^Exec=gvim /Exec=gvim.$f /" gvim-$f.desktop
+done
 %patch -P42 -p1
 
 cp -p %{SOURCE20} runtime/syntax
@@ -915,18 +912,6 @@ build vimx \
 	--with-features=huge
 %endif
 
-%if %{with athena}
-build gvim.athena \
-	--with-features=huge \
-	--enable-gui=athena \
-	--with-x \
-	--enable-fontset \
-	--disable-canberra \
-	--disable-gpm \
-	--without-gnome
-
-%endif
-
 %if %{with motif}
 build gvim.motif \
 	--with-features=huge \
@@ -951,7 +936,17 @@ build gvim.gtk \
 	--enable-gtk2-check \
 %endif
 	--with-x \
-	--disable-canberra \
+	--enable-canberra \
+	--disable-gpm
+
+%endif
+
+%if %{with gtk4}
+# GTK4 does not use X11 directly (Wayland or X11 through GDK)
+build gvim.gtk4 \
+	--with-features=huge \
+	--enable-gui=gtk4 \
+	--enable-canberra \
 	--disable-gpm
 
 %endif
@@ -1067,10 +1062,6 @@ ln -sf vi  $RPM_BUILD_ROOT/bin/ex
 ln -sf vi  $RPM_BUILD_ROOT/bin/view
 ln -sf vi  $RPM_BUILD_ROOT/bin/rview
 
-%if %{with athena}
-install -p src/bin/gvim.athena $RPM_BUILD_ROOT%{_bindir}/gvim.athena
-cp -p gvim-athena.desktop $RPM_BUILD_ROOT%{_desktopdir}
-%endif
 %if %{with motif}
 install -p src/bin/gvim.motif $RPM_BUILD_ROOT%{_bindir}/gvim.motif
 cp -p gvim-motif.desktop $RPM_BUILD_ROOT%{_desktopdir}
@@ -1089,6 +1080,10 @@ ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/gvimdiff
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgview
 ln -sf gvim		$RPM_BUILD_ROOT%{_bindir}/rgvim
+%endif
+%if %{with gtk4}
+install -p src/bin/gvim.gtk4	$RPM_BUILD_ROOT%{_bindir}/gvim.gtk4
+cp -p gvim-gtk4.desktop $RPM_BUILD_ROOT%{_desktopdir}
 %endif
 %if %{with heavy}
 install -p src/bin/vim.heavy	$RPM_BUILD_ROOT%{_bindir}
@@ -1135,12 +1130,6 @@ rm -rf $RPM_BUILD_ROOT
 %postun doc
 %vim_doc_helptags
 
-%post -n gvim-athena
-[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
-
-%postun -n gvim-athena
-[ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
-
 %post -n gvim-motif
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
 
@@ -1153,6 +1142,14 @@ rm -rf $RPM_BUILD_ROOT
 
 %postun -n gvim-gtk
 [ ! -x /usr/bin/update-desktop-database ] || %update_desktop_database
+%update_icon_cache hicolor
+
+%post -n gvim-gtk4
+%update_desktop_database_post
+%update_icon_cache hicolor
+
+%postun -n gvim-gtk4
+%update_desktop_database_postun
 %update_icon_cache hicolor
 
 %post -n gvim-gnome
@@ -1534,13 +1531,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %{_datadir}/vim/spell/en.*.*
 
-%if %{with athena}
-%files -n gvim-athena
-%defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/gvim.athena
-%{_desktopdir}/gvim-athena.desktop
-%endif
-
 %if %{with motif}
 %files -n gvim-motif
 %defattr(644,root,root,755)
@@ -1603,6 +1593,13 @@ rm -rf $RPM_BUILD_ROOT
 %lang(tr) %{_mandir}/tr/man1/gvi*.1*
 %lang(tr) %{_mandir}/tr/man1/rgv*.1*
 %{_desktopdir}/gvim-gtk.desktop
+%endif
+
+%if %{with gtk4}
+%files -n gvim-gtk4
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/gvim.gtk4
+%{_desktopdir}/gvim-gtk4.desktop
 %endif
 
 %if %{with gnome}
