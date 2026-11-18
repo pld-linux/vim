@@ -1,0 +1,15 @@
+--- vim-9.2.1364/src/gui_x11.c.orig
++++ vim-9.2.1364/src/gui_x11.c
+@@ -1735,6 +1735,12 @@
+ 	}
+ 	if (font == NULL)
+ 	    font = (XFontStruct *)gui_mch_get_font(font_name, FALSE);
++	if (font == NULL && STRCMP(font_name, DFLT_FONT) == 0)
++	{
++	    // DFLT_FONT (7x13) may be missing, "fixed" is always there
++	    font_name = (char_u *)"fixed";
++	    font = (XFontStruct *)gui_mch_get_font(font_name, FALSE);
++	}
+ 	if (font == NULL)
+ 	    return FAIL;
+     }

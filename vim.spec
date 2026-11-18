@@ -31,8 +31,8 @@
 # wget ftp://ftp.vim.org/pub/editors/vim/patches/8.0/MD5SUMS -O - | tail -n1 | awk '{print $2}'
 # VCS Commits: https://github.com/vim/vim/commits/master
 
-%define		ver		9.2.1351
-%define		rel		2
+%define		ver		9.2.1373
+%define		rel		1
 Summary:	Vi IMproved - a Vi clone
 Summary(de.UTF-8):	VIsual editor iMproved
 Summary(es.UTF-8):	Editor visual incrementado
@@ -52,7 +52,7 @@ License:	Charityware
 Group:		Applications/Editors/Vim
 #TODO:	https://github.com/vim/vim/archive/v%{ver}/%{name}-%{ver}.tar.gz
 Source0:	https://github.com/vim/vim/archive/v%{ver}.tar.gz
-# Source0-md5:	4112cc60ba7aebb5e73da643ccdea7fd
+# Source0-md5:	9c25984c6d622fe6d596dfa7b5c69ba1
 Source1:	http://www.mif.pg.gda.pl/homepages/ankry/man-PLD/%{name}-non-english-man-pages.tar.bz2
 # Source1-md5:	bc4d1e115ca506ad7751b9bd2b773a7f
 Source2:	http://skawina.eu.org/mikolaj/usr_doc_pl.zip
@@ -107,6 +107,7 @@ Patch39:	%{name}-revert-7.4.165-noundo.patch
 Patch40:	desktop.patch
 Patch41:	%{name}-lua.patch
 Patch42:	%{name}-hardcopy-pango-libs.patch
+Patch43:	%{name}-x11-font-fallback.patch
 URL:		http://www.vim.org/
 BuildRequires:	acl-devel
 BuildRequires:	attr-devel
@@ -152,12 +153,10 @@ BuildRequires:	pkgconfig
 BuildRequires:	perl-devel
 %endif
 BuildRequires:	pixman-devel
-%if %{with python} || %{with heavy}
+%if %{with python}
 BuildRequires:	python-devel >= 1:2.3
 %endif
-%if %{with python3} || %{with heavy}
-BuildRequires:	python3-devel
-%endif
+BuildRequires:	python3-devel >= 1:3.8
 %if %{with python} || %{with python3} || %{with heavy}
 BuildRequires:	rpm-pythonprov
 %endif
@@ -595,6 +594,7 @@ Summary(pl.UTF-8):	Vim dla systemu X Window korzystający z biblioteki Motif
 Group:		Applications/Editors/Vim
 Requires:	%{name}-rt = %{epoch}:%{version}-%{release}
 Requires:	iconv
+Suggests:	xorg-font-font-misc-misc-ISO8859-1
 Provides:	gvim
 Provides:	vi-editor
 Provides:	vim-editor = %{epoch}:%{version}-%{release}
@@ -804,6 +804,7 @@ for f in gnome gtk gtk4 motif; do
 	%{__sed} -i -e "s/^TryExec=gvim$/TryExec=gvim.$f/" -e "s/^Exec=gvim /Exec=gvim.$f /" gvim-$f.desktop
 done
 %patch -P42 -p1
+%patch -P43 -p1
 
 cp -p %{SOURCE20} runtime/syntax
 cp -p %{SOURCE22} runtime/syntax
@@ -852,6 +853,7 @@ build() {
 		--with-tlib="ncursesw" \
 		--with-modified-by="PLD Linux Distribution" \
 		--with-compiledby="PLD Linux Distribution" \
+		--enable-autoservername \
 		"$@"
 
 	%{__make} vim
@@ -902,6 +904,8 @@ build vim.ncurses \
 	--disable-gui \
 	%{__with_without x} \
 	--disable-canberra \
+	--enable-python3interp=dynamic \
+	--with-python3-stable-abi \
 	--with-features=huge
 
 %if %{with x11}
@@ -909,6 +913,8 @@ build vimx \
 	--disable-gui \
 	--with-x \
 	--disable-canberra \
+	--enable-python3interp=dynamic \
+	--with-python3-stable-abi \
 	--with-features=huge
 %endif
 
@@ -937,6 +943,8 @@ build gvim.gtk \
 %endif
 	--with-x \
 	--enable-canberra \
+	--enable-python3interp=dynamic \
+	--with-python3-stable-abi \
 	--disable-gpm
 
 %endif
@@ -947,6 +955,8 @@ build gvim.gtk4 \
 	--with-features=huge \
 	--enable-gui=gtk4 \
 	--enable-canberra \
+	--enable-python3interp=dynamic \
+	--with-python3-stable-abi \
 	--disable-gpm
 
 %endif
@@ -970,8 +980,9 @@ build vim.heavy \
 	--without-x \
 	--enable-luainterp \
 	--enable-perlinterp \
-	--enable-pythoninterp \
-	--enable-python3interp \
+	--disable-pythoninterp \
+	--enable-python3interp=dynamic \
+	--with-python3-stable-abi \
 	--enable-rubyinterp \
 	--enable-tclinterp \
 	--disable-canberra \
@@ -985,8 +996,9 @@ build gvim.heavy \
 	--with-x \
 	--enable-luainterp \
 	--enable-perlinterp \
-	--enable-pythoninterp \
-	--enable-python3interp \
+	--disable-pythoninterp \
+	--enable-python3interp=dynamic \
+	--with-python3-stable-abi \
 	--enable-rubyinterp \
 	--enable-tclinterp \
 	--disable-gpm
